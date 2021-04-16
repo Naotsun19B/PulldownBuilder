@@ -1,0 +1,29 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "PulldownBuilder",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Naotsun",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "PulldownBuilder",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "PulldownBuilderEd",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "Default"
+		}
+	]
+}
