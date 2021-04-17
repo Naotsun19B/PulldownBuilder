@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "PulldownBuilderGlobals.h"
+
+DEFINE_LOG_CATEGORY(LogPulldownBuilder);
 
 class FPulldownBuilderModule : public IModuleInterface
 {

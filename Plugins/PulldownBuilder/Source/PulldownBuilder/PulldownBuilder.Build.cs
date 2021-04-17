@@ -12,6 +12,7 @@ public class PulldownBuilder : ModuleRules
 			new string[]
 			{
 				"Core",
+				"PulldownStruct",
 			}
 			);
 			

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PulldownStruct/PulldownStructBase.h"
+#include "PulldownStructBase.h"
 #include "TestPulldown.generated.h"
 
 USTRUCT(BlueprintType)

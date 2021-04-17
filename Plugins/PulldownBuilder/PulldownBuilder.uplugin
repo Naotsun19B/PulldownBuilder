@@ -16,12 +16,12 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "PulldownBuilder",
+			"Name": "PulldownStruct",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "PulldownBuilderEd",
+			"Name": "PulldownBuilder",
 			"Type": "EditorNoCommandlet",
 			"LoadingPhase": "Default"
 		}

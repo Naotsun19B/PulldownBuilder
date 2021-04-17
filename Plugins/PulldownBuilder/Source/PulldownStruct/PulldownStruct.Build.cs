@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class PulldownBuilderEd : ModuleRules
+public class PulldownStruct : ModuleRules
 {
-	public PulldownBuilderEd(ReadOnlyTargetRules Target) : base(Target)
+	public PulldownStruct(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -12,7 +12,6 @@ public class PulldownBuilderEd : ModuleRules
 			new string[]
 			{
 				"Core",
-				"PulldownBuilder",
 			}
 			);
 			

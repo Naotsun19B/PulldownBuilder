@@ -10,6 +10,6 @@ public class PulldownBuilderTest : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "PulldownBuilder" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "PulldownStruct" });
 	}
 }
