@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "PulldownBuilderGlobals.h"
+#include "DetailCustomization/PulldownStructTypeDetail.h"
 
 DEFINE_LOG_CATEGORY(LogPulldownBuilder);
 
@@ -17,16 +18,16 @@ public:
 	// End of IModuleInterface interface.
 };
 
-#define LOCTEXT_NAMESPACE "PulldownBuilder"
-
 void FPulldownBuilderModule::StartupModule()
 {
+	// Register detail customizations.
+	FPulldownStructTypeDetail::Register();
 }
 
 void FPulldownBuilderModule::ShutdownModule()
 {
+	// Unregister detail customizations.
+	FPulldownStructTypeDetail::Unregister();
 }
-
-#undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FPulldownBuilderModule, PulldownBuilder)

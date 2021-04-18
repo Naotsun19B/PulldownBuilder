@@ -24,6 +24,10 @@ public class PulldownBuilder : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"EditorStyle",
+				"StructViewer",
+				"GraphEditor",
+				"PropertyEditor",
 			}
 			);
 	}

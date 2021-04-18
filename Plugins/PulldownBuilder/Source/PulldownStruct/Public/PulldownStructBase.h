@@ -22,8 +22,8 @@ public:
 
 public:
 	// Constructor.
-	FPulldownStructBase(const FName& InValue) : SelectedValue(InValue) {}
 	FPulldownStructBase() : SelectedValue(NAME_None) {}
+	FPulldownStructBase(const FName& InValue) : SelectedValue(InValue) {}
 
 	// Overload oprators.
 	FORCEINLINE bool operator ==(const FPulldownStructBase& Other) const
