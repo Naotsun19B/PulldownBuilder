@@ -1,8 +1,8 @@
-﻿// Copyright 2021 Naotsun. All Rights Reserved.
+// Copyright 2021 Naotsun. All Rights Reserved.
 
-#include "PulldownContentsAsset/PulldownContents.h"
+#include "ListGenerator/PulldownListGeneratorBase.h"
 
-TArray<TSharedPtr<FString>> UPulldownContents::GetDisplayStrings()
+TArray<TSharedPtr<FString>> UPulldownListGeneratorBase::GetDisplayStrings() const
 {
 	TArray<TSharedPtr<FString>> DisplayStrings;
 	TArray<FString> DisplayStringsFromBlueprint = GetDisplayStringsFromBlueprint();

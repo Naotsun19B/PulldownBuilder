@@ -1,7 +1,8 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "DetailCustomization/PulldownStructTypeDetail.h"
-#include "PulldownContentsAsset/PulldownContents.h"
+#include "Asset/PulldownContents.h"
+#include "Common/PulldownStructType.h"
 #include "Common/PulldownBuilderUtils.h"
 #include "StructViewerModule.h"
 #include "StructViewerFilter.h"
@@ -10,14 +11,6 @@
 
 namespace PulldownStructTypeDetailInternal
 {
-	// Get the type name of FPulldownStructType as FName type.
-	const FName PulldownStructTypeName()
-	{
-		UScriptStruct* StaticStruct = FPulldownStructType::StaticStruct();
-		check(StaticStruct);
-		return StaticStruct->GetFName();
-	}
-
 	// Filter class for displaying only structs that inherit from FPulldownStructBase in the struct picker.
 	class FPulldownStructFilter : public IStructViewerFilter
 	{
@@ -39,7 +32,7 @@ void FPulldownStructTypeDetail::Register()
 {
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyModule.RegisterCustomPropertyTypeLayout(
-		PulldownStructTypeDetailInternal::PulldownStructTypeName(),
+		FPulldownStructType::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructTypeDetail::MakeInstance)
 	);
 }
@@ -48,7 +41,7 @@ void FPulldownStructTypeDetail::Unregister()
 {
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyModule.UnregisterCustomPropertyTypeLayout(
-		PulldownStructTypeDetailInternal::PulldownStructTypeName()
+		FPulldownStructType::StaticStruct()->GetFName()
 	);
 }
 

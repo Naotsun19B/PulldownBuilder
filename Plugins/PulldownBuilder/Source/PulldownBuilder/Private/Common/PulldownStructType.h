@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "PulldownContents.generated.h"
+#include "PulldownStructType.generated.h"
 
 /**
  * A structure for specifying the type of structure that inherits from FPulldownStructBase.
@@ -39,7 +38,7 @@ public:
 		return !(*this == Other);
 	}
 
-	FORCEINLINE const FName& operator *() const
+	FORCEINLINE FName operator *() const
 	{
 		if (IsValid(SelectedStruct))
 		{
@@ -55,34 +54,4 @@ public:
 	{
 		return GetTypeHash(PulldownStructType.SelectedStruct);
 	}
-};
-
-/**
- * A class that defines a structure that displays a pull-down menu and 
- * builds the list that is the basis of the pull-down menu.
- */
-UCLASS(Abstract, Blueprintable)
-class PULLDOWNBUILDER_API UPulldownContents : public UObject
-{
-	GENERATED_BODY()
-	
-public:
-	// Returns a list of strings to display in the pull-down menu.
-	// By default, it returns the value of "GetDisplayStringsBP".
-	virtual TArray<TSharedPtr<FString>> GetDisplayStrings();
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, meta = (DisplayName = "GetDisplayStrings"))
-	TArray<FString> GetDisplayStringsFromBlueprint();
-
-	// PulldownStructType getter.
-	const FPulldownStructType& GetPulldownStructType() const { return PulldownStructType; }
-
-	// UObject interface.
-	virtual bool IsEditorOnly() const { return true; }
-	// End of UObject interface.
-
-private:
-	// Structure that displays a pull-down menu.
-	// It must be a structure that inherits from FPulldownStructBase.
-	UPROPERTY(EditDefaultsOnly)
-	FPulldownStructType PulldownStructType;
 };
