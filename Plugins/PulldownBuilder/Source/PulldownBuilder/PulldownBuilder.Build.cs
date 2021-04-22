@@ -15,7 +15,6 @@ public class PulldownBuilder : ModuleRules
 				"PulldownStruct",
 			}
 			);
-			
 		
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
@@ -27,8 +26,9 @@ public class PulldownBuilder : ModuleRules
 				"UnrealEd",
 				"AssetTools",
 				"EditorStyle",
-				"StructViewer",
 				"GraphEditor",
+				"StructViewer",
+				"AssetRegistry",
 				"PropertyEditor",
 			}
 			);

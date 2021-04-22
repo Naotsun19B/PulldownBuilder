@@ -29,5 +29,5 @@ UObject* UPulldownContentsFactory::FactoryCreateNew(
 	FFeedbackContext* Warn
 )
 {
-	return CastChecked<UPulldownContents>(StaticConstructObject_Internal(InClass, InParent, InName, Flags));
+	return NewObject<UPulldownContents>(InParent, InClass, InName, Flags);
 }

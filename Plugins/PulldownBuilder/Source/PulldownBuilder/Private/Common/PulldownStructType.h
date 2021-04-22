@@ -48,10 +48,13 @@ public:
 		return NAME_None;
 	}
 	// End of overload oprators.
-
+	
 	// Define a GetTypeHash function so that it can be used as a map key.
 	friend FORCEINLINE uint32 GetTypeHash(const FPulldownStructType& PulldownStructType)
 	{
 		return GetTypeHash(PulldownStructType.SelectedStruct);
 	}
+
+	// Returns whether the structure information is empty.
+	bool IsEmpty() const { return !IsValid(SelectedStruct); }
 };

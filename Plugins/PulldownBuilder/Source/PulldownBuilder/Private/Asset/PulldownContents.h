@@ -7,6 +7,7 @@
 #include "Common/PulldownStructType.h"
 #include "PulldownContents.generated.h"
 
+struct FPropertyChangedEvent;
 class UPulldownListGeneratorBase;
 
 /**
@@ -21,6 +22,10 @@ class PULLDOWNBUILDER_API UPulldownContents : public UObject
 public:
 	// UObject interface.
 	virtual bool IsEditorOnly() const override { return true; }
+	virtual void PostLoad() override;
+	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void BeginDestroy() override;
 	// End of UObject interface.
 
 	// Get information about the target structure.
@@ -28,6 +33,13 @@ public:
 	
 	// Returns the list to display in the pull-down menu.
 	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const;
+
+protected:
+	// Register the structure set for this asset in detail customization.
+	virtual void RegisterDetailCustomization();
+	
+	// Unregister the structure set for this asset from detail customization.
+	virtual void UnregisterDetailCustomization();
 	
 protected:
 	// Structure that displays a pull-down menu.

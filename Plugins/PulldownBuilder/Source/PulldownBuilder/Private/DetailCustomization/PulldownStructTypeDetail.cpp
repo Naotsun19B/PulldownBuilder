@@ -18,7 +18,13 @@ namespace PulldownStructTypeDetailInternal
 		// IStructViewerFilter interface.
 		virtual bool IsStructAllowed(const FStructViewerInitializationOptions& InInitOptions, const UScriptStruct* InStruct, TSharedRef<FStructViewerFilterFuncs> InFilterFuncs) override
 		{
-			return FPulldownBuilderUtils::IsPulldownStruct(InStruct);
+			bool bIsStructAllowed = false;
+			if (FPulldownBuilderUtils::IsPulldownStruct(InStruct))
+			{
+				bIsStructAllowed = !FPulldownBuilderUtils::IsRegisteredPulldownStruct(InStruct);
+			}
+			
+			return bIsStructAllowed;
 		}
 		virtual bool IsUnloadedStructAllowed(const FStructViewerInitializationOptions& InInitOptions, const FName InStructPath, TSharedRef<FStructViewerFilterFuncs> InFilterFuncs) override
 		{
@@ -122,8 +128,9 @@ TSharedRef<SWidget> FPulldownStructTypeDetail::GenerateStructPicker()
 	FStructViewerModule& StructViewerModule = FModuleManager::LoadModuleChecked<FStructViewerModule>("StructViewer");
 
 	FStructViewerInitializationOptions Options;
-	Options.Mode = EStructViewerMode::StructPicker;
 	Options.StructFilter = MakeShared<PulldownStructTypeDetailInternal::FPulldownStructFilter>();
+	Options.Mode = EStructViewerMode::StructPicker;
+	Options.bShowNoneOption = true;
 
 	return
 		SNew(SBox)
