@@ -16,4 +16,9 @@ MONOLITHIC_HEADER_BOILERPLATE()
 /* Public includes.
 *****************************************************************************/
 #include "PulldownBuilderGlobals.h"
-#include "PulldownContentsAsset/PulldownContents.h"
+#include "Asset/PulldownContents.h"
+#include "Common/PulldownStructType.h"
+#include "Common/PulldownBuilderUtils.h"
+#include "ListGenerator/PulldownListGeneratorBase.h"
+#include "ListGenerator/DataTablePulldownListGenerator.h"
+#include "ListGenerator/NameArrayPulldownListGenerator.h"

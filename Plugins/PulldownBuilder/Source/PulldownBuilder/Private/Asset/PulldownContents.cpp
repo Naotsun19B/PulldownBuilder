@@ -4,6 +4,13 @@
 #include "PulldownBuilderGlobals.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
 #include "DetailCustomization/PulldownStructDetail.h"
+#include "UObject/MetaData.h"
+
+namespace PulldownContentsDefine
+{
+	static const FName RegisteredStructTypeTag = TEXT("RegisteredStructType");
+	static const FName GeneratorClassTag = TEXT("GeneratorClass");
+}
 
 void UPulldownContents::PostLoad()
 {
@@ -56,6 +63,33 @@ void UPulldownContents::PostDuplicate(bool bDuplicateForPIE)
 
 	// Prevent the same structure from being registered when duplicated.
 	PulldownStructType = nullptr;
+}
+
+void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const
+{
+	Super::GetAssetRegistryTags(OutTags);
+
+	// Added the name of the structure registered in this asset to AssetRegistryTags.
+	OutTags.Add(FAssetRegistryTag(
+		PulldownContentsDefine::RegisteredStructTypeTag,
+		FName(*PulldownStructType).ToString(),
+		FAssetRegistryTag::TT_Alphabetical
+	));
+
+	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
+	FName GeneratorClassName = NAME_None;
+	if (IsValid(PulldownListGenerator))
+	{
+		if (UClass* Class = PulldownListGenerator->GetClass())
+		{
+			GeneratorClassName = Class->GetFName();
+		}
+	}
+	OutTags.Add(FAssetRegistryTag(
+		PulldownContentsDefine::GeneratorClassTag,
+		GeneratorClassName.ToString(),
+		FAssetRegistryTag::TT_Alphabetical
+	));
 }
 
 TArray<TSharedPtr<FString>> UPulldownContents::GetDisplayStrings() const

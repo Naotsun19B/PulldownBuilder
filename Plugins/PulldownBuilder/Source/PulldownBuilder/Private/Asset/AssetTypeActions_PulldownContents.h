@@ -17,6 +17,5 @@ public:
 	virtual UClass* GetSupportedClass() const override;
 	virtual uint32 GetCategories() override;
 	virtual bool CanLocalize() const override;
-	virtual FText GetAssetDescription(const FAssetData& AssetData) const override;
 	// End of FAssetTypeActions_Base interface.
 };

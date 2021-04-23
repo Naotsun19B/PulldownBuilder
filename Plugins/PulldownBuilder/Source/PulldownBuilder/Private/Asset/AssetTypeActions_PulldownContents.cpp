@@ -30,9 +30,4 @@ bool FAssetTypeActions_PulldownContents::CanLocalize() const
 	return false;
 }
 
-FText FAssetTypeActions_PulldownContents::GetAssetDescription(const FAssetData& AssetData) const
-{
-	return FAssetTypeActions_Base::GetAssetDescription(AssetData);
-}
-
 #undef LOCTEXT_NAMESPACE

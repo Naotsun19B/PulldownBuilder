@@ -27,6 +27,7 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void BeginDestroy() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;
+	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
 	// End of UObject interface.
 
 	// Get information about the target structure.
@@ -42,7 +43,7 @@ protected:
 	// Unregister the structure set for this asset from detail customization.
 	virtual void UnregisterDetailCustomization();
 	
-protected:
+protected:	
 	// Structure that displays a pull-down menu.
 	// It must be a structure that inherits from FPulldownStructBase.
 	UPROPERTY(EditDefaultsOnly)
