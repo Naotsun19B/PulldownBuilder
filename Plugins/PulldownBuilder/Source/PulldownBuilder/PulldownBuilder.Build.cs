@@ -29,6 +29,7 @@ public class PulldownBuilder : ModuleRules
 				"GraphEditor",
 				"StructViewer",
 				"AssetRegistry",
+				"BlueprintGraph",
 				"PropertyEditor",
 				"ApplicationCore",
 			}

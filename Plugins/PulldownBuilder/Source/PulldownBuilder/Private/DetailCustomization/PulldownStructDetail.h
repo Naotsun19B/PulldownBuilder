@@ -6,14 +6,14 @@
 #include "DetailCustomizations.h"
 #include "IPropertyTypeCustomization.h"
 
-class SComboButton;
+class STextComboBox;
 class FDetailWidgetRow;
 class IDetailChildrenBuilder;
 class IPropertyHandle;
 struct FPulldownStructType;
 
 /**
- * 
+ * Detail customization applied to structures that inherit from FPulldownStructBase.
  */
 class PULLDOWNBUILDER_API FPulldownStructDetail : public IPropertyTypeCustomization
 {
