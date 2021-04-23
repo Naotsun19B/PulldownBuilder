@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "AssetToolsModule.h"
+#include "AssetRegistryModule.h"
 #include "PulldownBuilderGlobals.h"
 #include "Asset/AssetTypeActions_PulldownContents.h"
+#include "Asset/PulldownContents.h"
 #include "DetailCustomization/PulldownStructTypeDetail.h"
 
 DEFINE_LOG_CATEGORY(LogPulldownBuilder);
@@ -32,6 +34,20 @@ void FPulldownBuilderModule::StartupModule()
 	
 	// Register detail customizations.
 	FPulldownStructTypeDetail::Register();
+
+	// Load all PulldownContents in the Content Browser.
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	AssetRegistry.OnAssetAdded().AddLambda([](const FAssetData& AssetData)
+	{
+		if (UClass* Class = AssetData.GetClass())
+		{
+			if (Class->IsChildOf<UPulldownContents>())
+			{
+				AssetData.GetAsset();
+			}
+		}
+	});
 }
 
 void FPulldownBuilderModule::ShutdownModule()

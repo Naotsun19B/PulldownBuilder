@@ -9,16 +9,17 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 	// If the return value of the parent Get Display Strings is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the data table in consideration of expansion on the Blueprint side.
-	if (SourceDataTable.IsValid() && DisplayStrings.Num() == 0)
+	if (DisplayStrings.Num() == 0)
 	{
 		if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
 		{
 			DataTable->ForeachRow<FTableRowBase>(
-			GET_FUNCTION_NAME_STRING_CHECKED(UDataTablePulldownListGenerator, GetDisplayStrings),
-			[&](const FName& Key, const FTableRowBase& Value)
-			{
-				DisplayStrings.Add(MakeShared<FString>(Key.ToString()));
-			});
+				GET_FUNCTION_NAME_STRING_CHECKED(UDataTablePulldownListGenerator, GetDisplayStrings),
+				[&](const FName& Key, const FTableRowBase& Value)
+				{
+					DisplayStrings.Add(MakeShared<FString>(Key.ToString()));
+				}
+			);
 		}
 	}
 
