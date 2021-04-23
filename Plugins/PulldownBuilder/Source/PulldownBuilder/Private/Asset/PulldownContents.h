@@ -26,6 +26,7 @@ public:
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void BeginDestroy() override;
+	virtual void PostDuplicate(bool bDuplicateForPIE) override;
 	// End of UObject interface.
 
 	// Get information about the target structure.

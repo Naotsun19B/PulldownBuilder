@@ -30,6 +30,7 @@ public class PulldownBuilder : ModuleRules
 				"StructViewer",
 				"AssetRegistry",
 				"PropertyEditor",
+				"ApplicationCore",
 			}
 			);
 	}

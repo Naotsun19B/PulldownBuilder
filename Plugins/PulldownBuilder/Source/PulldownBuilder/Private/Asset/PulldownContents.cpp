@@ -3,6 +3,7 @@
 #include "Asset/PulldownContents.h"
 #include "PulldownBuilderGlobals.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
+#include "DetailCustomization/PulldownStructDetail.h"
 
 void UPulldownContents::PostLoad()
 {
@@ -49,6 +50,14 @@ void UPulldownContents::BeginDestroy()
 	Super::BeginDestroy();
 }
 
+void UPulldownContents::PostDuplicate(bool bDuplicateForPIE)
+{
+	Super::PostDuplicate(bDuplicateForPIE);
+
+	// Prevent the same structure from being registered when duplicated.
+	PulldownStructType = nullptr;
+}
+
 TArray<TSharedPtr<FString>> UPulldownContents::GetDisplayStrings() const
 {
 	TArray<TSharedPtr<FString>> DisplayStrings;
@@ -57,6 +66,9 @@ TArray<TSharedPtr<FString>> UPulldownContents::GetDisplayStrings() const
 	{
 		DisplayStrings = PulldownListGenerator->GetDisplayStrings();
 	}
+
+	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.
+	DisplayStrings.Insert(MakeShared<FString>(FName(NAME_None).ToString()), 0);
 
 	return DisplayStrings;
 }
@@ -75,9 +87,8 @@ void UPulldownContents::RegisterDetailCustomization()
 		return;
 	}
 
-	const FName& StructName = *PulldownStructType;
-	//FPulldownStructDetail::Register(StructName);
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *StructName.ToString());
+	FPulldownStructDetail::Register(PulldownStructType);
+	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
 }
 
 void UPulldownContents::UnregisterDetailCustomization()
@@ -94,7 +105,6 @@ void UPulldownContents::UnregisterDetailCustomization()
 		return;
 	}
 
-	const FName& StructName = *PulldownStructType;
-	//FPulldownStructDetail::Unregister(StructName);
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *StructName.ToString());
+	FPulldownStructDetail::Unregister(PulldownStructType);
+	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
 }

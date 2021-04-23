@@ -18,3 +18,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString TestString;
 };
+
+USTRUCT(BlueprintType)
+struct FTestPulldown2 : public FPulldownStructBase
+{
+	GENERATED_BODY()
+};

@@ -11,12 +11,15 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 	// the data table in consideration of expansion on the Blueprint side.
 	if (SourceDataTable.IsValid() && DisplayStrings.Num() == 0)
 	{
-		SourceDataTable->ForeachRow<FTableRowBase>(
+		if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
+		{
+			DataTable->ForeachRow<FTableRowBase>(
 			GET_FUNCTION_NAME_STRING_CHECKED(UDataTablePulldownListGenerator, GetDisplayStrings),
 			[&](const FName& Key, const FTableRowBase& Value)
-		{
-			DisplayStrings.Add(MakeShared<FString>(Key.ToString()));
-		});
+			{
+				DisplayStrings.Add(MakeShared<FString>(Key.ToString()));
+			});
+		}
 	}
 
 	return DisplayStrings;

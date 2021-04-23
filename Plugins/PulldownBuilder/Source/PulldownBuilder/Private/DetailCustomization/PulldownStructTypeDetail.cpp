@@ -7,6 +7,7 @@
 #include "StructViewerModule.h"
 #include "StructViewerFilter.h"
 #include "DetailWidgetRow.h"
+#include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
 
 namespace PulldownStructTypeDetailInternal

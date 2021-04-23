@@ -51,6 +51,34 @@ TArray<UPulldownContents*> FPulldownBuilderUtils::GetAllPulldownContents()
 	return PulldownContentsList;
 }
 
+UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByStruct(const UScriptStruct* InStruct)
+{
+	UPulldownContents* FoundItem = nullptr;
+	EnumeratePulldownContents([&](UPulldownContents* PulldownContents) -> bool
+    {
+        if (InStruct == PulldownContents->GetPulldownStructType().SelectedStruct)
+        {
+        	FoundItem = PulldownContents;
+            return false;
+        }
+		
+        return true;
+    });
+
+	return FoundItem;
+}
+
+TArray<TSharedPtr<FString>> FPulldownBuilderUtils::GetDisplayStringsFromStruct(const UScriptStruct* InStruct)
+{
+	TArray<TSharedPtr<FString>> DisplayStrings;
+	if (UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
+	{
+		DisplayStrings = FoundItem->GetDisplayStrings();
+	}
+
+	return DisplayStrings;
+}
+
 bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InStruct)
 {
 	bool bIsRegistered = false;

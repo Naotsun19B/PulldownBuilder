@@ -21,6 +21,14 @@ public:
 	// Gets all Pulldown Contents that exist on the Content Browser.
 	static TArray<UPulldownContents*> GetAllPulldownContents();
 
+	// Finds Pulldown Contents that has the specified structure set.
+	// If not found, returns nullptr.
+	static UPulldownContents* FindPulldownContentsByStruct(const UScriptStruct* InStruct);
+
+	// Get the list of character strings to be displayed in the pull-down menu from Pulldown Contents
+	// obtained by FindPulldownContentsByStruct.
+	static TArray<TSharedPtr<FString>> GetDisplayStringsFromStruct(const UScriptStruct* InStruct);
+	
 	// Returns whether the specified structure is already registered.
 	static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);
 };
