@@ -41,9 +41,6 @@ private:
 	// A list of strings to display in the pull-down menu.
 	TArray<TSharedPtr<FString>> DisplayStrings;
 
-	// The currently selected value.
-	FName SelectedValue;
-
 	// Pull-down menu widget.
 	TSharedPtr<STextComboBox> PulldownWidget;
 };

@@ -68,7 +68,7 @@ TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayStringByName(const FName
 
 void SPulldownStructGraphPin::OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	if (SelectedItem.IsValid())
+	if (SelectedItem.IsValid() && SelectInfo != ESelectInfo::Direct)
 	{
 		SetSelectedValueData(**SelectedItem);
 	}
@@ -132,7 +132,7 @@ void SPulldownStructGraphPin::SetSelectedValueData(const FName& NewSelectedValue
 {
 	check(GraphPinObj);
 	
-	if (NewSelectedValue != SelectedValue)
+	if (NewSelectedValue != GetSelectedValueData())
 	{
 		if (const UEdGraphSchema* Schema = GraphPinObj->GetSchema())
 		{
