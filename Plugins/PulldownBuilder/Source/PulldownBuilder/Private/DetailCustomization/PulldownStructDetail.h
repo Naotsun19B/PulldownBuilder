@@ -3,19 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DetailCustomizations.h"
-#include "IPropertyTypeCustomization.h"
+#include "DetailCustomization/PulldownStructDetailBase.h"
 
-class STextComboBox;
-class FDetailWidgetRow;
-class IDetailChildrenBuilder;
-class IPropertyHandle;
 struct FPulldownStructType;
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
  */
-class PULLDOWNBUILDER_API FPulldownStructDetail : public IPropertyTypeCustomization
+class PULLDOWNBUILDER_API FPulldownStructDetail : public FPulldownStructDetailBase
 {
 public:
 	// Register-Unregister and instantiate this customization.
@@ -29,16 +24,9 @@ public:
 	// End of IPropertyTypeCustomization interface.
 
 private:
-	// Rebuilds the list of strings to display in the pull-down menu.
-	void RebuildPulldown();
-
-	// Search for the same name as the specified Name from the list of
-	// character strings displayed in the pull-down menu.
-	// If not found, returns nullptr.
-	TSharedPtr<FString> FindDisplayStringByName(const FName& InName) const;
-	
-	// Called when the value of the combo box changes.
-	void OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	// FPulldownStructDetailBase interface.
+	virtual void RebuildPulldown() override;
+	// End of FPulldownStructDetailBase interface.
 
 	// Create a FUIAction from a copy-paste callback function.
 	FUIAction CreateCopyAction();
@@ -47,18 +35,4 @@ private:
 	// Called when copying-pasting.
 	void OnCopyAction();
 	void OnPasteAction();
-	
-private:
-	// A list of strings to display in the pull-down menu.
-	TArray<TSharedPtr<FString>> DisplayStrings;
-
-	// The property handle of the structure that inherits the FPulldownStructBase
-	// that is the target of this detail customization.
-	TSharedPtr<IPropertyHandle> StructPropertyHandle;
-
-	// FPulldownStructBase::SelectedValue property handle.
-	TSharedPtr<IPropertyHandle> SelectedValueHandle;
-
-	// Pull-down menu widget.
-	TSharedPtr<STextComboBox> PulldownWidget;
 };
