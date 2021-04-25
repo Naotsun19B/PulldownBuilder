@@ -59,7 +59,11 @@ void FPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStruct
 		const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 		if (ChildPropertyHandle.IsValid())
 		{
+#if BEFORE_UE_4_24
+			if (UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#else
 			if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#endif
 			{
 				if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
 				{
@@ -91,7 +95,11 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 		const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 		if (ChildPropertyHandle.IsValid())
 		{
+#if BEFORE_UE_4_24
+			if (UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#else
 			if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#endif
 			{
 				if (ChildProperty->GetFName() != GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
 				{
@@ -141,7 +149,11 @@ void FPulldownStructDetail::RebuildPulldown()
 
 	// Find Pulldown Contents in the property structure and
 	// build a list of strings to display in the pull-down menu.
+#if BEFORE_UE_4_24
+	if (auto* StructProperty = CastField<UStructProperty>(StructPropertyHandle->GetProperty()))
+#else
 	if (auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
 	{	
 		void* StructValueData = nullptr;
 		FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);

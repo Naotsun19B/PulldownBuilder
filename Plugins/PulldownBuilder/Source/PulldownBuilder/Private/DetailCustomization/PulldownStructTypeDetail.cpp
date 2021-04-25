@@ -27,6 +27,7 @@ namespace PulldownStructTypeDetailInternal
 			
 			return bIsStructAllowed;
 		}
+		
 		virtual bool IsUnloadedStructAllowed(const FStructViewerInitializationOptions& InInitOptions, const FName InStructPath, TSharedRef<FStructViewerFilterFuncs> InFilterFuncs) override
 		{
 			return false;
@@ -102,23 +103,21 @@ void FPulldownStructTypeDetail::CustomizeChildren(TSharedRef<IPropertyHandle> In
 
 void FPulldownStructTypeDetail::OnPickedStruct(const UScriptStruct* SelectedStruct)
 {
-	if (SelectedStructHandle.IsValid())
-	{
-		SelectedStructHandle->SetValue(SelectedStruct);
-	}
+	check(SelectedStructHandle && StructPickerAnchor);
+	
+	SelectedStructHandle->SetValue(SelectedStruct);
 	StructPickerAnchor->SetIsOpen(false);
 }
 
 FText FPulldownStructTypeDetail::OnGetComboTextValue() const
 {
-	if (SelectedStructHandle.IsValid())
+	check(SelectedStructHandle);
+	
+	UObject* Value;
+	SelectedStructHandle->GetValue(Value);
+	if (auto* Struct = Cast<UScriptStruct>(Value))
 	{
-		UObject* Value;
-		SelectedStructHandle->GetValue(Value);
-		if (auto* Struct = Cast<UScriptStruct>(Value))
-		{
-			return FText::AsCultureInvariant(Struct->GetName());
-		}
+		return FText::AsCultureInvariant(Struct->GetName());
 	}
 
 	return NSLOCTEXT("PulldownStructTypeDetail", "NoSelectedStruct", "None");
