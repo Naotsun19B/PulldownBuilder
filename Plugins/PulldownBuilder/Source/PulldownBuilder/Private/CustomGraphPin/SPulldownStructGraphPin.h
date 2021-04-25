@@ -27,7 +27,7 @@ private:
 	// Search for the same name as the specified Name from the list of
 	// character strings displayed in the pull-down menu.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindDisplayNameByName(const FName& InName) const;
+	TSharedPtr<FString> FindDisplayStringByName(const FName& InName) const;
 	
 	// Called when the value of the combo box changes.
 	void OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);

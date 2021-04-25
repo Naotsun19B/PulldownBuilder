@@ -162,11 +162,11 @@ void FPulldownStructDetail::RebuildPulldown()
 	FName CurrentSelectedValue;
 	SelectedValueHandle->GetValue(CurrentSelectedValue);
 
-	TSharedPtr<FString> SelectedItem = FindDisplayNameByName(CurrentSelectedValue);
+	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(CurrentSelectedValue);
 	if (!SelectedItem.IsValid())
 	{
 		SelectedValueHandle->SetValue(NAME_None);
-		SelectedItem = FindDisplayNameByName(NAME_None);
+		SelectedItem = FindDisplayStringByName(NAME_None);
 	}
 
 	if (PulldownWidget.IsValid())
@@ -176,7 +176,7 @@ void FPulldownStructDetail::RebuildPulldown()
 	}
 }
 
-TSharedPtr<FString> FPulldownStructDetail::FindDisplayNameByName(const FName& InName) const
+TSharedPtr<FString> FPulldownStructDetail::FindDisplayStringByName(const FName& InName) const
 {
 	const TSharedPtr<FString>* FoundItem = DisplayStrings.FindByPredicate(
 		[&](const TSharedPtr<FString>& Item)
@@ -246,7 +246,7 @@ void FPulldownStructDetail::OnPasteAction()
 		PastedText = *ClipboardString;
 	}
 
-	TSharedPtr<FString> SelectedItem = FindDisplayNameByName(PastedText);
+	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(PastedText);
 	if (SelectedItem.IsValid())
 	{
 		PulldownWidget->SetSelectedItem(SelectedItem);

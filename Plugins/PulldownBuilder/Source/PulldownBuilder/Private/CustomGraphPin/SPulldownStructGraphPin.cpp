@@ -14,7 +14,7 @@ void SPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* I
 TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()
 {
 	RebuildPulldown();
-	
+
 	return SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
 			+ SHorizontalBox::Slot()
@@ -23,7 +23,7 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()
 				SAssignNew(PulldownWidget, STextComboBox)
 				.OptionsSource(&DisplayStrings)
 				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnStateValueChanged)
-				.InitiallySelectedItem(MakeShared<FString>(GetSelectedValueData().ToString()))
+				.InitiallySelectedItem(FindDisplayStringByName(GetSelectedValueData()))
 			];
 }
 
@@ -40,11 +40,11 @@ void SPulldownStructGraphPin::RebuildPulldown()
 	
 	// Check if the currently set string is included in the constructed list.
 	const FName& CurrentSelectedValue = GetSelectedValueData();
-	TSharedPtr<FString> SelectedItem = FindDisplayNameByName(CurrentSelectedValue);
+	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(CurrentSelectedValue);
 	if (!SelectedItem.IsValid())
 	{
 		SetSelectedValueData(NAME_None);
-		SelectedItem = FindDisplayNameByName(NAME_None);
+		SelectedItem = FindDisplayStringByName(NAME_None);
 	}
 
 	if (PulldownWidget.IsValid())
@@ -54,7 +54,7 @@ void SPulldownStructGraphPin::RebuildPulldown()
 	}
 }
 
-TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayNameByName(const FName& InName) const
+TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayStringByName(const FName& InName) const
 {
 	const TSharedPtr<FString>* FoundItem = DisplayStrings.FindByPredicate(
         [&](const TSharedPtr<FString>& Item)
