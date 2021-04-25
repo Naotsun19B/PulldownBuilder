@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Common/PulldownStructType.h"
+#include "Common/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
 struct FPropertyChangedEvent;
@@ -53,4 +54,8 @@ protected:
 	// It can be freely expanded according to the application.
 	UPROPERTY(EditDefaultsOnly, Instanced)
 	UPulldownListGeneratorBase* PulldownListGenerator;
+
+	// Shows a preview of the pull-down menu built from this PulldownContents.
+	UPROPERTY(EditDefaultsOnly, Transient)
+	FPreviewPulldownStruct Preview;
 };

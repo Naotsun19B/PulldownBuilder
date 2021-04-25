@@ -11,6 +11,7 @@
 #include "Asset/PulldownContents.h"
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"
 #include "DetailCustomization/PulldownStructTypeDetail.h"
+#include "DetailCustomization/PreviewPulldownStructDetail.h"
 
 DEFINE_LOG_CATEGORY(LogPulldownBuilder);
 
@@ -38,6 +39,7 @@ void FPulldownBuilderModule::StartupModule()
 	
 	// Register detail customizations.
 	FPulldownStructTypeDetail::Register();
+	FPreviewPulldownStructDetail::Register();
 
 	// Load all PulldownContents in the Content Browser.
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -57,6 +59,7 @@ void FPulldownBuilderModule::StartupModule()
 void FPulldownBuilderModule::ShutdownModule()
 {
 	// Unregister detail customizations.
+	FPreviewPulldownStructDetail::Unregister();
 	FPulldownStructTypeDetail::Unregister();
 
 	// Unregister custom graph pin.
