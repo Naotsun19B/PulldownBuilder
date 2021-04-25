@@ -131,6 +131,7 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 				SAssignNew(PulldownWidget, STextComboBox)
 				.OptionsSource(&DisplayStrings)
 				.OnSelectionChanged(this, &FPulldownStructDetail::OnStateValueChanged)
+				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
 			]
 		];
 

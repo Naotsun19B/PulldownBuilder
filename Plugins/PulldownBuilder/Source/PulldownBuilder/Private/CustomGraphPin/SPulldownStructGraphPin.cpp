@@ -23,6 +23,7 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()
 				SAssignNew(PulldownWidget, STextComboBox)
 				.OptionsSource(&DisplayStrings)
 				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnStateValueChanged)
+				.OnComboBoxOpening(this, &SPulldownStructGraphPin::RebuildPulldown)
 				.InitiallySelectedItem(FindDisplayStringByName(GetSelectedValueData()))
 			];
 }
@@ -67,14 +68,10 @@ TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayStringByName(const FName
 
 void SPulldownStructGraphPin::OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	check(GraphPinObj);
-	
-	if (!SelectedItem.IsValid())
+	if (SelectedItem.IsValid())
 	{
-		return;
+		SetSelectedValueData(**SelectedItem);
 	}
-
-	SetSelectedValueData(**SelectedItem);
 }
 
 FName SPulldownStructGraphPin::GetSelectedValueData() const
