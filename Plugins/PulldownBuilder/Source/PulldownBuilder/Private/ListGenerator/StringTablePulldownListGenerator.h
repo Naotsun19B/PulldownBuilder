@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
-#include "NameArrayPulldownListGenerator.generated.h"
+#include "StringTablePulldownListGenerator.generated.h"
 
 /**
- * Generate a list to be displayed in the pull-down menu from the name array.
+ * Generate a list to be displayed in the pull-down menu from the row name of the string table asset.
  */
 UCLASS()
-class UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
+class UStringTablePulldownListGenerator : public UPulldownListGeneratorBase
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ public:
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
-	// Name array from which the list displayed in the pull-down menu is based.
+	// The string table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<FName> SourceNameArray;
+	TSoftObjectPtr<UStringTable> SourceStringTable;
 };

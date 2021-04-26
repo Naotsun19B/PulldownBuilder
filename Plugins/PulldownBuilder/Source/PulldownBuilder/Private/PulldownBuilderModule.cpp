@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-#include "AssetToolsModule.h"
 #include "AssetRegistryModule.h"
 #include "PulldownBuilderGlobals.h"
 #include "Asset/AssetTypeActions_PulldownContents.h"
@@ -24,17 +23,12 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 	// End of IModuleInterface interface.
-
-private:
-	// An instance of a class that defines information and operations for UPulldownContents.
-	TSharedPtr<FAssetTypeActions_PulldownContents> AssetTypeActions;
 };
 
 void FPulldownBuilderModule::StartupModule()
 {
 	// Register asset type actions.
-	AssetTypeActions = MakeShared<FAssetTypeActions_PulldownContents>();
-	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(AssetTypeActions.ToSharedRef());
+	FAssetTypeActions_PulldownContents::Register();
 
 	// Register the icons of this plugin.
 	FPulldownBuilderStyle::Register();
@@ -56,7 +50,10 @@ void FPulldownBuilderModule::StartupModule()
 		{
 			if (Class->IsChildOf<UPulldownContents>())
 			{
-				AssetData.GetAsset();
+				if (auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
+				{
+					UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *PulldownContents->GetName());
+				}
 			}
 		}
 	});
@@ -76,11 +73,8 @@ void FPulldownBuilderModule::ShutdownModule()
 	FPulldownBuilderStyle::Unregister();
 	
 	// Unregister asset type actions.
-	if (AssetTypeActions.IsValid() && FAssetToolsModule::IsModuleLoaded())
-	{
-		FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(AssetTypeActions.ToSharedRef());
-		AssetTypeActions.Reset();
-	}
+	FAssetTypeActions_PulldownContents::Unregister();
+	
 }
 	
 IMPLEMENT_MODULE(FPulldownBuilderModule, PulldownBuilder)
