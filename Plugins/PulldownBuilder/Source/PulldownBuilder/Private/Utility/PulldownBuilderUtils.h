@@ -12,20 +12,30 @@ class UPulldownContents;
 class PULLDOWNBUILDER_API FPulldownBuilderUtils
 {
 public:
-	// Checks if the specified structure is FPulldownStructBase or a structure that inherits FPulldownStructBase.
-	static bool IsPulldownStruct(const UScriptStruct* InStruct);
+	// Checks if the specified structure inherits the specified structure.
+	static bool IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct);
+	
+	// Checks if the specified structure is inherits FPulldownStructBase.
+	static bool IsPulldownStruct(const UScriptStruct* InTestStruct);
 
-	// Scans all Pulldown Contents present in the Content Browser.
+	// Checks if the specified structure is FNativeLessPulldownStruct or a structure that inherits FNativeLessPulldownStruct.
+	static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);
+
+	// Scans all PulldownContents present in the Content Browser.
 	static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback);
 	
-	// Gets all Pulldown Contents that exist on the Content Browser.
+	// Gets all PulldownContents that exist on the Content Browser.
 	static TArray<UPulldownContents*> GetAllPulldownContents();
 
-	// Finds Pulldown Contents that has the specified structure set.
+	// Finds PulldownContents that has the specified structure set.
 	// If not found, returns nullptr.
 	static UPulldownContents* FindPulldownContentsByStruct(const UScriptStruct* InStruct);
 
-	// Get the list of character strings to be displayed in the pull-down menu from Pulldown Contents
+    // Finds PulldownContents with the specified name.
+	// If not found, returns nullptr.
+	static UPulldownContents* FindPulldownContentsByName(const FName& InName);
+
+	// Get the list of character strings to be displayed in the pull-down menu from PulldownContents
 	// obtained by FindPulldownContentsByStruct.
 	static TArray<TSharedPtr<FString>> GetDisplayStringsFromStruct(const UScriptStruct* InStruct);
 	

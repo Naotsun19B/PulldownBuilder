@@ -2,31 +2,47 @@
 
 #include "Utility/PulldownBuilderUtils.h"
 #include "PulldownStructBase.h"
+#include "NativeLessPulldownStruct.h"
 #include "Asset/PulldownContents.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "EdGraphSchema_K2.h"
 
-bool FPulldownBuilderUtils::IsPulldownStruct(const UScriptStruct* InStruct)
+bool FPulldownBuilderUtils::IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct)
 {
-	// Checks if the specified structure is not temporary,
-	// inherits from FPulldownStructBase, and can be used in Blueprint.
+	// Check that the "InTestStruct" inherits "InSuperStruct" rather than being temporary.
 	bool bValidStruct = false;
-	bool bBasedOnPulldownStructBase = false;
-	bool bIsBlueprintType = false;
+	bool bBasedOnSuperStruct = false;
 	
-	UScriptStruct* PulldownStruct = FPulldownStructBase::StaticStruct();
-	if (IsValid(PulldownStruct) && IsValid(InStruct))
+	if (IsValid(InSuperStruct) && IsValid(InTestStruct))
 	{
-		bValidStruct = (InStruct->GetOutermost() != GetTransientPackage());
-		bBasedOnPulldownStructBase = (InStruct->IsChildOf(PulldownStruct) && (InStruct != PulldownStruct));
-		// Note: The return value of "UEdGraphSchema_K2::IsAllowableBlueprintVariableType" is true
-		// because the structure that inherits any of the structures will be automatically added
-		// "BlueprintType" unless "NotBlueprintType" and "BlueprintInternalUseOnly" is added in
-		// the USTRUCT of the child structure.
-		bIsBlueprintType = UEdGraphSchema_K2::IsAllowableBlueprintVariableType(InStruct);
+		bValidStruct = (InTestStruct->GetOutermost() != GetTransientPackage());
+		bBasedOnSuperStruct = (InTestStruct->IsChildOf(InSuperStruct) && (InTestStruct != InSuperStruct));
 	}
 
-	return (bValidStruct && bBasedOnPulldownStructBase && bIsBlueprintType);
+	return (bValidStruct && bBasedOnSuperStruct);
+}
+
+bool FPulldownBuilderUtils::IsPulldownStruct(const UScriptStruct* InTestStruct)
+{
+	const bool bBasedOnPulldownStructBase = IsChildStruct(FPulldownStructBase::StaticStruct(), InTestStruct);
+	const bool bBasedOnNativeLessPulldownStruct = IsNativeLessPulldownStruct(InTestStruct);
+	
+	// Note: The return value of "UEdGraphSchema_K2::IsAllowableBlueprintVariableType" is true
+	// because the structure that inherits any of the structures will be automatically added
+	// "BlueprintType" unless "NotBlueprintType" and "BlueprintInternalUseOnly" is added in
+	// the USTRUCT of the child structure.
+	const bool bIsBlueprintType = UEdGraphSchema_K2::IsAllowableBlueprintVariableType(InTestStruct);
+
+	return (bBasedOnPulldownStructBase && !bBasedOnNativeLessPulldownStruct && bIsBlueprintType);
+}
+
+bool FPulldownBuilderUtils::IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct)
+{
+	const bool bIsNativeLessPulldownStruct = (FNativeLessPulldownStruct::StaticStruct() == InTestStruct);
+	const bool bBasedOnNativeLessPulldownStruct = IsChildStruct(FNativeLessPulldownStruct::StaticStruct(), InTestStruct);
+	const bool bIsBlueprintType = UEdGraphSchema_K2::IsAllowableBlueprintVariableType(InTestStruct);
+
+	return ((bIsNativeLessPulldownStruct || bBasedOnNativeLessPulldownStruct) && bIsBlueprintType);
 }
 
 void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback)
@@ -75,6 +91,23 @@ UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByStruct(const USc
 		
         return true;
     });
+
+	return FoundItem;
+}
+
+UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByName(const FName& InName)
+{
+	UPulldownContents* FoundItem = nullptr;
+	EnumeratePulldownContents([&](UPulldownContents* PulldownContents) -> bool
+	{
+		if (InName == PulldownContents->GetFName())
+		{
+			FoundItem = PulldownContents;
+			return false;
+		}
+		
+		return true;
+	});
 
 	return FoundItem;
 }
