@@ -9,7 +9,7 @@
 /**
  * A class that manages the slate icon used by this plugin.
  */
-class FPulldownBuilderStyle : public FSlateStyleSet
+class PULLDOWNBUILDER_API FPulldownBuilderStyle : public FSlateStyleSet
 {	
 public:
 	// Constructor.

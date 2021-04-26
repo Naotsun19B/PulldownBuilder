@@ -9,7 +9,7 @@
  * A class that defines the operations that can be performed on an PulldownContents and
  * information about the PulldownContents.
  */
-class FAssetTypeActions_PulldownContents : public FAssetTypeActions_Base
+class PULLDOWNBUILDER_API FAssetTypeActions_PulldownContents : public FAssetTypeActions_Base
 {
 public:
 	// FAssetTypeActions_Base interface.
