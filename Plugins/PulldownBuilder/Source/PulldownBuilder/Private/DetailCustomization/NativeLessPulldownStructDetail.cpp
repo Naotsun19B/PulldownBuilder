@@ -36,11 +36,9 @@ TSharedRef<IPropertyTypeCustomization> FNativeLessPulldownStructDetail::MakeInst
 
 void FNativeLessPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	StructPropertyHandle = InStructPropertyHandle;
-	check(StructPropertyHandle);
+	FPulldownStructDetail::CustomizeHeader(InStructPropertyHandle, HeaderRow, StructCustomizationUtils);
 
-	// Scan the properties of the structure for the property handle of FPulldownStructBase::SelectedValue
-	// and FNativeLessPulldownStruct::PulldownContentsName.
+	// Scan the properties of the structure for the property handle of FNativeLessPulldownStruct::PulldownContentsName.
 	uint32 NumChildProperties;
 	StructPropertyHandle->GetNumChildren(NumChildProperties);
 	for (uint32 Index = 0; Index < NumChildProperties; Index++)
@@ -54,11 +52,7 @@ void FNativeLessPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle
 			if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
 #endif
 			{
-				if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
-				{
-					SelectedValueHandle = ChildPropertyHandle;
-				}
-				else if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource))
+				if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource))
 				{
 					PulldownSourceHandle = ChildPropertyHandle;
 				}
@@ -67,50 +61,76 @@ void FNativeLessPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle
 	}
 
 	// Do not register structures other than FNativeLessPulldownStruct in this detail customization.
-	check(SelectedValueHandle.IsValid() && PulldownSourceHandle.IsValid());
-	
-	HeaderRow.NameContent()
-    [
-        StructPropertyHandle->CreatePropertyNameWidget()
-    ];
+	check(PulldownSourceHandle.IsValid());
 }
 
-void FNativeLessPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
 {
-	check(StructPropertyHandle);
+	check(PulldownSourceHandle);
+	
+	// Check if the currently set string is included in the constructed list.
+	FName CurrentPulldownSource;
+	PulldownSourceHandle->GetValue(CurrentPulldownSource);
 
-	// Add child properties other than FPulldownStructBase::SelectedValue to the Struct Builder.
-	uint32 NumChildProperties;
-	StructPropertyHandle->GetNumChildren(NumChildProperties);
-	for (uint32 Index = 0; Index < NumChildProperties; Index++)
+	TSharedPtr<FString> SelectedItem = FindPulldownContentsNameByName(CurrentPulldownSource);
+	if (!SelectedItem.IsValid())
 	{
-		const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
-		if (ChildPropertyHandle.IsValid())
+		PulldownSourceHandle->SetValue(NAME_None);
+		SelectedItem = FindPulldownContentsNameByName(NAME_None);
+	}
+
+	if (PulldownSourceWidget.IsValid())
+	{
+		PulldownSourceWidget->RefreshOptions();
+		PulldownSourceWidget->SetSelectedItem(SelectedItem);
+	}
+
+	FPulldownStructDetail::RefreshPulldownWidget();
+}
+
+TArray<TSharedPtr<FString>> FNativeLessPulldownStructDetail::GenerateSelectableValues()
+{
+	PulldownContentsNames.Reset();
+	PulldownContentsNames.Add(MakeShared<FString>(FName(NAME_None).ToString()));
+
+	const TArray<UPulldownContents*>& AllPulldownContents = FPulldownBuilderUtils::GetAllPulldownContents();
+	for (const auto& PulldownContents : AllPulldownContents)
+	{
+		if (IsValid(PulldownContents))
 		{
-#if BEFORE_UE_4_24
-			if (UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#else
-			if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#endif
-			{
-				if (ChildProperty->GetFName() != GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue) &&
-					ChildProperty->GetFName() != GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
-				)
-				{
-					StructBuilder.AddProperty(ChildPropertyHandle.ToSharedRef());
-					ChildPropertyHandle->SetOnPropertyValueChanged(
-						FSimpleDelegate::CreateSP(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
-					);
-				}
-			}
+			PulldownContentsNames.Add(MakeShared<FString>(PulldownContents->GetName()));
 		}
 	}
 
-	check(SelectedValueHandle.IsValid() && PulldownSourceHandle.IsValid());
+	FName PulldownSource;
+	PulldownSourceHandle->GetValue(PulldownSource);
+	if (UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
+	{
+		return SourceAsset->GetDisplayStrings();
+	}
 
+	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+}
+
+void FNativeLessPulldownStructDetail::OnMutipleSelected()
+{
+	PulldownContentsNames.Reset();
+	FPulldownStructDetail::OnMutipleSelected();
+}
+
+bool FNativeLessPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
+{
+	return (
+		FPulldownStructDetail::IsCustomizationTarget(InProperty) ||
+		InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
+	);
+}
+
+void FNativeLessPulldownStructDetail::AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder)
+{
 	StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)))
-		.CopyAction(CreateCopyAction())
-		.PasteAction(CreatePasteAction())
+		.CopyAction(CreatePulldownSourceCopyAction())
+		.PasteAction(CreatePulldownSourcePasteAction())
 		.NameContent()
 		[
 			PulldownSourceHandle->CreatePropertyNameWidget()
@@ -122,110 +142,12 @@ void FNativeLessPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHand
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			[
-				SAssignNew(SourceAssetPulldownWidget, STextComboBox)
+				SAssignNew(PulldownSourceWidget, STextComboBox)
 				.OptionsSource(&PulldownContentsNames)
-				.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnSourceAssetChanged)
+				.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnPulldownSourceChanged)
 				.OnComboBoxOpening(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
 			]
 		];
-
-	StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)))
-		.CopyAction(CreateCopyAction())
-		.PasteAction(CreatePasteAction())
-		.NameContent()
-		[
-			SelectedValueHandle->CreatePropertyNameWidget()
-		]
-		.ValueContent()
-		.MinDesiredWidth(500)
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Left)
-			[
-				SAssignNew(PulldownWidget, STextComboBox)
-				.OptionsSource(&DisplayStrings)
-				.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnStateValueChanged)
-				.OnComboBoxOpening(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
-			]
-		];
-
-	RebuildPulldown();
-}
-
-void FNativeLessPulldownStructDetail::RebuildPulldown()
-{
-	if (StructPropertyHandle == nullptr ||
-		!StructPropertyHandle->IsValidHandle() ||
-		!SelectedValueHandle.IsValid()
-	)
-	{
-		return;
-	}
-
-	// Find Pulldown Contents in the property structure and
-	// build a list of strings to display in the pull-down menu.
-#if BEFORE_UE_4_24
-	if (auto* StructProperty = CastField<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
-	if (auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
-#endif
-	{	
-		void* StructValueData = nullptr;
-		FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
-
-		if (Result == FPropertyAccess::Success)
-		{	
-			PulldownContentsNames.Reset();
-			PulldownContentsNames.Add(MakeShared<FString>(FName(NAME_None).ToString()));
-			const TArray<UPulldownContents*>& AllPulldownContents = FPulldownBuilderUtils::GetAllPulldownContents();
-			for (const auto& PulldownContents : AllPulldownContents)
-			{
-				if (IsValid(PulldownContents))
-				{
-					PulldownContentsNames.Add(MakeShared<FString>(PulldownContents->GetName()));
-				}
-			}
-
-			DisplayStrings.Reset();
-			FName PulldownSource;
-			PulldownSourceHandle->GetValue(PulldownSource);
-			if (UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
-			{
-				DisplayStrings = SourceAsset->GetDisplayStrings();
-			}
-			else
-			{
-				DisplayStrings.Add(MakeShared<FString>(FName(NAME_None).ToString()));
-			}
-		}
-		// Empty the list if data acquisition fails or if multiple selections are made.
-		else
-		{
-			PulldownContentsNames.Reset();
-			DisplayStrings.Reset();
-			return;
-		}
-	}
-
-	// Check if the currently set string is included in the constructed list.
-	FName CurrentPulldownContentsName;
-	PulldownSourceHandle->GetValue(CurrentPulldownContentsName);
-
-	TSharedPtr<FString> SelectedItem = FindPulldownContentsNameByName(CurrentPulldownContentsName);
-	if (!SelectedItem.IsValid())
-	{
-		PulldownSourceHandle->SetValue(NAME_None);
-		SelectedItem = FindPulldownContentsNameByName(NAME_None);
-	}
-
-	if (SourceAssetPulldownWidget.IsValid())
-	{
-		SourceAssetPulldownWidget->RefreshOptions();
-		SourceAssetPulldownWidget->SetSelectedItem(SelectedItem);
-	}
-
-	FPulldownStructDetailBase::RebuildPulldown();
 }
 
 TSharedPtr<FString> FNativeLessPulldownStructDetail::FindPulldownContentsNameByName(const FName& InName) const
@@ -239,9 +161,11 @@ TSharedPtr<FString> FNativeLessPulldownStructDetail::FindPulldownContentsNameByN
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void FNativeLessPulldownStructDetail::OnSourceAssetChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	if (!SelectedItem.IsValid() || !PulldownSourceHandle.IsValid())
+	check(PulldownSourceHandle);
+	
+	if (!SelectedItem.IsValid())
 	{
 		return;
 	}
@@ -256,41 +180,35 @@ void FNativeLessPulldownStructDetail::OnSourceAssetChanged(TSharedPtr<FString> S
 	}
 }
 
-FUIAction FNativeLessPulldownStructDetail::CreateCopyAction()
+FUIAction FNativeLessPulldownStructDetail::CreatePulldownSourceCopyAction()
 {
 	return FUIAction
 	(
-		FExecuteAction::CreateSP(this, &FNativeLessPulldownStructDetail::OnCopyAction)
+		FExecuteAction::CreateSP(this, &FNativeLessPulldownStructDetail::OnPulldownSourceCopyAction)
 	);
 }
 
-FUIAction FNativeLessPulldownStructDetail::CreatePasteAction()
+FUIAction FNativeLessPulldownStructDetail::CreatePulldownSourcePasteAction()
 {
 	return FUIAction
 	(
-		FExecuteAction::CreateSP(this, & FNativeLessPulldownStructDetail::OnPasteAction)
+		FExecuteAction::CreateSP(this, & FNativeLessPulldownStructDetail::OnPulldownSourcePasteAction)
 	);
 }
 
-void FNativeLessPulldownStructDetail::OnCopyAction()
+void FNativeLessPulldownStructDetail::OnPulldownSourceCopyAction()
 {
-	if (!SelectedValueHandle.IsValid())
-	{
-		return;
-	}
+	check(PulldownSourceHandle);
 
 	FName SelectedValue;
-	SelectedValueHandle->GetValue(SelectedValue);
+	PulldownSourceHandle->GetValue(SelectedValue);
 
 	FPlatformApplicationMisc::ClipboardCopy(*SelectedValue.ToString());
 }
 
-void FNativeLessPulldownStructDetail::OnPasteAction()
+void FNativeLessPulldownStructDetail::OnPulldownSourcePasteAction()
 {
-	if (!PulldownWidget.IsValid())
-	{
-		return;
-	}
+	check(PulldownSourceWidget);
 	
 	FName PastedText;
 	{
@@ -299,9 +217,9 @@ void FNativeLessPulldownStructDetail::OnPasteAction()
 		PastedText = *ClipboardString;
 	}
 
-	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(PastedText);
+	TSharedPtr<FString> SelectedItem = FindPulldownContentsNameByName(PastedText);
 	if (SelectedItem.IsValid())
 	{
-		PulldownWidget->SetSelectedItem(SelectedItem);
+		PulldownSourceWidget->SetSelectedItem(SelectedItem);
 	}
 }

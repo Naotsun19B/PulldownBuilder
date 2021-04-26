@@ -82,8 +82,8 @@ void FPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStruct
         StructPropertyHandle->CreatePropertyNameWidget()
     ];
 
-	// If the property is only "FPulldownStructBase::SelectedValue", display it inline.
-	if (NumChildProperties == 1)
+	// If the property is only FPulldownStructBase::SelectedValue, display it inline.
+	if (NumChildProperties == 1 && !bNeverInlineDisplay)
 	{
 		HeaderRow.ValueContent()
 			.MinDesiredWidth(500)
@@ -99,7 +99,7 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 {
 	check(StructPropertyHandle && SelectedValueHandle);
 
-	// Add child properties other than FPulldownStructBase::SelectedValue to the Struct Builder.
+	// Add child properties other than FPulldownStructBase::SelectedValue to the StructBuilder.
 	uint32 NumChildProperties;
 	StructPropertyHandle->GetNumChildren(NumChildProperties);
 	for (uint32 Index = 0; Index < NumChildProperties; Index++)
@@ -113,7 +113,7 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 			if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
 #endif
 			{
-				if (ChildProperty->GetFName() != GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
+				if (!IsCustomizationTarget(ChildProperty))
 				{
 					StructBuilder.AddProperty(ChildPropertyHandle.ToSharedRef());
 					ChildPropertyHandle->SetOnPropertyValueChanged(
@@ -125,8 +125,10 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 	}
 
 	// If there are multiple properties, do not display inline.
-	if (NumChildProperties > 1)
+	if (NumChildProperties > 1 || bNeverInlineDisplay)
 	{
+		AddCustomRowBeforeSelectedValue(StructBuilder);
+		
 		StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)))
 			.CopyAction(CreateSelectedValueCopyAction())
 			.PasteAction(CreateSelectedValuePasteAction())
@@ -140,6 +142,8 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 				GenerateSelectableValuesWidget()
 			];
 
+		AddCustomRowAfterSelectedValue(StructBuilder);
+
 		RebuildPulldown();
 	}
 }
@@ -148,7 +152,7 @@ void FPulldownStructDetail::RebuildPulldown()
 {
 	check(StructPropertyHandle && SelectedValueHandle);
 
-	// Find Pulldown Contents in the property structure and
+	// Find PulldownContents in the property structure and
 	// build a list of strings to display in the pull-down menu.
     void* StructValueData = nullptr;
     FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
@@ -209,15 +213,10 @@ void FPulldownStructDetail::OnMutipleSelected()
 	SelectableValues.Reset();
 }
 
-TSharedPtr<FString> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
+bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
 {
-	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
-		[&](const TSharedPtr<FString>& Item)
-		{
-			return (Item.IsValid() && *Item == InName.ToString());
-		});
-
-	return (FoundItem != nullptr ? *FoundItem : nullptr);
+	check(InProperty);
+	return (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 }
 
 TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
@@ -231,6 +230,17 @@ TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
 				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
 				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
 			];
+}
+
+TSharedPtr<FString> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
+{
+	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
+		[&](const TSharedPtr<FString>& Item)
+		{
+			return (Item.IsValid() && *Item == InName.ToString());
+		});
+
+	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
 void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)

@@ -36,16 +36,22 @@ protected:
 	
 	// Behavior when multiple are selected. 
 	virtual void OnMutipleSelected();
-	
-	// Search for the same name as the specified name from the list of
-	// character strings displayed in the pull-down menu.
-	// If not found, returns nullptr.
-	TSharedPtr<FString> FindSelectableValueByName(const FName& InName) const;
+
+	// Returns whether the specified property is the property to be customized.
+	virtual bool IsCustomizationTarget(FProperty* InProperty) const;
+
+	// Set custom properties before and after FPulldownStructBase::SelectedValue.
+	virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
+	virtual void AddCustomRowAfterSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 
 	// Generates a widget that displays a pull-down menu.
 	TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
-	// Called when the value of the combo box changes.
+	// Search for the same name as the specified name from the SelectableValues.
+	// If not found, returns nullptr.
+	TSharedPtr<FString> FindSelectableValueByName(const FName& InName) const;
+	
+	// Called when the value of the SelectedValueWidget changes.
 	void OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 	// Create a FUIAction from a copy-paste FPulldownStructBase::SelectedValue callback function.
@@ -57,16 +63,19 @@ protected:
 	void OnSelectedValuePasteAction();
 
 protected:
-	// A list of strings to display in the pull-down menu.
-	TArray<TSharedPtr<FString>> SelectableValues;
-
 	// The property handle of the structure that inherits the FPulldownStructBase
 	// that is the target of this detail customization.
 	TSharedPtr<IPropertyHandle> StructPropertyHandle;
+	
+	// A list of values that can be set in FPulldownStructBase::SelectedValue.
+	TArray<TSharedPtr<FString>> SelectableValues;
 
 	// FPulldownStructBase::SelectedValue property handle.
 	TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
-	// Pull-down menu widget.
+	// A widget that displays a pull-down menu based on the SelectableValues.
 	TSharedPtr<STextComboBox> SelectedValueWidget;
+
+	// If this flag is true, inline display will not be performed regardless of the number of properties.
+	bool bNeverInlineDisplay = false;
 };

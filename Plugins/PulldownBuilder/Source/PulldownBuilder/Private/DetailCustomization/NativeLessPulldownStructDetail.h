@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DetailCustomization/PulldownStructDetailBase.h"
+#include "DetailCustomization/PulldownStructDetail.h"
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
  */
-class PULLDOWNBUILDER_API FNativeLessPulldownStructDetail : public FPulldownStructDetailBase
+class PULLDOWNBUILDER_API FNativeLessPulldownStructDetail : public FPulldownStructDetail
 {
 public:
 	// Register-Unregister and instantiate this customization.
@@ -18,37 +18,39 @@ public:
 
 	// IPropertyTypeCustomization interface.
 	virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-	virtual void CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 	// End of IPropertyTypeCustomization interface.
 
 private:
-	// FPulldownStructDetailBase interface.
-	virtual void RebuildPulldown() override;
-	// End of FPulldownStructDetailBase interface.
+	// FPulldownStructDetail interface.
+	virtual void RefreshPulldownWidget() override;
+	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
+	virtual void OnMutipleSelected() override;
+	virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
+	virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
+	// End of FPulldownStructDetail interface.
 
-	// Search for the same name as the specified Name from the list of
-	// character strings displayed in the pull-down menu.
+	// Search for the same name as the specified name from the PulldownContentsNames.
 	// If not found, returns nullptr.
 	TSharedPtr<FString> FindPulldownContentsNameByName(const FName& InName) const;
 	
-	// Called when the value of the combo box changes.
-	void OnSourceAssetChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	// Called when the value of the PulldownSourceWidget changes.
+	void OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 	
-	// Create a FUIAction from a copy-paste callback function.
-	FUIAction CreateCopyAction();
-	FUIAction CreatePasteAction();
+	// Create a FUIAction from a copy-paste FNativeLessPulldownStruct::PulldownSource callback function.
+	FUIAction CreatePulldownSourceCopyAction();
+	FUIAction CreatePulldownSourcePasteAction();
 
-	// Called when copying-pasting.
-	void OnCopyAction();
-	void OnPasteAction();
+	// Called when copying-pasting FNativeLessPulldownStruct::PulldownSource. 
+	void OnPulldownSourceCopyAction();
+	void OnPulldownSourcePasteAction();
 	
 private:
-	// A list of strings to display in the pull-down menu.
+	// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
 	TArray<TSharedPtr<FString>> PulldownContentsNames;
 	
 	// FNativeLessPulldownStruct::PulldownContentsName property handle.
 	TSharedPtr<IPropertyHandle> PulldownSourceHandle;
 
-	// Pull-down menu widget.
-	TSharedPtr<STextComboBox> SourceAssetPulldownWidget;
+	// A widget that displays a pull-down menu based on the PulldownContentsNames.
+	TSharedPtr<STextComboBox> PulldownSourceWidget;
 };
