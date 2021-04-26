@@ -6,7 +6,8 @@
 #include "AssetTypeActions_Base.h"
 
 /**
- * 
+ * A class that defines the operations that can be performed on an PulldownContents and
+ * information about the PulldownContents.
  */
 class FAssetTypeActions_PulldownContents : public FAssetTypeActions_Base
 {

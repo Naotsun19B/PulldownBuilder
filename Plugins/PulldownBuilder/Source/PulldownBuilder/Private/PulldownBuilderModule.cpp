@@ -9,6 +9,7 @@
 #include "PulldownBuilderGlobals.h"
 #include "Asset/AssetTypeActions_PulldownContents.h"
 #include "Asset/PulldownContents.h"
+#include "Common/PulldownBuilderStyle.h"
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"
 #include "DetailCustomization/PulldownStructTypeDetail.h"
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
@@ -34,6 +35,9 @@ void FPulldownBuilderModule::StartupModule()
 	AssetTypeActions = MakeShared<FAssetTypeActions_PulldownContents>();
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(AssetTypeActions.ToSharedRef());
 
+	// Register the icons of this plugin.
+	FPulldownBuilderStyle::Register();
+	
 	// Register custom graph pin.
 	FPulldownStructGraphPinFactory::Register();
 	
@@ -64,6 +68,9 @@ void FPulldownBuilderModule::ShutdownModule()
 
 	// Unregister custom graph pin.
 	FPulldownStructGraphPinFactory::Unregister();
+
+	// Unregister the icons of this plugin.
+	FPulldownBuilderStyle::Unregister();
 	
 	// Unregister asset type actions.
 	if (AssetTypeActions.IsValid() && FAssetToolsModule::IsModuleLoaded())
