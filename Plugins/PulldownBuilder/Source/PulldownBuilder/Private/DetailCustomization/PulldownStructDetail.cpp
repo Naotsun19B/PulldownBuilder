@@ -2,8 +2,8 @@
 
 #include "DetailCustomization/PulldownStructDetail.h"
 #include "PulldownBuilderGlobals.h"
-#include "Common/PulldownBuilderUtils.h"
-#include "Common/PulldownStructType.h"
+#include "Struct/PulldownStructType.h"
+#include "Utility/PulldownBuilderUtils.h"
 #include "PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"

@@ -9,10 +9,10 @@
 #include "PulldownBuilderGlobals.h"
 #include "Asset/AssetTypeActions_PulldownContents.h"
 #include "Asset/PulldownContents.h"
-#include "Common/PulldownBuilderStyle.h"
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"
 #include "DetailCustomization/PulldownStructTypeDetail.h"
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
+#include "Utility/PulldownBuilderStyle.h"
 
 DEFINE_LOG_CATEGORY(LogPulldownBuilder);
 

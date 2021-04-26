@@ -2,7 +2,7 @@
 
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"
 #include "PulldownBuilderGlobals.h"
-#include "Common/PulldownBuilderUtils.h"
+#include "Utility/PulldownBuilderUtils.h"
 #include "CustomGraphPin/SPulldownStructGraphPin.h"
 
 TSharedPtr<FGraphPanelPinFactory> FPulldownStructGraphPinFactory::Instance = nullptr;

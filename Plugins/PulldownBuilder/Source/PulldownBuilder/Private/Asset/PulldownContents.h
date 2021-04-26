@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Common/PulldownStructType.h"
-#include "Common/PreviewPulldownStruct.h"
+#include "Struct/PulldownStructType.h"
+#include "Struct/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
 struct FPropertyChangedEvent;

@@ -4,7 +4,6 @@
 #include "PulldownBuilderGlobals.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
 #include "DetailCustomization/PulldownStructDetail.h"
-#include "UObject/MetaData.h"
 
 namespace PulldownContentsDefine
 {

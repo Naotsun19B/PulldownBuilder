@@ -3,7 +3,7 @@
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
 #include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
-#include "Common/PreviewPulldownStruct.h"
+#include "Struct/PreviewPulldownStruct.h"
 #include "PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
