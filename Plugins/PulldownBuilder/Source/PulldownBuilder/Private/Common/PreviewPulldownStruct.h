@@ -9,7 +9,7 @@
 /**
 * Structure for previewing pulldown menus in the PulldownContents.
 */
-USTRUCT()
+USTRUCT(NotBlueprintType, BlueprintInternalUseOnly)
 struct FPreviewPulldownStruct : public FPulldownStructBase
 {
 	GENERATED_BODY()

@@ -8,6 +8,9 @@
 /**
  * Base structure of the structure displayed as a pull-down menu.
  * To create a pull-down menu structure in C++, define a structure that inherits this structure.
+ * If the inherited child struct is used only internally and cannot be used from within Blueprint and
+ * cannot be selected by FPulldownStructType, it is necessary to specify "NotBlueprintType" and
+ * "BlueprintInternalUseOnly" in the USTRUCT of the child structure.
  */
 USTRUCT(BlueprintInternalUseOnly)
 struct FPulldownStructBase
@@ -26,16 +29,6 @@ public:
 	FPulldownStructBase(const FName& InValue) : SelectedValue(InValue) {}
 
 	// Overload oprators.
-	FORCEINLINE bool operator ==(const FPulldownStructBase& Other) const
-	{
-		return (SelectedValue == Other.SelectedValue);
-	}
-
-	FORCEINLINE bool operator !=(const FPulldownStructBase& Other) const
-	{
-		return !(*this == Other);
-	}
-
 	FORCEINLINE bool operator ==(const FName& Other) const
 	{
 		return (SelectedValue == Other);
