@@ -10,6 +10,7 @@
 #include "Asset/AssetTypeActions_PulldownContents.h"
 #include "Asset/PulldownContents.h"
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"
+#include "DetailCustomization/NativeLessPulldownStructDetail.h"
 #include "DetailCustomization/PulldownStructTypeDetail.h"
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
 #include "Utility/PulldownBuilderStyle.h"
@@ -44,6 +45,7 @@ void FPulldownBuilderModule::StartupModule()
 	// Register detail customizations.
 	FPulldownStructTypeDetail::Register();
 	FPreviewPulldownStructDetail::Register();
+	FNativeLessPulldownStructDetail::Register();
 
 	// Load all PulldownContents in the Content Browser.
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -63,6 +65,7 @@ void FPulldownBuilderModule::StartupModule()
 void FPulldownBuilderModule::ShutdownModule()
 {
 	// Unregister detail customizations.
+	FNativeLessPulldownStructDetail::Unregister();
 	FPreviewPulldownStructDetail::Unregister();
 	FPulldownStructTypeDetail::Unregister();
 
