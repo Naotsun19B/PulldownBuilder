@@ -123,6 +123,13 @@ TArray<TSharedPtr<FString>> FPulldownBuilderUtils::GetDisplayStringsFromStruct(c
 	return DisplayStrings;
 }
 
+TArray<TSharedPtr<FString>> FPulldownBuilderUtils::GetEmptyDisplayStrings()
+{
+	TArray<TSharedPtr<FString>> EmptySelectableValues;
+	EmptySelectableValues.Add(MakeShared<FString>(FName(NAME_None).ToString()));
+	return EmptySelectableValues;
+}
+
 bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InStruct)
 {
 	bool bIsRegistered = false;

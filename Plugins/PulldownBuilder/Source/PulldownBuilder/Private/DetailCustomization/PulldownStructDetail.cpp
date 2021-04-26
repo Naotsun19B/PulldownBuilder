@@ -81,11 +81,23 @@ void FPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStruct
     [
         StructPropertyHandle->CreatePropertyNameWidget()
     ];
+
+	// If the property is only "FPulldownStructBase::SelectedValue", display it inline.
+	if (NumChildProperties == 1)
+	{
+		HeaderRow.ValueContent()
+			.MinDesiredWidth(500)
+			[
+				GenerateSelectableValuesWidget()
+			];
+
+		RebuildPulldown();
+	}
 }
 
 void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	check(StructPropertyHandle);
+	check(StructPropertyHandle && SelectedValueHandle);
 
 	// Add child properties other than FPulldownStructBase::SelectedValue to the Struct Builder.
 	uint32 NumChildProperties;
@@ -112,85 +124,148 @@ void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStru
 		}
 	}
 
-	check(SelectedValueHandle);
-
-	StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)))
-		.CopyAction(CreateCopyAction())
-		.PasteAction(CreatePasteAction())
-		.NameContent()
-		[
-			SelectedValueHandle->CreatePropertyNameWidget()
-		]
-		.ValueContent()
-		.MinDesiredWidth(500)
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Left)
+	// If there are multiple properties, do not display inline.
+	if (NumChildProperties > 1)
+	{
+		StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)))
+			.CopyAction(CreateSelectedValueCopyAction())
+			.PasteAction(CreateSelectedValuePasteAction())
+			.NameContent()
 			[
-				SAssignNew(PulldownWidget, STextComboBox)
-				.OptionsSource(&DisplayStrings)
-				.OnSelectionChanged(this, &FPulldownStructDetail::OnStateValueChanged)
-				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
+				SelectedValueHandle->CreatePropertyNameWidget()
 			]
-		];
+			.ValueContent()
+			.MinDesiredWidth(500)
+			[
+				GenerateSelectableValuesWidget()
+			];
 
-	RebuildPulldown();
+		RebuildPulldown();
+	}
 }
 
 void FPulldownStructDetail::RebuildPulldown()
 {
-	if (StructPropertyHandle == nullptr ||
-		!StructPropertyHandle->IsValidHandle() ||
-		!SelectedValueHandle.IsValid()
-	)
-	{
-		return;
-	}
+	check(StructPropertyHandle && SelectedValueHandle);
 
 	// Find Pulldown Contents in the property structure and
 	// build a list of strings to display in the pull-down menu.
+    void* StructValueData = nullptr;
+    FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
+    if (Result == FPropertyAccess::Success)
+    {	
+        SelectableValues = GenerateSelectableValues();
+    }
+    // Empty the list if data acquisition fails or if multiple selections are made.
+    else
+    {
+    	OnMutipleSelected();
+        return;
+    }
+
+	RefreshPulldownWidget();
+}
+
+void FPulldownStructDetail::RefreshPulldownWidget()
+{
+	check(SelectedValueHandle);
+	
+	// Check if the currently set string is included in the constructed list.
+	FName CurrentSelectedValue;
+	SelectedValueHandle->GetValue(CurrentSelectedValue);
+
+	TSharedPtr<FString> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
+	if (!SelectedItem.IsValid())
+	{
+		SelectedValueHandle->SetValue(NAME_None);
+		SelectedItem = FindSelectableValueByName(NAME_None);
+	}
+
+	if (SelectedValueWidget.IsValid())
+	{
+		SelectedValueWidget->RefreshOptions();
+		SelectedValueWidget->SetSelectedItem(SelectedItem);
+	}
+}
+
+TArray<TSharedPtr<FString>> FPulldownStructDetail::GenerateSelectableValues()
+{
+	check(StructPropertyHandle);
+	
 #if BEFORE_UE_4_24
 	if (auto* StructProperty = CastField<UStructProperty>(StructPropertyHandle->GetProperty()))
 #else
 	if (auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
-	{	
-		void* StructValueData = nullptr;
-		FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
-
-		if (Result == FPropertyAccess::Success)
-		{	
-			DisplayStrings = FPulldownBuilderUtils::GetDisplayStringsFromStruct(StructProperty->Struct);
-		}
-		// Empty the list if data acquisition fails or if multiple selections are made.
-		else
-		{
-			DisplayStrings.Reset();
-			return;
-		}
+	{
+		return FPulldownBuilderUtils::GetDisplayStringsFromStruct(StructProperty->Struct);
 	}
 
-	FPulldownStructDetailBase::RebuildPulldown();
+	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
 }
 
-FUIAction FPulldownStructDetail::CreateCopyAction()
+void FPulldownStructDetail::OnMutipleSelected()
+{
+	SelectableValues.Reset();
+}
+
+TSharedPtr<FString> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
+{
+	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
+		[&](const TSharedPtr<FString>& Item)
+		{
+			return (Item.IsValid() && *Item == InName.ToString());
+		});
+
+	return (FoundItem != nullptr ? *FoundItem : nullptr);
+}
+
+TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
+{
+	return SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			[
+				SAssignNew(SelectedValueWidget, STextComboBox)
+				.OptionsSource(&SelectableValues)
+				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
+				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
+			];
+}
+
+void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+{
+	if (!SelectedItem.IsValid() || !SelectedValueHandle.IsValid())
+	{
+		return;
+	}
+
+	FName NewSelectedValue = **SelectedItem;
+	FName OldSelectedValue;
+	SelectedValueHandle->GetValue(OldSelectedValue);
+	if (NewSelectedValue != OldSelectedValue)
+	{
+		SelectedValueHandle->SetValue(NewSelectedValue);
+	}
+}
+
+FUIAction FPulldownStructDetail::CreateSelectedValueCopyAction()
 {
 	return FUIAction
 	(
-		FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnCopyAction)
+		FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnSelectedValueCopyAction)
 	);
 }
 
-FUIAction FPulldownStructDetail::CreatePasteAction()
+FUIAction FPulldownStructDetail::CreateSelectedValuePasteAction()
 {
 	return FUIAction
 	(
-		FExecuteAction::CreateSP(this, & FPulldownStructDetail::OnPasteAction)
+		FExecuteAction::CreateSP(this, & FPulldownStructDetail::OnSelectedValuePasteAction)
 	);
 }
 
-void FPulldownStructDetail::OnCopyAction()
+void FPulldownStructDetail::OnSelectedValueCopyAction()
 {
 	if (!SelectedValueHandle.IsValid())
 	{
@@ -203,9 +278,9 @@ void FPulldownStructDetail::OnCopyAction()
 	FPlatformApplicationMisc::ClipboardCopy(*SelectedValue.ToString());
 }
 
-void FPulldownStructDetail::OnPasteAction()
+void FPulldownStructDetail::OnSelectedValuePasteAction()
 {
-	if (!PulldownWidget.IsValid())
+	if (!SelectedValueWidget.IsValid())
 	{
 		return;
 	}
@@ -217,9 +292,9 @@ void FPulldownStructDetail::OnPasteAction()
 		PastedText = *ClipboardString;
 	}
 
-	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(PastedText);
+	TSharedPtr<FString> SelectedItem = FindSelectableValueByName(PastedText);
 	if (SelectedItem.IsValid())
 	{
-		PulldownWidget->SetSelectedItem(SelectedItem);
+		SelectedValueWidget->SetSelectedItem(SelectedItem);
 	}
 }

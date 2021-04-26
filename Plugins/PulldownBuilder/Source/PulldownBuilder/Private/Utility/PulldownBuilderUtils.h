@@ -38,6 +38,9 @@ public:
 	// Get the list of character strings to be displayed in the pull-down menu from PulldownContents
 	// obtained by FindPulldownContentsByStruct.
 	static TArray<TSharedPtr<FString>> GetDisplayStringsFromStruct(const UScriptStruct* InStruct);
+
+	// Generates "None" only display strings.
+	static TArray<TSharedPtr<FString>> GetEmptyDisplayStrings();
 	
 	// Returns whether the specified structure is already registered.
 	static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);

@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DetailCustomization/PulldownStructDetailBase.h"
+#include "DetailCustomization/PulldownStructDetail.h"
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
  */
-class PULLDOWNBUILDER_API FPreviewPulldownStructDetail : public FPulldownStructDetailBase
+class PULLDOWNBUILDER_API FPreviewPulldownStructDetail : public FPulldownStructDetail
 {
 public:
 	// Register-Unregister and instantiate this customization.
@@ -16,12 +16,8 @@ public:
 	static void Unregister();
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
-	// IPropertyTypeCustomization interface.
-	virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-	virtual void CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-	// End of IPropertyTypeCustomization interface.
-
 private:
-	// Rebuilds the list of strings to display in the pull-down menu.
-	virtual void RebuildPulldown() override;
+	// FPulldownStructDetail interface.
+	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
+	// End of FPulldownStructDetail interface.
 };
