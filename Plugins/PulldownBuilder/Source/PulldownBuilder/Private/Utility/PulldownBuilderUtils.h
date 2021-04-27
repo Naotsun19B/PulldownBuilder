@@ -44,4 +44,7 @@ public:
 	
 	// Returns whether the specified structure is already registered.
 	static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);
+
+	// Generates a string that represents the default value of the structure.
+	static FString GenerateStructDefaultValueString(const UScriptStruct* InStruct);
 };

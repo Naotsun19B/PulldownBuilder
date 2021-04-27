@@ -30,7 +30,7 @@ void SPulldownStructGraphPin::RebuildPulldown()
 void SPulldownStructGraphPin::RefreshPulldownWidget()
 {	
 	// Check if the currently set string is included in the constructed list.
-	const TSharedPtr<FName>& CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+	const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 	TSharedPtr<FString> SelectedItem = nullptr;
 	if (CurrentSelectedValue.IsValid())
 	{
@@ -63,7 +63,7 @@ TArray<TSharedPtr<FString>> SPulldownStructGraphPin::GenerateSelectableValues()
 
 TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
 {
-    TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+    const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 	const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
 	
 	return SNew(SHorizontalBox)
@@ -94,7 +94,10 @@ void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FString> Selecte
 {
 	if (SelectedItem.IsValid())
 	{
-		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), **SelectedItem);
+		SetPropertyValue(
+			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
+			**SelectedItem
+		);
 	}
 }
 
@@ -109,13 +112,13 @@ TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& Propert
 	return nullptr;
 }
 
-void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewSelectedValue)
+void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue)
 {
 	check(GraphPinObj);
 
 	// If the value does not change, do nothing.
-	const TSharedPtr<FName>& OldSelectedValue = GetPropertyValue(PropertyName);
-	if (!OldSelectedValue.IsValid() || NewSelectedValue == *OldSelectedValue)
+	const TSharedPtr<FName> OldPropertyValue = GetPropertyValue(PropertyName);
+	if (!OldPropertyValue.IsValid() || NewPropertyValue == *OldPropertyValue)
 	{
 		return;
 	}
@@ -124,7 +127,7 @@ void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const 
 	TMap<FString, FString> PropertiesMap = GetDefaultValueAsMap();
 	if (PropertiesMap.Contains(PropertyName.ToString()))
 	{
-		PropertiesMap[PropertyName.ToString()] = NewSelectedValue.ToString();
+		PropertiesMap[PropertyName.ToString()] = NewPropertyValue.ToString();
 	}
 
 	// Create a structure string from the property map.
@@ -165,5 +168,6 @@ TMap<FString, FString> SPulldownStructGraphPin::GetDefaultValueAsMap() const
 		PropertiesMap.Add(VariableName, VariableValue);
 	}
 
+	//check(PropertiesMap.Num() > 0);
 	return PropertiesMap;
 }

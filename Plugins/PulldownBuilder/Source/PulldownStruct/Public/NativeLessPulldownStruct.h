@@ -19,4 +19,13 @@ public:
 	// The name of the PulldownContents asset from which the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName PulldownSource;
+
+public:
+	// Constructor.
+	FNativeLessPulldownStruct() : FPulldownStructBase(NAME_None), PulldownSource(NAME_None) {}
+	FNativeLessPulldownStruct(const FName& InPulldownSource, const FName& InSelectedValue)
+		: FPulldownStructBase(InPulldownSource)
+		, PulldownSource(InSelectedValue)
+	{
+	}
 };

@@ -1,24 +1,24 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
-#include "CustomGraphPin/PulldownStructGraphPinFactory.h"
+#include "CustomGraphPin/NativeLessPulldownStructGraphPinFactory.h"
 #include "PulldownBuilderGlobals.h"
-#include "CustomGraphPin/SPulldownStructGraphPin.h"
+#include "CustomGraphPin/SNativeLessPulldownStructGraphPin.h"
 #include "Utility/PulldownBuilderUtils.h"
 
-TSharedPtr<FGraphPanelPinFactory> FPulldownStructGraphPinFactory::Instance = nullptr;
+TSharedPtr<FGraphPanelPinFactory> FNativeLessPulldownStructGraphPinFactory::Instance = nullptr;
 
-void FPulldownStructGraphPinFactory::Register()
+void FNativeLessPulldownStructGraphPinFactory::Register()
 {
-	Instance = MakeShared<FPulldownStructGraphPinFactory>();
+	Instance = MakeShared<FNativeLessPulldownStructGraphPinFactory>();
 	FEdGraphUtilities::RegisterVisualPinFactory(Instance);
 }
 
-void FPulldownStructGraphPinFactory::Unregister()
+void FNativeLessPulldownStructGraphPinFactory::Unregister()
 {
 	FEdGraphUtilities::UnregisterVisualPinFactory(Instance);
 }
 
-TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
+TSharedPtr<SGraphPin> FNativeLessPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
 {
 	check(InPin);
 	
@@ -26,7 +26,7 @@ TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InP
 	{
 		if (auto* Struct = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
 		{
-			if (FPulldownBuilderUtils::IsPulldownStruct(Struct))
+			if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
 			{
 				// Since the DefaultValue of the pin when it is created is empty,
 				// the default structure string is generated and set.
@@ -34,8 +34,8 @@ TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InP
 				{
 					InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
 				}
-				
-				return SNew(SPulldownStructGraphPin, InPin);
+			
+				return SNew(SNativeLessPulldownStructGraphPin, InPin);
 			}
 		}
 	}

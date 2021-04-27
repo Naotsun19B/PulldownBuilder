@@ -1,9 +1,10 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "Utility/PulldownBuilderUtils.h"
+#include "PulldownBuilderGlobals.h"
+#include "Asset/PulldownContents.h"
 #include "PulldownStructBase.h"
 #include "NativeLessPulldownStruct.h"
-#include "Asset/PulldownContents.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "EdGraphSchema_K2.h"
 
@@ -145,4 +146,32 @@ bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InSt
     });
     
 	return bIsRegistered;
+}
+
+FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* InStruct)
+{
+	check(InStruct);
+	
+	FString DefaultValueString = TEXT("(");	
+#if BEFORE_UE_4_24
+	for (TFieldIterator<UProperty> PropertyItr(InStruct); PropertyItr; ++PropertyItr)
+#else
+	for (TFieldIterator<FProperty> PropertyItr(InStruct); PropertyItr; ++PropertyItr)
+#endif
+	{
+#if BEFORE_UE_4_24
+		UProperty* Property = *PropertyItr;
+#else
+		FProperty* Property = *PropertyItr;
+#endif
+		if (Property == nullptr)
+		{
+			continue;
+		}
+
+		DefaultValueString += FString::Printf(TEXT("%s=,"), *Property->GetName());
+	}
+	DefaultValueString[DefaultValueString.Len() - 1] = TEXT(')');
+
+	return DefaultValueString;
 }
