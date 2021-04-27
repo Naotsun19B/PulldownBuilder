@@ -32,7 +32,7 @@ TSharedRef<IPropertyTypeCustomization> FPreviewPulldownStructDetail::MakeInstanc
 
 TArray<TSharedPtr<FString>> FPreviewPulldownStructDetail::GenerateSelectableValues()
 {
-	// Get the list of strings to display from Pulldown Contents that owns this structure.
+	// Get the list of strings to display from PulldownContents that owns this structure.
 	TArray<UObject*> OuterObjects;
 	StructPropertyHandle->GetOuterObjects(OuterObjects);
 	for (const auto& OuterObject : OuterObjects)

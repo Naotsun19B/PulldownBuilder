@@ -20,27 +20,37 @@ public:
 	virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
 	// End of SGraphPin interface.
 
-private:
+protected:
 	// Rebuilds the list of strings to display in the pull-down menu.
-	void RebuildPulldown();
+	virtual void RebuildPulldown();
 
-	// Search for the same name as the specified Name from the list of
-	// character strings displayed in the pull-down menu.
+	// Refresh the widget in the pull-down menu.
+	virtual void RefreshPulldownWidget();
+
+	// Generates a list of strings to display in the pull-down menu.
+	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues();
+
+	// Generates a widget that displays a pull-down menu.
+	TSharedRef<SWidget> GenerateSelectableValuesWidget();
+	
+	// Search for the same name as the specified name from the SelectableValues.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindDisplayStringByName(const FName& InName) const;
+	TSharedPtr<FString> FindSelectableValueByName(const FName& InName) const;
 	
-	// Called when the value of the combo box changes.
-	void OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	// Called when the value of the SelectedValueWidget changes.
+	void OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 
-	// Getters and setters for FPulldownStructBase::SelectedValue for structures to
-	// which this custom graph pin is applied.
-	FName GetSelectedValueData() const;
-	void SetSelectedValueData(const FName& NewSelectedValue);
+	// 
+	TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;
+	void SetPropertyValue(const FName& PropertyName, const FName& NewSelectedValue);
+
+	//
+	TMap<FString, FString> GetDefaultValueAsMap() const;
 	
-private:
-	// A list of strings to display in the pull-down menu.
-	TArray<TSharedPtr<FString>> DisplayStrings;
+protected:
+	// A list of values that can be set in FPulldownStructBase::SelectedValue.
+	TArray<TSharedPtr<FString>> SelectableValues;
 
-	// Pull-down menu widget.
-	TSharedPtr<STextComboBox> PulldownWidget;
+	// A widget that displays a pull-down menu based on the SelectableValues.
+	TSharedPtr<STextComboBox> SelectedValueWidget;
 };

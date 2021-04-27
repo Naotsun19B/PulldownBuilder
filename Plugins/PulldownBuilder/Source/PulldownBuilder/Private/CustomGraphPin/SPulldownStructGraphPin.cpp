@@ -15,49 +15,73 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()
 {
 	RebuildPulldown();
 
+	return GenerateSelectableValuesWidget();
+}
+
+void SPulldownStructGraphPin::RebuildPulldown()
+{
+	// Find Pulldown Contents in the property structure and
+	// build a list of strings to display in the pull-down menu.
+	SelectableValues = GenerateSelectableValues();
+
+	RefreshPulldownWidget();
+}
+
+void SPulldownStructGraphPin::RefreshPulldownWidget()
+{	
+	// Check if the currently set string is included in the constructed list.
+	const TSharedPtr<FName>& CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+	TSharedPtr<FString> SelectedItem = nullptr;
+	if (CurrentSelectedValue.IsValid())
+	{
+		SelectedItem = FindSelectableValueByName(*CurrentSelectedValue);
+	}
+	if (!SelectedItem.IsValid())
+	{
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), NAME_None);
+		SelectedItem = FindSelectableValueByName(NAME_None);
+	}
+
+	if (SelectedValueWidget.IsValid())
+	{
+		SelectedValueWidget->RefreshOptions();
+		SelectedValueWidget->SetSelectedItem(SelectedItem);
+	}
+}
+
+TArray<TSharedPtr<FString>> SPulldownStructGraphPin::GenerateSelectableValues()
+{
+	check(GraphPinObj);
+	
+	if (auto* Struct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject))
+	{
+		return FPulldownBuilderUtils::GetDisplayStringsFromStruct(Struct);
+	}
+
+	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+}
+
+TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
+{
+    TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+	const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
+	
 	return SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			[
-				SAssignNew(PulldownWidget, STextComboBox)
-				.OptionsSource(&DisplayStrings)
-				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnStateValueChanged)
+				SAssignNew(SelectedValueWidget, STextComboBox)
+				.OptionsSource(&SelectableValues)
+				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
 				.OnComboBoxOpening(this, &SPulldownStructGraphPin::RebuildPulldown)
-				.InitiallySelectedItem(FindDisplayStringByName(GetSelectedValueData()))
+				.InitiallySelectedItem(FindSelectableValueByName(NameToFind))
 			];
 }
 
-void SPulldownStructGraphPin::RebuildPulldown()
+TSharedPtr<FString> SPulldownStructGraphPin::FindSelectableValueByName(const FName& InName) const
 {
-	check(GraphPinObj);
-
-	// Find Pulldown Contents in the property structure and
-	// build a list of strings to display in the pull-down menu.
-	if (auto* Struct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject))
-	{
-		DisplayStrings = FPulldownBuilderUtils::GetDisplayStringsFromStruct(Struct);
-	}
-	
-	// Check if the currently set string is included in the constructed list.
-	const FName& CurrentSelectedValue = GetSelectedValueData();
-	TSharedPtr<FString> SelectedItem = FindDisplayStringByName(CurrentSelectedValue);
-	if (!SelectedItem.IsValid())
-	{
-		SetSelectedValueData(NAME_None);
-		SelectedItem = FindDisplayStringByName(NAME_None);
-	}
-
-	if (PulldownWidget.IsValid())
-	{
-		PulldownWidget->RefreshOptions();
-		PulldownWidget->SetSelectedItem(SelectedItem);
-	}
-}
-
-TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayStringByName(const FName& InName) const
-{
-	const TSharedPtr<FString>* FoundItem = DisplayStrings.FindByPredicate(
+	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
         [&](const TSharedPtr<FString>& Item)
         {
             return (Item.IsValid() && *Item == InName.ToString());
@@ -66,82 +90,80 @@ TSharedPtr<FString> SPulldownStructGraphPin::FindDisplayStringByName(const FName
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void SPulldownStructGraphPin::OnStateValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	if (SelectedItem.IsValid() && SelectInfo != ESelectInfo::Direct)
+	if (SelectedItem.IsValid())
 	{
-		SetSelectedValueData(**SelectedItem);
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), **SelectedItem);
 	}
 }
 
-FName SPulldownStructGraphPin::GetSelectedValueData() const
+TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName) const
 {
-	check(GraphPinObj);
-	
-	FString CurrentDefault = GraphPinObj->GetDefaultAsString();
-
-	// If it is shorter than the variable name of FPulldownStructBase::SelectedValue, returns nullptr.
-	const int32 MinLength = FString(GET_MEMBER_NAME_STRING_CHECKED(FPulldownStructBase, SelectedValue)).Len();
-	if (CurrentDefault.Len() < MinLength)
+	const TMap<FString, FString>& PropertiesMap = GetDefaultValueAsMap();
+	if (PropertiesMap.Contains(PropertyName.ToString()))
 	{
-		return NAME_None;
-	}
-
-	// If there are multiple properties, only the FPulldownStructBase::SelectedValue part is extracted.
-	if (CurrentDefault.Contains(TEXT(",")))
-	{
-		TArray<FString> ParsedString;
-		CurrentDefault.ParseIntoArray(ParsedString, TEXT(","));
-
-		const FString& FindTarget = FString::Printf(TEXT("%s="), GET_MEMBER_NAME_STRING_CHECKED(FPulldownStructBase, SelectedValue));
-		const int32 FindTargetLength = FindTarget.Len();
-		for (const auto& String : ParsedString)
-		{
-			bool bIsMatch = true;
-			for (int32 Index = 0; Index < FindTargetLength; Index++)
-			{
-				if (!String.IsValidIndex(Index) ||
-					FindTarget[Index] != String[Index])
-				{
-					bIsMatch = false;
-					break;
-				}
-			}
-
-			if (bIsMatch)
-			{
-				CurrentDefault = String;
-				break;
-			}
-		}
+		return MakeShared<FName>(PropertiesMap[PropertyName.ToString()]);
 	}
 	
-	// Extract only the value part of the structure string.
-	FString VariableName;
-	FString VariableValue;
-	CurrentDefault.Split(TEXT("="), &VariableName, &VariableValue);
-	CurrentDefault = VariableValue;
-
-	CurrentDefault = CurrentDefault.Replace(TEXT(")"), TEXT(""));
-	CurrentDefault = CurrentDefault.Replace(TEXT("\""), TEXT(""));
-
-	return FName(CurrentDefault);
+	return nullptr;
 }
 
-void SPulldownStructGraphPin::SetSelectedValueData(const FName& NewSelectedValue)
+void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewSelectedValue)
+{
+	check(GraphPinObj);
+
+	// If the value does not change, do nothing.
+	const TSharedPtr<FName>& OldSelectedValue = GetPropertyValue(PropertyName);
+	if (!OldSelectedValue.IsValid() || NewSelectedValue == *OldSelectedValue)
+	{
+		return;
+	}
+
+	// Updates the value of the specified property.
+	TMap<FString, FString> PropertiesMap = GetDefaultValueAsMap();
+	if (PropertiesMap.Contains(PropertyName.ToString()))
+	{
+		PropertiesMap[PropertyName.ToString()] = NewSelectedValue.ToString();
+	}
+
+	// Create a structure string from the property map.
+	FString NewDefaultValue = TEXT("(");
+	for (const auto& PropertyPair : PropertiesMap)
+	{
+		NewDefaultValue += FString::Printf(TEXT("%s=%s,"), *PropertyPair.Key, *PropertyPair.Value);
+	}
+	NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
+	
+	// Set the created value for the pin.
+	const UEdGraphSchema* Schema = GraphPinObj->GetSchema();
+	check(Schema);
+	Schema->TrySetDefaultValue(*GraphPinObj, NewDefaultValue);
+}
+
+TMap<FString, FString> SPulldownStructGraphPin::GetDefaultValueAsMap() const
 {
 	check(GraphPinObj);
 	
-	if (NewSelectedValue != GetSelectedValueData())
+	// Remove parentheses at both ends of the structure string and double quotes used in string types.
+	FString PropertyValues = GraphPinObj->GetDefaultAsString();
+	PropertyValues = PropertyValues.Replace(TEXT("("), TEXT(""));
+	PropertyValues = PropertyValues.Replace(TEXT(")"), TEXT(""));
+	PropertyValues = PropertyValues.Replace(TEXT("\""), TEXT(""));
+
+	// Create a map of variable names and values by splitting properties.
+	TArray<FString> ParsedPropertyValues;
+	PropertyValues.ParseIntoArray(ParsedPropertyValues, TEXT(","));
+	
+	TMap<FString, FString> PropertiesMap;
+	for (const auto& ParsedPropertyValue : ParsedPropertyValues)
 	{
-		if (const UEdGraphSchema* Schema = GraphPinObj->GetSchema())
-		{
-			const FString& SelectedValueString = FString::Printf(
-                TEXT("(%s=%s)"),
-                GET_MEMBER_NAME_STRING_CHECKED(FPulldownStructBase, SelectedValue),
-                *NewSelectedValue.ToString()
-            );
-			Schema->TrySetDefaultValue(*GraphPinObj, SelectedValueString);
-		}
+		FString VariableName;
+		FString VariableValue;
+		ParsedPropertyValue.Split(TEXT("="), &VariableName, &VariableValue);
+
+		PropertiesMap.Add(VariableName, VariableValue);
 	}
+
+	return PropertiesMap;
 }
