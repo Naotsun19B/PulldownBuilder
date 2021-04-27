@@ -163,7 +163,7 @@ TSharedPtr<FString> FNativeLessPulldownStructDetail::FindPulldownContentsNameByN
 
 void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	check(PulldownSourceHandle);
+	check(PulldownSourceHandle && SelectedValueHandle);
 	
 	if (!SelectedItem.IsValid())
 	{
@@ -176,7 +176,14 @@ void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString
 	if (NewPulldownSource != OldPulldownSource)
 	{
 		PulldownSourceHandle->SetValue(NewPulldownSource);
-		RebuildPulldown();
+
+		// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
+		SelectedValueHandle->SetValue(NAME_None);
+		if (SelectedValueWidget.IsValid())
+		{
+			SelectedValueWidget->RefreshOptions();
+			SelectedValueWidget->SetSelectedItem(MakeShared<FString>(FName(NAME_None).ToString()));
+		}
 	}
 }
 

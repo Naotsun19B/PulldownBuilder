@@ -69,7 +69,7 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
 	return SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
 			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Left)
+			.AutoWidth()
 			[
 				SAssignNew(SelectedValueWidget, STextComboBox)
 				.OptionsSource(&SelectableValues)
@@ -92,12 +92,16 @@ TSharedPtr<FString> SPulldownStructGraphPin::FindSelectableValueByName(const FNa
 
 void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	if (SelectedItem.IsValid())
+	TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+	if (SelectedItem.IsValid() && CurrentSelectedValue.IsValid())
 	{
-		SetPropertyValue(
+		if (*SelectedItem != CurrentSelectedValue->ToString())
+		{
+			SetPropertyValue(
 			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
 			**SelectedItem
-		);
+			);
+		}
 	}
 }
 
@@ -168,6 +172,6 @@ TMap<FString, FString> SPulldownStructGraphPin::GetDefaultValueAsMap() const
 		PropertiesMap.Add(VariableName, VariableValue);
 	}
 
-	//check(PropertiesMap.Num() > 0);
+	check(PropertiesMap.Num() > 0);
 	return PropertiesMap;
 }

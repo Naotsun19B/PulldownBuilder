@@ -5,7 +5,6 @@
 #include "Asset/PulldownContents.h"
 #include "PulldownStructBase.h"
 #include "NativeLessPulldownStruct.h"
-#include "AssetRegistry/AssetRegistryModule.h"
 #include "EdGraphSchema_K2.h"
 
 bool FPulldownBuilderUtils::IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct)
@@ -48,23 +47,14 @@ bool FPulldownBuilderUtils::IsNativeLessPulldownStruct(const UScriptStruct* InTe
 
 void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback)
 {
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-	FARFilter Filter;
-	Filter.ClassNames.Add(UPulldownContents::StaticClass()->GetFName());
-	Filter.bRecursivePaths = true;
-	Filter.bRecursiveClasses = true;
-
-	AssetRegistry.EnumerateAssets(Filter, [&](const FAssetData& AssetData) -> bool
-    {
-        if (auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
-        {
-            return Callback(PulldownContents);
-        }
-		
-        return false;
-    });
+	for (TObjectIterator<UPulldownContents> ObjectItr; ObjectItr; ++ObjectItr)
+	{
+		UPulldownContents* PulldownContents = *ObjectItr;
+		if (IsValid(PulldownContents))
+		{
+			Callback(PulldownContents);
+		}
+	}
 }
 
 TArray<UPulldownContents*> FPulldownBuilderUtils::GetAllPulldownContents()

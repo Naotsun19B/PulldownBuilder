@@ -19,15 +19,15 @@ TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 	const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 	const FName& NameToFind = (PulldownSource.IsValid() ? *PulldownSource : NAME_None);
 	
-	return SNew(SVerticalBox)
+	return SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
-			+ SVerticalBox::Slot()
-			.VAlign(VAlign_Center)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
 				SNew(SHorizontalBox)
 				.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
 				+ SHorizontalBox::Slot()
-				.HAlign(HAlign_Left)
+				.AutoWidth()
 				[
 					SAssignNew(PulldownSourceWidget, STextComboBox)
 					.OptionsSource(&PulldownContentsNames)
@@ -36,8 +36,8 @@ TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 					.InitiallySelectedItem(FindPulldownContentsNameByName(NameToFind))
 				]
 			]
-			+ SVerticalBox::Slot()
-			.VAlign(VAlign_Center)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
 				GenerateSelectableValuesWidget()
 			];
@@ -106,11 +106,22 @@ TSharedPtr<FString> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameB
 
 void SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	if (SelectedItem.IsValid())
+	TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
+	if (SelectedItem.IsValid() && CurrentPulldownSource.IsValid())
 	{
-		SetPropertyValue(
+		if (*SelectedItem != CurrentPulldownSource->ToString())
+		{
+			SetPropertyValue(
 			GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
 			**SelectedItem
-		);
+			);
+
+			// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
+			SetPropertyValue(
+				GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
+				NAME_None
+			);
+			SPulldownStructGraphPin::RefreshPulldownWidget();
+		}	
 	}
 }
