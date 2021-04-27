@@ -178,12 +178,9 @@ void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString
 		PulldownSourceHandle->SetValue(NewPulldownSource);
 
 		// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
-		SelectedValueHandle->SetValue(NAME_None);
-		if (SelectedValueWidget.IsValid())
-		{
-			SelectedValueWidget->RefreshOptions();
-			SelectedValueWidget->SetSelectedItem(MakeShared<FString>(FName(NAME_None).ToString()));
-		}
+		SelectedValueHandle->SetValue(FName(NAME_None));
+		
+		FPulldownStructDetail::RefreshPulldownWidget();
 	}
 }
 
