@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "SGraphPin.h"
 
+class SSearchableTextComboBox;
+
 /**
  * A custom graph pin that applies to structures that inherit from FPulldownStructBase.
  */
@@ -53,5 +55,5 @@ protected:
 	TArray<TSharedPtr<FString>> SelectableValues;
 
 	// A widget that displays a pull-down menu based on the SelectableValues.
-	TSharedPtr<STextComboBox> SelectedValueWidget;
+	TSharedPtr<SSearchableTextComboBox> SelectedValueWidget;
 };

@@ -4,8 +4,8 @@
 #include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "Utility/SSearchableTextComboBox.h"
 #include "NativeLessPulldownStruct.h"
-#include "Widgets/Input/STextComboBox.h"
 
 void SNativeLessPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
@@ -29,7 +29,7 @@ TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
 				[
-					SAssignNew(PulldownSourceWidget, STextComboBox)
+					SAssignNew(PulldownSourceWidget, SSearchableTextComboBox)
 					.OptionsSource(&PulldownContentsNames)
 					.OnSelectionChanged(this, &SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged)
 					.OnComboBoxOpening(this, &SNativeLessPulldownStructGraphPin::RebuildPulldown)

@@ -3,8 +3,8 @@
 #include "CustomGraphPin/SPulldownStructGraphPin.h"
 #include "PulldownBuilderGlobals.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "Utility/SSearchableTextComboBox.h"
 #include "PulldownStructBase.h"
-#include "Widgets/Input/STextComboBox.h"
 
 void SPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
@@ -71,7 +71,7 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SAssignNew(SelectedValueWidget, STextComboBox)
+				SAssignNew(SelectedValueWidget, SSearchableTextComboBox)
 				.OptionsSource(&SelectableValues)
 				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
 				.OnComboBoxOpening(this, &SPulldownStructGraphPin::RebuildPulldown)

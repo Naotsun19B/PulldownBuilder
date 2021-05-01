@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "CustomGraphPin/SPulldownStructGraphPin.h"
 
+class SSearchableTextComboBox;
+
 /**
  * A custom graph pin that applies to structures that inherit from FNativeLessPulldownStruct.
  */
@@ -38,5 +40,5 @@ private:
 	TArray<TSharedPtr<FString>> PulldownContentsNames;
 
 	// A widget that displays a pull-down menu based on the PulldownContentsNames.
-	TSharedPtr<STextComboBox> PulldownSourceWidget;
+	TSharedPtr<SSearchableTextComboBox> PulldownSourceWidget;
 };
