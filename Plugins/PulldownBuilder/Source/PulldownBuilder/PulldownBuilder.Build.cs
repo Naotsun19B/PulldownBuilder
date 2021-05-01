@@ -20,6 +20,7 @@ public class PulldownBuilder : ModuleRules
 			new string[]
 			{
 				"CoreUObject",
+				"InputCore",
 				"Engine",
 				"Slate",
 				"SlateCore",
@@ -28,6 +29,7 @@ public class PulldownBuilder : ModuleRules
 				"EditorStyle",
 				"GraphEditor",
 				"StructViewer",
+				"EditorWidgets",
 				"AssetRegistry",
 				"BlueprintGraph",
 				"PropertyEditor",

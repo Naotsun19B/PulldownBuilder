@@ -4,12 +4,12 @@
 #include "PulldownBuilderGlobals.h"
 #include "Struct/PulldownStructType.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "Utility/SSearchableTextComboBox.h"
 #include "PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
-#include "Widgets/Input/STextComboBox.h"
 #include "HAL/PlatformApplicationMisc.h"
 
 void FPulldownStructDetail::Register(const FPulldownStructType& StructType)
@@ -225,7 +225,7 @@ TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			[
-				SAssignNew(SelectedValueWidget, STextComboBox)
+				SAssignNew(SelectedValueWidget, SSearchableTextComboBox)
 				.OptionsSource(&SelectableValues)
 				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
 				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
@@ -256,6 +256,8 @@ void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FString> SelectedI
 	if (NewSelectedValue != OldSelectedValue)
 	{
 		SelectedValueHandle->SetValue(NewSelectedValue);
+		
+		UE_LOG(LogPulldownBuilder, Warning, TEXT("%s -> %s"), *OldSelectedValue.ToString(), *NewSelectedValue.ToString());
 	}
 }
 

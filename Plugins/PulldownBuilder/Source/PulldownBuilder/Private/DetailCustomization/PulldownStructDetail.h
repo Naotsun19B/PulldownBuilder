@@ -7,6 +7,7 @@
 #include "IPropertyTypeCustomization.h"
 
 struct FPulldownStructType;
+class SSearchableTextComboBox;
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
@@ -74,7 +75,7 @@ protected:
 	TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
 	// A widget that displays a pull-down menu based on the SelectableValues.
-	TSharedPtr<STextComboBox> SelectedValueWidget;
+	TSharedPtr<SSearchableTextComboBox> SelectedValueWidget;
 
 	// If this flag is true, inline display will not be performed regardless of the number of properties.
 	bool bNeverInlineDisplay = false;

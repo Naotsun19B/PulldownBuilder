@@ -4,12 +4,12 @@
 #include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "Utility/SSearchableTextComboBox.h"
 #include "NativeLessPulldownStruct.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
-#include "Widgets/Input/STextComboBox.h"
 #include "HAL/PlatformApplicationMisc.h"
 
 void FNativeLessPulldownStructDetail::Register()
@@ -142,7 +142,7 @@ void FNativeLessPulldownStructDetail::AddCustomRowBeforeSelectedValue(IDetailChi
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			[
-				SAssignNew(PulldownSourceWidget, STextComboBox)
+				SAssignNew(PulldownSourceWidget, SSearchableTextComboBox)
 				.OptionsSource(&PulldownContentsNames)
 				.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnPulldownSourceChanged)
 				.OnComboBoxOpening(this, &FNativeLessPulldownStructDetail::RebuildPulldown)

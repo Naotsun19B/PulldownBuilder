@@ -65,7 +65,7 @@ void FPulldownStructTypeDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InSt
 
 	for (uint32 ChildIndex = 0; ChildIndex < NumChildren; ++ChildIndex)
 	{
-		const TSharedPtr< IPropertyHandle > ChildHandle = InStructPropertyHandle->GetChildHandle(ChildIndex);
+		const TSharedPtr<IPropertyHandle> ChildHandle = InStructPropertyHandle->GetChildHandle(ChildIndex);
 		if (ChildHandle->GetProperty()->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructType, SelectedStruct))
 		{
 			SelectedStructHandle = ChildHandle;

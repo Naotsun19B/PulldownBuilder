@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "DetailCustomization/PulldownStructDetail.h"
 
+class SSearchableTextComboBox;
+
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
  */
@@ -52,5 +54,5 @@ private:
 	TSharedPtr<IPropertyHandle> PulldownSourceHandle;
 
 	// A widget that displays a pull-down menu based on the PulldownContentsNames.
-	TSharedPtr<STextComboBox> PulldownSourceWidget;
+	TSharedPtr<SSearchableTextComboBox> PulldownSourceWidget;
 };
