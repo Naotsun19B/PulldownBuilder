@@ -9,7 +9,8 @@ void SSearchableTextComboBox::Construct(const FArguments& InArgs)
 	// If want to inherit the SSearchableComboBox and create custom combo box with search function,
 	// bind the function that generates the row widget to the OnGenerateWidget and
 	// specify the widget to be displayed in the Content closed state.
-	SSearchableComboBox::Construct(SSearchableComboBox::FArguments()
+	SSearchableComboBox::Construct(
+		SSearchableComboBox::FArguments()
 		.OptionsSource(InArgs._OptionsSource)
 		.OnSelectionChanged(InArgs._OnSelectionChanged)
 		.OnComboBoxOpening(InArgs._OnComboBoxOpening)
@@ -33,6 +34,8 @@ void SSearchableTextComboBox::Construct(const FArguments& InArgs)
 			.Font(IDetailLayoutBuilder::GetDetailFont())
 		]
 #if !BEFORE_UE_4_25
+		// At version 4.26.2, there is a problem that the pull-down menu is closed
+		// when using the search field, so hide the search field in version 4.26.
 		.SearchVisibility(EVisibility::Collapsed)
 #endif
 	);
