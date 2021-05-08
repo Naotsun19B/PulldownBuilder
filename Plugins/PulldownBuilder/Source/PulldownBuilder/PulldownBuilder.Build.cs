@@ -29,11 +29,17 @@ public class PulldownBuilder : ModuleRules
 				"EditorStyle",
 				"GraphEditor",
 				"StructViewer",
-				"EditorWidgets",
 				"AssetRegistry",
 				"BlueprintGraph",
 				"PropertyEditor",
 				"ApplicationCore",
+				
+				// The module in which "SSearchableComboBox" is defined is different from 4.25 or earlier.
+#if UE_4_25_OR_LATER
+				"EditorWidgets",
+#else
+				"Persona"
+#endif
 			}
 			);
 	}

@@ -17,7 +17,7 @@ struct FNativeLessPulldownStruct : public FPulldownStructBase
 
 public:
 	// The name of the PulldownContents asset from which the pull-down menu is based.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FName PulldownSource;
 
 public:

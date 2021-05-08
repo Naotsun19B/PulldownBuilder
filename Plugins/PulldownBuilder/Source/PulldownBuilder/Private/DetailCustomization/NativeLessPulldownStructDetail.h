@@ -27,7 +27,11 @@ private:
 	virtual void RefreshPulldownWidget() override;
 	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
 	virtual void OnMutipleSelected() override;
-	virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
+#if BEFORE_UE_4_24
+	virtual bool IsCustomizationTarget(UProperty* InProperty) const;
+#else
+	virtual bool IsCustomizationTarget(FProperty* InProperty) const;
+#endif
 	virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
 	// End of FPulldownStructDetail interface.
 

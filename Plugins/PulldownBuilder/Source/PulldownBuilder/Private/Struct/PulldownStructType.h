@@ -15,7 +15,7 @@ struct FPulldownStructType
 
 public:
 	// StaticStruct pointer for the specified structure.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	UScriptStruct* SelectedStruct;
 
 public:

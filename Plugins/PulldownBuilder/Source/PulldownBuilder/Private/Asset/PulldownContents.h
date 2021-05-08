@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "PulldownBuilderGlobals.h"
 #include "Struct/PulldownStructType.h"
 #include "Struct/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
@@ -24,7 +25,11 @@ public:
 	// UObject interface.
 	virtual bool IsEditorOnly() const override { return true; }
 	virtual void PostLoad() override;
+#if BEFORE_UE_4_24
+	virtual void PreEditChange(UProperty* PropertyAboutToChange) override;
+#else
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
+#endif
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void BeginDestroy() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;

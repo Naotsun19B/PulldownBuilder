@@ -77,7 +77,6 @@ void FPulldownBuilderModule::ShutdownModule()
 	
 	// Unregister asset type actions.
 	FAssetTypeActions_PulldownContents::Unregister();
-	
 }
 	
 IMPLEMENT_MODULE(FPulldownBuilderModule, PulldownBuilder)

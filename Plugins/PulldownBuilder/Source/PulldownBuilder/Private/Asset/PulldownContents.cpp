@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "Asset/PulldownContents.h"
-#include "PulldownBuilderGlobals.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
 #include "DetailCustomization/PulldownStructDetail.h"
 
@@ -18,7 +17,11 @@ void UPulldownContents::PostLoad()
 	RegisterDetailCustomization();
 }
 
+#if BEFORE_UE_4_24
+void UPulldownContents::PreEditChange(UProperty* PropertyAboutToChange)
+#else
 void UPulldownContents::PreEditChange(FProperty* PropertyAboutToChange)
+#endif
 {
 	Super::PreEditChange(PropertyAboutToChange);
 

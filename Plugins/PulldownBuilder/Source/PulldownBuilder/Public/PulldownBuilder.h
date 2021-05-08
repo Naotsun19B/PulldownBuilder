@@ -19,6 +19,7 @@ MONOLITHIC_HEADER_BOILERPLATE()
 #include "Asset/PulldownContents.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
 #include "ListGenerator/DataTablePulldownListGenerator.h"
+#include "ListGenerator/StringTablePulldownListGenerator.h"
 #include "ListGenerator/NameArrayPulldownListGenerator.h"
 #include "Struct/PulldownStructType.h"
 #include "Utility/PulldownBuilderUtils.h"

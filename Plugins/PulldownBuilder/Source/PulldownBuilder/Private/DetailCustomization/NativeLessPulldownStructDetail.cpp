@@ -11,6 +11,7 @@
 #include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "Modules/ModuleManager.h"
 
 void FNativeLessPulldownStructDetail::Register()
 {
@@ -118,7 +119,11 @@ void FNativeLessPulldownStructDetail::OnMutipleSelected()
 	FPulldownStructDetail::OnMutipleSelected();
 }
 
+#if BEFORE_UE_4_24
+bool FNativeLessPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
+#else
 bool FNativeLessPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
+#endif
 {
 	return (
 		FPulldownStructDetail::IsCustomizationTarget(InProperty) ||

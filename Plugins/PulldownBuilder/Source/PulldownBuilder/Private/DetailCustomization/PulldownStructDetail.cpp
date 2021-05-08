@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "DetailCustomization/PulldownStructDetail.h"
-#include "PulldownBuilderGlobals.h"
 #include "Struct/PulldownStructType.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "Utility/SSearchableTextComboBox.h"
@@ -11,6 +10,7 @@
 #include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "Modules/ModuleManager.h"
 
 void FPulldownStructDetail::Register(const FPulldownStructType& StructType)
 {
@@ -197,7 +197,7 @@ TArray<TSharedPtr<FString>> FPulldownStructDetail::GenerateSelectableValues()
 	check(StructPropertyHandle);
 	
 #if BEFORE_UE_4_24
-	if (auto* StructProperty = CastField<UStructProperty>(StructPropertyHandle->GetProperty()))
+	if (auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #else
 	if (auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
@@ -213,7 +213,11 @@ void FPulldownStructDetail::OnMutipleSelected()
 	SelectableValues.Reset();
 }
 
+#if BEFORE_UE_4_24
+bool FPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
+#else
 bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
+#endif
 {
 	check(InProperty);
 	return (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));

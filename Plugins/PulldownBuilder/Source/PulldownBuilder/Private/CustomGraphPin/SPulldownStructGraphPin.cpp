@@ -110,7 +110,7 @@ TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& Propert
 	const TMap<FString, FString>& PropertiesMap = GetDefaultValueAsMap();
 	if (PropertiesMap.Contains(PropertyName.ToString()))
 	{
-		return MakeShared<FName>(PropertiesMap[PropertyName.ToString()]);
+		return MakeShared<FName>(*PropertiesMap[PropertyName.ToString()]);
 	}
 	
 	return nullptr;

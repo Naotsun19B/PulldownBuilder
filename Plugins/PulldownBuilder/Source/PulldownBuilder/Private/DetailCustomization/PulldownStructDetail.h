@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DetailCustomizations.h"
 #include "IPropertyTypeCustomization.h"
+#include "PulldownBuilderGlobals.h"
 
 struct FPulldownStructType;
 class SSearchableTextComboBox;
@@ -39,7 +40,11 @@ protected:
 	virtual void OnMutipleSelected();
 
 	// Returns whether the specified property is the property to be customized.
+#if BEFORE_UE_4_24
+	virtual bool IsCustomizationTarget(UProperty* InProperty) const;
+#else
 	virtual bool IsCustomizationTarget(FProperty* InProperty) const;
+#endif
 
 	// Set custom properties before and after FPulldownStructBase::SelectedValue.
 	virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
