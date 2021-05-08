@@ -27,14 +27,14 @@ public:
 			RootToContentDir(
 				TEXT("/UserDefinedEnum_16x"),
 				TEXT(".png")
-			), FVector2D(16.f)
+			), FVector2D(16.f, 16.f)
 		));
 		
 		Set(TEXT("ClassThumbnail.PulldownContents"), new FSlateImageBrush(
 			RootToContentDir(
 				TEXT("/UserDefinedEnum_64x"),
 				TEXT(".png")
-			), FVector2D(64.f)
+			), FVector2D(64.f, 64.f)
 		));
 		
 		FSlateStyleRegistry::RegisterSlateStyle(*this);

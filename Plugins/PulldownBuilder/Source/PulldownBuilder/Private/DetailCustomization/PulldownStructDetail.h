@@ -37,7 +37,7 @@ protected:
 	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues();
 	
 	// Behavior when multiple are selected. 
-	virtual void OnMutipleSelected();
+	virtual void OnMultipleSelected();
 
 	// Returns whether the specified property is the property to be customized.
 #if BEFORE_UE_4_24

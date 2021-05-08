@@ -4,6 +4,7 @@
 #include "PulldownBuilderGlobals.h"
 #include "CustomGraphPin/SPulldownStructGraphPin.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "EdGraphSchema_K2.h"
 
 TSharedPtr<FGraphPanelPinFactory> FPulldownStructGraphPinFactory::Instance = nullptr;
 

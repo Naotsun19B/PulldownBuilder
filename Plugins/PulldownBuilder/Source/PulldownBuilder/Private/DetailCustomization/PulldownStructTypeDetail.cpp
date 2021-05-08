@@ -9,6 +9,10 @@
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
+#include "ModuleManager.h"
+#include "SComboButton.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Layout/SBorder.h"
 
 namespace PulldownStructTypeDetailInternal
 {

@@ -23,7 +23,13 @@
 		{
 			"Name": "PulldownBuilder",
 			"Type": "EditorNoCommandlet",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"Mac",
+				"Linux"
+			]
 		}
 	]
 }

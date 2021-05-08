@@ -4,6 +4,7 @@
 #include "PulldownBuilderGlobals.h"
 #include "CustomGraphPin/SNativeLessPulldownStructGraphPin.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "EdGraphSchema_K2.h"
 
 TSharedPtr<FGraphPanelPinFactory> FNativeLessPulldownStructGraphPinFactory::Instance = nullptr;
 

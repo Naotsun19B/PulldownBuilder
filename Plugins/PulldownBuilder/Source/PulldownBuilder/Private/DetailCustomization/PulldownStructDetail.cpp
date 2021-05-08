@@ -163,7 +163,7 @@ void FPulldownStructDetail::RebuildPulldown()
     // Empty the list if data acquisition fails or if multiple selections are made.
     else
     {
-    	OnMutipleSelected();
+    	OnMultipleSelected();
         return;
     }
 
@@ -208,7 +208,7 @@ TArray<TSharedPtr<FString>> FPulldownStructDetail::GenerateSelectableValues()
 	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
 }
 
-void FPulldownStructDetail::OnMutipleSelected()
+void FPulldownStructDetail::OnMultipleSelected()
 {
 	SelectableValues.Reset();
 }

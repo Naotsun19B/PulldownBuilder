@@ -7,6 +7,7 @@
 #include "Utility/PulldownBuilderUtils.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
+#include "ModuleManager.h"
 
 void FPreviewPulldownStructDetail::Register()
 {

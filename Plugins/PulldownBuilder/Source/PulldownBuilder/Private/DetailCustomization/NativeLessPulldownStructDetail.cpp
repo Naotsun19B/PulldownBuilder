@@ -113,10 +113,10 @@ TArray<TSharedPtr<FString>> FNativeLessPulldownStructDetail::GenerateSelectableV
 	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
 }
 
-void FNativeLessPulldownStructDetail::OnMutipleSelected()
+void FNativeLessPulldownStructDetail::OnMultipleSelected()
 {
 	PulldownContentsNames.Reset();
-	FPulldownStructDetail::OnMutipleSelected();
+	FPulldownStructDetail::OnMultipleSelected();
 }
 
 #if BEFORE_UE_4_24
