@@ -20,6 +20,6 @@ public:
 	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const;
 
 protected:
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
     TArray<FString> GetDisplayStringsFromBlueprint() const;
 };

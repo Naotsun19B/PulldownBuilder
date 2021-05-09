@@ -21,6 +21,6 @@ public:
 
 protected:
 	// The data table asset from which the list displayed in the pull-down menu is based.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	TSoftObjectPtr<UDataTable> SourceDataTable;
 };

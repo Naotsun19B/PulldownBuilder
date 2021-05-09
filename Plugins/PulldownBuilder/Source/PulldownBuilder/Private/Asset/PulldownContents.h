@@ -52,15 +52,15 @@ protected:
 protected:	
 	// Structure that displays a pull-down menu.
 	// It must be a structure that inherits from FPulldownStructBase.
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Pulldown")
 	FPulldownStructType PulldownStructType;
 
 	// A class that generates a list to display in the pull-down menu.
 	// It can be freely expanded according to the application.
-	UPROPERTY(EditDefaultsOnly, Instanced)
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Pulldown")
 	UPulldownListGeneratorBase* PulldownListGenerator;
 
 	// Shows a preview of the pull-down menu built from this PulldownContents.
-	UPROPERTY(EditDefaultsOnly, Transient)
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "Pulldown")
 	FPreviewPulldownStruct Preview;
 };
