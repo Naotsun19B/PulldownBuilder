@@ -26,7 +26,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 ## Requirement  
 
 Target version : UE4.23 ~ UE4.26  
-arget platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
+Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
 
