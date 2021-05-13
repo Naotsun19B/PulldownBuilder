@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -14,8 +14,7 @@ public class PulldownStruct : ModuleRules
 				"Core",
 			}
 			);
-			
-		
+				
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
