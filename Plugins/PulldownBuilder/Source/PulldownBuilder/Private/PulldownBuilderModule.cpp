@@ -1,7 +1,5 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
-#pragma once
-
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "AssetRegistryModule.h"
