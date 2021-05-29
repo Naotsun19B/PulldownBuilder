@@ -13,13 +13,11 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 	{
 		if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
 		{
-			DataTable->ForeachRow<FTableRowBase>(
-				GET_FUNCTION_NAME_STRING_CHECKED(UDataTablePulldownListGenerator, GetDisplayStrings),
-				[&](const FName& Key, const FTableRowBase& Value)
-				{
-					DisplayStrings.Add(MakeShared<FString>(Key.ToString()));
-				}
-			);
+			const TArray<FName>& RowNames = DataTable->GetRowNames();
+			for (const auto& RowName : RowNames)
+			{
+				DisplayStrings.Add(MakeShared<FString>(RowName.ToString()));
+			}
 		}
 	}
 
