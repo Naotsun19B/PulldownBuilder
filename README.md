@@ -163,7 +163,7 @@ The return value array will be listed in the pull-down menu.
 ## History  
 
 - (2021/05/29) v1.1   
-  Fixed not working properly when specifying a data table using UserDefinedStruct as a PulldownContents asset  
+  Fixed an issue where specifying a data table created from UserDefinedStruct as a PulldownContents asset would not work properly  
 
 - (2021/05/09) v1.0   
   Publish plugin
