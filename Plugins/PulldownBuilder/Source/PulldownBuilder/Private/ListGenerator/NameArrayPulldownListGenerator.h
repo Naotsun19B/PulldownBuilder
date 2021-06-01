@@ -15,6 +15,10 @@ class UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
 	GENERATED_BODY()
 
 public:
+	// UObject interface.
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	// End of UObject interface.
+	
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const override;
 	// End of UPulldownListGeneratorBase interface.

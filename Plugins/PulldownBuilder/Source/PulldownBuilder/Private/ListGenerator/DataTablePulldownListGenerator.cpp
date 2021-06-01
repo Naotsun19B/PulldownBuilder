@@ -16,7 +16,10 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 			const TArray<FName>& RowNames = DataTable->GetRowNames();
 			for (const auto& RowName : RowNames)
 			{
-				DisplayStrings.Add(MakeShared<FString>(RowName.ToString()));
+				if (RowName != NAME_None)
+				{
+					DisplayStrings.Add(MakeShared<FString>(RowName.ToString()));
+				}
 			}
 		}
 	}

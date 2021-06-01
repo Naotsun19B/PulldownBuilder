@@ -2,6 +2,30 @@
 
 #include "ListGenerator/NameArrayPulldownListGenerator.h"
 
+void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.MemberProperty == nullptr)
+	{
+		return;
+	}
+
+	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
+	{
+		// Filter so that there are no multiple elements with the same value.
+		TArray<FName> FilteredArray;
+		for (const auto& SourceName : SourceNameArray)
+		{
+			if (!FilteredArray.Contains(SourceName))
+			{
+				FilteredArray.Add(SourceName);
+			}
+		}
+		SourceNameArray = FilteredArray;
+	}
+}
+
 TArray<TSharedPtr<FString>> UNameArrayPulldownListGenerator::GetDisplayStrings() const
 {
 	TArray<TSharedPtr<FString>> DisplayStrings = Super::GetDisplayStrings();
@@ -13,7 +37,10 @@ TArray<TSharedPtr<FString>> UNameArrayPulldownListGenerator::GetDisplayStrings()
 	{
 		for (const auto& SourceName : SourceNameArray)
 		{
-			DisplayStrings.Add(MakeShared<FString>(SourceName.ToString()));
+			if (SourceName != NAME_None)
+			{
+				DisplayStrings.Add(MakeShared<FString>(SourceName.ToString()));
+			}
 		}
 	}
 
