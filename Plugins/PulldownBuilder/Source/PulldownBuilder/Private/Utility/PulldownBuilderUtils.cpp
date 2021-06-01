@@ -165,3 +165,66 @@ FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStr
 
 	return DefaultValueString;
 }
+
+TMap<FString, FString> FPulldownBuilderUtils::StructStringToPropertyMap(const FString& StructString)
+{
+	// Remove parentheses at both ends of the structure string and double quotes used in string types.
+	FString PropertyValues = StructString;
+	PropertyValues = PropertyValues.Replace(TEXT("("), TEXT(""));
+	PropertyValues = PropertyValues.Replace(TEXT(")"), TEXT(""));
+	PropertyValues = PropertyValues.Replace(TEXT("\""), TEXT(""));
+
+	// Create a map of variable names and values by splitting properties.
+	TArray<FString> ParsedPropertyValues;
+	PropertyValues.ParseIntoArray(ParsedPropertyValues, TEXT(","));
+	
+	TMap<FString, FString> PropertiesMap;
+	for (const auto& ParsedPropertyValue : ParsedPropertyValues)
+	{
+		FString VariableName;
+		FString VariableValue;
+		ParsedPropertyValue.Split(TEXT("="), &VariableName, &VariableValue);
+
+		PropertiesMap.Add(VariableName, VariableValue);
+	}
+
+	return PropertiesMap;
+}
+
+TSharedPtr<FName> FPulldownBuilderUtils::StructStringToMemberValue(const FString& StructString, const FName& PropertyName) 
+{
+	const TMap<FString, FString>& PropertiesMap = StructStringToPropertyMap(StructString);
+	if (PropertiesMap.Contains(PropertyName.ToString()))
+	{
+		return MakeShared<FName>(*PropertiesMap[PropertyName.ToString()]);
+	}
+	
+	return nullptr;
+}
+
+TSharedPtr<FString> FPulldownBuilderUtils::MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue)
+{
+	// If the value does not change, do nothing.
+	const TSharedPtr<FName> OldPropertyValue = StructStringToMemberValue(StructString, PropertyName);
+	if (!OldPropertyValue.IsValid() || NewPropertyValue == *OldPropertyValue)
+	{
+		return nullptr;
+	}
+
+	// Updates the value of the specified property.
+	TMap<FString, FString> PropertiesMap = StructStringToPropertyMap(StructString);
+	if (PropertiesMap.Contains(PropertyName.ToString()))
+	{
+		PropertiesMap[PropertyName.ToString()] = NewPropertyValue.ToString();
+	}
+
+	// Create a structure string from the property map.
+	FString NewDefaultValue = TEXT("(");
+	for (const auto& PropertyPair : PropertiesMap)
+	{
+		NewDefaultValue += FString::Printf(TEXT("%s=%s,"), *PropertyPair.Key, *PropertyPair.Value);
+	}
+	NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
+	
+	return MakeShared<FString>(NewDefaultValue);
+}

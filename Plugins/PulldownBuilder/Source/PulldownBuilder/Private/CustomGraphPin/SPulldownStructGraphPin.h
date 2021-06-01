@@ -46,9 +46,6 @@ protected:
 	// If specify a property name that does not exist and get it, nullptr is returned.
 	TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;
 	void SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue);
-
-	// Gets the value set for the default pin as a map of variable names and values.
-	TMap<FString, FString> GetDefaultValueAsMap() const;
 	
 protected:
 	// A list of values that can be set in FPulldownStructBase::SelectedValue.

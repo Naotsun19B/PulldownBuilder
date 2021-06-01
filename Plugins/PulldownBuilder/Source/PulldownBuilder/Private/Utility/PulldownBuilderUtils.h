@@ -47,4 +47,12 @@ public:
 
 	// Generates a string that represents the default value of the structure.
 	static FString GenerateStructDefaultValueString(const UScriptStruct* InStruct);
+
+	// Gets the value of the string state structure as a map of variable names and values.
+	static TMap<FString, FString> StructStringToPropertyMap(const FString& StructString);
+	
+	// Gets or sets the value of a variable with the specified name.
+	// If specify a property name that does not exist and get it, nullptr is returned.
+	static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
+	static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
 };

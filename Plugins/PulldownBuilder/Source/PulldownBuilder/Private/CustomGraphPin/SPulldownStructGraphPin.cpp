@@ -107,71 +107,28 @@ void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FString> Selecte
 
 TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName) const
 {
-	const TMap<FString, FString>& PropertiesMap = GetDefaultValueAsMap();
-	if (PropertiesMap.Contains(PropertyName.ToString()))
-	{
-		return MakeShared<FName>(*PropertiesMap[PropertyName.ToString()]);
-	}
+	check(GraphPinObj);
 	
-	return nullptr;
+	return FPulldownBuilderUtils::StructStringToMemberValue(
+		GraphPinObj->GetDefaultAsString(),
+		PropertyName
+	);
 }
 
 void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue)
 {
 	check(GraphPinObj);
 
-	// If the value does not change, do nothing.
-	const TSharedPtr<FName> OldPropertyValue = GetPropertyValue(PropertyName);
-	if (!OldPropertyValue.IsValid() || NewPropertyValue == *OldPropertyValue)
+	const TSharedPtr<FString> NewDefaultValue = FPulldownBuilderUtils::MemberValueToStructString(
+		GraphPinObj->GetDefaultAsString(),
+		PropertyName,
+		NewPropertyValue
+	);
+	if (NewDefaultValue.IsValid())
 	{
-		return;
+		// Set the created value for the pin.
+		const UEdGraphSchema* Schema = GraphPinObj->GetSchema();
+		check(Schema);
+		Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 	}
-
-	// Updates the value of the specified property.
-	TMap<FString, FString> PropertiesMap = GetDefaultValueAsMap();
-	if (PropertiesMap.Contains(PropertyName.ToString()))
-	{
-		PropertiesMap[PropertyName.ToString()] = NewPropertyValue.ToString();
-	}
-
-	// Create a structure string from the property map.
-	FString NewDefaultValue = TEXT("(");
-	for (const auto& PropertyPair : PropertiesMap)
-	{
-		NewDefaultValue += FString::Printf(TEXT("%s=%s,"), *PropertyPair.Key, *PropertyPair.Value);
-	}
-	NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
-	
-	// Set the created value for the pin.
-	const UEdGraphSchema* Schema = GraphPinObj->GetSchema();
-	check(Schema);
-	Schema->TrySetDefaultValue(*GraphPinObj, NewDefaultValue);
-}
-
-TMap<FString, FString> SPulldownStructGraphPin::GetDefaultValueAsMap() const
-{
-	check(GraphPinObj);
-	
-	// Remove parentheses at both ends of the structure string and double quotes used in string types.
-	FString PropertyValues = GraphPinObj->GetDefaultAsString();
-	PropertyValues = PropertyValues.Replace(TEXT("("), TEXT(""));
-	PropertyValues = PropertyValues.Replace(TEXT(")"), TEXT(""));
-	PropertyValues = PropertyValues.Replace(TEXT("\""), TEXT(""));
-
-	// Create a map of variable names and values by splitting properties.
-	TArray<FString> ParsedPropertyValues;
-	PropertyValues.ParseIntoArray(ParsedPropertyValues, TEXT(","));
-	
-	TMap<FString, FString> PropertiesMap;
-	for (const auto& ParsedPropertyValue : ParsedPropertyValues)
-	{
-		FString VariableName;
-		FString VariableValue;
-		ParsedPropertyValue.Split(TEXT("="), &VariableName, &VariableValue);
-
-		PropertiesMap.Add(VariableName, VariableValue);
-	}
-
-	check(PropertiesMap.Num() > 0);
-	return PropertiesMap;
 }
