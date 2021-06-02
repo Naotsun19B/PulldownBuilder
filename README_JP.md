@@ -10,6 +10,8 @@
       * [C++を使用する場合](#C++を使用する場合)
       * [C++を使用しない場合](#C++を使用しない場合)
       * [PulldownListGenerator](#PulldownListGenerator)
+      * [RowNameUpdater](#RowNameUpdater)
+   * [オプション](#オプション)
    * [備考](#備考)
    * [ライセンス](#ライセンス)
    * [作者](#作者)
@@ -139,8 +141,32 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 |StringTablePulldownListGenerator|`SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。|
 |NameArrayPulldownListGenerator|`SourceNameArray`に配列の要素をプルダウンメニューに列挙します。|
 
-独自の`PulldownListGenerator`を作成するには、C++もしくはBPで`UPulldownListGeneratorBase`を継承し、`GetDisplayStrings`をオーバライドします。  
+独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/ListGenerator/PulldownListGeneratorBase.h) を継承し、`GetDisplayStrings`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
+
+### ・RowNameUpdater  
+
+プルダウンメニューの元となるデータに更新があった場合(例えばデータテーブルのRowNameが変更されたなど)、既に使用されている値を新しい名前に置き換える仕組みがあります。  
+標準で以下のアセットが対応しています。
+
+|**アセット**|**Updaterクラス**|
+|:---:|---|
+|Blueprint| [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/BlueprintUpdater.h) |
+|DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataTableUpdater.h) |
+|DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataAssetUpdater.h) |
+
+これら以外のアセットに対応するには、C++で [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/RowNameUpdaterBase.h) を継承して更新処理を実装する必要があります。
+
+## オプション  
+
+![settings](https://user-images.githubusercontent.com/51815450/120459719-64b48500-c3d3-11eb-9ea8-c9398f73175f.PNG)  
+
+エディタの環境設定から設定できる項目は以下の通りです。
+
+|**項目**|**説明**|
+|---|---|
+|Should Update When Source Row Name Changed|RowNameUpdaterを使ったプルダウンメニューの自動更新処理を行うかを指定します。|
+|Active Row Name Updater|有効化するRowNameUpdaterのクラスを指定します。ここで設定されているRowNameUpdaterのみが更新処理を行います。|
 
 ## 備考  
 
@@ -162,8 +188,11 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 ## 履歴
 
+- (2021/06/02) v1.2   
+  プルダウンメニューの元となるデータに更新があった場合に、既に使用されている値を新しい名前に置き換える機能を追加しました
+
 - (2021/05/29) v1.1   
-  UserDefinedStructをPulldownContentsアセットとして使用してデータ テーブルを指定すると正しく動作しない問題を修正しました  
+  UserDefinedStructをPulldownContentsアセットとして使用してデータ テーブルを指定すると正しく動作しない問題を修正しました
 
 - (2021/05/09) v1.0   
   プラグインを公開

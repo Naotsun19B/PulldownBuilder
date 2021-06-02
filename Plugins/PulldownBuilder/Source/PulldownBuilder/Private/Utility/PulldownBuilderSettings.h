@@ -30,7 +30,7 @@ public:
 
 	// Active per-asset updater class.
 	// Blueprint, data table, and data asset are provided by default.
-	UPROPERTY(EditAnywhere, Config, Category = "Redirect")
+	UPROPERTY(EditAnywhere, Config, Category = "Redirect", meta = (EditCondition = "bShouldUpdateWhenSourceRowNameChanged"))
 	TArray<TSubclassOf<URowNameUpdaterBase>> ActiveRowNameUpdater;
 
 public:

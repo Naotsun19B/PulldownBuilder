@@ -10,6 +10,8 @@
       * [When using C++](#When-using-C++)
       * [When don't using C++](#When-don't-using-C++)
       * [PulldownListGenerator](#PulldownListGenerator)
+      * [RowNameUpdater](#RowNameUpdater)
+   * [Settings](#Settings)
    * [Note](#Note)
    * [License](#License)
    * [Author](#Author)
@@ -139,8 +141,32 @@ The following three `PulldownListGenerator`s are provided as standard.
 |StringTablePulldownListGenerator|List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.|
 |NameArrayPulldownListGenerator|List the elements of the array in the pull-down menu under `SourceNameArray`.|
 
-To create your own `PulldownListGenerator`, inherit the` UPulldownListGeneratorBase` in C++ or BP and override the `GetDisplayStrings`.  
+To create your own `PulldownListGenerator`, inherit the [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/ListGenerator/PulldownListGeneratorBase.h) in C++ or BP and override the `GetDisplayStrings`.  
 The return value array will be listed in the pull-down menu.  
+
+### ・RowNameUpdater  
+
+If the underlying data of the pull-down menu is updated (for example, the Row Name of the data table has changed), there is a mechanism to replace the already used value with the new name.  
+The following assets are supported as standard.
+
+|**Asset type**|**Updater class**|
+|:---:|---|
+|Blueprint| [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/BlueprintUpdater.h) |
+|DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataTableUpdater.h) |
+|DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataAssetUpdater.h) |
+
+In order to support assets other than these, it is necessary to inherit [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/RowNameUpdaterBase.h) in C ++ and implement the update process.
+
+## Settings  
+
+![settings](https://user-images.githubusercontent.com/51815450/120459719-64b48500-c3d3-11eb-9ea8-c9398f73175f.PNG)
+
+The items that can be set from the editor preferences are as follows.
+
+|**Item**|**Description**|
+|---|---|
+|Should Update When Source Row Name Changed|Specifies whether to perform automatic update processing of the pull-down menu using RowNameUpdater.|
+|Active Row Name Updater|Specifies the RowNameUpdater class to enable. Only the RowNameUpdater set here will perform the update process.|
 
 ## Note  
 
@@ -161,6 +187,9 @@ The return value array will be listed in the pull-down menu.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2021/06/02) v1.2   
+  Added the ability to replace already used values with new names when the underlying data in the pull-down menu is updated
 
 - (2021/05/29) v1.1   
   Fixed an issue where specifying a data table created from UserDefinedStruct as a PulldownContents asset would not work properly  
