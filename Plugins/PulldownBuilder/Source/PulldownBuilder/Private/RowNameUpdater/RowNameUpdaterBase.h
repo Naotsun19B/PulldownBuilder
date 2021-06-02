@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "UObject/UObjectIterator.h"
 #include "RowNameUpdaterBase.generated.h"
 
 class UPulldownContents;

@@ -4,12 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "PulldownBuilderGlobals.h"
 #include "Struct/PulldownStructType.h"
 #include "Struct/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
-struct FPropertyChangedEvent;
 class UPulldownListGeneratorBase;
 
 /**

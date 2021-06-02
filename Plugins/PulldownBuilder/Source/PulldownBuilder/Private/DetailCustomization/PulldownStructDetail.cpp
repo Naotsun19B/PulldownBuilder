@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "DetailCustomization/PulldownStructDetail.h"
-#include "Struct/PulldownStructType.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "Utility/SSearchableTextComboBox.h"
 #include "PulldownStructBase.h"

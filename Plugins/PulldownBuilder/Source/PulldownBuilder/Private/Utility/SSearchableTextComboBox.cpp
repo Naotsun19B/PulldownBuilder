@@ -1,7 +1,6 @@
 // Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "Utility/SSearchableTextComboBox.h"
-#include "PulldownBuilderGlobals.h"
 #include "DetailLayoutBuilder.h"
 
 void SSearchableTextComboBox::Construct(const FArguments& InArgs)

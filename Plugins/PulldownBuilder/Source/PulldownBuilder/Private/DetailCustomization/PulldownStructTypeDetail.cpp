@@ -1,8 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "DetailCustomization/PulldownStructTypeDetail.h"
-#include "Asset/PulldownContents.h"
-#include "Struct/PulldownStructType.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "StructViewerModule.h"
 #include "StructViewerFilter.h"

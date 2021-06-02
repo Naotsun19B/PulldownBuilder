@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "AssetRegistryModule.h"
-#include "PulldownBuilderGlobals.h"
 #include "Asset/AssetTypeActions_PulldownContents.h"
 #include "Asset/PulldownContents.h"
 #include "CustomGraphPin/PulldownStructGraphPinFactory.h"

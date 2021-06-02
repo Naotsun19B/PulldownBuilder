@@ -1,7 +1,6 @@
 // Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "ListGenerator/PulldownListGeneratorBase.h"
-#include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
 #include "RowNameUpdater/RowNameUpdaterBase.h"
 #include "Utility/PulldownBuilderSettings.h"

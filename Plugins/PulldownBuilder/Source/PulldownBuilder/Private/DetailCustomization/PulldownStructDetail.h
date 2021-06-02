@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "DetailCustomizations.h"
 #include "IPropertyTypeCustomization.h"
-#include "PulldownBuilderGlobals.h"
 
 struct FPulldownStructType;
 class SSearchableTextComboBox;

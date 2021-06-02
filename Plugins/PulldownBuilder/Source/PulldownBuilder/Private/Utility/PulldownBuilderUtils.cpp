@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "Utility/PulldownBuilderUtils.h"
-#include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
 #include "PulldownStructBase.h"
 #include "NativeLessPulldownStruct.h"

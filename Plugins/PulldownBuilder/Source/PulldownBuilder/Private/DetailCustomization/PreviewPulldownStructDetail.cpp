@@ -1,9 +1,7 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
-#include "PulldownBuilderGlobals.h"
 #include "Asset/PulldownContents.h"
-#include "Struct/PreviewPulldownStruct.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"

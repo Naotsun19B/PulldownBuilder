@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "CustomGraphPin/SPulldownStructGraphPin.h"
-#include "PulldownBuilderGlobals.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "Utility/SSearchableTextComboBox.h"
 #include "PulldownStructBase.h"

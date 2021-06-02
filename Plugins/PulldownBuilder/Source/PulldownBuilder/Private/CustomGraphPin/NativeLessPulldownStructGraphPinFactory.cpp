@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "CustomGraphPin/NativeLessPulldownStructGraphPinFactory.h"
-#include "PulldownBuilderGlobals.h"
 #include "CustomGraphPin/SNativeLessPulldownStructGraphPin.h"
 #include "Utility/PulldownBuilderUtils.h"
 #include "EdGraphSchema_K2.h"

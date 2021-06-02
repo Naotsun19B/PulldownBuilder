@@ -12,12 +12,13 @@ MONOLITHIC_HEADER_BOILERPLATE()
 *****************************************************************************/
 
 #include "Core.h"
+#include "Templates/SubclassOf.h"
+#include "Framework/Commands/UIAction.h"
 
 /* Public includes.
 *****************************************************************************/
 #include "PulldownBuilderGlobals.h"
-#include "Asset/PulldownContents.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
 #include "RowNameUpdater/RowNameUpdaterBase.h"
 #include "Struct/PulldownStructType.h"
-#include "Utility/PulldownBuilderUtils.h"
+#include "Struct/PreviewPulldownStruct.h"

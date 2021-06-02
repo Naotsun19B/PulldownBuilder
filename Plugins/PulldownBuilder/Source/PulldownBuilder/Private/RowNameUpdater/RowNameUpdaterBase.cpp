@@ -7,10 +7,6 @@
 #include "PulldownStructBase.h"
 #include "NativeLessPulldownStruct.h"
 
-#if BEFORE_UE_4_23
-#include "UObjectIterator.h"
-#endif
-
 void URowNameUpdaterBase::UpdateRowNames(
 	UPulldownContents* PulldownContents,
 	const FName& PreChangeName,
