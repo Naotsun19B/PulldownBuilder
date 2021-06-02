@@ -12,6 +12,7 @@ MONOLITHIC_HEADER_BOILERPLATE()
 *****************************************************************************/
 
 #include "Core.h"
+#include "UObject/Package.h"
 #include "Templates/SubclassOf.h"
 #include "Framework/Commands/UIAction.h"
 
