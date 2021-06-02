@@ -7,10 +7,10 @@
 /**
  * Macro to support each engine version.
  */
-#if ENGINE_MINOR_VERSION <= 25
-#define BEFORE_UE_4_25 1
+#if ENGINE_MINOR_VERSION == 26
+#define DISABLE_SEARCH_FIELD 1
 #else
-#define BEFORE_UE_4_25 0
+#define DISABLE_SEARCH_FIELD 0
 #endif
  
 #if ENGINE_MINOR_VERSION <= 24

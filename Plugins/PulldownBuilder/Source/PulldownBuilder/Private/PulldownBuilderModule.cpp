@@ -11,6 +11,7 @@
 #include "DetailCustomization/PulldownStructTypeDetail.h"
 #include "DetailCustomization/PreviewPulldownStructDetail.h"
 #include "DetailCustomization/NativeLessPulldownStructDetail.h"
+#include "Utility/PulldownBuilderSettings.h"
 #include "Utility/PulldownBuilderStyle.h"
 
 DEFINE_LOG_CATEGORY(LogPulldownBuilder);
@@ -31,6 +32,9 @@ void FPulldownBuilderModule::StartupModule()
 
 	// Register the icons of this plugin.
 	FPulldownBuilderStyle::Register();
+
+	// Register settings.
+	UPulldownBuilderSettings::Register();
 	
 	// Register custom graph pin.
 	FPulldownStructGraphPinFactory::Register();
@@ -70,6 +74,9 @@ void FPulldownBuilderModule::ShutdownModule()
 	FNativeLessPulldownStructGraphPinFactory::Unregister();
 	FPulldownStructGraphPinFactory::Unregister();
 
+	// Unregister settings.
+	UPulldownBuilderSettings::Unregister();
+	
 	// Unregister the icons of this plugin.
 	FPulldownBuilderStyle::Unregister();
 	

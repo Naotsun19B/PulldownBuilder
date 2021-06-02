@@ -3,6 +3,7 @@
 #include "RowNameUpdater/RowNameUpdaterBase.h"
 #include "Asset/PulldownContents.h"
 #include "Utility/PulldownBuilderUtils.h"
+#include "Utility/PulldownBuilderSettings.h"
 #include "PulldownStructBase.h"
 #include "NativeLessPulldownStruct.h"
 
@@ -46,7 +47,10 @@ void URowNameUpdaterBase::UpdateRowNamesInternal(
 
 bool URowNameUpdaterBase::ShouldUpdateProcess() const
 {
-	return true;
+	auto* Settings = GetDefault<UPulldownBuilderSettings>();
+	check(Settings);
+
+	return Settings->ActiveRowNameUpdater.Contains(GetClass());
 }
 
 bool URowNameUpdaterBase::UpdateMemberVariables(

@@ -33,7 +33,7 @@ void SSearchableTextComboBox::Construct(const FArguments& InArgs)
 			})
 			.Font(IDetailLayoutBuilder::GetDetailFont())
 		]
-#if !BEFORE_UE_4_25
+#if DISABLE_SEARCH_FIELD
 		// At version 4.26.2, there is a problem that the pull-down menu is closed
 		// when using the search field, so hide the search field in version 4.26.
 		.SearchVisibility(EVisibility::Collapsed)
