@@ -18,7 +18,7 @@ TArray<TSharedPtr<FString>> UStringTablePulldownListGenerator::GetDisplayStrings
 			StringTable->GetStringTable()->EnumerateSourceStrings(
 				[&](const FString& InKey, const FString& InSourceString) -> bool
 				{
-					if (FName(InKey) != NAME_None)
+					if (FName(*InKey) != NAME_None)
 					{
 						DisplayStrings.Add(MakeShared<FString>(InKey));
 					}

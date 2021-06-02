@@ -22,4 +22,7 @@ public:
 protected:
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
     TArray<FString> GetDisplayStringsFromBlueprint() const;
+
+	// Update all FPulldownStructBases that reference owner PulldownContents asset.
+	virtual void UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName);
 };

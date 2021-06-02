@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ListGenerator/PulldownListGeneratorBase.h"
+#include "PulldownBuilderGlobals.h"
 #include "NameArrayPulldownListGenerator.generated.h"
 
 /**
@@ -16,6 +17,11 @@ class UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
 
 public:
 	// UObject interface.
+#if BEFORE_UE_4_24
+	virtual void PreEditChange(UProperty* PropertyAboutToChange) override;
+#else
+	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
+#endif
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	// End of UObject interface.
 	
@@ -27,4 +33,8 @@ protected:
 	// Name array from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	TArray<FName> SourceNameArray;
+
+	// Cache of name array before change.
+	UPROPERTY(Transient)
+	TArray<FName> PreChangeNameArray;
 };

@@ -7,13 +7,17 @@
 		{
 			"Name": "PulldownBuilderTest",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "PulldownBuilder",
-			"Enabled": true
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/02ffb84382fb4c7e8c7af28514cf1d14"
 		}
 	]
 }

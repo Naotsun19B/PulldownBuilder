@@ -2,6 +2,25 @@
 
 #include "ListGenerator/NameArrayPulldownListGenerator.h"
 
+#if BEFORE_UE_4_24
+void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)
+#else
+void UNameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToChange)
+#endif
+{
+	Super::PreEditChange(PropertyAboutToChange);
+
+	if (PropertyAboutToChange == nullptr)
+	{
+		return;
+	}
+
+	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
+	{
+		PreChangeNameArray = SourceNameArray;
+	}
+}
+
 void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -23,6 +42,23 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 			}
 		}
 		SourceNameArray = FilteredArray;
+
+		if (PreChangeNameArray.Num() == SourceNameArray.Num())
+		{
+			for (int32 Index = 0; Index < SourceNameArray.Num(); Index++)
+			{
+				const FName PreChangeName = PreChangeNameArray[Index];
+				const FName PostChangeName = SourceNameArray[Index];
+				if (PreChangeName != PostChangeName &&
+					PreChangeName != NAME_None &&
+					PostChangeName != NAME_None)
+				{
+					UpdateDisplayStrings(PreChangeName, PostChangeName);
+				}
+			}
+		}
+
+		PreChangeNameArray.Empty();
 	}
 }
 

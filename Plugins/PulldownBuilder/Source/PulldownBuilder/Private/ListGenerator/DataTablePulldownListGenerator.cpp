@@ -26,3 +26,43 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 
 	return DisplayStrings;
 }
+
+void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
+{
+	if (!IsValid(Changed) ||
+		Changed != SourceDataTable.LoadSynchronous() ||
+		Info != FDataTableEditorUtils::EDataTableChangeInfo::RowList
+	)
+	{
+		return;
+	}
+
+	PreChangeRowList = Changed->GetRowNames();
+}
+
+void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
+{
+	if (!IsValid(Changed) ||
+		Changed != SourceDataTable.LoadSynchronous() ||
+		Info != FDataTableEditorUtils::EDataTableChangeInfo::RowList
+	)
+	{
+		return;
+	}
+
+	const TArray<FName> PostChangeRowList = Changed->GetRowNames();
+	if (PreChangeRowList.Num() == PostChangeRowList.Num())
+	{
+		for (int32 Index = 0; Index < PostChangeRowList.Num(); Index++)
+		{
+			const FName PreChangeName = PreChangeRowList[Index];
+			const FName PostChangeName = PostChangeRowList[Index];
+			if (PreChangeName != PostChangeName)
+			{
+				UpdateDisplayStrings(PreChangeName, PostChangeName);
+			}
+		}
+	}
+
+	PreChangeRowList.Empty();
+}
