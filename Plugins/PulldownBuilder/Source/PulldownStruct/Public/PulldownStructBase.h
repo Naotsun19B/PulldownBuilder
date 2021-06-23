@@ -26,28 +26,40 @@ public:
 public:
 	// Constructor.
 	FPulldownStructBase() : SelectedValue(NAME_None) {}
-	FPulldownStructBase(const FName& InSelectedValue) : SelectedValue(InSelectedValue) {}
+	explicit FPulldownStructBase(const FName& InSelectedValue) : SelectedValue(InSelectedValue) {}
+	virtual ~FPulldownStructBase() = default;
 
-	// Overload oprators.
-	FORCEINLINE bool operator ==(const FName& Other) const
-	{
-		return (SelectedValue == Other);
-	}
-
-	FORCEINLINE bool operator !=(const FName& Other) const
-	{
-		return !(*this == Other);
-	}
-
-	FORCEINLINE const FName& operator *() const
-	{
-		return SelectedValue;
-	}
-	// End of overload oprators.
-
-	// Define a GetTypeHash function so that it can be used as a map key.
-	friend FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
-	{
-		return GetTypeHash(PulldownStruct.SelectedValue);
-	}
+	// Conversion functions.
+	const FName& ToName() const { return SelectedValue; }
+	FString ToString() const { return SelectedValue.ToString(); }
+	FText ToText() const { return FText::FromName(SelectedValue); }
 };
+
+// Define a GetTypeHash function so that it can be used as a map key.
+FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
+{
+	return GetTypeHash(PulldownStruct.SelectedValue);
+}
+
+// A meta-struct that checks if it is a structure that inherits FPulldownStructBase.
+template<class TPulldownStruct>
+struct TIsPulldownStruct
+{
+	static constexpr bool Value =
+		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::Value &&
+		!TIsSame<TPulldownStruct, FPulldownStructBase>::Value;
+};
+
+// A function for comparing structures that inherit from FPulldownStructBase.
+// Make it possible to compare only structures of the same type.
+template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Value = nullptr>
+FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
+{
+	return (Lhs.SelectedValue == Rhs.SelectedValue);
+}
+
+template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Value = nullptr>
+FORCEINLINE_DEBUGGABLE bool operator!=(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
+{
+	return !(Lhs == Rhs);
+}
