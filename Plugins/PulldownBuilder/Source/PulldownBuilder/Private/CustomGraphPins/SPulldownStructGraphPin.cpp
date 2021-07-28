@@ -2,7 +2,7 @@
 
 #include "CustomGraphPins/SPulldownStructGraphPin.h"
 #include "Utilities/PulldownBuilderUtils.h"
-#include "Widgets/SSearchableTextComboBox.h"
+#include "Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownStructBase.h"
 
 void SPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
@@ -30,7 +30,7 @@ void SPulldownStructGraphPin::RefreshPulldownWidget()
 {	
 	// Check if the currently set string is included in the constructed list.
 	const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
-	TSharedPtr<FString> SelectedItem = nullptr;
+	TSharedPtr<FPulldownRow> SelectedItem = nullptr;
 	if (CurrentSelectedValue.IsValid())
 	{
 		SelectedItem = FindSelectableValueByName(*CurrentSelectedValue);
@@ -43,21 +43,21 @@ void SPulldownStructGraphPin::RefreshPulldownWidget()
 
 	if (SelectedValueWidget.IsValid())
 	{
-		SelectedValueWidget->RefreshOptions();
+		SelectedValueWidget->RefreshList();
 		SelectedValueWidget->SetSelectedItem(SelectedItem);
 	}
 }
 
-TArray<TSharedPtr<FString>> SPulldownStructGraphPin::GenerateSelectableValues()
+TArray<TSharedPtr<FPulldownRow>> SPulldownStructGraphPin::GenerateSelectableValues()
 {
 	check(GraphPinObj);
 	
 	if (auto* Struct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject))
 	{
-		return FPulldownBuilderUtils::GetDisplayStringsFromStruct(Struct);
+		return FPulldownBuilderUtils::GetPulldownRowsFromStruct(Struct);
 	}
 
-	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+	return FPulldownBuilderUtils::GetEmptyPulldownRows();
 }
 
 TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
@@ -65,40 +65,41 @@ TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
     const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 	const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
 	
-	return SNew(SHorizontalBox)
-			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SAssignNew(SelectedValueWidget, SSearchableTextComboBox)
-				.OptionsSource(&SelectableValues)
-				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
-				.OnComboBoxOpening(this, &SPulldownStructGraphPin::RebuildPulldown)
-				.InitiallySelectedItem(FindSelectableValueByName(NameToFind))
-			];
+	return
+		SNew(SHorizontalBox)
+		.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
+			.ListItemsSource(&SelectableValues)
+			.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
+			.OnComboBoxOpened(this, &SPulldownStructGraphPin::RebuildPulldown)
+			.InitialSelection(FindSelectableValueByName(NameToFind))
+		];
 }
 
-TSharedPtr<FString> SPulldownStructGraphPin::FindSelectableValueByName(const FName& InName) const
+TSharedPtr<FPulldownRow> SPulldownStructGraphPin::FindSelectableValueByName(const FName& InName) const
 {
-	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
-        [&](const TSharedPtr<FString>& Item)
+	const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
+        [&](const TSharedPtr<FPulldownRow>& Item)
         {
-            return (Item.IsValid() && *Item == InName.ToString());
+            return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
         });
 
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+	const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 	if (SelectedItem.IsValid() && CurrentSelectedValue.IsValid())
 	{
 		if (*SelectedItem != CurrentSelectedValue->ToString())
 		{
 			SetPropertyValue(
-			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
-			**SelectedItem
+				GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
+				*SelectedItem->DisplayText.ToString()
 			);
 		}
 	}

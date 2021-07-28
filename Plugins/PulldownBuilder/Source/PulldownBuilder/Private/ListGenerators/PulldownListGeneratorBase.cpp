@@ -5,16 +5,16 @@
 #include "RowNameUpdaters/RowNameUpdaterBase.h"
 #include "Utilities/PulldownBuilderSettings.h"
 
-TArray<TSharedPtr<FString>> UPulldownListGeneratorBase::GetDisplayStrings() const
+TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows() const
 {
-	TArray<TSharedPtr<FString>> DisplayStrings;
-	TArray<FString> DisplayStringsFromBlueprint = GetDisplayStringsFromBlueprint();
-	for (const auto& DisplayStringFromBlueprint : DisplayStringsFromBlueprint)
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
+	TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint();
+	for (const auto& PulldownRowFromBlueprint : PulldownRowsFromBlueprint)
 	{
-		DisplayStrings.Add(MakeShared<FString>(DisplayStringFromBlueprint));
+		PulldownRows.Add(MakeShared<FPulldownRow>(PulldownRowFromBlueprint));
 	}
 
-	return DisplayStrings;
+	return PulldownRows;
 }
 
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)

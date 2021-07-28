@@ -17,7 +17,8 @@ void UNameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToCh
 
 	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
 	{
-		PreChangeNameArray = SourceNameArray;
+		PreChangeNameArray.Reset();
+		SourceNameArray.GenerateKeyArray(PreChangeNameArray);
 	}
 }
 
@@ -32,23 +33,15 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
 	{
-		// Filter so that there are no multiple elements with the same value.
-		TArray<FName> FilteredArray;
-		for (const auto& SourceName : SourceNameArray)
-		{
-			if (!FilteredArray.Contains(SourceName))
-			{
-				FilteredArray.Add(SourceName);
-			}
-		}
-		SourceNameArray = FilteredArray;
-
 		if (PreChangeNameArray.Num() == SourceNameArray.Num())
 		{
+			TArray<FName> PostChangeNameArray;
+			SourceNameArray.GenerateKeyArray(PostChangeNameArray);
+			
 			for (int32 Index = 0; Index < SourceNameArray.Num(); Index++)
 			{
 				const FName PreChangeName = PreChangeNameArray[Index];
-				const FName PostChangeName = SourceNameArray[Index];
+				const FName PostChangeName = PostChangeNameArray[Index];
 				if (PreChangeName != PostChangeName &&
 					PreChangeName != NAME_None &&
 					PostChangeName != NAME_None)
@@ -62,23 +55,23 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 	}
 }
 
-TArray<TSharedPtr<FString>> UNameArrayPulldownListGenerator::GetDisplayStrings() const
+TArray<TSharedPtr<FPulldownRow>> UNameArrayPulldownListGenerator::GetPulldownRows() const
 {
-	TArray<TSharedPtr<FString>> DisplayStrings = Super::GetDisplayStrings();
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows();
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the name array in consideration of expansion on the Blueprint side.
-	if (DisplayStrings.Num() == 0)
+	if (PulldownRows.Num() == 0)
 	{
 		for (const auto& SourceName : SourceNameArray)
 		{
-			if (SourceName != NAME_None)
+			if (SourceName.Key != NAME_None)
 			{
-				DisplayStrings.Add(MakeShared<FString>(SourceName.ToString()));
+				PulldownRows.Add(MakeShared<FPulldownRow>(SourceName.Key, SourceName.Value));
 			}
 		}
 	}
 
-	return DisplayStrings;
+	return PulldownRows;
 }

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SGraphPin.h"
 
-class SSearchableTextComboBox;
+class SPulldownSelectorComboButton;
 
 /**
  * A custom graph pin that applies to structures that inherit from FPulldownStructBase.
@@ -30,17 +30,17 @@ protected:
 	virtual void RefreshPulldownWidget();
 
 	// Generates a list of strings to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues();
+	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
 
 	// Generates a widget that displays a pull-down menu.
 	TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
 	// Search for the same name as the specified name from the SelectableValues.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindSelectableValueByName(const FName& InName) const;
+	TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
 	
 	// Called when the value of the SelectedValueWidget changes.
-	void OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 
 	// Gets or sets the value of a variable with the specified name.
 	// If specify a property name that does not exist and get it, nullptr is returned.
@@ -49,8 +49,8 @@ protected:
 	
 protected:
 	// A list of values that can be set in FPulldownStructBase::SelectedValue.
-	TArray<TSharedPtr<FString>> SelectableValues;
+	TArray<TSharedPtr<FPulldownRow>> SelectableValues;
 
 	// A widget that displays a pull-down menu based on the SelectableValues.
-	TSharedPtr<SSearchableTextComboBox> SelectedValueWidget;
+	TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
 };

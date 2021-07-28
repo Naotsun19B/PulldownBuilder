@@ -102,21 +102,21 @@ UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByName(const FName
 	return FoundItem;
 }
 
-TArray<TSharedPtr<FString>> FPulldownBuilderUtils::GetDisplayStringsFromStruct(const UScriptStruct* InStruct)
+TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(const UScriptStruct* InStruct)
 {
-	TArray<TSharedPtr<FString>> DisplayStrings;
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 	if (UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
 	{
-		DisplayStrings = FoundItem->GetDisplayStrings();
+		PulldownRows = FoundItem->GetPulldownRows();
 	}
 
-	return DisplayStrings;
+	return PulldownRows;
 }
 
-TArray<TSharedPtr<FString>> FPulldownBuilderUtils::GetEmptyDisplayStrings()
+TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetEmptyPulldownRows()
 {
-	TArray<TSharedPtr<FString>> EmptySelectableValues;
-	EmptySelectableValues.Add(MakeShared<FString>(FName(NAME_None).ToString()));
+	TArray<TSharedPtr<FPulldownRow>> EmptySelectableValues;
+	EmptySelectableValues.Add(MakeShared<FPulldownRow>());
 	return EmptySelectableValues;
 }
 

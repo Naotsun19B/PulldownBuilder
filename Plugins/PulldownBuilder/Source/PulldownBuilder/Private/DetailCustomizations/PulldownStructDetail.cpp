@@ -2,7 +2,7 @@
 
 #include "DetailCustomizations/PulldownStructDetail.h"
 #include "Utilities/PulldownBuilderUtils.h"
-#include "Widgets/SSearchableTextComboBox.h"
+#include "Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
@@ -154,7 +154,7 @@ void FPulldownStructDetail::RebuildPulldown()
 	// Find PulldownContents in the property structure and
 	// build a list of strings to display in the pull-down menu.
     void* StructValueData = nullptr;
-    FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
+	const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
     if (Result == FPropertyAccess::Success)
     {	
         SelectableValues = GenerateSelectableValues();
@@ -177,7 +177,7 @@ void FPulldownStructDetail::RefreshPulldownWidget()
 	FName CurrentSelectedValue;
 	SelectedValueHandle->GetValue(CurrentSelectedValue);
 
-	TSharedPtr<FString> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
+	TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 	if (!SelectedItem.IsValid())
 	{
 		SelectedValueHandle->SetValue(NAME_None);
@@ -186,12 +186,12 @@ void FPulldownStructDetail::RefreshPulldownWidget()
 
 	if (SelectedValueWidget.IsValid())
 	{
-		SelectedValueWidget->RefreshOptions();
+		SelectedValueWidget->RefreshList();
 		SelectedValueWidget->SetSelectedItem(SelectedItem);
 	}
 }
 
-TArray<TSharedPtr<FString>> FPulldownStructDetail::GenerateSelectableValues()
+TArray<TSharedPtr<FPulldownRow>> FPulldownStructDetail::GenerateSelectableValues()
 {
 	check(StructPropertyHandle);
 	
@@ -201,10 +201,10 @@ TArray<TSharedPtr<FString>> FPulldownStructDetail::GenerateSelectableValues()
 	if (auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 	{
-		return FPulldownBuilderUtils::GetDisplayStringsFromStruct(StructProperty->Struct);
+		return FPulldownBuilderUtils::GetPulldownRowsFromStruct(StructProperty->Struct);
 	}
 
-	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+	return FPulldownBuilderUtils::GetEmptyPulldownRows();
 }
 
 void FPulldownStructDetail::OnMultipleSelected()
@@ -224,43 +224,42 @@ bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
 
 TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
 {
-	return SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Left)
-			[
-				SAssignNew(SelectedValueWidget, SSearchableTextComboBox)
-				.OptionsSource(&SelectableValues)
-				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
-				.OnComboBoxOpening(this, &FPulldownStructDetail::RebuildPulldown)
-			];
+	return
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Left)
+		[
+			SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
+			.ListItemsSource(&SelectableValues)
+			.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
+			.OnComboBoxOpened(this, &FPulldownStructDetail::RebuildPulldown)
+		];
 }
 
-TSharedPtr<FString> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
+TSharedPtr<FPulldownRow> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
 {
-	const TSharedPtr<FString>* FoundItem = SelectableValues.FindByPredicate(
-		[&](const TSharedPtr<FString>& Item)
+	const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
+		[&](const TSharedPtr<FPulldownRow>& Item)
 		{
-			return (Item.IsValid() && *Item == InName.ToString());
+			return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
 		});
 
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 {
 	if (!SelectedItem.IsValid() || !SelectedValueHandle.IsValid())
 	{
 		return;
 	}
 
-	FName NewSelectedValue = **SelectedItem;
+	const FName NewSelectedValue = *SelectedItem->DisplayText.ToString();
 	FName OldSelectedValue;
 	SelectedValueHandle->GetValue(OldSelectedValue);
 	if (NewSelectedValue != OldSelectedValue)
 	{
 		SelectedValueHandle->SetValue(NewSelectedValue);
-		
-		UE_LOG(LogPulldownBuilder, Warning, TEXT("%s -> %s"), *OldSelectedValue.ToString(), *NewSelectedValue.ToString());
 	}
 }
 
@@ -307,7 +306,7 @@ void FPulldownStructDetail::OnSelectedValuePasteAction()
 		PastedText = *ClipboardString;
 	}
 
-	TSharedPtr<FString> SelectedItem = FindSelectableValueByName(PastedText);
+	const TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(PastedText);
 	if (SelectedItem.IsValid())
 	{
 		SelectedValueWidget->SetSelectedItem(SelectedItem);

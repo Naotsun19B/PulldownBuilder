@@ -29,7 +29,7 @@ TSharedRef<IPropertyTypeCustomization> FPreviewPulldownStructDetail::MakeInstanc
 	return MakeShared<FPreviewPulldownStructDetail>();
 }
 
-TArray<TSharedPtr<FString>> FPreviewPulldownStructDetail::GenerateSelectableValues()
+TArray<TSharedPtr<FPulldownRow>> FPreviewPulldownStructDetail::GenerateSelectableValues()
 {
 	// Get the list of strings to display from PulldownContents that owns this structure.
 	TArray<UObject*> OuterObjects;
@@ -38,9 +38,9 @@ TArray<TSharedPtr<FString>> FPreviewPulldownStructDetail::GenerateSelectableValu
 	{
 		if (auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
 		{
-			return PulldownContents->GetDisplayStrings();
+			return PulldownContents->GetPulldownRows();
 		}
 	}
 
-	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+	return FPulldownBuilderUtils::GetEmptyPulldownRows();
 }

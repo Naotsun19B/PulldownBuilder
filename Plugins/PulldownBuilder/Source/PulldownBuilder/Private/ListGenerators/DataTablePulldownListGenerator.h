@@ -23,7 +23,7 @@ class UDataTablePulldownListGenerator
 
 public:
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 	// INotifyOnDataTableChanged interface.

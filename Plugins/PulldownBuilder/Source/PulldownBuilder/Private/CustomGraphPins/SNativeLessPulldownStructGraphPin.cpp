@@ -3,7 +3,7 @@
 #include "CustomGraphPins/SNativeLessPulldownStructGraphPin.h"
 #include "Assets/PulldownContents.h"
 #include "Utilities/PulldownBuilderUtils.h"
-#include "Widgets/SSearchableTextComboBox.h"
+#include "Widgets/SPulldownSelectorComboButton.h"
 #include "NativeLessPulldownStruct.h"
 
 void SNativeLessPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
@@ -18,35 +18,36 @@ TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 	const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 	const FName& NameToFind = (PulldownSource.IsValid() ? *PulldownSource : NAME_None);
 	
-	return SNew(SHorizontalBox)
+	return
+		SNew(SHorizontalBox)
+		.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SNew(SHorizontalBox)
-				.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				[
-					SAssignNew(PulldownSourceWidget, SSearchableTextComboBox)
-					.OptionsSource(&PulldownContentsNames)
-					.OnSelectionChanged(this, &SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged)
-					.OnComboBoxOpening(this, &SNativeLessPulldownStructGraphPin::RebuildPulldown)
-					.InitiallySelectedItem(FindPulldownContentsNameByName(NameToFind))
-				]
+				SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
+				.ListItemsSource(&PulldownContentsNames)
+				.OnSelectionChanged(this, &SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged)
+				.OnComboBoxOpened(this, &SNativeLessPulldownStructGraphPin::RebuildPulldown)
+				.InitialSelection(FindPulldownContentsNameByName(NameToFind))
 			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				GenerateSelectableValuesWidget()
-			];
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			GenerateSelectableValuesWidget()
+		];
 }
 
 void SNativeLessPulldownStructGraphPin::RefreshPulldownWidget()
 {
 	// Check if the currently set string is included in the constructed list.
 	const TSharedPtr<FName>& CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
-	TSharedPtr<FString> SelectedItem = nullptr;
+	TSharedPtr<FPulldownRow> SelectedItem = nullptr;
 	if (CurrentPulldownSource.IsValid())
 	{
 		SelectedItem = FindPulldownContentsNameByName(*CurrentPulldownSource);
@@ -59,24 +60,24 @@ void SNativeLessPulldownStructGraphPin::RefreshPulldownWidget()
 
 	if (PulldownSourceWidget.IsValid())
 	{
-		PulldownSourceWidget->RefreshOptions();
+		PulldownSourceWidget->RefreshList();
 		PulldownSourceWidget->SetSelectedItem(SelectedItem);
 	}
 
 	SPulldownStructGraphPin::RefreshPulldownWidget();
 }
 
-TArray<TSharedPtr<FString>> SNativeLessPulldownStructGraphPin::GenerateSelectableValues()
+TArray<TSharedPtr<FPulldownRow>> SNativeLessPulldownStructGraphPin::GenerateSelectableValues()
 {
 	PulldownContentsNames.Reset();
-	PulldownContentsNames.Add(MakeShared<FString>(FName(NAME_None).ToString()));
+	PulldownContentsNames.Add(MakeShared<FPulldownRow>());
 
 	const TArray<UPulldownContents*>& AllPulldownContents = FPulldownBuilderUtils::GetAllPulldownContents();
 	for (const auto& PulldownContents : AllPulldownContents)
 	{
 		if (IsValid(PulldownContents))
 		{
-			PulldownContentsNames.Add(MakeShared<FString>(PulldownContents->GetName()));
+			PulldownContentsNames.Add(MakeShared<FPulldownRow>(PulldownContents->GetName()));
 		}
 	}
 
@@ -85,34 +86,34 @@ TArray<TSharedPtr<FString>> SNativeLessPulldownStructGraphPin::GenerateSelectabl
 	{
 		if (UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(*PulldownSource))
 		{
-			return SourceAsset->GetDisplayStrings();
+			return SourceAsset->GetPulldownRows();
 		}
 	}
 
-	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+	return FPulldownBuilderUtils::GetEmptyPulldownRows();
 }
 
-TSharedPtr<FString> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameByName(const FName& InName) const
+TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameByName(const FName& InName) const
 {
-	const TSharedPtr<FString>* FoundItem = PulldownContentsNames.FindByPredicate(
-		[&](const TSharedPtr<FString>& Item)
+	const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
+		[&](const TSharedPtr<FPulldownRow>& Item)
 		{
-			return (Item.IsValid() && *Item == InName.ToString());
+			return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
 		});
 
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 {
-	TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
+	const TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 	if (SelectedItem.IsValid() && CurrentPulldownSource.IsValid())
 	{
 		if (*SelectedItem != CurrentPulldownSource->ToString())
 		{
 			SetPropertyValue(
-			GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
-			**SelectedItem
+				GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
+				*SelectedItem->DisplayText.ToString()
 			);
 
 			// Since the base asset of the pull-down menu has changed, set SelectedValue to None.

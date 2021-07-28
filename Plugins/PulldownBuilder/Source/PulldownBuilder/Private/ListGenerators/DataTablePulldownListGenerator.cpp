@@ -2,14 +2,14 @@
 
 #include "ListGenerators/DataTablePulldownListGenerator.h"
 
-TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings() const
+TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows() const
 {
-	TArray<TSharedPtr<FString>> DisplayStrings = Super::GetDisplayStrings();
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows();
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the data table in consideration of expansion on the Blueprint side.
-	if (DisplayStrings.Num() == 0)
+	if (PulldownRows.Num() == 0)
 	{
 		if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
 		{
@@ -18,13 +18,13 @@ TArray<TSharedPtr<FString>> UDataTablePulldownListGenerator::GetDisplayStrings()
 			{
 				if (RowName != NAME_None)
 				{
-					DisplayStrings.Add(MakeShared<FString>(RowName.ToString()));
+					PulldownRows.Add(MakeShared<FPulldownRow>(RowName));
 				}
 			}
 		}
 	}
 
-	return DisplayStrings;
+	return PulldownRows;
 }
 
 void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)

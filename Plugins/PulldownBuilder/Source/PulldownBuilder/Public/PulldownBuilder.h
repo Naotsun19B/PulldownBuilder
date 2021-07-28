@@ -15,6 +15,8 @@ MONOLITHIC_HEADER_BOILERPLATE()
 #include "UObject/Package.h"
 #include "Templates/SubclassOf.h"
 #include "Framework/Commands/UIAction.h"
+#include "Framework/SlateDelegates.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
 
 /* Public includes.
 *****************************************************************************/
@@ -22,4 +24,5 @@ MONOLITHIC_HEADER_BOILERPLATE()
 #include "ListGenerators/PulldownListGeneratorBase.h"
 #include "RowNameUpdaters/RowNameUpdaterBase.h"
 #include "Structs/PulldownStructType.h"
+#include "Structs/PulldownRow.h"
 #include "Structs/PreviewPulldownStruct.h"

@@ -3,7 +3,7 @@
 #include "DetailCustomizations/NativeLessPulldownStructDetail.h"
 #include "Assets/PulldownContents.h"
 #include "Utilities/PulldownBuilderUtils.h"
-#include "Widgets/SSearchableTextComboBox.h"
+#include "Widgets/SPulldownSelectorComboButton.h"
 #include "NativeLessPulldownStruct.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
@@ -72,7 +72,7 @@ void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
 	FName CurrentPulldownSource;
 	PulldownSourceHandle->GetValue(CurrentPulldownSource);
 
-	TSharedPtr<FString> SelectedItem = FindPulldownContentsNameByName(CurrentPulldownSource);
+	TSharedPtr<FPulldownRow> SelectedItem = FindPulldownContentsNameByName(CurrentPulldownSource);
 	if (!SelectedItem.IsValid())
 	{
 		PulldownSourceHandle->SetValue(NAME_None);
@@ -81,24 +81,24 @@ void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
 
 	if (PulldownSourceWidget.IsValid())
 	{
-		PulldownSourceWidget->RefreshOptions();
+		PulldownSourceWidget->RefreshList();
 		PulldownSourceWidget->SetSelectedItem(SelectedItem);
 	}
 
 	FPulldownStructDetail::RefreshPulldownWidget();
 }
 
-TArray<TSharedPtr<FString>> FNativeLessPulldownStructDetail::GenerateSelectableValues()
+TArray<TSharedPtr<FPulldownRow>> FNativeLessPulldownStructDetail::GenerateSelectableValues()
 {
 	PulldownContentsNames.Reset();
-	PulldownContentsNames.Add(MakeShared<FString>(FName(NAME_None).ToString()));
+	PulldownContentsNames.Add(MakeShared<FPulldownRow>());
 
 	const TArray<UPulldownContents*>& AllPulldownContents = FPulldownBuilderUtils::GetAllPulldownContents();
 	for (const auto& PulldownContents : AllPulldownContents)
 	{
 		if (IsValid(PulldownContents))
 		{
-			PulldownContentsNames.Add(MakeShared<FString>(PulldownContents->GetName()));
+			PulldownContentsNames.Add(MakeShared<FPulldownRow>(PulldownContents->GetName()));
 		}
 	}
 
@@ -106,10 +106,10 @@ TArray<TSharedPtr<FString>> FNativeLessPulldownStructDetail::GenerateSelectableV
 	PulldownSourceHandle->GetValue(PulldownSource);
 	if (UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
 	{
-		return SourceAsset->GetDisplayStrings();
+		return SourceAsset->GetPulldownRows();
 	}
 
-	return FPulldownBuilderUtils::GetEmptyDisplayStrings();
+	return FPulldownBuilderUtils::GetEmptyPulldownRows();
 }
 
 void FNativeLessPulldownStructDetail::OnMultipleSelected()
@@ -146,26 +146,26 @@ void FNativeLessPulldownStructDetail::AddCustomRowBeforeSelectedValue(IDetailChi
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			[
-				SAssignNew(PulldownSourceWidget, SSearchableTextComboBox)
-				.OptionsSource(&PulldownContentsNames)
+				SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
+				.ListItemsSource(&PulldownContentsNames)
 				.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnPulldownSourceChanged)
-				.OnComboBoxOpening(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
+				.OnComboBoxOpened(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
 			]
 		];
 }
 
-TSharedPtr<FString> FNativeLessPulldownStructDetail::FindPulldownContentsNameByName(const FName& InName) const
+TSharedPtr<FPulldownRow> FNativeLessPulldownStructDetail::FindPulldownContentsNameByName(const FName& InName) const
 {
-	const TSharedPtr<FString>* FoundItem = PulldownContentsNames.FindByPredicate(
-		[&](const TSharedPtr<FString>& Item)
+	const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
+		[&](const TSharedPtr<FPulldownRow>& Item)
 		{
-			return (Item.IsValid() && *Item == InName.ToString());
+			return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
 		});
 
 	return (FoundItem != nullptr ? *FoundItem : nullptr);
 }
 
-void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 {
 	check(PulldownSourceHandle && SelectedValueHandle);
 	
@@ -174,7 +174,7 @@ void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FString
 		return;
 	}
 
-	FName NewPulldownSource = **SelectedItem;
+	const FName NewPulldownSource = *SelectedItem->DisplayText.ToString();
 	FName OldPulldownSource;
 	PulldownSourceHandle->GetValue(OldPulldownSource);
 	if (NewPulldownSource != OldPulldownSource)
@@ -225,7 +225,7 @@ void FNativeLessPulldownStructDetail::OnPulldownSourcePasteAction()
 		PastedText = *ClipboardString;
 	}
 
-	TSharedPtr<FString> SelectedItem = FindPulldownContentsNameByName(PastedText);
+	const TSharedPtr<FPulldownRow> SelectedItem = FindPulldownContentsNameByName(PastedText);
 	if (SelectedItem.IsValid())
 	{
 		PulldownSourceWidget->SetSelectedItem(SelectedItem);

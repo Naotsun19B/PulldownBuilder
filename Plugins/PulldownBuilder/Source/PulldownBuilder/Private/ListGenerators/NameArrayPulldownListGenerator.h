@@ -25,13 +25,13 @@ public:
 	// End of UObject interface.
 	
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
-	// Name array from which the list displayed in the pull-down menu is based.
+	// The name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
-	TArray<FName> SourceNameArray;
+	TMap<FName, FName> SourceNameArray;
 
 	// Cache of name array before change.
 	UPROPERTY(Transient)

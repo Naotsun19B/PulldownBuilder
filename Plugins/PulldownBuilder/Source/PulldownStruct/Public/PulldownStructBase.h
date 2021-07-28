@@ -46,7 +46,7 @@ template<class TPulldownStruct>
 struct TIsPulldownStruct
 {
 	static constexpr bool Value =
-		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::Value &&
+		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::IsDerived &&
 		!TIsSame<TPulldownStruct, FPulldownStructBase>::Value;
 };
 

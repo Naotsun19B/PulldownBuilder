@@ -18,6 +18,6 @@ public:
 
 private:
 	// FPulldownStructDetail interface.
-	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 	// End of FPulldownStructDetail interface.
 };

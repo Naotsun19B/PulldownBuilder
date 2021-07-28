@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilderSettings.h"
+#include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
 #include "RowNameUpdaters/BlueprintUpdater.h"
 #include "RowNameUpdaters/DataAssetUpdater.h"
@@ -22,6 +23,8 @@ namespace PulldownBuilderSettingsInternal
 
 UPulldownBuilderSettings::UPulldownBuilderSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, PanelSize(220.f, 300.f)
+	, bIsSelectWhenDoubleClick(false)
 	, bShouldUpdateWhenSourceRowNameChanged(true)
 	, ActiveRowNameUpdater({
 		UBlueprintUpdater::StaticClass(),

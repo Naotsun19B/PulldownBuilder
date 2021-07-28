@@ -8,22 +8,10 @@
 /**
  * Macro to support each engine version.
  */
-#if ENGINE_MINOR_VERSION == 26
-#define DISABLE_SEARCH_FIELD 1
-#else
-#define DISABLE_SEARCH_FIELD 0
-#endif
- 
 #if ENGINE_MINOR_VERSION <= 24
 #define BEFORE_UE_4_24 1
 #else
 #define BEFORE_UE_4_24 0
-#endif
-
-#if ENGINE_MINOR_VERSION <= 23
-#define BEFORE_UE_4_23 1
-#else
-#define BEFORE_UE_4_23 0
 #endif
 
 /**

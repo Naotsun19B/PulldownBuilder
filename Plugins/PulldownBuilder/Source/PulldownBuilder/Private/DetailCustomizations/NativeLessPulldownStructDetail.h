@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "DetailCustomizations/PulldownStructDetail.h"
 
-class SSearchableTextComboBox;
+class SPulldownSelectorComboButton;
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
@@ -25,23 +25,23 @@ public:
 private:
 	// FPulldownStructDetail interface.
 	virtual void RefreshPulldownWidget() override;
-	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 	virtual void OnMultipleSelected() override;
 #if BEFORE_UE_4_24
-	virtual bool IsCustomizationTarget(UProperty* InProperty) const;
+	virtual bool IsCustomizationTarget(UProperty* InProperty) const override;
 #else
-	virtual bool IsCustomizationTarget(FProperty* InProperty) const;
+	virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
 #endif
 	virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
 	// End of FPulldownStructDetail interface.
 
 	// Search for the same name as the specified name from the PulldownContentsNames.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindPulldownContentsNameByName(const FName& InName) const;
+	TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
 	
 	// Called when the value of the PulldownSourceWidget changes.
-	void OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
-	
+	void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
+
 	// Create a FUIAction from a copy-paste FNativeLessPulldownStruct::PulldownSource callback function.
 	FUIAction CreatePulldownSourceCopyAction();
 	FUIAction CreatePulldownSourcePasteAction();
@@ -52,11 +52,11 @@ private:
 	
 private:
 	// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
-	TArray<TSharedPtr<FString>> PulldownContentsNames;
+	TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
 	
 	// FNativeLessPulldownStruct::PulldownContentsName property handle.
 	TSharedPtr<IPropertyHandle> PulldownSourceHandle;
 
 	// A widget that displays a pull-down menu based on the PulldownContentsNames.
-	TSharedPtr<SSearchableTextComboBox> PulldownSourceWidget;
+	TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
 };

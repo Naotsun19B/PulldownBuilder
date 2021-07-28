@@ -7,7 +7,7 @@
 #include "IPropertyTypeCustomization.h"
 
 struct FPulldownStructType;
-class SSearchableTextComboBox;
+class SPulldownSelectorComboButton;
 
 /**
  * Detail customization applied to structures that inherit from FPulldownStructBase.
@@ -33,7 +33,7 @@ protected:
 	virtual void RefreshPulldownWidget();
 
 	// Generates a list of strings to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues();
+	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
 	
 	// Behavior when multiple are selected. 
 	virtual void OnMultipleSelected();
@@ -54,10 +54,10 @@ protected:
 	
 	// Search for the same name as the specified name from the SelectableValues.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindSelectableValueByName(const FName& InName) const;
+	TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
 	
 	// Called when the value of the SelectedValueWidget changes.
-	void OnSelectedValueChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 	// Create a FUIAction from a copy-paste FPulldownStructBase::SelectedValue callback function.
 	FUIAction CreateSelectedValueCopyAction();
@@ -73,13 +73,13 @@ protected:
 	TSharedPtr<IPropertyHandle> StructPropertyHandle;
 	
 	// A list of values that can be set in FPulldownStructBase::SelectedValue.
-	TArray<TSharedPtr<FString>> SelectableValues;
+	TArray<TSharedPtr<FPulldownRow>> SelectableValues;
 
 	// FPulldownStructBase::SelectedValue property handle.
 	TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
 	// A widget that displays a pull-down menu based on the SelectableValues.
-	TSharedPtr<SSearchableTextComboBox> SelectedValueWidget;
+	TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
 
 	// If this flag is true, inline display will not be performed regardless of the number of properties.
 	bool bNeverInlineDisplay = false;

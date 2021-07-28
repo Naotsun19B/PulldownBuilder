@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Structs/PulldownRow.h"
 #include "PulldownListGeneratorBase.generated.h"
 
 /**
@@ -15,13 +16,13 @@ class PULLDOWNBUILDER_API UPulldownListGeneratorBase : public UObject
 	GENERATED_BODY()
 
 public:
-	// Returns a list of strings to display in the pull-down menu.
-	// By default, it returns the value of "GetDisplayStringsBP".
-	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const;
+	// Returns a list of data to display in the pull-down menu.
+	// By default, it returns the value of "GetPulldownRowsFromBlueprint".
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
 
 protected:
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
-    TArray<FString> GetDisplayStringsFromBlueprint() const;
+    TArray<FPulldownRow> GetPulldownRowsFromBlueprint() const;
 
 	// Update all FPulldownStructBases that reference owner PulldownContents asset.
 	virtual void UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName);

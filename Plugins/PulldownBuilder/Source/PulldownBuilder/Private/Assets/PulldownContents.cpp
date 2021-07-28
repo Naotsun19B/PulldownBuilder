@@ -94,19 +94,19 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	));
 }
 
-TArray<TSharedPtr<FString>> UPulldownContents::GetDisplayStrings() const
+TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows() const
 {
-	TArray<TSharedPtr<FString>> DisplayStrings;
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 	
 	if (IsValid(PulldownListGenerator))
 	{
-		DisplayStrings = PulldownListGenerator->GetDisplayStrings();
+		PulldownRows = PulldownListGenerator->GetPulldownRows();
 	}
 
 	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.
-	DisplayStrings.Insert(MakeShared<FString>(FName(NAME_None).ToString()), 0);
+	PulldownRows.Insert(MakeShared<FPulldownRow>(), 0);
 
-	return DisplayStrings;
+	return PulldownRows;
 }
 
 void UPulldownContents::RegisterDetailCustomization()

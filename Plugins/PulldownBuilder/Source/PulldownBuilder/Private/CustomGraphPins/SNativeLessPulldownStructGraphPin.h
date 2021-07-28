@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "CustomGraphPins/SPulldownStructGraphPin.h"
 
-class SSearchableTextComboBox;
+class SPulldownSelectorComboButton;
 
 /**
  * A custom graph pin that applies to structures that inherit from FNativeLessPulldownStruct.
@@ -25,20 +25,20 @@ public:
 private:
 	// SPulldownStructGraphPin interface.
 	virtual void RefreshPulldownWidget() override;
-	virtual TArray<TSharedPtr<FString>> GenerateSelectableValues() override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 	// End of SPulldownStructGraphPin interface.
 	
 	// Search for the same name as the specified name from the PulldownContentsNames.
 	// If not found, returns nullptr.
-	TSharedPtr<FString> FindPulldownContentsNameByName(const FName& InName) const;
+	TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
 	
 	// Called when the value of the PulldownSourceWidget changes.
-	void OnPulldownSourceChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
+	void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 private:
 	// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
-	TArray<TSharedPtr<FString>> PulldownContentsNames;
+	TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
 
 	// A widget that displays a pull-down menu based on the PulldownContentsNames.
-	TSharedPtr<SSearchableTextComboBox> PulldownSourceWidget;
+	TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
 };

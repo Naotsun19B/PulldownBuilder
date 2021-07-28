@@ -37,8 +37,8 @@ public:
 	// Get information about the target structure.
 	const FPulldownStructType& GetPulldownStructType() const { return PulldownStructType; }
 	
-	// Returns the list to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FString>> GetDisplayStrings() const;
+	// Returns the data list to display in the pull-down menu.
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
 
 protected:
 	// Register the structure set for this asset in detail customization.
