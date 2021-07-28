@@ -9,6 +9,22 @@
 #include "TestDataTable.generated.h"
 
 USTRUCT()
+struct FNativeDataTableStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 TestInt;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FString TestString;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FString PulldownTooltip;
+};
+
+USTRUCT()
 struct FTestDataTable : public FTableRowBase
 {
 	GENERATED_BODY()

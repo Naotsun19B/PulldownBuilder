@@ -13,6 +13,8 @@ using IDataTableListener = FDataTableEditorUtils::INotifyOnDataTableChanged;
 
 /**
  * Generate a list to be displayed in the pull-down menu from the row name of the data table asset.
+ * To set the text to display in a tooltip, you need to define a variable of
+ * type FString named "PulldownTooltip" in the row structure.
  */
 UCLASS()
 class UDataTablePulldownListGenerator
@@ -30,6 +32,12 @@ public:
 	virtual void PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info) override;
 	virtual void PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info) override;
 	// End of INotifyOnDataTableChanged interface.
+
+protected:
+	// If it is looking for a property that satisfies the tooltip data condition,
+	// it returns true and assigns the data to the TooltipString.
+	// See the class description comments for property conditions.
+	virtual bool FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const;
 
 protected:
 	// The data table asset from which the list displayed in the pull-down menu is based.
