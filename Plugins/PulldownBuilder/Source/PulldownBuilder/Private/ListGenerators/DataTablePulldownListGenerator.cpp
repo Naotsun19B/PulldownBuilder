@@ -45,6 +45,21 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 	return PulldownRows;
 }
 
+bool UDataTablePulldownListGenerator::HasSourceAsset() const
+{
+	return true;
+}
+
+FString UDataTablePulldownListGenerator::GetSourceAssetName() const
+{
+	if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
+	{
+		return DataTable->GetName();
+	}
+
+	return TEXT("SourceDataTable is not set");
+}
+
 void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
 {
 	if (!IsValid(Changed) ||

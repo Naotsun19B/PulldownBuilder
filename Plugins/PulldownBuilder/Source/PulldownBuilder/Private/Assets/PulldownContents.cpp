@@ -6,8 +6,10 @@
 
 namespace PulldownContentsDefine
 {
+	// Define tags for the information that is displayed when you hover over an asset in the Content Browser.
 	static const FName RegisteredStructTypeTag = TEXT("RegisteredStructType");
 	static const FName GeneratorClassTag = TEXT("GeneratorClass");
+	static const FName SourceAssetTag = TEXT("SourceAsset");
 }
 
 void UPulldownContents::PostLoad()
@@ -79,17 +81,24 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	));
 
 	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
-	FName GeneratorClassName = NAME_None;
+	OutTags.Add(FAssetRegistryTag(
+		PulldownContentsDefine::GeneratorClassTag,
+		GetPulldownListGeneratorClassName(),
+		FAssetRegistryTag::TT_Alphabetical
+	));
+
+	//
+	FName SourceAssetName = NAME_None;
 	if (IsValid(PulldownListGenerator))
 	{
-		if (UClass* Class = PulldownListGenerator->GetClass())
+		if (PulldownListGenerator->HasSourceAsset())
 		{
-			GeneratorClassName = Class->GetFName();
+			SourceAssetName = *PulldownListGenerator->GetSourceAssetName();
 		}
 	}
 	OutTags.Add(FAssetRegistryTag(
-		PulldownContentsDefine::GeneratorClassTag,
-		GeneratorClassName.ToString(),
+		PulldownContentsDefine::SourceAssetTag,
+		SourceAssetName.ToString(),
 		FAssetRegistryTag::TT_Alphabetical
 	));
 }
@@ -107,6 +116,42 @@ TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows() const
 	PulldownRows.Insert(MakeShared<FPulldownRow>(), 0);
 
 	return PulldownRows;
+}
+
+FString UPulldownContents::GetPulldownListGeneratorClassName() const
+{
+	FName GeneratorClassName = NAME_None;
+	if (IsValid(PulldownListGenerator))
+	{
+		if (UClass* Class = PulldownListGenerator->GetClass())
+		{
+			GeneratorClassName = Class->GetFName();
+		}
+	}
+
+	return GeneratorClassName.ToString();
+}
+
+FString UPulldownContents::GetTooltip() const
+{
+	FString Tooltip = FString::Printf(
+		TEXT("%s : %s\n%s : %s"),
+		*PulldownContentsDefine::RegisteredStructTypeTag.ToString(), *FName(*PulldownStructType).ToString(),
+		*PulldownContentsDefine::GeneratorClassTag.ToString(), *GetPulldownListGeneratorClassName()
+	);
+	
+	if (IsValid(PulldownListGenerator))
+	{
+		if (PulldownListGenerator->HasSourceAsset())
+		{
+			Tooltip += FString::Printf(
+				TEXT("\n%s : %s"),
+				*PulldownContentsDefine::SourceAssetTag.ToString(), *PulldownListGenerator->GetSourceAssetName()
+			);
+		}
+	}
+
+	return Tooltip;
 }
 
 void UPulldownContents::RegisterDetailCustomization()

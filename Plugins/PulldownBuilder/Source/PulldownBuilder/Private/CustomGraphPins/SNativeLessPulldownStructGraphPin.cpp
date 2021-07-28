@@ -77,7 +77,9 @@ TArray<TSharedPtr<FPulldownRow>> SNativeLessPulldownStructGraphPin::GenerateSele
 	{
 		if (IsValid(PulldownContents))
 		{
-			PulldownContentsNames.Add(MakeShared<FPulldownRow>(PulldownContents->GetName()));
+			PulldownContentsNames.Add(
+				MakeShared<FPulldownRow>(PulldownContents->GetName(), PulldownContents->GetTooltip())
+			);
 		}
 	}
 

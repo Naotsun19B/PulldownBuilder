@@ -30,3 +30,18 @@ TArray<TSharedPtr<FPulldownRow>> UStringTablePulldownListGenerator::GetPulldownR
 
 	return PulldownRows;
 }
+
+bool UStringTablePulldownListGenerator::HasSourceAsset() const
+{
+	return true;
+}
+
+FString UStringTablePulldownListGenerator::GetSourceAssetName() const
+{
+	if (UStringTable* StringTable = SourceStringTable.LoadSynchronous())
+	{
+		return StringTable->GetName();
+	}
+
+	return TEXT("SourceStringTable is not set");
+}

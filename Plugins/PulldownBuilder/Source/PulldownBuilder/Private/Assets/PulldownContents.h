@@ -40,6 +40,12 @@ public:
 	// Returns the data list to display in the pull-down menu.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
 
+	// Returns the name of the class set in the PulldownListGenerator.
+	virtual FString GetPulldownListGeneratorClassName() const;
+	
+	// Returns the text of the tooltip to display with NativeLessPulldownStruct.
+	virtual FString GetTooltip() const;
+	
 protected:
 	// Register the structure set for this asset in detail customization.
 	virtual void RegisterDetailCustomization();

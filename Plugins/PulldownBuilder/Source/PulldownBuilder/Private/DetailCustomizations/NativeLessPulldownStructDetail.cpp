@@ -98,7 +98,9 @@ TArray<TSharedPtr<FPulldownRow>> FNativeLessPulldownStructDetail::GenerateSelect
 	{
 		if (IsValid(PulldownContents))
 		{
-			PulldownContentsNames.Add(MakeShared<FPulldownRow>(PulldownContents->GetName()));
+			PulldownContentsNames.Add(
+				MakeShared<FPulldownRow>(PulldownContents->GetName(), PulldownContents->GetTooltip())
+			);
 		}
 	}
 

@@ -20,6 +20,14 @@ public:
 	// By default, it returns the value of "GetPulldownRowsFromBlueprint".
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
 
+	// Returns whether there is an underlying asset.
+	// If this function returns true, the name of the original asset
+	// will be displayed in the PulldownContents pop-up display.
+	virtual bool HasSourceAsset() const;
+
+	// Returns the name of the underlying asset only if "HasSourceAsset" returns true.
+	virtual FString GetSourceAssetName() const;
+	
 protected:
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
     TArray<FPulldownRow> GetPulldownRowsFromBlueprint() const;

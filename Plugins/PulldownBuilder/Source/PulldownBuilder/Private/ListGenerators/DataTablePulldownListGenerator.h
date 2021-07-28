@@ -26,6 +26,8 @@ class UDataTablePulldownListGenerator
 public:
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
+	virtual bool HasSourceAsset() const override;
+	virtual FString GetSourceAssetName() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 	// INotifyOnDataTableChanged interface.

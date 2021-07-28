@@ -17,6 +17,17 @@ TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows() c
 	return PulldownRows;
 }
 
+bool UPulldownListGeneratorBase::HasSourceAsset() const
+{
+	return false;
+}
+
+FString UPulldownListGeneratorBase::GetSourceAssetName() const
+{
+	unimplemented(); // Be sure to override it when using this function.
+	return FString();
+}
+
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)
 {
 	auto* Settings = GetDefault<UPulldownBuilderSettings>();
