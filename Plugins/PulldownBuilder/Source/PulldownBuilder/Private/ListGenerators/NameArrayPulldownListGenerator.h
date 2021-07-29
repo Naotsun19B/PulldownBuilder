@@ -10,7 +10,7 @@
  * Generate a list to be displayed in the pull-down menu from the name array.
  */
 UCLASS()
-class UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
+class PULLDOWNBUILDER_API UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
 {
 	GENERATED_BODY()
 

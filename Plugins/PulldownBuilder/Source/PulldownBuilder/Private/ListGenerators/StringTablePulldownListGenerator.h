@@ -10,7 +10,7 @@
  * Generate a list to be displayed in the pull-down menu from the row name of the string table asset.
  */
 UCLASS()
-class UStringTablePulldownListGenerator : public UPulldownListGeneratorBase
+class PULLDOWNBUILDER_API UStringTablePulldownListGenerator : public UPulldownListGeneratorBase
 {
 	GENERATED_BODY()
 

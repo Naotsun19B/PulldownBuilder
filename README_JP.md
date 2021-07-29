@@ -101,13 +101,13 @@ struct FTestPulldown2 : public FPulldownStructBase
 次に、プルダウンメニューの元となるリストを構築するクラスを設定します。  
 リストを構築するクラスについては下記の`PulldownListGenerator`の項目を参照してください。  
 
-![image](https://user-images.githubusercontent.com/51815450/117564161-a78d8080-b0e5-11eb-8e2c-d158b58b571e.png)
+![Preview](https://user-images.githubusercontent.com/51815450/127496168-b2746a67-e729-4883-8321-7aa94c1182ec.PNG)
 
 ここまで設定すると`Preview`でこのPulldownContentsアセットによって構築されるプルダウンメニューを確認することができます。  
 あとは、変数や関数の引数などで定義した構造体を使用すると自動的にプルダウンメニューが表示されるようになります。  
 
-![image](https://user-images.githubusercontent.com/51815450/117563475-20d6a480-b0e1-11eb-9f98-eaed2cc562ea.png)
-![image](https://user-images.githubusercontent.com/51815450/117564229-1c60ba80-b0e6-11eb-9455-b160a5d0bef0.png)
+![Pins](https://user-images.githubusercontent.com/51815450/127496202-3b1d0838-aee7-49e1-a4da-b9c9e18abcc9.PNG)
+![Details](https://user-images.githubusercontent.com/51815450/127496205-9d6c49e1-436a-4631-aa82-609ce85574cc.PNG)
 
 ### ・C++を使用しない場合
 
@@ -120,28 +120,27 @@ struct FTestPulldown2 : public FPulldownStructBase
 次に、プルダウンメニューの元となるリストを構築するクラスを設定します。  
 リストを構築するクラスについては下記の`PulldownListGenerator`の項目を参照してください。  
 
-![image](https://user-images.githubusercontent.com/51815450/117564161-a78d8080-b0e5-11eb-8e2c-d158b58b571e.png)
+![Preview](https://user-images.githubusercontent.com/51815450/127496168-b2746a67-e729-4883-8321-7aa94c1182ec.PNG)
 
 ここまで設定すると`Preview`でこのPulldownContentsアセットによって構築されるプルダウンメニューを確認することができます。  
 あとは、変数や関数の引数などで`NativeLessPulldownStruct`を使用すると自動的にプルダウンメニューが表示されるようになります。  
 C++で定義したものとは違い、プルダウンメニューの元となるPulldownContentsアセットを切り替えることができます。
 
-![image](https://user-images.githubusercontent.com/51815450/117564369-aa3ca580-b0e6-11eb-9aa0-90dede20de3b.png)
-![image](https://user-images.githubusercontent.com/51815450/117564377-baed1b80-b0e6-11eb-9795-1c82e424eb58.png)
-![image](https://user-images.githubusercontent.com/51815450/117564402-d0624580-b0e6-11eb-9b24-ccf7bae3467c.png)
+![NativeLessPins](https://user-images.githubusercontent.com/51815450/127496214-49997c1a-fab5-4527-b994-a1e8b36214d0.PNG)
+![NativeLessDetails](https://user-images.githubusercontent.com/51815450/127496219-56d9adb5-287d-42c2-856f-7ce5673cfcf0.PNG)
 
 ### ・PulldownListGenerator  
 
 プルダウンメニューの元となるリストを構築するクラスとして`PulldownListGenerator`があります。  
 標準で以下の3つの`PulldownListGenerator`が用意されています。
 
-|**クラス**|**機能**|
-|:---:|---|
-|DataTablePulldownListGenerator|`SourceDataTable`に設定されたデータテーブルアセットのRowNameをプルダウンメニューに列挙します。|
-|StringTablePulldownListGenerator|`SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。|
-|NameArrayPulldownListGenerator|`SourceNameArray`に配列の要素をプルダウンメニューに列挙します。|
+|**クラス**|**機能**|**ツールチップ**|
+|:---:|---|---|
+|DataTablePulldownListGenerator|`SourceDataTable`に設定されたデータテーブルアセットのRowNameをプルダウンメニューに列挙します。|データテーブルの行として使用されている構造体内にFString型の"PulldownTooltip"という名前の変数があった場合、その文字列を表示します。|
+|StringTablePulldownListGenerator|`SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。|各項目の対応する文字列を表示します。|
+|NameArrayPulldownListGenerator|`SourceNameArray`の要素をプルダウンメニューに列挙します。|各項目のValueに設定されている文字列を表示します。|
 
-独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/ListGenerator/PulldownListGeneratorBase.h) を継承し、`GetDisplayStrings`をオーバライドします。  
+独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/ListGenerator/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
 
 ### ・RowNameUpdater  
@@ -159,24 +158,20 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 ## オプション  
 
-![settings](https://user-images.githubusercontent.com/51815450/120459719-64b48500-c3d3-11eb-9ea8-c9398f73175f.PNG)  
+![Settings](https://user-images.githubusercontent.com/51815450/127496240-39f10c81-277b-40d3-8d5d-3a6ff68e1a17.PNG)
 
 エディタの環境設定から設定できる項目は以下の通りです。
 
 |**項目**|**説明**|
 |---|---|
+|Panel Size|プルダウンメニューのパネルサイズを指定します。|
+|Is Select when Double Click|このフラグがtrueの場合はプルダウンメニューの項目を選ぶ時にダブルクリックをする必要があります。|
 |Should Update When Source Row Name Changed|RowNameUpdaterを使ったプルダウンメニューの自動更新処理を行うかを指定します。|
 |Active Row Name Updater|有効化するRowNameUpdaterのクラスを指定します。ここで設定されているRowNameUpdaterのみが更新処理を行います。|
 
 ## 備考  
 
-・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。  
-
-・UE4.26.2の時点ではエンジンコードに不具合があるため、UE4.26のみプルダウンメニューに検索欄を表示しないようにしています。
-#### UE4.23 ~ UE4.25  
-![E0Tj1waVUAQ0LBM](https://user-images.githubusercontent.com/51815450/117564840-056f9780-b0e9-11eb-806b-00db8bf125d9.png)
-#### UE4.26.2  
-![image](https://user-images.githubusercontent.com/51815450/117564900-6d25e280-b0e9-11eb-992c-5a63a6faa7d6.png)
+・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。
 
 ## ライセンス
 
@@ -188,11 +183,14 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 ## 履歴
 
+- (2021/07/29) v1.3   
+  プルダウンメニューウィジェットを大幅に改善し、各項目にツールチップを表示できるようにしました  
+
 - (2021/06/02) v1.2   
-  プルダウンメニューの元となるデータに更新があった場合に、既に使用されている値を新しい名前に置き換える機能を追加しました
+  プルダウンメニューの元となるデータに更新があった場合に、既に使用されている値を新しい名前に置き換える機能を追加しました  
 
 - (2021/05/29) v1.1   
-  UserDefinedStructをPulldownContentsアセットとして使用してデータ テーブルを指定すると正しく動作しない問題を修正しました
+  UserDefinedStructをPulldownContentsアセットとして使用してデータ テーブルを指定すると正しく動作しない問題を修正しました  
 
 - (2021/05/09) v1.0   
-  プラグインを公開
+  プラグインを公開  

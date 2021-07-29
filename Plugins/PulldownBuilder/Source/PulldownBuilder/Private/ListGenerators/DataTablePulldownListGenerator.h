@@ -17,7 +17,7 @@ using IDataTableListener = FDataTableEditorUtils::INotifyOnDataTableChanged;
  * type FString named "PulldownTooltip" in the row structure.
  */
 UCLASS()
-class UDataTablePulldownListGenerator
+class PULLDOWNBUILDER_API UDataTablePulldownListGenerator
 	: public UPulldownListGeneratorBase
 	, public IDataTableListener
 {

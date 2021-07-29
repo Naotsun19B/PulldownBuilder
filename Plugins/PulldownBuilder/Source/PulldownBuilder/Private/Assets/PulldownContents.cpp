@@ -87,7 +87,7 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 		FAssetRegistryTag::TT_Alphabetical
 	));
 
-	//
+	// Added the name of the underlying asset of the PulldownListGenerator to AssetRegistryTags.
 	FName SourceAssetName = NAME_None;
 	if (IsValid(PulldownListGenerator))
 	{
