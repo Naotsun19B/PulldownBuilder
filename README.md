@@ -23,7 +23,7 @@
 This plugin allows you to easily create a pull-down structure using a dedicated asset.  
 For example, you can specify the Row Name of the data table in a pull-down menu like an enum instead of a string.  
 
-![image](https://user-images.githubusercontent.com/51815450/117563475-20d6a480-b0e1-11eb-9f98-eaed2cc562ea.png)
+![Details](https://user-images.githubusercontent.com/51815450/127496205-9d6c49e1-436a-4631-aa82-609ce85574cc.PNG)
 
 ## Requirement  
 
