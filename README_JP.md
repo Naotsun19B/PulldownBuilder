@@ -23,7 +23,7 @@
 このプラグインは専用アセットを使用して簡単にプルダウン表示する構造体を作成することができます。  
 例えば、データテーブルのRowNameを文字列ではなく列挙型のようなプルダウンメニューで指定することができます。  
 
-![image](https://user-images.githubusercontent.com/51815450/117563475-20d6a480-b0e1-11eb-9f98-eaed2cc562ea.png)
+![Details](https://user-images.githubusercontent.com/51815450/127496205-9d6c49e1-436a-4631-aa82-609ce85574cc.PNG)
 
 ## 動作環境  
 
