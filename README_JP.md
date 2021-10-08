@@ -27,12 +27,13 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.23 ~ UE4.26  
+対象バージョン : UE4.23 ~ UE4.27  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
 
 プロジェクトのPluginsフォルダにPlugins/PulldownBuilderフォルダを入れてください。  
+または、[マーケットプレイス](https://www.unrealengine.com/marketplace/ja/product/pulldown-builder)からインストールしてください。  
 
 ## 使い方  
 
