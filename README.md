@@ -27,12 +27,13 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.23 ~ UE4.26  
+Target version : UE4.23 ~ UE4.27  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
 
 Put the Plugins/PulldownBuilder folder in your project's Plugins folder.  
+Or install from the [marketplace](https://www.unrealengine.com/marketplace/en-US/product/pulldown-builder).  
 
 ## Usage  
 
