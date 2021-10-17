@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IPropertyTypeCustomization.h"
 
+class SWidget;
 class SComboButton;
 class FDetailWidgetRow;
 class IDetailChildrenBuilder;
@@ -29,7 +30,7 @@ namespace PulldownBuilder
 		virtual void CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 		// End of IPropertyTypeCustomization interface.
 
-		private:
+	private:
 		// Called when a structure is selected from the list.
 		void OnPickedStruct(const UScriptStruct* SelectedStruct);
 

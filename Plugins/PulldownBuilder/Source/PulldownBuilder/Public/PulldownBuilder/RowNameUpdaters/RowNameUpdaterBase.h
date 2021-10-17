@@ -56,9 +56,8 @@ protected:
 	template<class TAsset>
 	void EnumerateAssets(TFunction<bool(TAsset* Asset)> Predicate)
 	{
-		for (TObjectIterator<TAsset> Itr; Itr; ++Itr)
+		for (TAsset* Asset : TObjectRange<TAsset>())
 		{
-			TAsset* Asset = *Itr;
 			if (!IsValid(Asset))
 			{
 				continue;

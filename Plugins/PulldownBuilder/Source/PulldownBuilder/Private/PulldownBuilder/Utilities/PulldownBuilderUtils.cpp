@@ -6,6 +6,7 @@
 #include "PulldownBuilder/Structs/PulldownRow.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "UObject/UObjectIterator.h"
 #include "EdGraphSchema_K2.h"
 
 namespace PulldownBuilder
@@ -50,9 +51,8 @@ namespace PulldownBuilder
 
 	void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback)
 	{
-		for (TObjectIterator<UPulldownContents> ObjectItr; ObjectItr; ++ObjectItr)
+		for (UPulldownContents* PulldownContents : TObjectRange<UPulldownContents>())
 		{
-			UPulldownContents* PulldownContents = *ObjectItr;
 			if (IsValid(PulldownContents))
 			{
 				Callback(PulldownContents);
@@ -146,17 +146,12 @@ namespace PulldownBuilder
 		check(InStruct);
 		
 		FString DefaultValueString = TEXT("(");	
-	#if BEFORE_UE_4_24
-		for (TFieldIterator<UProperty> PropertyItr(InStruct); PropertyItr; ++PropertyItr)
-	#else
-		for (TFieldIterator<FProperty> PropertyItr(InStruct); PropertyItr; ++PropertyItr)
-	#endif
+#if BEFORE_UE_4_24
+		for (UProperty* Property : TFieldRange<UProperty>(InStruct))
+#else
+		for (FProperty* Property : TFieldRange<FProperty>(InStruct))
+#endif
 		{
-	#if BEFORE_UE_4_24
-			UProperty* Property = *PropertyItr;
-	#else
-			FProperty* Property = *PropertyItr;
-	#endif
 			if (Property == nullptr)
 			{
 				continue;

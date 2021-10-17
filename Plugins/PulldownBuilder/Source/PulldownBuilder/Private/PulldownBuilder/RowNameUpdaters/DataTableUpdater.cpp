@@ -19,14 +19,11 @@ void UDataTableUpdater::UpdateRowNamesInternal(
 		for (const auto& RowName : RowNames)
 		{
 #if BEFORE_UE_4_24
-			for (TFieldIterator<UStructProperty> PropertyItr(RowType); PropertyItr; ++PropertyItr)
-			{
-				UStructProperty* StructProperty = *PropertyItr;
+			for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(RowType))
 #else
-			for (TFieldIterator<FStructProperty> PropertyItr(RowType); PropertyItr; ++PropertyItr)
+			for (FStructProperty* StructProperty : TFieldRange<FStructProperty>(RowType))
+#endif
 			{
-				FStructProperty* StructProperty = *PropertyItr;
-#endif 
 				if (StructProperty == nullptr)
 				{
 					continue;

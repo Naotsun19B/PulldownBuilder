@@ -1,11 +1,11 @@
 ﻿// Copyright 2021 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilderSettings.h"
-#include "Modules/ModuleManager.h"
-#include "ISettingsModule.h"
 #include "PulldownBuilder/RowNameUpdaters/BlueprintUpdater.h"
 #include "PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h"
 #include "PulldownBuilder/RowNameUpdaters/DataTableUpdater.h"
+#include "Modules/ModuleManager.h"
+#include "ISettingsModule.h"
 
 #define LOCTEXT_NAMESPACE "PulldownBuilderSettings"
 
@@ -29,12 +29,10 @@ UPulldownBuilderSettings::UPulldownBuilderSettings(const FObjectInitializer& Obj
 	, PanelSize(220.f, 300.f)
 	, bIsSelectWhenDoubleClick(false)
 	, bShouldUpdateWhenSourceRowNameChanged(true)
-	, ActiveRowNameUpdater(TArray<TSubclassOf<URowNameUpdaterBase>>{
-		UBlueprintUpdater::StaticClass(),
-		UDataTableUpdater::StaticClass(),
-		UDataAssetUpdater::StaticClass()
-	})
-{	
+{
+	ActiveRowNameUpdater.Add(UBlueprintUpdater::StaticClass());
+	ActiveRowNameUpdater.Add(UDataTableUpdater::StaticClass());
+	ActiveRowNameUpdater.Add(UDataAssetUpdater::StaticClass());
 }
 
 void UPulldownBuilderSettings::Register()

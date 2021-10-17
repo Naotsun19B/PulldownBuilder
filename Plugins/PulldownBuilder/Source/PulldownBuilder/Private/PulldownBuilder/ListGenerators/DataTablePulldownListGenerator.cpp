@@ -104,14 +104,11 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const
 {
 #if BEFORE_UE_4_24
-	for (TFieldIterator<UStrProperty> PropertyItr(RowStruct); PropertyItr; ++PropertyItr)
-	{
-		UStrProperty* StringProperty = *PropertyItr;
+	for (UStrProperty* StringProperty : TFieldRange<UStrProperty>(RowStruct))
 #else
-	for (TFieldIterator<FStrProperty> PropertyItr(RowStruct); PropertyItr; ++PropertyItr)
+	for (FStrProperty* StringProperty : TFieldRange<FStrProperty>(RowStruct))
+#endif
 	{
-		FStrProperty* StringProperty = *PropertyItr;
-#endif 
 		if (StringProperty == nullptr)
 		{
 			continue;

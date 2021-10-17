@@ -8,6 +8,8 @@
 
 struct FPulldownStructType;
 struct FPulldownRow;
+struct FUIAction;
+class SWidget;
 
 namespace PulldownBuilder
 {
@@ -43,7 +45,7 @@ namespace PulldownBuilder
 		virtual void OnMultipleSelected();
 
 		// Returns whether the specified property is the property to be customized.
-		#if BEFORE_UE_4_24
+#if BEFORE_UE_4_24
 		virtual bool IsCustomizationTarget(UProperty* InProperty) const;
 #else
 		virtual bool IsCustomizationTarget(FProperty* InProperty) const;

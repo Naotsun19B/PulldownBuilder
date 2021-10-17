@@ -14,9 +14,8 @@ void URowNameUpdaterBase::UpdateRowNames(
 )
 {
 	// All upload processing of the class created by inheriting this class is performed.
-	for (TObjectIterator<UClass> Itr; Itr; ++Itr)
+	for (UClass* Class : TObjectRange<UClass>())
 	{
-		UClass* Class = *Itr;
 		if (!IsValid(Class) || Class == URowNameUpdaterBase::StaticClass())
 		{
 			continue;
@@ -76,14 +75,11 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 	bool bIsModified = false;
 	
 #if BEFORE_UE_4_24
-	for (TFieldIterator<UStructProperty> PropertyItr(Struct); PropertyItr; ++PropertyItr)
-	{
-		UStructProperty* StructProperty = *PropertyItr;
+	for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(Struct))
 #else
-	for (TFieldIterator<FStructProperty> PropertyItr(Struct); PropertyItr; ++PropertyItr)
+	for (FStructProperty* StructProperty : TFieldRange<FStructProperty>(Struct))
+#endif
 	{
-		FStructProperty* StructProperty = *PropertyItr;
-#endif 
 		if (StructProperty == nullptr)
 		{
 			continue;
