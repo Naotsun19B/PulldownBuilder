@@ -84,7 +84,7 @@ struct FTestPulldown2 : public FPulldownStructBase
 	GENERATED_BODY()
 };
 ```
-次に、ランタイムモジュール([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct))に含まれる[`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/3b829357b2c9f013357a3ee30fcdb2b5a913aaf1/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStructBase.h#L16)を継承した構造体を定義します。  
+次に、ランタイムモジュール([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct))に含まれる[`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStruct/PulldownStructBase.h)を継承した構造体を定義します。  
 プルダウンメニューで選択する文字列の他に変数を定義することができます。  
 ここで定義した構造体がプルダウンメニューが表示される構造体になります。  
 
@@ -141,7 +141,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 |StringTablePulldownListGenerator|`SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。|各項目の対応する文字列を表示します。|
 |NameArrayPulldownListGenerator|`SourceNameArray`の要素をプルダウンメニューに列挙します。|各項目のValueに設定されている文字列を表示します。|
 
-独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/ListGenerator/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
+独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
 
 ### ・RowNameUpdater  
@@ -151,9 +151,9 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 |**アセット**|**Updaterクラス**|
 |:---:|---|
-|Blueprint| [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/BlueprintUpdater.h) |
-|DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataTableUpdater.h) |
-|DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/DataAssetUpdater.h) |
+|Blueprint| [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/BlueprintUpdater.h) |
+|DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataTableUpdater.h) |
+|DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h) |
 
 これら以外のアセットに対応するには、C++で [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/RowNameUpdaterBase.h) を継承して更新処理を実装する必要があります。
 
@@ -183,6 +183,9 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2021/07/29) v1.4   
+  UE5に対応しました  
 
 - (2021/07/29) v1.3   
   プルダウンメニューウィジェットを大幅に改善し、各項目にツールチップを表示できるようにしました  
