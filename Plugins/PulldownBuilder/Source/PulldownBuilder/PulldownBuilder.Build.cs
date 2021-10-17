@@ -7,8 +7,7 @@ public class PulldownBuilder : ModuleRules
 	public PulldownBuilder(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivatePCHHeaderFile = "Public/PulldownBuilder.h";
-		
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{

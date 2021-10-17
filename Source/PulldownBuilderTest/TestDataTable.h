@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "TestPulldown.h"
-#include "NativeLessPulldownStruct.h"
+#include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "TestDataTable.generated.h"
 
 USTRUCT()

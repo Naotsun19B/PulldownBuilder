@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "TestPulldown.h"
-#include "NativeLessPulldownStruct.h"
+#include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "TestDataAsset.generated.h"
 
 UCLASS()
