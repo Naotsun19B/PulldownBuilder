@@ -155,7 +155,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 |DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataTableUpdater.h) |
 |DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h) |
 
-これら以外のアセットに対応するには、C++で [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/RowNameUpdater/RowNameUpdaterBase.h) を継承して更新処理を実装する必要があります。
+これら以外のアセットに対応するには、C++で [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h) を継承して更新処理を実装する必要があります。
 
 ## オプション  
 
@@ -184,7 +184,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 ## 履歴
 
-- (2021/07/29) v1.4   
+- (2021/10/17) v1.4   
   UE5に対応しました  
 
 - (2021/07/29) v1.3   
