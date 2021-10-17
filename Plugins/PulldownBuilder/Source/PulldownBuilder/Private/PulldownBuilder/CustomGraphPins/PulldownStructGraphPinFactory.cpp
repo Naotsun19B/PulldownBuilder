@@ -5,40 +5,43 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "EdGraphSchema_K2.h"
 
-TSharedPtr<FGraphPanelPinFactory> FPulldownStructGraphPinFactory::Instance = nullptr;
-
-void FPulldownStructGraphPinFactory::Register()
+namespace PulldownBuilder
 {
-	Instance = MakeShared<FPulldownStructGraphPinFactory>();
-	FEdGraphUtilities::RegisterVisualPinFactory(Instance);
-}
+	TSharedPtr<FGraphPanelPinFactory> FPulldownStructGraphPinFactory::Instance = nullptr;
 
-void FPulldownStructGraphPinFactory::Unregister()
-{
-	FEdGraphUtilities::UnregisterVisualPinFactory(Instance);
-}
-
-TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
-{
-	check(InPin);
-	
-	if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
+	void FPulldownStructGraphPinFactory::Register()
 	{
-		if (const auto* Struct = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
-		{
-			if (FPulldownBuilderUtils::IsPulldownStruct(Struct))
-			{
-				// Since the DefaultValue of the pin when it is created is empty,
-				// the default structure string is generated and set.
-				if (InPin->DefaultValue.IsEmpty())
-				{
-					InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
-				}
-				
-				return SNew(SPulldownStructGraphPin, InPin);
-			}
-		}
+		Instance = MakeShared<FPulldownStructGraphPinFactory>();
+		FEdGraphUtilities::RegisterVisualPinFactory(Instance);
 	}
 
-	return nullptr;
+	void FPulldownStructGraphPinFactory::Unregister()
+	{
+		FEdGraphUtilities::UnregisterVisualPinFactory(Instance);
+	}
+
+	TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
+	{
+		check(InPin);
+	
+		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
+		{
+			if (const auto* Struct = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
+			{
+				if (FPulldownBuilderUtils::IsPulldownStruct(Struct))
+				{
+					// Since the DefaultValue of the pin when it is created is empty,
+					// the default structure string is generated and set.
+					if (InPin->DefaultValue.IsEmpty())
+					{
+						InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
+					}
+				
+					return SNew(SPulldownStructGraphPin, InPin);
+				}
+			}
+		}
+
+		return nullptr;
+	}
 }

@@ -5,81 +5,84 @@
 
 #define LOCTEXT_NAMESPACE "PulldownSelectorComboButton"
 
-void SPulldownSelectorComboButton::Construct(const FArguments& InArgs)
+namespace PulldownBuilder
 {
-	ListItemsSource = InArgs._ListItemsSource;
-	SelectedPulldownRow = InArgs._InitialSelection;
-	OnSelectionChanged = InArgs._OnSelectionChanged;
-	
-	SComboButton::Construct(
-		SComboButton::FArguments()
-		.ContentPadding(FMargin(2, 2, 2, 1))
-		.MenuPlacement(EMenuPlacement::MenuPlacement_BelowAnchor)
-		.OnComboBoxOpened(InArgs._OnComboBoxOpened)
-		.OnGetMenuContent(this, &SPulldownSelectorComboButton::HandleOnGetMenuContent)
-		.ButtonContent()
-		[
-			SNew(STextBlock)
-			.Text(this, &SPulldownSelectorComboButton::GetDisplayText)
-			.ToolTipText(this, &SPulldownSelectorComboButton::GetTooltipText)
-		]
-	);
-}
-
-TSharedPtr<FPulldownRow> SPulldownSelectorComboButton::GetSelectedItem() const
-{
-	return SelectedPulldownRow;
-}
-
-void SPulldownSelectorComboButton::SetSelectedItem(TSharedPtr<FPulldownRow> NewItem)
-{
-	SelectedPulldownRow = NewItem;
-}
-
-TSharedRef<SWidget> SPulldownSelectorComboButton::HandleOnGetMenuContent()
-{
-	return
-		SNew(SPulldownSelector)
-		.ListItemsSource(ListItemsSource)
-		.InitialSelection(SelectedPulldownRow)
-		.OnSelectionChanged(this, &SPulldownSelectorComboButton::HandleOnSelectionChanged);
-}
-
-FText SPulldownSelectorComboButton::GetDisplayText() const
-{
-	const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
-	if (SelectedItem.IsValid())
+	void SPulldownSelectorComboButton::Construct(const FArguments& InArgs)
 	{
-		return SelectedItem->DisplayText;
-	}
-	
-	return LOCTEXT("InvalidDisplayText", "Invalid Data");
-}
-
-FText SPulldownSelectorComboButton::GetTooltipText() const
-{
-	const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
-	if (SelectedItem.IsValid())
-	{
-		return SelectedItem->TooltipText;
+		ListItemsSource = InArgs._ListItemsSource;
+		SelectedPulldownRow = InArgs._InitialSelection;
+		OnSelectionChanged = InArgs._OnSelectionChanged;
+		
+		SComboButton::Construct(
+			SComboButton::FArguments()
+			.ContentPadding(FMargin(2, 2, 2, 1))
+			.MenuPlacement(EMenuPlacement::MenuPlacement_BelowAnchor)
+			.OnComboBoxOpened(InArgs._OnComboBoxOpened)
+			.OnGetMenuContent(this, &SPulldownSelectorComboButton::HandleOnGetMenuContent)
+			.ButtonContent()
+			[
+				SNew(STextBlock)
+				.Text(this, &SPulldownSelectorComboButton::GetDisplayText)
+				.ToolTipText(this, &SPulldownSelectorComboButton::GetTooltipText)
+			]
+		);
 	}
 
-	return LOCTEXT("InvalidTooltipText", "Invalid Data");
-}
-
-void SPulldownSelectorComboButton::HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
-{
-	if (OnSelectionChanged.IsBound())
+	TSharedPtr<FPulldownRow> SPulldownSelectorComboButton::GetSelectedItem() const
 	{
-		OnSelectionChanged.Execute(SelectedItem, SelectInfo);
+		return SelectedPulldownRow;
 	}
 
-	if (SelectedItem.IsValid())
+	void SPulldownSelectorComboButton::SetSelectedItem(TSharedPtr<FPulldownRow> NewItem)
 	{
-		SelectedPulldownRow = SelectedItem;
+		SelectedPulldownRow = NewItem;
 	}
 
-	SetIsOpen(false);
+	TSharedRef<SWidget> SPulldownSelectorComboButton::HandleOnGetMenuContent()
+	{
+		return
+			SNew(SPulldownSelector)
+			.ListItemsSource(ListItemsSource)
+			.InitialSelection(SelectedPulldownRow)
+			.OnSelectionChanged(this, &SPulldownSelectorComboButton::HandleOnSelectionChanged);
+	}
+
+	FText SPulldownSelectorComboButton::GetDisplayText() const
+	{
+		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
+		if (SelectedItem.IsValid())
+		{
+			return SelectedItem->DisplayText;
+		}
+		
+		return LOCTEXT("InvalidDisplayText", "Invalid Data");
+	}
+
+	FText SPulldownSelectorComboButton::GetTooltipText() const
+	{
+		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
+		if (SelectedItem.IsValid())
+		{
+			return SelectedItem->TooltipText;
+		}
+
+		return LOCTEXT("InvalidTooltipText", "Invalid Data");
+	}
+
+	void SPulldownSelectorComboButton::HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
+	{
+		if (OnSelectionChanged.IsBound())
+		{
+			OnSelectionChanged.Execute(SelectedItem, SelectInfo);
+		}
+
+		if (SelectedItem.IsValid())
+		{
+			SelectedPulldownRow = SelectedItem;
+		}
+
+		SetIsOpen(false);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

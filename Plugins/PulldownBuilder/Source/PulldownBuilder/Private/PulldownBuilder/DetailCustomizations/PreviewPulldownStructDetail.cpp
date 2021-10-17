@@ -7,40 +7,43 @@
 #include "PropertyHandle.h"
 #include "Modules/ModuleManager.h"
 
-void FPreviewPulldownStructDetail::Register()
+namespace PulldownBuilder
 {
-	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	PropertyModule.RegisterCustomPropertyTypeLayout(
-        FPreviewPulldownStruct::StaticStruct()->GetFName(),
-        FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPreviewPulldownStructDetail::MakeInstance)
-    );
-}
-
-void FPreviewPulldownStructDetail::Unregister()
-{
-	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	PropertyModule.UnregisterCustomPropertyTypeLayout(
-		FPreviewPulldownStruct::StaticStruct()->GetFName()
-    );
-}
-
-TSharedRef<IPropertyTypeCustomization> FPreviewPulldownStructDetail::MakeInstance()
-{
-	return MakeShared<FPreviewPulldownStructDetail>();
-}
-
-TArray<TSharedPtr<FPulldownRow>> FPreviewPulldownStructDetail::GenerateSelectableValues()
-{
-	// Get the list of strings to display from PulldownContents that owns this structure.
-	TArray<UObject*> OuterObjects;
-	StructPropertyHandle->GetOuterObjects(OuterObjects);
-	for (const auto& OuterObject : OuterObjects)
+	void FPreviewPulldownStructDetail::Register()
 	{
-		if (auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
-		{
-			return PulldownContents->GetPulldownRows();
-		}
+		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			FPreviewPulldownStruct::StaticStruct()->GetFName(),
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPreviewPulldownStructDetail::MakeInstance)
+		);
 	}
 
-	return FPulldownBuilderUtils::GetEmptyPulldownRows();
+	void FPreviewPulldownStructDetail::Unregister()
+	{
+		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		PropertyModule.UnregisterCustomPropertyTypeLayout(
+			FPreviewPulldownStruct::StaticStruct()->GetFName()
+		);
+	}
+
+	TSharedRef<IPropertyTypeCustomization> FPreviewPulldownStructDetail::MakeInstance()
+	{
+		return MakeShared<FPreviewPulldownStructDetail>();
+	}
+
+	TArray<TSharedPtr<FPulldownRow>> FPreviewPulldownStructDetail::GenerateSelectableValues()
+	{
+		// Get the list of strings to display from PulldownContents that owns this structure.
+		TArray<UObject*> OuterObjects;
+		StructPropertyHandle->GetOuterObjects(OuterObjects);
+		for (const auto& OuterObject : OuterObjects)
+		{
+			if (const auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
+			{
+				return PulldownContents->GetPulldownRows();
+			}
+		}
+
+		return FPulldownBuilderUtils::GetEmptyPulldownRows();
+	}
 }

@@ -90,7 +90,7 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 		}
 
 		const UScriptStruct* StaticStruct = StructProperty->Struct;
-		if (FPulldownBuilderUtils::IsPulldownStruct(StaticStruct) &&
+		if (PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(StaticStruct) &&
 			StaticStruct == PulldownContents->GetPulldownStructType().SelectedStruct)
 		{
 			if (auto* Value = StructProperty->ContainerPtrToValuePtr<FPulldownStructBase>(ContainerPtr))
@@ -102,7 +102,7 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 				}
 			}
 		}
-		else if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(StaticStruct))
+		else if (PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(StaticStruct))
 		{
 			if (auto* Value = StructProperty->ContainerPtrToValuePtr<FNativeLessPulldownStruct>(ContainerPtr))
 			{

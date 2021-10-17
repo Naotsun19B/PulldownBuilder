@@ -9,8 +9,8 @@
 #include "PulldownBuilder/Structs/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
-class UPulldownListGeneratorBase;
 struct FPulldownRow;
+class UPulldownListGeneratorBase;
 
 /**
  * A class that defines a structure that displays a pull-down menu and 

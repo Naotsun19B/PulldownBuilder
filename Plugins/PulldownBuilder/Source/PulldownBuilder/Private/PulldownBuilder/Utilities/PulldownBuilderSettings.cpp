@@ -7,17 +7,20 @@
 #include "PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h"
 #include "PulldownBuilder/RowNameUpdaters/DataTableUpdater.h"
 
-#define LOCTEXT_NAMESPACE "PulldownBuilder"
+#define LOCTEXT_NAMESPACE "PulldownBuilderSettings"
 
-namespace PulldownBuilderSettingsInternal
+namespace PulldownBuilder
 {
-	static const FName ContainerName			= TEXT("Editor");
-	static const FName CategoryName				= TEXT("Plugins");
-	static const FName SectionName				= TEXT("PulldownBuilderSettings");
-
-	ISettingsModule* GetSettingsModule()
+	namespace Settings
 	{
-		return FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+		static const FName ContainerName			= TEXT("Editor");
+		static const FName CategoryName				= TEXT("Plugins");
+		static const FName SectionName				= TEXT("PulldownBuilderSettings");
+
+		ISettingsModule* GetSettingsModule()
+		{
+			return FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+		}
 	}
 }
 
@@ -36,12 +39,12 @@ UPulldownBuilderSettings::UPulldownBuilderSettings(const FObjectInitializer& Obj
 
 void UPulldownBuilderSettings::Register()
 {
-	if (ISettingsModule* SettingsModule = PulldownBuilderSettingsInternal::GetSettingsModule())
+	if (ISettingsModule* SettingsModule = PulldownBuilder::Settings::GetSettingsModule())
 	{
 		SettingsModule->RegisterSettings(
-			PulldownBuilderSettingsInternal::ContainerName,
-			PulldownBuilderSettingsInternal::CategoryName,
-			PulldownBuilderSettingsInternal::SectionName,
+			PulldownBuilder::Settings::ContainerName,
+			PulldownBuilder::Settings::CategoryName,
+			PulldownBuilder::Settings::SectionName,
 			LOCTEXT("SettingName", "Pulldown Builder"),
 			LOCTEXT("SettingDescription", "Editor settings for Pulldown Builder"),
 			GetMutableDefault<UPulldownBuilderSettings>()
@@ -51,12 +54,12 @@ void UPulldownBuilderSettings::Register()
 
 void UPulldownBuilderSettings::Unregister()
 {
-	if (ISettingsModule* SettingsModule = PulldownBuilderSettingsInternal::GetSettingsModule())
+	if (ISettingsModule* SettingsModule = PulldownBuilder::Settings::GetSettingsModule())
 	{
 		SettingsModule->UnregisterSettings(
-			PulldownBuilderSettingsInternal::ContainerName,
-			PulldownBuilderSettingsInternal::CategoryName,
-			PulldownBuilderSettingsInternal::SectionName
+			PulldownBuilder::Settings::ContainerName,
+			PulldownBuilder::Settings::CategoryName,
+			PulldownBuilder::Settings::SectionName
 		);
 	}
 }

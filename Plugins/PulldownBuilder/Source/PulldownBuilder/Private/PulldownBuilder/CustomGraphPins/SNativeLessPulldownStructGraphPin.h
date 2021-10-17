@@ -5,40 +5,43 @@
 #include "CoreMinimal.h"
 #include "PulldownBuilder/CustomGraphPins/SPulldownStructGraphPin.h"
 
-class SPulldownSelectorComboButton;
-
-/**
- * A custom graph pin that applies to structures that inherit from FNativeLessPulldownStruct.
- */
-class PULLDOWNBUILDER_API SNativeLessPulldownStructGraphPin : public SPulldownStructGraphPin
+namespace PulldownBuilder
 {
-public:
-	SLATE_BEGIN_ARGS(SNativeLessPulldownStructGraphPin) {}
-	SLATE_END_ARGS()
+	class SPulldownSelectorComboButton;
 
-	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
+	/**
+	 * A custom graph pin that applies to structures that inherit from FNativeLessPulldownStruct.
+	 */
+	class PULLDOWNBUILDER_API SNativeLessPulldownStructGraphPin : public SPulldownStructGraphPin
+	{
+	public:
+		SLATE_BEGIN_ARGS(SNativeLessPulldownStructGraphPin) {}
+		SLATE_END_ARGS()
 
-	// SGraphPin interface.
-	virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
-	// End of SGraphPin interface.
+		void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
 
-private:
-	// SPulldownStructGraphPin interface.
-	virtual void RefreshPulldownWidget() override;
-	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
-	// End of SPulldownStructGraphPin interface.
-	
-	// Search for the same name as the specified name from the PulldownContentsNames.
-	// If not found, returns nullptr.
-	TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
-	
-	// Called when the value of the PulldownSourceWidget changes.
-	void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
-	
-private:
-	// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
-	TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
+		// SGraphPin interface.
+		virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
+		// End of SGraphPin interface.
 
-	// A widget that displays a pull-down menu based on the PulldownContentsNames.
-	TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
-};
+	private:
+		// SPulldownStructGraphPin interface.
+		virtual void RefreshPulldownWidget() override;
+		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		// End of SPulldownStructGraphPin interface.
+		
+		// Search for the same name as the specified name from the PulldownContentsNames.
+		// If not found, returns nullptr.
+		TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
+		
+		// Called when the value of the PulldownSourceWidget changes.
+		void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
+		
+	private:
+		// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
+		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
+
+		// A widget that displays a pull-down menu based on the PulldownContentsNames.
+		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
+	};
+}

@@ -5,40 +5,43 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "EdGraphSchema_K2.h"
 
-TSharedPtr<FGraphPanelPinFactory> FNativeLessPulldownStructGraphPinFactory::Instance = nullptr;
-
-void FNativeLessPulldownStructGraphPinFactory::Register()
+namespace PulldownBuilder
 {
-	Instance = MakeShared<FNativeLessPulldownStructGraphPinFactory>();
-	FEdGraphUtilities::RegisterVisualPinFactory(Instance);
-}
+	TSharedPtr<FGraphPanelPinFactory> FNativeLessPulldownStructGraphPinFactory::Instance = nullptr;
 
-void FNativeLessPulldownStructGraphPinFactory::Unregister()
-{
-	FEdGraphUtilities::UnregisterVisualPinFactory(Instance);
-}
-
-TSharedPtr<SGraphPin> FNativeLessPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
-{
-	check(InPin);
-	
-	if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
+	void FNativeLessPulldownStructGraphPinFactory::Register()
 	{
-		if (const auto* Struct = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
-		{
-			if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
-			{
-				// Since the DefaultValue of the pin when it is created is empty,
-				// the default structure string is generated and set.
-				if (InPin->DefaultValue.IsEmpty())
-				{
-					InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
-				}
-			
-				return SNew(SNativeLessPulldownStructGraphPin, InPin);
-			}
-		}
+		Instance = MakeShared<FNativeLessPulldownStructGraphPinFactory>();
+		FEdGraphUtilities::RegisterVisualPinFactory(Instance);
 	}
 
-	return nullptr;
+	void FNativeLessPulldownStructGraphPinFactory::Unregister()
+	{
+		FEdGraphUtilities::UnregisterVisualPinFactory(Instance);
+	}
+
+	TSharedPtr<SGraphPin> FNativeLessPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
+	{
+		check(InPin);
+	
+		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
+		{
+			if (const auto* Struct = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
+			{
+				if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
+				{
+					// Since the DefaultValue of the pin when it is created is empty,
+					// the default structure string is generated and set.
+					if (InPin->DefaultValue.IsEmpty())
+					{
+						InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
+					}
+			
+					return SNew(SNativeLessPulldownStructGraphPin, InPin);
+				}
+			}
+		}
+
+		return nullptr;
+	}
 }

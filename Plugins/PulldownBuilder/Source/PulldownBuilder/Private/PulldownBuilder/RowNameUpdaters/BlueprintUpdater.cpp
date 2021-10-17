@@ -61,16 +61,16 @@ bool UBlueprintUpdater::UpdateGraphPins(
 				{
 					if (auto* Struct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject))
 					{
-						if (FPulldownBuilderUtils::IsPulldownStruct(Struct) &&
+						if (PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct) &&
 							Struct == PulldownContents->GetPulldownStructType().SelectedStruct)
 						{
-							const TSharedPtr<FName> CurrentValue = FPulldownBuilderUtils::StructStringToMemberValue(
+							const TSharedPtr<FName> CurrentValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 								Pin->DefaultValue,
 								GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)
 							);
 							if (CurrentValue.IsValid() && *CurrentValue == PreChangeName)
 							{
-								const TSharedPtr<FString> UpdatedValue = FPulldownBuilderUtils::MemberValueToStructString(
+								const TSharedPtr<FString> UpdatedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
 									Pin->DefaultValue,
 									GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
 									PostChangeName
@@ -82,21 +82,21 @@ bool UBlueprintUpdater::UpdateGraphPins(
 								}
 							}
 						}
-						else if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
+						else if (PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
 						{
-							const TSharedPtr<FName> CurrentSource = FPulldownBuilderUtils::StructStringToMemberValue(
+							const TSharedPtr<FName> CurrentSource = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 								Pin->DefaultValue,
 								GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
 							);
 							if (CurrentSource.IsValid() && *CurrentSource == PulldownContents->GetFName())
 							{
-								const TSharedPtr<FName> CurrentValue = FPulldownBuilderUtils::StructStringToMemberValue(
+								const TSharedPtr<FName> CurrentValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 									Pin->DefaultValue,
 									GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, SelectedValue)
 								);
 								if (CurrentValue.IsValid() && *CurrentValue == PreChangeName)
 								{
-									const TSharedPtr<FString> UpdatedValue = FPulldownBuilderUtils::MemberValueToStructString(
+									const TSharedPtr<FString> UpdatedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
 										Pin->DefaultValue,
 										GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, SelectedValue),
 										PostChangeName

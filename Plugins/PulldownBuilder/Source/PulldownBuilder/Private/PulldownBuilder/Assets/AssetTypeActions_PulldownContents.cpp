@@ -6,46 +6,49 @@
 
 #define LOCTEXT_NAMESPACE "PulldownBuilder"
 
-TSharedPtr<FAssetTypeActions_PulldownContents> FAssetTypeActions_PulldownContents::Instance = nullptr;
-
-void FAssetTypeActions_PulldownContents::Register()
+namespace PulldownBuilder
 {
-	Instance = MakeShared<FAssetTypeActions_PulldownContents>();
-	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(Instance.ToSharedRef());
-}
+	TSharedPtr<FAssetTypeActions_PulldownContents> FAssetTypeActions_PulldownContents::Instance = nullptr;
 
-void FAssetTypeActions_PulldownContents::Unregister()
-{
-	if (Instance.IsValid() && FAssetToolsModule::IsModuleLoaded())
+	void FAssetTypeActions_PulldownContents::Register()
 	{
-		FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(Instance.ToSharedRef());
-		Instance.Reset();
+		Instance = MakeShared<FAssetTypeActions_PulldownContents>();
+		FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(Instance.ToSharedRef());
 	}
-}
 
-FText FAssetTypeActions_PulldownContents::GetName() const
-{
-	return LOCTEXT("AssetName", "Pulldown Contents");
-}
+	void FAssetTypeActions_PulldownContents::Unregister()
+	{
+		if (Instance.IsValid() && FAssetToolsModule::IsModuleLoaded())
+		{
+			FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(Instance.ToSharedRef());
+			Instance.Reset();
+		}
+	}
 
-FColor FAssetTypeActions_PulldownContents::GetTypeColor() const
-{
-	return FColor(103, 206, 218);
-}
+	FText FAssetTypeActions_PulldownContents::GetName() const
+	{
+		return LOCTEXT("AssetName", "Pulldown Contents");
+	}
 
-UClass* FAssetTypeActions_PulldownContents::GetSupportedClass() const
-{
-	return UPulldownContents::StaticClass();
-}
+	FColor FAssetTypeActions_PulldownContents::GetTypeColor() const
+	{
+		return FColor(103, 206, 218);
+	}
 
-uint32 FAssetTypeActions_PulldownContents::GetCategories()
-{
-	return EAssetTypeCategories::Misc;
-}
+	UClass* FAssetTypeActions_PulldownContents::GetSupportedClass() const
+	{
+		return UPulldownContents::StaticClass();
+	}
 
-bool FAssetTypeActions_PulldownContents::CanLocalize() const
-{
-	return false;
+	uint32 FAssetTypeActions_PulldownContents::GetCategories()
+	{
+		return EAssetTypeCategories::Misc;
+	}
+
+	bool FAssetTypeActions_PulldownContents::CanLocalize() const
+	{
+		return false;
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

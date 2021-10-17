@@ -7,19 +7,22 @@
 
 struct FPulldownRow;
 
-/**
- * Detail customization applied to structures that inherit from FPulldownStructBase.
- */
-class PULLDOWNBUILDER_API FPreviewPulldownStructDetail : public FPulldownStructDetail
+namespace PulldownBuilder
 {
-public:
-	// Register-Unregister and instantiate this customization.
-	static void Register();
-	static void Unregister();
-	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
+	/**
+	 * Detail customization applied to structures that inherit from FPulldownStructBase.
+	 */
+	class PULLDOWNBUILDER_API FPreviewPulldownStructDetail : public FPulldownStructDetail
+	{
+	public:
+		// Register-Unregister and instantiate this customization.
+		static void Register();
+		static void Unregister();
+		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
-private:
-	// FPulldownStructDetail interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
-	// End of FPulldownStructDetail interface.
-};
+	private:
+		// FPulldownStructDetail interface.
+		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		// End of FPulldownStructDetail interface.
+	};
+}
