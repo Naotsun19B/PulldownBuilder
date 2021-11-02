@@ -7,8 +7,8 @@
    * [Requirement](#Requirement)
    * [Installation](#Installation)
    * [Usage](#Usage)
-      * [When using C++](#When-using-C++)
-      * [When don't using C++](#When-don't-using-C++)
+      * [When using C++](#when-using-c)
+      * [When don't using C++](#when-dont-using-c)
       * [PulldownListGenerator](#PulldownListGenerator)
       * [RowNameUpdater](#RowNameUpdater)
    * [Settings](#Settings)
@@ -27,7 +27,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.23 ~ UE4.27  
+Target version : UE4.23 ~ UE4.27 (UE5.0EA)  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
