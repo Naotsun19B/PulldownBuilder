@@ -34,6 +34,7 @@
 
 プロジェクトのPluginsフォルダにPlugins/PulldownBuilderフォルダを入れてください。  
 または、[マーケットプレイス](https://www.unrealengine.com/marketplace/ja/product/pulldown-builder)からインストールしてください。  
+プラグインのインストール後に機能が使用できない場合は、プラグインが有効化されていない可能性がありますので、編集 > プラグイン からプラグインの有効のチェックが入っているかをご確認ください。
 
 ## 使い方  
 

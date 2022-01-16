@@ -34,6 +34,7 @@ Target platform :  Windows, Mac, Linux (Runtime module has no platform restricti
 
 Put the Plugins/PulldownBuilder folder in your project's Plugins folder.  
 Or install from the [marketplace](https://www.unrealengine.com/marketplace/en-US/product/pulldown-builder).  
+If the feature is not available after installing the plugin, it is possible that the plugin has not been enabled, so please check if the plugin is enabled from Edit > Plugins.  
 
 ## Usage  
 
