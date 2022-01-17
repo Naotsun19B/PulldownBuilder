@@ -30,9 +30,8 @@ FString UPulldownListGeneratorBase::GetSourceAssetName() const
 
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)
 {
-	auto* Settings = GetDefault<UPulldownBuilderSettings>();
-	check(Settings);
-	if (!Settings->bShouldUpdateWhenSourceRowNameChanged)
+	const auto& Settings = UPulldownBuilderSettings::Get();
+	if (!Settings.bShouldUpdateWhenSourceRowNameChanged)
 	{
 		return;
 	}

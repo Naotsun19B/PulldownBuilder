@@ -42,10 +42,8 @@ void URowNameUpdaterBase::UpdateRowNamesInternal(
 
 bool URowNameUpdaterBase::ShouldUpdateProcess() const
 {
-	auto* Settings = GetDefault<UPulldownBuilderSettings>();
-	check(Settings);
-
-	return Settings->ActiveRowNameUpdater.Contains(GetClass());
+	const auto& Settings = UPulldownBuilderSettings::Get();
+	return Settings.ActiveRowNameUpdater.Contains(GetClass());
 }
 
 bool URowNameUpdaterBase::UpdateMemberVariables(

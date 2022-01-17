@@ -62,4 +62,11 @@ void UPulldownBuilderSettings::Unregister()
 	}
 }
 
+const UPulldownBuilderSettings& UPulldownBuilderSettings::Get()
+{
+	const auto* Settings = GetDefault<UPulldownBuilderSettings>();
+	check(IsValid(Settings));
+	return *Settings;
+}
+
 #undef LOCTEXT_NAMESPACE

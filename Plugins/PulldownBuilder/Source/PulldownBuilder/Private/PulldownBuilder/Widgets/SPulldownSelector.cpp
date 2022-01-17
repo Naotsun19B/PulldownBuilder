@@ -12,11 +12,9 @@ namespace PulldownBuilder
 	{
 		ListItemsSource = InArgs._ListItemsSource;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
-
-		const auto* Settings = GetDefault<UPulldownBuilderSettings>();
-		check(Settings);
-
-		if (Settings->bIsSelectWhenDoubleClick)
+		
+		const auto& Settings = UPulldownBuilderSettings::Get();
+		if (Settings.bIsSelectWhenDoubleClick)
 		{
 			ListView = SNew(SListView<TSharedPtr<FPulldownRow>>)
 			.SelectionMode(ESelectionMode::Single)
@@ -36,8 +34,8 @@ namespace PulldownBuilder
 		ChildSlot
 		[
 			SNew(SBox)
-			.HeightOverride(Settings->PanelSize.Y)
-			.WidthOverride(Settings->PanelSize.X)
+			.HeightOverride(Settings.PanelSize.Y)
+			.WidthOverride(Settings.PanelSize.X)
 			[
 				SNew(SVerticalBox)
 				+SVerticalBox::Slot()

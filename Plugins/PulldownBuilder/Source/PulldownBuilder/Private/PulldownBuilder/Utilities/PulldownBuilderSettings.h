@@ -11,7 +11,7 @@ class URowNameUpdaterBase;
 /**
  * Editor settings for this plugin.
  */
-UCLASS(Config = Editor, DefaultConfig)
+UCLASS(Config = Editor)
 class UPulldownBuilderSettings : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -45,4 +45,7 @@ public:
 	// Register - unregister in the editor setting item.
 	static void Register();
 	static void Unregister();
+
+	// Returns reference of this settings.
+	static const UPulldownBuilderSettings& Get();
 };
