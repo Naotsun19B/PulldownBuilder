@@ -45,21 +45,21 @@ FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
 template<class TPulldownStruct>
 struct TIsPulldownStruct
 {
-	static constexpr bool bValue = (
+	static constexpr bool Value = (
 		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::IsDerived &&
-		!TIsSame<TPulldownStruct, FPulldownStructBase>::bValue
+		!TIsSame<TPulldownStruct, FPulldownStructBase>::Value
 	);
 };
 
 // A function for comparing structures that inherit from FPulldownStructBase.
 // Make it possible to compare only structures of the same type.
-template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::bValue, nullptr_t>::Type = nullptr>
+template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
 	return (Lhs.SelectedValue == Rhs.SelectedValue);
 }
 
-template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::bValue, nullptr_t>::Type = nullptr>
+template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator!=(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
 	return !(Lhs == Rhs);
