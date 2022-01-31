@@ -5,8 +5,11 @@
 
 namespace DataTablePulldownListGeneratorDefine
 {
-	// The name of the property that will be the data to be displayed as a tooltip in the pull-down menu.
-	static const FString PulldownTooltipName = TEXT("PulldownTooltip");
+	// The default name of the property that will be the data to be displayed as a tooltip in the pull-down menu.
+	static const FString DefaultPulldownTooltipName = TEXT("PulldownTooltip");
+
+	// A meta specifier for specifying properties for tooltips in USTRUCT.
+	static const FString TooltipPropertyMeta = TEXT("TooltipProperty");
 }
 
 TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows() const
@@ -103,6 +106,14 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 
 bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const
 {
+	check(IsValid(RowStruct));
+
+	FString TooltipPropertyName = DataTablePulldownListGeneratorDefine::DefaultPulldownTooltipName;
+	if (const FString* Meta = RowStruct->FindMetaData(*DataTablePulldownListGeneratorDefine::TooltipPropertyMeta))
+	{
+		TooltipPropertyName = *Meta;
+	}
+	
 #if BEFORE_UE_4_24
 	for (UStrProperty* StringProperty : TFieldRange<UStrProperty>(RowStruct))
 #else
@@ -114,7 +125,7 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 			continue;
 		}
 
-		if (StringProperty->GetName() != DataTablePulldownListGeneratorDefine::PulldownTooltipName)
+		if (StringProperty->GetName() != TooltipPropertyName)
 		{
 			continue;	
 		}

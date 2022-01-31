@@ -8,6 +8,8 @@
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "TestDataTable.generated.h"
 
+// USTRUCT(meta = (TooltipProperty = "TestString"))
+// As mentioned above, you can use the meta specifier to change the properties displayed in the tooltip.
 USTRUCT()
 struct FNativeDataTableStruct : public FTableRowBase
 {
