@@ -185,6 +185,9 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2022/04/06) v1.5   
+  Fixed errors when building with strict includes
+
 - (2021/10/17) v1.4   
   Added support for UE5  
 
