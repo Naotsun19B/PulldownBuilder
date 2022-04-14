@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/Launch/Resources/Version.h"
+#include "Version.h"
 
 /**
  * Macro to support each engine version.
