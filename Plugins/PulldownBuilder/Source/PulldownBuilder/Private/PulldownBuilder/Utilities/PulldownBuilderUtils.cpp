@@ -3,7 +3,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
-#include "PulldownBuilder/Structs/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "UObject/UObjectIterator.h"

@@ -2,7 +2,7 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
-#include "PulldownBuilder/Structs/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/SToolTip.h"
 

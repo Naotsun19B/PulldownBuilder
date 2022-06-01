@@ -3,7 +3,7 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
-#include "PulldownBuilder/Structs/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 
 namespace PulldownBuilder
 {

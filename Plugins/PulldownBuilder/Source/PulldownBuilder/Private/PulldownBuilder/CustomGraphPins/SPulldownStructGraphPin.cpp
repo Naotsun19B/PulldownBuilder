@@ -3,7 +3,7 @@
 #include "PulldownBuilder/CustomGraphPins/SPulldownStructGraphPin.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
-#include "PulldownBuilder/Structs/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownStruct/PulldownStructBase.h"
 
 namespace PulldownBuilder

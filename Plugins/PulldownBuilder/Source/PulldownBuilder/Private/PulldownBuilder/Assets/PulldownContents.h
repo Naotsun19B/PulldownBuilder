@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "PulldownBuilder/PulldownBuilderGlobals.h"
-#include "PulldownBuilder/Structs/PulldownStructType.h"
-#include "PulldownBuilder/Structs/PreviewPulldownStruct.h"
+#include "PulldownBuilder/Types/PulldownStructType.h"
+#include "PulldownBuilder/Types/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
 struct FPulldownRow;

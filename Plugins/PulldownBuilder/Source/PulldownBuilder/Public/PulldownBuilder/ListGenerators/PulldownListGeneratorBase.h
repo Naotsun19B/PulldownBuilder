@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "PulldownBuilder/Structs/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownListGeneratorBase.generated.h"
 
 /**
