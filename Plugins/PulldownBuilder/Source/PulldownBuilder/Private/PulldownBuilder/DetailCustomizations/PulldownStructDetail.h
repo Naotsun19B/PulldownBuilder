@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IPropertyTypeCustomization.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 struct FPulldownStructType;
 struct FPulldownRow;

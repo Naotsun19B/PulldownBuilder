@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 namespace DataTablePulldownListGeneratorDefine
 {

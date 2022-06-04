@@ -17,4 +17,4 @@
 /**
  * Categories used for log output with this module.
  */
-PULLDOWNBUILDER_API DECLARE_LOG_CATEGORY_EXTERN(LogPulldownBuilder, Log, All);
+PULLDOWNSTRUCT_API DECLARE_LOG_CATEGORY_EXTERN(LogPulldownBuilder, Log, All);

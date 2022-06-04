@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/NameArrayPulldownListGenerator.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 #if BEFORE_UE_4_24
 void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)

@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/RowNameUpdaters/DataTableUpdater.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Engine/DataTable.h"
 
 void UDataTableUpdater::UpdateRowNamesInternal(

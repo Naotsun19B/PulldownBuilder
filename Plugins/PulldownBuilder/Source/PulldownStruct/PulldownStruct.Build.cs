@@ -1,6 +1,7 @@
 ﻿// Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class PulldownStruct : ModuleRules
 {
@@ -13,16 +14,22 @@ public class PulldownStruct : ModuleRules
 			{
 				"Core",
 			}
-			);
+		);
 				
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 			}
-			);
+		);
+		
+		// To use version macros.
+		PublicIncludePaths.AddRange(
+			new string[]
+			{
+				Path.Combine(EngineDirectory, "Source", "Runtime", "Launch", "Resources"),
+			}
+		);
 	}
 }

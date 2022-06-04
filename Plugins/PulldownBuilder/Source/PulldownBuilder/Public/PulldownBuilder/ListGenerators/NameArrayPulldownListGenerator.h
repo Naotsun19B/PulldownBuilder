@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "NameArrayPulldownListGenerator.generated.h"
 
 /**

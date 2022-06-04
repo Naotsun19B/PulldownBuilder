@@ -2,17 +2,28 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
-namespace PulldownStruct
+DEFINE_LOG_CATEGORY(LogPulldownBuilder);
+
+namespace PulldownBuilder
 {
 	class FPulldownStructModule : public IModuleInterface
 	{
 	public:
 		// IModuleInterface interface.
-		virtual void StartupModule() override {}
-		virtual void ShutdownModule() override {}
+		virtual void StartupModule() override;
+		virtual void ShutdownModule() override;
 		// End of IModuleInterface interface.
 	};
+
+	void FPulldownStructModule::StartupModule()
+	{
+	}
+
+	void FPulldownStructModule::ShutdownModule()
+	{
+	}
 }
 	
-IMPLEMENT_MODULE(PulldownStruct::FPulldownStructModule, PulldownStruct)
+IMPLEMENT_MODULE(PulldownBuilder::FPulldownStructModule, PulldownStruct)

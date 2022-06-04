@@ -3,18 +3,16 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "AssetRegistryModule.h"
-#include "PulldownBuilder/PulldownBuilderGlobals.h"
-#include "Assets/AssetTypeActions_PulldownContents.h"
-#include "Assets/PulldownContents.h"
-#include "CustomGraphPins/PulldownStructGraphPinFactory.h"
-#include "CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
-#include "DetailCustomizations/PulldownStructTypeDetail.h"
-#include "DetailCustomizations/PreviewPulldownStructDetail.h"
-#include "DetailCustomizations/NativeLessPulldownStructDetail.h"
-#include "Utilities/PulldownBuilderSettings.h"
-#include "Utilities/PulldownBuilderStyle.h"
-
-DEFINE_LOG_CATEGORY(LogPulldownBuilder);
+#include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
+#include "PulldownBuilder/CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
+#include "PulldownBuilder/DetailCustomizations/PulldownStructTypeDetail.h"
+#include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
+#include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 namespace PulldownBuilder
 {
