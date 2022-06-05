@@ -30,6 +30,17 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "PulldownStructNodes",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"Mac",
+				"Linux"
+			]
 		}
 	]
 }
