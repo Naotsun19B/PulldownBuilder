@@ -18,6 +18,6 @@ public:
 	// UK2Node_Compare_PulldownStruct interface.
 	virtual FText GetCompareMethodName() const override;
 	virtual FText GetCompareMethodOperator() const override;
-	virtual void GetFunction(FName& FunctionName, TSubclassOf<UObject>& MemberParentClass) const override;
+	virtual FName GetFunctionName() const override;
 	// End of UK2Node_Compare_PulldownStruct interface.
 };

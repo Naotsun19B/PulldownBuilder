@@ -15,10 +15,9 @@ FText UK2Node_Equal_PulldownStruct::GetCompareMethodOperator() const
 	return LOCTEXT("CompareMethodOperator", "==");
 }
 
-void UK2Node_Equal_PulldownStruct::GetFunction(FName& FunctionName, TSubclassOf<UObject>& MemberParentClass) const
+FName UK2Node_Equal_PulldownStruct::GetFunctionName() const
 {
-	FunctionName = GET_FUNCTION_NAME_CHECKED(UPulldownStructFunctionLibrary, Equal_PulldownStruct);
-	MemberParentClass = UPulldownStructFunctionLibrary::StaticClass();
+	return GET_FUNCTION_NAME_CHECKED(UPulldownStructFunctionLibrary, Equal_PulldownStruct);
 }
 
 #undef LOCTEXT_NAMESPACE

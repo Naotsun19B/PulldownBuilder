@@ -57,8 +57,8 @@ protected:
 	// Returns the operator of the comparison method used in the node title, etc.
 	virtual FText GetCompareMethodOperator() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodOperator, { return FText::GetEmpty(); });
 	
-	// Get the name of the function to actually execute and the class that owns it.
-	virtual void GetFunction(FName& FunctionName, TSubclassOf<UObject>& MemberParentClass) const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunction, {});
+	// Get the name of the function to actually execute.
+	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, { return NAME_None; });
 	
 protected:
 	// A cache of text for the title of this node.

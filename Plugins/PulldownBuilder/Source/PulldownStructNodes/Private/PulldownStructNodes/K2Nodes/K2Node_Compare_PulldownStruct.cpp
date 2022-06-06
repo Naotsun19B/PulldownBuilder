@@ -1,6 +1,7 @@
 // Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_Compare_PulldownStruct.h"
+#include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "EdGraphSchema_K2.h"
 #include "BlueprintNodeSpawner.h"
@@ -91,15 +92,11 @@ void UK2Node_Compare_PulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegi
 void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
-
-	FName FunctionName;
-	TSubclassOf<UObject> MemberParentClass;
-	GetFunction(FunctionName, MemberParentClass);
 	
 	UK2Node_CallFunction* FunctionNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
 	if (ensure(IsValid(FunctionNode)))
 	{
-		FunctionNode->FunctionReference.SetExternalMember(FunctionName, MemberParentClass);
+		FunctionNode->FunctionReference.SetExternalMember(GetFunctionName(), UPulldownStructFunctionLibrary::StaticClass());
 		FunctionNode->AllocateDefaultPins();
 	}
 
