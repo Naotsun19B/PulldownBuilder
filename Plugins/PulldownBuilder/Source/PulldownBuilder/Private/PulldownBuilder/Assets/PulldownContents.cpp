@@ -63,7 +63,7 @@ void UPulldownContents::PostDuplicate(bool bDuplicateForPIE)
 	Super::PostDuplicate(bDuplicateForPIE);
 
 	// Prevent the same structure from being registered when duplicated.
-	PulldownStructType = nullptr;
+	PulldownStructType = FPulldownStructType();
 }
 
 void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const

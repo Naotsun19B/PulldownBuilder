@@ -54,7 +54,7 @@ namespace PulldownBuilder
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 		PropertyModule.UnregisterCustomPropertyTypeLayout(
-			*GetNameSafe(FPulldownStructType::StaticStruct()),
+			*GetNameSafe(FPulldownStructType::StaticStruct())
 		);
 	}
 
