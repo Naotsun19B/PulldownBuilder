@@ -8,6 +8,8 @@
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "UObject/UObjectIterator.h"
 #include "EdGraphSchema_K2.h"
+#include "Modules/ModuleManager.h"
+#include "ISettingsModule.h"
 
 namespace PulldownBuilder
 {
@@ -225,5 +227,48 @@ namespace PulldownBuilder
 		NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
 		
 		return MakeShared<FString>(NewDefaultValue);
+	}
+
+	ISettingsModule* FPulldownBuilderUtils::GetSettingsModule()
+	{
+		return FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+	}
+
+	void FPulldownBuilderUtils::RegisterSettings(
+		const FName& ContainerName,
+		const FName& CategoryName,
+		const FName& SectionName,
+		const FText& DisplayName,
+		const FText& Description,
+		const TWeakObjectPtr<UObject>& SettingsObject
+	)
+	{
+		if (ISettingsModule* SettingsModule = GetSettingsModule())
+		{
+			SettingsModule->RegisterSettings(
+				ContainerName,
+				CategoryName,
+				SectionName,
+				DisplayName,
+				Description,
+				SettingsObject
+			);
+		}
+	}
+
+	void FPulldownBuilderUtils::UnregisterSettings(
+		const FName& ContainerName,
+		const FName& CategoryName,
+		const FName& SectionName
+	)
+	{
+		if (ISettingsModule* SettingsModule = GetSettingsModule())
+		{
+			SettingsModule->UnregisterSettings(
+				ContainerName,
+				CategoryName,
+				SectionName
+			);
+		}
 	}
 }

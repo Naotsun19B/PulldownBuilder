@@ -6,25 +6,17 @@
 #include "UObject/NoExportTypes.h"
 #include "Templates/SubclassOf.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
-#include "PulldownBuilderSettings.generated.h"
+#include "PulldownBuilderRedirectSettings.generated.h"
 
 /**
- * Editor settings for this plugin.
+ * Settings related to redirect processing when changes are made to the data that is the source of the pull-down list.
  */
-UCLASS(Config = Editor)
-class UPulldownBuilderSettings : public UObject
+UCLASS(Config = Editor, DefaultConfig)
+class PULLDOWNBUILDER_API UPulldownBuilderRedirectSettings : public UObject
 {
-	GENERATED_UCLASS_BODY()
-	
-public:
-	// Size of the PulldownSelector widget.
-	UPROPERTY(EditAnywhere, Config, Category = "Pulldown Selector")
-	FVector2D PanelSize;
+	GENERATED_BODY()
 
-	// Whether you need to double-click to select an item in PulldownSelector widget.
-	UPROPERTY(EditAnywhere, Config, Category = "Pulldown Selector")
-	bool bIsSelectWhenDoubleClick;
-	
+public:
 	// Whether to replace the value already used in the Blueprint Asset with the changed name
 	// when the original data of the PulldownContents asset is updated
 	// (for example, the row name of the data table asset is changed).
@@ -40,12 +32,15 @@ public:
 	// Blueprint, data table, and data asset are provided by default.
 	UPROPERTY(EditAnywhere, Config, Category = "Redirect", meta = (EditCondition = "bShouldUpdateWhenSourceRowNameChanged"))
 	TArray<TSubclassOf<URowNameUpdaterBase>> ActiveRowNameUpdater;
-
+	
 public:
+    // Constructor.
+	UPulldownBuilderRedirectSettings();
+
 	// Register - unregister in the editor setting item.
 	static void Register();
 	static void Unregister();
 
 	// Returns reference of this settings.
-	static const UPulldownBuilderSettings& Get();
+	static const UPulldownBuilderRedirectSettings& Get();
 };

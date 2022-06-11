@@ -10,7 +10,8 @@
 #include "PulldownBuilder/DetailCustomizations/PulldownStructTypeDetail.h"
 #include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
 #include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
@@ -34,7 +35,8 @@ namespace PulldownBuilder
 		FPulldownBuilderStyle::Register();
 
 		// Register settings.
-		UPulldownBuilderSettings::Register();
+		UPulldownBuilderAppearanceSettings::Register();
+		UPulldownBuilderRedirectSettings::Register();
 		
 		// Register custom graph pin.
 		FPulldownStructGraphPinFactory::Register();
@@ -75,7 +77,8 @@ namespace PulldownBuilder
 		FPulldownStructGraphPinFactory::Unregister();
 
 		// Unregister settings.
-		UPulldownBuilderSettings::Unregister();
+		UPulldownBuilderRedirectSettings::Unregister();
+		UPulldownBuilderAppearanceSettings::Unregister();
 		
 		// Unregister the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();

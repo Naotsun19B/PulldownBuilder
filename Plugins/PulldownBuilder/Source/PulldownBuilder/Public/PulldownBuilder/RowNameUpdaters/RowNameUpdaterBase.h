@@ -13,7 +13,7 @@ class UPulldownContents;
  * A base class that replaces an already used value with a new one
  * when the display string list of PulldownContents is updated.
  */
-UCLASS()
+UCLASS(Abstract)
 class PULLDOWNBUILDER_API URowNameUpdaterBase : public UObject
 {
 	GENERATED_BODY()

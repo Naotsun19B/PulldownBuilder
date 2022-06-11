@@ -1,7 +1,7 @@
 ﻿// Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/SToolTip.h"
@@ -13,7 +13,7 @@ namespace PulldownBuilder
 		ListItemsSource = InArgs._ListItemsSource;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
 		
-		const auto& Settings = UPulldownBuilderSettings::Get();
+		const auto& Settings = UPulldownBuilderAppearanceSettings::Get();
 		if (Settings.bIsSelectWhenDoubleClick)
 		{
 			ListView = SNew(SListView<TSharedPtr<FPulldownRow>>)

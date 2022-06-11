@@ -3,7 +3,7 @@
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 
 TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows() const
 {
@@ -30,7 +30,7 @@ FString UPulldownListGeneratorBase::GetSourceAssetName() const
 
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)
 {
-	const auto& Settings = UPulldownBuilderSettings::Get();
+	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
 	if (!Settings.bShouldUpdateWhenSourceRowNameChanged)
 	{
 		return;

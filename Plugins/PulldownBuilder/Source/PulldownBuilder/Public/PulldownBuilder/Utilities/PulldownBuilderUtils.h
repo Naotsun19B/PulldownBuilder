@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+class ISettingsModule;
 class UPulldownContents;
 struct FPulldownRow;
 
@@ -58,5 +59,25 @@ namespace PulldownBuilder
 		// If specify a property name that does not exist and get it, nullptr is returned.
 		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
 		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
+
+		// Returns a module that registers editor preferences etc. added by the plugin.
+		static ISettingsModule* GetSettingsModule();
+
+		// Register custom setting class in the editor preferences etc.
+		static void RegisterSettings(
+			const FName& ContainerName,
+			const FName& CategoryName,
+			const FName& SectionName,
+			const FText& DisplayName,
+			const FText& Description,
+			const TWeakObjectPtr<UObject>& SettingsObject
+		);
+
+		// Unregister the custom setting class registered in the editor preference etc.
+		static void UnregisterSettings(
+			const FName& ContainerName,
+			const FName& CategoryName,
+			const FName& SectionName
+		);
 	};
 }
