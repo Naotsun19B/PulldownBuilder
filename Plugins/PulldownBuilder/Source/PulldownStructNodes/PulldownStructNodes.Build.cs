@@ -1,10 +1,11 @@
 // Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
-public class PulldownBuilder : ModuleRules
+public class PulldownStructNodes : ModuleRules
 {
-	public PulldownBuilder(ReadOnlyTargetRules Target) : base(Target)
+	public PulldownStructNodes(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -14,26 +15,18 @@ public class PulldownBuilder : ModuleRules
 				"Core",
 			}
 		);
-		
+				
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"CoreUObject",
-				"InputCore",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				"UnrealEd",
-				"AssetTools",
-				"EditorStyle",
-				"GraphEditor",
-				"StructViewer",
-				"AssetRegistry",
 				"BlueprintGraph",
-				"PropertyEditor",
-				"ApplicationCore",
+				"KismetCompiler",
 				
 				"PulldownStruct",
+				"PulldownBuilder",
 			}
 		);
 	}

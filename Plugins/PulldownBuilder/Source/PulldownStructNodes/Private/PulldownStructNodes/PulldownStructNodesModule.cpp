@@ -2,13 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
-
-DEFINE_LOG_CATEGORY(LogPulldownBuilder);
 
 namespace PulldownBuilder
 {
-	class FPulldownStructModule : public IModuleInterface
+	class FPulldownStructNodesModule : public IModuleInterface
 	{
 	public:
 		// IModuleInterface interface.
@@ -17,13 +14,13 @@ namespace PulldownBuilder
 		// End of IModuleInterface interface.
 	};
 
-	void FPulldownStructModule::StartupModule()
+	void FPulldownStructNodesModule::StartupModule()
 	{
 	}
 
-	void FPulldownStructModule::ShutdownModule()
+	void FPulldownStructNodesModule::ShutdownModule()
 	{
 	}
 }
 	
-IMPLEMENT_MODULE(PulldownBuilder::FPulldownStructModule, PulldownStruct)
+IMPLEMENT_MODULE(PulldownBuilder::FPulldownStructNodesModule, PulldownStructNodes)
