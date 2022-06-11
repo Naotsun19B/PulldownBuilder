@@ -9,6 +9,11 @@ const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructT
 const FName UPulldownContents::GeneratorClassTag = TEXT("GeneratorClass");
 const FName UPulldownContents::SourceAssetTag = TEXT("SourceAsset");
 
+bool UPulldownContents::IsEditorOnly() const
+{
+	return true;
+}
+
 void UPulldownContents::PostLoad()
 {
 	Super::PostLoad();
@@ -98,6 +103,11 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 		SourceAssetName.ToString(),
 		FAssetRegistryTag::TT_Alphabetical
 	));
+}
+
+const FPulldownStructType& UPulldownContents::GetPulldownStructType() const
+{
+	return PulldownStructType;
 }
 
 TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows() const

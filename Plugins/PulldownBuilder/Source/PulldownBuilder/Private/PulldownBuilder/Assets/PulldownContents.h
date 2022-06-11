@@ -29,7 +29,7 @@ public:
 	
 public:
 	// UObject interface.
-	virtual bool IsEditorOnly() const override { return true; }
+	virtual bool IsEditorOnly() const override;
 	virtual void PostLoad() override;
 #if BEFORE_UE_4_24
 	virtual void PreEditChange(UProperty* PropertyAboutToChange) override;
@@ -43,7 +43,7 @@ public:
 	// End of UObject interface.
 
 	// Get information about the target structure.
-	const FPulldownStructType& GetPulldownStructType() const { return PulldownStructType; }
+	const FPulldownStructType& GetPulldownStructType() const;
 	
 	// Returns the data list to display in the pull-down menu.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;

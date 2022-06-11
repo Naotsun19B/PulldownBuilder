@@ -10,6 +10,22 @@ UInputMappingsPulldownListGenerator::UInputMappingsPulldownListGenerator()
 {
 }
 
+void UInputMappingsPulldownListGenerator::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	FEditorDelegates::OnActionAxisMappingsChanged.AddUObject(this, &UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged);
+	
+	CachePreChangeDisplayTexts();
+}
+
+void UInputMappingsPulldownListGenerator::BeginDestroy()
+{
+	FEditorDelegates::OnActionAxisMappingsChanged.RemoveAll(this);
+	
+	Super::BeginDestroy();
+}
+
 TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows() const
 {
 	const auto* InputSettings = UInputSettings::GetInputSettings();
@@ -129,4 +145,58 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 	}
 	
 	return PulldownRows;
+}
+
+void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
+{
+	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows();
+	
+	PreChangeDisplayTexts.Reset(PulldownRows.Num());
+	
+	for (const auto& PulldownRow : PulldownRows)
+	{
+		if (!PulldownRow.IsValid())
+		{
+			continue;
+		}
+
+		PreChangeDisplayTexts.Add(*PulldownRow->DisplayText.ToString());
+	}
+}
+
+void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
+{
+	TArray<FName> PostChangeDisplayTexts;
+	{
+		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows();
+		
+		PostChangeDisplayTexts.Reset(PulldownRows.Num());
+
+		for (const auto& PulldownRow : PulldownRows)
+		{
+			if (!PulldownRow.IsValid())
+			{
+				continue;
+			}
+
+			PostChangeDisplayTexts.Add(*PulldownRow->DisplayText.ToString());
+		}
+	}
+
+	if (PreChangeDisplayTexts.Num() != PostChangeDisplayTexts.Num())
+	{
+		return;
+	}
+
+	for (int32 Index = 0; Index < PostChangeDisplayTexts.Num(); Index++)
+	{
+		const FName PreChangeName = PreChangeDisplayTexts[Index];
+		const FName PostChangeName = PostChangeDisplayTexts[Index];
+		if (PreChangeName != PostChangeName)
+		{
+			UpdateDisplayStrings(PreChangeName, PostChangeName);
+		}
+	}
+	
+	CachePreChangeDisplayTexts();
 }

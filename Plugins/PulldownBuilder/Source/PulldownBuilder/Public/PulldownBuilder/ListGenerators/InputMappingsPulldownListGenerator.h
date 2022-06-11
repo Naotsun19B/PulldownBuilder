@@ -17,11 +17,23 @@ class PULLDOWNBUILDER_API UInputMappingsPulldownListGenerator : public UPulldown
 public:
 	// Constructor.
 	UInputMappingsPulldownListGenerator();
+
+	// UObject interface.
+	virtual void PostInitProperties() override;
+	virtual void BeginDestroy() override;
+	// End of UObject interface.
 	
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
 	// End of UPulldownListGeneratorBase interface.
 
+protected:
+	// Cache a pull-down list of current input mapping.
+	void CachePreChangeDisplayTexts();
+	
+	// Called when action or axis mappings have been changed.
+	void HandleOnActionAxisMappingsChanged();
+	
 protected:
 	// Whether to include the action mapping in the list in the pulldown menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
@@ -34,4 +46,8 @@ protected:
 	// Whether to include the speech mapping in the list in the pulldown menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeSpeechMappings;
+
+	// Keep the data of the pull-down list before the change for the redirect process.
+	UPROPERTY(Transient)
+	TArray<FName> PreChangeDisplayTexts;
 };
