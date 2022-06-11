@@ -26,7 +26,7 @@ namespace PulldownBuilder
 		virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 		// End of IPropertyTypeCustomization interface.
 
-		private:
+	private:
 		// FPulldownStructDetail interface.
 		virtual void RefreshPulldownWidget() override;
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;

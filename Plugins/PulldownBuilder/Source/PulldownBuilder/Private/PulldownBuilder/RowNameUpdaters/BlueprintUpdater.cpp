@@ -15,7 +15,7 @@ void UBlueprintUpdater::UpdateRowNamesInternal(
 	const FName& PostChangeName
 )
 {
-	EnumerateAssets<UBlueprint>([&](UBlueprint* Blueprint) -> bool
+	EnumerateAssets<UBlueprint>([&](const UBlueprint* Blueprint) -> bool
 	{
 		return
 			UpdateMemberVariables(Blueprint->GeneratedClass, PulldownContents, PreChangeName, PostChangeName) ||
@@ -24,8 +24,8 @@ void UBlueprintUpdater::UpdateRowNamesInternal(
 }
 
 bool UBlueprintUpdater::UpdateGraphPins(
-	UBlueprint* Blueprint,
-	UPulldownContents* PulldownContents,
+	const UBlueprint* Blueprint,
+	const UPulldownContents* PulldownContents,
 	const FName& PreChangeName,
 	const FName& PostChangeName
 )
@@ -59,7 +59,7 @@ bool UBlueprintUpdater::UpdateGraphPins(
 
 				if (Pin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
 				{
-					if (auto* Struct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject))
+					if (const auto* Struct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject))
 					{
 						if (PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct) &&
 							Struct == PulldownContents->GetPulldownStructType().SelectedStruct)

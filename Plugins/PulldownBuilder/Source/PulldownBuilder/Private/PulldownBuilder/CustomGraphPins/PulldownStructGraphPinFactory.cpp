@@ -22,7 +22,7 @@ namespace PulldownBuilder
 
 	TSharedPtr<SGraphPin> FPulldownStructGraphPinFactory::CreatePin(UEdGraphPin* InPin) const
 	{
-		check(InPin);
+		check(InPin != nullptr);
 	
 		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
 		{

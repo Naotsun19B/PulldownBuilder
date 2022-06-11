@@ -45,6 +45,7 @@ FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
 template<class TPulldownStruct>
 struct TIsPulldownStruct
 {
+public:
 	static constexpr bool Value = (
 		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::IsDerived &&
 		!TIsSame<TPulldownStruct, FPulldownStructBase>::Value

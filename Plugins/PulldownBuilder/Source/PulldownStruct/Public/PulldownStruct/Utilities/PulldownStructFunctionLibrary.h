@@ -9,7 +9,7 @@
 #include "PulldownStructFunctionLibrary.generated.h"
 
 /**
- * A class that defines a blueprint node for pulldown struct.
+ * A class that defines a blueprint node for pull-down struct.
  */
 UCLASS()
 class PULLDOWNSTRUCT_API UPulldownStructFunctionLibrary : public UBlueprintFunctionLibrary
@@ -17,7 +17,7 @@ class PULLDOWNSTRUCT_API UPulldownStructFunctionLibrary : public UBlueprintFunct
 	GENERATED_BODY()
 
 public:
-	// Compares FPulldownStructBase::SelectedValue between pulldown structures of the same type and returns if the values are equal.
+	// Compares FPulldownStructBase::SelectedValue between pull-down structures of the same type and returns if the values are equal.
 	UFUNCTION(BlueprintPure, CustomThunk, meta = (AutoCreateRefTerm = "Lhs,Rhs", BlueprintInternalUseOnly = true, CustomStructureParam = "Lhs,Rhs"))
 	static bool Equal_PulldownStruct(const FPulldownStructBase& Lhs, const FPulldownStructBase& Rhs);
 	static bool GenericEqual_PulldownStruct(
@@ -70,7 +70,7 @@ public:
 		*static_cast<bool*>(RESULT_PARAM) = bReturnValue;
 	}
 
-	// Compares FPulldownStructBase::SelectedValue between pulldown structures of the same type and returns if the values are not equal.
+	// Compares FPulldownStructBase::SelectedValue between pull-down structures of the same type and returns if the values are not equal.
 	UFUNCTION(BlueprintPure, CustomThunk, meta = (AutoCreateRefTerm = "Lhs,Rhs", BlueprintInternalUseOnly = true, CustomStructureParam = "Lhs,Rhs"))
 	static bool NotEqual_PulldownStruct(const FPulldownStructBase& Lhs, const FPulldownStructBase& Rhs);
 	static bool GenericNotEqual_PulldownStruct(
@@ -124,6 +124,6 @@ public:
 	}
 	
 private:
-	// Extract the FPulldownStructBase::SelectedValue value from the raw data of the pulldown structure.
+	// Extract the FPulldownStructBase::SelectedValue value from the raw data of the pull-down structure.
 	static bool TryGetSelectedValue(FName& SelectedValue, const UScriptStruct* Type, const void* Value);
 };

@@ -25,7 +25,7 @@ bool UPulldownListGeneratorBase::HasSourceAsset() const
 FString UPulldownListGeneratorBase::GetSourceAssetName() const
 {
 	unimplemented(); // Be sure to override it when using this function.
-	return FString();
+	return {};
 }
 
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)

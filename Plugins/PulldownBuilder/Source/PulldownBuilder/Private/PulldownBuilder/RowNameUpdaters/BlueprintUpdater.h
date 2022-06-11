@@ -25,8 +25,8 @@ protected:
 
 	// Update the default values for the pins placed on the graph.
 	bool UpdateGraphPins(
-		UBlueprint* Blueprint,
-		UPulldownContents* PulldownContents,
+		const UBlueprint* Blueprint,
+		const UPulldownContents* PulldownContents,
 		const FName& PreChangeName,
 		const FName& PostChangeName
 	);

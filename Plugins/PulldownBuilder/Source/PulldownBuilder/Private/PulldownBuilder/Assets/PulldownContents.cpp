@@ -5,16 +5,9 @@
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 
-namespace PulldownBuilder
-{
-	namespace PulldownContentsDefine
-	{
-		// Define tags for the information that is displayed when you hover over an asset in the Content Browser.
-		static const FName RegisteredStructTypeTag = TEXT("RegisteredStructType");
-		static const FName GeneratorClassTag = TEXT("GeneratorClass");
-		static const FName SourceAssetTag = TEXT("SourceAsset");
-	}
-}
+const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructType");
+const FName UPulldownContents::GeneratorClassTag = TEXT("GeneratorClass");
+const FName UPulldownContents::SourceAssetTag = TEXT("SourceAsset");
 
 void UPulldownContents::PostLoad()
 {
@@ -79,14 +72,14 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 
 	// Added the name of the structure registered in this asset to AssetRegistryTags.
 	OutTags.Add(FAssetRegistryTag(
-		PulldownBuilder::PulldownContentsDefine::RegisteredStructTypeTag,
+		RegisteredStructTypeTag,
 		FName(*PulldownStructType).ToString(),
 		FAssetRegistryTag::TT_Alphabetical
 	));
 
 	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
 	OutTags.Add(FAssetRegistryTag(
-		PulldownBuilder::PulldownContentsDefine::GeneratorClassTag,
+		GeneratorClassTag,
 		GetPulldownListGeneratorClassName(),
 		FAssetRegistryTag::TT_Alphabetical
 	));
@@ -101,7 +94,7 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 		}
 	}
 	OutTags.Add(FAssetRegistryTag(
-		PulldownBuilder::PulldownContentsDefine::SourceAssetTag,
+		SourceAssetTag,
 		SourceAssetName.ToString(),
 		FAssetRegistryTag::TT_Alphabetical
 	));
@@ -140,8 +133,8 @@ FString UPulldownContents::GetTooltip() const
 {
 	FString Tooltip = FString::Printf(
 		TEXT("%s : %s\n%s : %s"),
-		*PulldownBuilder::PulldownContentsDefine::RegisteredStructTypeTag.ToString(), *FName(*PulldownStructType).ToString(),
-		*PulldownBuilder::PulldownContentsDefine::GeneratorClassTag.ToString(), *GetPulldownListGeneratorClassName()
+		*RegisteredStructTypeTag.ToString(), *FName(*PulldownStructType).ToString(),
+		*GeneratorClassTag.ToString(), *GetPulldownListGeneratorClassName()
 	);
 	
 	if (IsValid(PulldownListGenerator))
@@ -150,7 +143,7 @@ FString UPulldownContents::GetTooltip() const
 		{
 			Tooltip += FString::Printf(
 				TEXT("\n%s : %s"),
-				*PulldownBuilder::PulldownContentsDefine::SourceAssetTag.ToString(), *PulldownListGenerator->GetSourceAssetName()
+				*SourceAssetTag.ToString(), *PulldownListGenerator->GetSourceAssetName()
 			);
 		}
 	}

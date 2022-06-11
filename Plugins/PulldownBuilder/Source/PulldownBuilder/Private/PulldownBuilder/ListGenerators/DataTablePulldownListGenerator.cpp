@@ -3,14 +3,8 @@
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
-namespace DataTablePulldownListGeneratorDefine
-{
-	// The default name of the property that will be the data to be displayed as a tooltip in the pull-down menu.
-	static const FString DefaultPulldownTooltipName = TEXT("PulldownTooltip");
-
-	// A meta specifier for specifying properties for tooltips in USTRUCT.
-	static const FString TooltipPropertyMeta = TEXT("TooltipProperty");
-}
+const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName = TEXT("PulldownTooltip");
+const FString UDataTablePulldownListGenerator::TooltipPropertyMeta = TEXT("TooltipProperty");
 
 TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows() const
 {
@@ -108,8 +102,8 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 {
 	check(IsValid(RowStruct));
 
-	FString TooltipPropertyName = DataTablePulldownListGeneratorDefine::DefaultPulldownTooltipName;
-	if (const FString* Meta = RowStruct->FindMetaData(*DataTablePulldownListGeneratorDefine::TooltipPropertyMeta))
+	FString TooltipPropertyName = DefaultPulldownTooltipName;
+	if (const FString* Meta = RowStruct->FindMetaData(*TooltipPropertyMeta))
 	{
 		TooltipPropertyName = *Meta;
 	}

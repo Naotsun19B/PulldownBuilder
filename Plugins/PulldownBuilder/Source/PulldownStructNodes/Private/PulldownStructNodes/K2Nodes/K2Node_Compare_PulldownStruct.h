@@ -7,7 +7,7 @@
 #include "K2Node_Compare_PulldownStruct.generated.h"
 
 /**
- * Base class for blueprint nodes that compare pulldown structures.
+ * Base class for blueprint nodes that compare pull-down structures.
  */
 UCLASS(Abstract)
 class PULLDOWNSTRUCTNODES_API UK2Node_Compare_PulldownStruct : public UK2Node

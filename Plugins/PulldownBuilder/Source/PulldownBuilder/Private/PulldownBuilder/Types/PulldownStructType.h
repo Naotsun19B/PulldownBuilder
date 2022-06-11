@@ -22,8 +22,8 @@ public:
 public:
 	// Constructor.
 	FPulldownStructType() : SelectedStruct(nullptr) {}
-	FPulldownStructType(UScriptStruct* InStructType) : SelectedStruct(InStructType) {}
-	FPulldownStructType(const FName& InStructTypeName)
+	explicit FPulldownStructType(UScriptStruct* InStructType) : SelectedStruct(InStructType) {}
+	explicit FPulldownStructType(const FName& InStructTypeName)
 	{
 		SelectedStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *InStructTypeName.ToString(), true);
 	}
@@ -50,12 +50,12 @@ public:
 	}
 	// End of overload oprators.
 	
-	// Define a GetTypeHash function so that it can be used as a map key.
-	friend FORCEINLINE uint32 GetTypeHash(const FPulldownStructType& PulldownStructType)
-	{
-		return GetTypeHash(PulldownStructType.SelectedStruct);
-	}
-
 	// Returns whether the structure information is empty.
 	bool IsEmpty() const { return !IsValid(SelectedStruct); }
 };
+
+// Define a GetTypeHash function so that it can be used as a map key.
+FORCEINLINE uint32 GetTypeHash(const FPulldownStructType& PulldownStructType)
+{
+	return GetTypeHash(PulldownStructType.SelectedStruct);
+}

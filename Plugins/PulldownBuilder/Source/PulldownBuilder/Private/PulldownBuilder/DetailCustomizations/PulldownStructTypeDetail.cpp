@@ -43,18 +43,18 @@ namespace PulldownBuilder
 
 	void FPulldownStructTypeDetail::Register()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 		PropertyModule.RegisterCustomPropertyTypeLayout(
-			FPulldownStructType::StaticStruct()->GetFName(),
+			*GetNameSafe(FPulldownStructType::StaticStruct()),
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructTypeDetail::MakeInstance)
 		);
 	}
 
 	void FPulldownStructTypeDetail::Unregister()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 		PropertyModule.UnregisterCustomPropertyTypeLayout(
-			FPulldownStructType::StaticStruct()->GetFName()
+			*GetNameSafe(FPulldownStructType::StaticStruct()),
 		);
 	}
 
@@ -120,7 +120,7 @@ namespace PulldownBuilder
 	
 		UObject* Value;
 		SelectedStructHandle->GetValue(Value);
-		if (auto* Struct = Cast<UScriptStruct>(Value))
+		if (const auto* Struct = Cast<UScriptStruct>(Value))
 		{
 			return FText::AsCultureInvariant(Struct->GetName());
 		}
@@ -148,7 +148,7 @@ namespace PulldownBuilder
 				[
 					SNew(SBorder)
 					.Padding(4)
-					.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+					.BorderImage(FEditorStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
 					[
 						StructViewerModule.CreateStructViewer(Options, FOnStructPicked::CreateSP(this, &FPulldownStructTypeDetail::OnPickedStruct))
 					]

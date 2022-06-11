@@ -22,7 +22,7 @@ namespace PulldownBuilder
 		virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* InPin) const override;
 		// End of FGraphPanelPinFactory interface.
 
-		private:
+	private:
 		// An instance of this factory class.
 		static TSharedPtr<FGraphPanelPinFactory> Instance;
 	};

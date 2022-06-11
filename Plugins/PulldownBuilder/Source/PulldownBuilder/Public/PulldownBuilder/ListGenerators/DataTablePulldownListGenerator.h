@@ -26,6 +26,13 @@ class PULLDOWNBUILDER_API UDataTablePulldownListGenerator
 	GENERATED_BODY()
 
 public:
+	// The default name of the property that will be the data to be displayed as a tooltip in the pull-down menu.
+	static const FString DefaultPulldownTooltipName;
+
+	// A meta specifier for specifying properties for tooltips in USTRUCT.
+	static const FString TooltipPropertyMeta;
+	
+public:
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
 	virtual bool HasSourceAsset() const override;

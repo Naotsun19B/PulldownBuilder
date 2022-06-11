@@ -20,6 +20,12 @@ UCLASS()
 class PULLDOWNBUILDER_API UPulldownContents : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	// Define tags for the information that is displayed when you hover over an asset in the Content Browser.
+	static const FName RegisteredStructTypeTag;
+	static const FName GeneratorClassTag;
+	static const FName SourceAssetTag;
 	
 public:
 	// UObject interface.

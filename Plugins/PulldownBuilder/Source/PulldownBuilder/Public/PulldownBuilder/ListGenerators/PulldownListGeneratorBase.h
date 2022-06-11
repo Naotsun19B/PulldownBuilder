@@ -29,7 +29,7 @@ public:
 	virtual FString GetSourceAssetName() const;
 	
 protected:
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetDisplayStrings"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetPulldownRows"))
     TArray<FPulldownRow> GetPulldownRowsFromBlueprint() const;
 
 	// Update all FPulldownStructBases that reference owner PulldownContents asset.
