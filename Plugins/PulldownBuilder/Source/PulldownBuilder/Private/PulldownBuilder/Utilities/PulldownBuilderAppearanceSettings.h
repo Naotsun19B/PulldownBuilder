@@ -16,13 +16,17 @@ class UPulldownBuilderAppearanceSettings : public UObject
 	
 public:
 	// Size of the PulldownSelector widget.
-	UPROPERTY(EditAnywhere, Config, Category = "Pulldown Selector")
+	UPROPERTY(EditAnywhere, Config, Category = "Selector")
 	FVector2D PanelSize;
 
 	// Whether you need to double-click to select an item in PulldownSelector widget.
-	UPROPERTY(EditAnywhere, Config, Category = "Pulldown Selector")
+	UPROPERTY(EditAnywhere, Config, Category = "Selector")
 	bool bIsSelectWhenDoubleClick;
 
+	// Whether to automatically inline a single property pull-down structure.
+	UPROPERTY(EditAnywhere, Config, Category = "Details")
+	bool bShouldInlineDisplayWhenSingleProperty;
+	
 public:
 	// Constructor.
 	UPulldownBuilderAppearanceSettings();

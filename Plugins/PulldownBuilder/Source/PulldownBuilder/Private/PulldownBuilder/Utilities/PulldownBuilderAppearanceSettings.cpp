@@ -18,6 +18,7 @@ namespace PulldownBuilder
 UPulldownBuilderAppearanceSettings::UPulldownBuilderAppearanceSettings()
 	: PanelSize(220.f, 300.f)
 	, bIsSelectWhenDoubleClick(false)
+	, bShouldInlineDisplayWhenSingleProperty(true)
 {
 }
 

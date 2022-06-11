@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
@@ -86,7 +87,7 @@ namespace PulldownBuilder
 		];
 
 		// If the property is only FPulldownStructBase::SelectedValue, display it inline.
-		if (NumChildProperties == 1 && !bNeverInlineDisplay)
+		if (NumChildProperties == 1 && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			HeaderRow.ValueContent()
 				.MinDesiredWidth(500)
@@ -128,7 +129,7 @@ namespace PulldownBuilder
 		}
 
 		// If there are multiple properties, do not display inline.
-		if (NumChildProperties > 1 || bNeverInlineDisplay)
+		if (NumChildProperties > 1 || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
 		

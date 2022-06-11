@@ -86,8 +86,5 @@ namespace PulldownBuilder
 
 		// A widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
-
-		// If this flag is true, inline display will not be performed regardless of the number of properties.
-		bool bNeverInlineDisplay = false;
 	};
 }
