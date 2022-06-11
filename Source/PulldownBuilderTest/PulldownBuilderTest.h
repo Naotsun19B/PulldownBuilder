@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #pragma once
 
