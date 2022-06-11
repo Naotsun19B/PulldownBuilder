@@ -10,6 +10,8 @@ struct FPulldownRow;
 
 namespace PulldownBuilder
 {
+	class SPulldownSelector;
+	
 	/**
 	 * A widget that displays the PulldownSelector when you press a button and
 	 * allows you to select an item from the pull-down menu.
@@ -43,7 +45,7 @@ namespace PulldownBuilder
 		void SetSelectedItem(TSharedPtr<FPulldownRow> NewItem);
 	
 		// Rebuild the list.
-		void RefreshList() {}
+		void RefreshList();
 
 	private:
 		// Returns the widget to display when the combo button is pressed.
@@ -59,6 +61,9 @@ namespace PulldownBuilder
 		void HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 	private:
+		// A pull-down selector widget to display in the contents of the combo box.
+		TSharedPtr<SPulldownSelector> PulldownSelector;
+		
 		// A pointer to the underlying data to use when building ListItems.
 		const TArray<TSharedPtr<FPulldownRow>>* ListItemsSource = nullptr;
 	

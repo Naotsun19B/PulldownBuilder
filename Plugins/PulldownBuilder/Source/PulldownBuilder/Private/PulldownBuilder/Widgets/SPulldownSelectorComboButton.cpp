@@ -38,10 +38,18 @@ namespace PulldownBuilder
 		SelectedPulldownRow = NewItem;
 	}
 
+	void SPulldownSelectorComboButton::RefreshList()
+	{
+		if (PulldownSelector.IsValid())
+		{
+			PulldownSelector->RefreshList();
+		}
+	}
+
 	TSharedRef<SWidget> SPulldownSelectorComboButton::HandleOnGetMenuContent()
 	{
 		return
-			SNew(SPulldownSelector)
+			SAssignNew(PulldownSelector, SPulldownSelector)
 			.ListItemsSource(ListItemsSource)
 			.InitialSelection(SelectedPulldownRow)
 			.OnSelectionChanged(this, &SPulldownSelectorComboButton::HandleOnSelectionChanged);
@@ -82,6 +90,7 @@ namespace PulldownBuilder
 		}
 
 		SetIsOpen(false);
+		PulldownSelector.Reset();
 	}
 }
 
