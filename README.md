@@ -1,6 +1,6 @@
 # PulldownBuilder 
 
-![image](https://user-images.githubusercontent.com/51815450/117563463-ff75b880-b0e0-11eb-9029-4a1766e39729.png)
+![Plugin](https://user-images.githubusercontent.com/51815450/173223798-f60374a1-1d14-4ac2-93c1-bdbab9fe5278.PNG)
 
 <!--ts-->
    * [Description](#Description)
@@ -11,6 +11,7 @@
       * [When don't using C++](#when-dont-using-c)
       * [PulldownListGenerator](#PulldownListGenerator)
       * [RowNameUpdater](#RowNameUpdater)
+   * [Nodes](#Nodes)
    * [Settings](#Settings)
    * [Note](#Note)
    * [License](#License)
@@ -23,7 +24,7 @@
 This plugin allows you to easily create a pull-down structure using a dedicated asset.  
 For example, you can specify the Row Name of the data table in a pull-down menu like an enum instead of a string.  
 
-![Details](https://user-images.githubusercontent.com/51815450/127496205-9d6c49e1-436a-4631-aa82-609ce85574cc.PNG)
+![PulldownDetails](https://user-images.githubusercontent.com/51815450/173223818-c8297c9c-6a0d-4e4a-938d-a15f55df9c49.PNG)
 
 ## Requirement  
 
@@ -89,58 +90,59 @@ Next, define a structure that inherits from [`FPulldownStructBase`](https://gith
 You can define variables in addition to the string selected in the pull-down menu.  
 The structure defined here is the structure for which the pull-down menu is displayed.  
 
-![image](https://user-images.githubusercontent.com/51815450/117563939-42855b00-b0e4-11eb-8fb9-bddb3e346919.png)
+![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
 
 Then build, launch the editor, and create a PulldownContents asset in the Content Browser.  
 
-![image](https://user-images.githubusercontent.com/51815450/117564018-c6d7de00-b0e4-11eb-84f3-78183b6edd3b.png)
+![PulldownStructType](https://user-images.githubusercontent.com/51815450/173223858-12fca014-5fb8-44b1-bbce-1d07c363edde.PNG)
 
 Open the created asset and set `Pulldown Struct Type` to the structure defined earlier.    
 You can't set the same structure for multiple PulldownContents assets.  
 
-![image](https://user-images.githubusercontent.com/51815450/117564115-5aa9aa00-b0e5-11eb-8bd2-4cf5d08d203b.png)
+![PulldownListGenerator](https://user-images.githubusercontent.com/51815450/173223874-23a8d64b-545d-4fb4-8b89-b163a93df5fc.PNG)
 
 Next, set the class that builds the list from which the pull-down menu is based.    
 See the `Pulldown List Generator` section below for the classes that build lists.    
 
-![Preview](https://user-images.githubusercontent.com/51815450/127496168-b2746a67-e729-4883-8321-7aa94c1182ec.PNG)
+![Preview](https://user-images.githubusercontent.com/51815450/173223882-b88eba54-db31-4282-8b57-aa49f4ac4c1b.PNG)
 
 With the settings up to this point, you can see the pull-down menu built by this PulldownContents asset in `Preview`.  
 After that, if you use a structure defined by variables or function arguments, the pull-down menu will be displayed automatically.  
 
-![Pins](https://user-images.githubusercontent.com/51815450/127496202-3b1d0838-aee7-49e1-a4da-b9c9e18abcc9.PNG)
-![Details](https://user-images.githubusercontent.com/51815450/127496205-9d6c49e1-436a-4631-aa82-609ce85574cc.PNG)
+![PulldownPin](https://user-images.githubusercontent.com/51815450/173223894-288dc7c3-ca0b-47dc-b0c9-97e7999f6460.PNG)
+![PulldownDetails](https://user-images.githubusercontent.com/51815450/173223818-c8297c9c-6a0d-4e4a-938d-a15f55df9c49.PNG)
 
 ### ・When don't using C++  
 
-![image](https://user-images.githubusercontent.com/51815450/117563939-42855b00-b0e4-11eb-8fb9-bddb3e346919.png)
+![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
 
 First, create a PulldownContents asset in the Content Browser.  
 
-![image](https://user-images.githubusercontent.com/51815450/117564115-5aa9aa00-b0e5-11eb-8bd2-4cf5d08d203b.png)
+![PulldownListGenerator](https://user-images.githubusercontent.com/51815450/173223874-23a8d64b-545d-4fb4-8b89-b163a93df5fc.PNG)
 
 Next, set the class that builds the list from which the pull-down menu is based.  
 See the `PulldownListGenerator` section below for the classes that build lists.   
 
-![Preview](https://user-images.githubusercontent.com/51815450/127496168-b2746a67-e729-4883-8321-7aa94c1182ec.PNG)
+![Preview](https://user-images.githubusercontent.com/51815450/173223882-b88eba54-db31-4282-8b57-aa49f4ac4c1b.PNG)
 
 With the settings up to this point, you can see the pull-down menu built by this PulldownContents asset in `Preview`.  
 After that, if you use `NativeLessPulldownStruct` for variables and function arguments, the pull-down menu will be displayed automatically.  
 Unlike the one defined in C++, you can switch the PulldownContents asset from which the pull-down menu is based.  
 
-![NativeLessPins](https://user-images.githubusercontent.com/51815450/127496214-49997c1a-fab5-4527-b994-a1e8b36214d0.PNG)
-![NativeLessDetails](https://user-images.githubusercontent.com/51815450/127496219-56d9adb5-287d-42c2-856f-7ce5673cfcf0.PNG)
+![NativeLessPin](https://user-images.githubusercontent.com/51815450/173223970-d3d8e7e5-3f1c-4d9f-9293-71cdc35ebbe7.PNG)
+![NativeLessDetails](https://user-images.githubusercontent.com/51815450/173223982-c93bd1dc-8470-4aca-906c-61617450cc00.PNG)
 
 ### ・PulldownListGenerator  
 
 There is `PulldownListGenerator` as a class that builds the list that is the basis of the pull-down menu.
 The following three `PulldownListGenerator`s are provided as standard.
 
-|**Class**|**Function**|**Tooltip**|
-|:---:|---|---|
-|DataTablePulldownListGenerator|List the Row Names of the data table assets set in `SourceDataTable` in the pull-down menu.|If there is a variable named "PulldownTooltip" of type FString in the structure used as the row of the Data Table, that string is displayed.|
-|StringTablePulldownListGenerator|List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.|Displays the corresponding character string for each item.|
-|NameArrayPulldownListGenerator|List the elements of the array in the pull-down menu under `SourceNameArray`.|Displays the character string set in the Value of each item.|
+|             **Class**              | **Function**                                                                                            | **Tooltip**                                                                                                                                  |
+|:----------------------------------:|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+|   DataTablePulldownListGenerator   | List the Row Names of the data table assets set in `SourceDataTable` in the pull-down menu.             | If there is a variable named "PulldownTooltip" of type FString in the structure used as the row of the Data Table, that string is displayed. |
+|  StringTablePulldownListGenerator  | List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.              | Displays the corresponding character string for each item.                                                                                   |
+|   NameArrayPulldownListGenerator   | List the elements of the array in the pull-down menu under `SourceNameArray`.                           | Displays the character string set in the Value of each item.                                                                                 |
+| InputMappingsPulldownListGenerator | List the elements of the input mapping set in the input of the project settings in the pull-down menu.  | Displays the name of the button corresponding to the input name.                                                                             |
 
 To create your own `PulldownListGenerator`, inherit the [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) in C++ or BP and override the `GetDisplayStrings`.  
 The return value array will be listed in the pull-down menu.  
@@ -150,26 +152,33 @@ The return value array will be listed in the pull-down menu.
 If the underlying data of the pull-down menu is updated (for example, the Row Name of the data table has changed), there is a mechanism to replace the already used value with the new name.  
 The following assets are supported as standard.
 
-|**Asset type**|**Updater class**|
-|:---:|---|
-|Blueprint| [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/BlueprintUpdater.h) |
-|DataTable| [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataTableUpdater.h) |
-|DataAsset| [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h) |
+| **Asset type** | **Updater class**                                                                                                                                                                            |
+|:--------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|   Blueprint    | [`UBlueprintUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/BlueprintUpdater.h)   |
+|   DataTable    | [`UDataTableUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataTableUpdater.h)   |
+|   DataAsset    | [`UDataAssetUpdater`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Private/PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h)   |
 
 In order to support assets other than these, it is necessary to inherit [`URowNameUpdaterBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h) in C ++ and implement the update process.
 
+### ・Nodes
+
+![Nodes](https://user-images.githubusercontent.com/51815450/173224288-acde9271-fff3-40eb-bd4a-47529f90a62a.PNG)
+
+Nodes are available that compare pull-down structures of the same type.
+
 ## Settings  
 
-![Settings](https://user-images.githubusercontent.com/51815450/127496240-39f10c81-277b-40d3-8d5d-3a6ff68e1a17.PNG)
+![EditorPreferences](https://user-images.githubusercontent.com/51815450/173224011-f82601a7-77e8-45fb-b74a-31ca17464163.PNG)
 
 The items that can be set from the editor preferences are as follows.
 
-|**Item**|**Description**|
-|---|---|
-|Panel Size|Specify the panel size of the pull-down menu.|
-|Is Select when Double Click|If this flag is true, you will need to double-click to select an item in the pull-down menu.|
-|Should Update When Source Row Name Changed|Specifies whether to perform automatic update processing of the pull-down menu using RowNameUpdater.|
-|Active Row Name Updater|Specifies the RowNameUpdater class to enable. Only the RowNameUpdater set here will perform the update process.|
+| **Section** | **Item**                                   | **Description**                                                                                                 |
+|-------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| Appearance  | Panel Size                                 | Specify the panel size of the pull-down menu.                                                                   |
+|             | Is Select when Double Click                | If this flag is true, you will need to double-click to select an item in the pull-down menu.                    |
+|             | Should Inline Display When Single Property | If this flag is true, automatically inline a single property pull-down structure.                               |
+| Redirect    | Should Update When Source Row Name Changed | Specifies whether to perform automatic update processing of the pull-down menu using RowNameUpdater.            |
+|             | Active Row Name Updater                    | Specifies the RowNameUpdater class to enable. Only the RowNameUpdater set here will perform the update process. |
 
 ## Note  
 
@@ -184,6 +193,11 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2022/06/12) v1.6   
+  Added comparison blueprint node between pull-down structures  
+  The settings related to appearance are saved for each individual, and the settings related to redirect processing are saved in the project share
+  Added `PulldownListGenerator` to generate a pulldown list from the input settings
 
 - (2022/04/06) v1.5   
   Fixed errors when building with strict includes

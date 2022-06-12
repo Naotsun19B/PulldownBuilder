@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/InputMappingsPulldownListGenerator.h"
 #include "GameFramework/InputSettings.h"
+#include "Editor.h"
 
 UInputMappingsPulldownListGenerator::UInputMappingsPulldownListGenerator()
 	: bIncludeActionMappings(true)
