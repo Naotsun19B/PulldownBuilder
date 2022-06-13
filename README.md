@@ -196,7 +196,7 @@ The items that can be set from the editor preferences are as follows.
 
 - (2022/06/12) v1.6   
   Added comparison blueprint node between pull-down structures  
-  The settings related to appearance are saved for each individual, and the settings related to redirect processing are saved in the project share
+  The settings related to appearance are saved for each individual, and the settings related to redirect processing are saved in the project share  
   Added `PulldownListGenerator` to generate a pulldown list from the input settings
 
 - (2022/04/06) v1.5   
