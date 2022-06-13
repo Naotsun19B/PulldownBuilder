@@ -11,7 +11,7 @@ G# PulldownBuilder
       * [C++を使用しない場合](#C++を使用しない場合)
       * [PulldownListGenerator](#PulldownListGenerator)
       * [RowNameUpdater](#RowNameUpdater)
-   * [ノード](#ノード)
+      * [ノード](#ノード)
    * [オプション](#オプション)
    * [備考](#備考)
    * [ライセンス](#ライセンス)
