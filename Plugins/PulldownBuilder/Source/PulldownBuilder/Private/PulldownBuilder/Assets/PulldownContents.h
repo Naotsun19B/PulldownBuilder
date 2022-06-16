@@ -61,6 +61,9 @@ protected:
 	// Unregister the structure set for this asset from detail customization.
 	virtual void UnregisterDetailCustomization();
 	
+	// Called when any asset in any package is reloaded.
+	void HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent);
+	
 protected:	
 	// Structure that displays a pull-down menu.
 	// It must be a structure that inherits from FPulldownStructBase.
