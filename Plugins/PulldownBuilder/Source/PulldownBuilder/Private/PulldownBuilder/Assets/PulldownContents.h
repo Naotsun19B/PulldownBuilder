@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "UObject/PackageReload.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownBuilder/Types/PreviewPulldownStruct.h"
