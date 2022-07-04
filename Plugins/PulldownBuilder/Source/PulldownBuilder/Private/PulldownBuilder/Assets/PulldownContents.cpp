@@ -18,6 +18,8 @@ void UPulldownContents::PostLoad()
 {
 	Super::PostLoad();
 	
+	FCoreUObjectDelegates::OnPackageReloaded.AddUObject(this, &UPulldownContents::HandleOnPackageReloaded);
+	
 	RegisterDetailCustomization();
 }
 
@@ -59,6 +61,8 @@ void UPulldownContents::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 void UPulldownContents::BeginDestroy()
 {
 	UnregisterDetailCustomization();
+
+	FCoreUObjectDelegates::OnPackageReloaded.RemoveAll(this);
 	
 	Super::BeginDestroy();
 }
@@ -195,4 +199,13 @@ void UPulldownContents::UnregisterDetailCustomization()
 
 	PulldownBuilder::FPulldownStructDetail::Unregister(PulldownStructType);
 	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
+}
+
+void UPulldownContents::HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent)
+{
+	if (ReloadPhase == EPackageReloadPhase::PostBatchPostGC)
+	{
+		UnregisterDetailCustomization();
+		RegisterDetailCustomization();
+	}
 }

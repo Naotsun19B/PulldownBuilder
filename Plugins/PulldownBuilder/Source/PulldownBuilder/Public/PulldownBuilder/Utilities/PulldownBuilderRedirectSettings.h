@@ -17,6 +17,7 @@ class PULLDOWNBUILDER_API UPulldownBuilderRedirectSettings : public UObject
 	GENERATED_BODY()
 
 public:
+	// *** [Caution]: This is an experimental feature. ***
 	// Whether to replace the value already used in the Blueprint Asset with the changed name
 	// when the original data of the PulldownContents asset is updated
 	// (for example, the row name of the data table asset is changed).
@@ -25,7 +26,7 @@ public:
 	// This process may load a large number of assets and stop the editor.
 	// In that case, turn off this flag or limit the types of assets
 	// that can be updated with the ActiveRowNameUpdater.
-	UPROPERTY(EditAnywhere, Config, Category = "Redirect")
+	UPROPERTY(EditAnywhere, Config, Category = "Redirect", DisplayName = "Should Update When Source Row Name Changed (Experimental)")
 	bool bShouldUpdateWhenSourceRowNameChanged;
 
 	// Active per-asset updater class.

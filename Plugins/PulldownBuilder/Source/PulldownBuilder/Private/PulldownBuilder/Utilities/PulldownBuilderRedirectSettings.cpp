@@ -19,7 +19,7 @@ namespace PulldownBuilder
 }
 
 UPulldownBuilderRedirectSettings::UPulldownBuilderRedirectSettings()
-	: bShouldUpdateWhenSourceRowNameChanged(true)
+	: bShouldUpdateWhenSourceRowNameChanged(false)
 {
 	ActiveRowNameUpdater.Add(UBlueprintUpdater::StaticClass());
 	ActiveRowNameUpdater.Add(UDataTableUpdater::StaticClass());
