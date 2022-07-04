@@ -93,6 +93,8 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> FNativeLessPulldownStructDetail::GenerateSelectableValues()
 	{
+		check(StructPropertyHandle);
+		
 		PulldownContentsNames.Reset();
 		PulldownContentsNames.Add(MakeShared<FPulldownRow>());
 
@@ -111,7 +113,10 @@ namespace PulldownBuilder
 		PulldownSourceHandle->GetValue(PulldownSource);
 		if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
 		{
-			return SourceAsset->GetPulldownRows();
+			TArray<UObject*> OuterObjects;
+			StructPropertyHandle->GetOuterObjects(OuterObjects);
+			
+			return SourceAsset->GetPulldownRows(OuterObjects);
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();

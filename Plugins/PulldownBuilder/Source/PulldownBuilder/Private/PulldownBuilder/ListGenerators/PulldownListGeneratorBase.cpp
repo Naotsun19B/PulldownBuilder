@@ -5,10 +5,10 @@
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 
-TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows() const
+TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
 {
 	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
-	TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint();
+	TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects);
 	for (const auto& PulldownRowFromBlueprint : PulldownRowsFromBlueprint)
 	{
 		PulldownRows.Add(MakeShared<FPulldownRow>(PulldownRowFromBlueprint));

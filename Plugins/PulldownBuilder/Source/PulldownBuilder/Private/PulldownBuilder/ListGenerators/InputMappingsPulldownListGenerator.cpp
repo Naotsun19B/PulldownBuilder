@@ -27,7 +27,7 @@ void UInputMappingsPulldownListGenerator::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows() const
+TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
 {
 	const auto* InputSettings = UInputSettings::GetInputSettings();
 	if (!IsValid(InputSettings))
@@ -150,7 +150,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 
 void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 {
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows();
+	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows(TArray<UObject*>{});
 	
 	PreChangeDisplayTexts.Reset(PulldownRows.Num());
 	
@@ -169,7 +169,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 {
 	TArray<FName> PostChangeDisplayTexts;
 	{
-		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows();
+		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows(TArray<UObject*>{});
 		
 		PostChangeDisplayTexts.Reset(PulldownRows.Num());
 

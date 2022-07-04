@@ -41,7 +41,10 @@ namespace PulldownBuilder
 
 		// Get the list of character strings to be displayed in the pull-down menu from PulldownContents
 		// obtained by FindPulldownContentsByStruct.
-		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(const UScriptStruct* InStruct);
+		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(
+			const UScriptStruct* InStruct,
+			const TArray<UObject*>& OuterObjects
+		);
 
 		// Generates "None" only display strings.
 		static TArray<TSharedPtr<FPulldownRow>> GetEmptyPulldownRows();

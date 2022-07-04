@@ -206,7 +206,10 @@ namespace PulldownBuilder
 		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(StructProperty->Struct);
+			TArray<UObject*> OuterObjects;
+			StructPropertyHandle->GetOuterObjects(OuterObjects);
+			
+			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(StructProperty->Struct, OuterObjects);
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();

@@ -46,7 +46,7 @@ public:
 	const FPulldownStructType& GetPulldownStructType() const;
 	
 	// Returns the data list to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const;
 
 	// Returns the name of the class set in the PulldownListGenerator.
 	virtual FString GetPulldownListGeneratorClassName() const;

@@ -108,12 +108,15 @@ namespace PulldownBuilder
 		return FoundItem;
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(const UScriptStruct* InStruct)
+	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+		const UScriptStruct* InStruct,
+		const TArray<UObject*>& OuterObjects
+	)
 	{
 		TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 		if (const UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
 		{
-			PulldownRows = FoundItem->GetPulldownRows();
+			PulldownRows = FoundItem->GetPulldownRows(OuterObjects);
 		}
 
 		return PulldownRows;

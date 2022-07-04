@@ -6,9 +6,9 @@
 const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName = TEXT("PulldownTooltip");
 const FString UDataTablePulldownListGenerator::TooltipPropertyMeta = TEXT("TooltipProperty");
 
-TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows() const
+TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows();
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from

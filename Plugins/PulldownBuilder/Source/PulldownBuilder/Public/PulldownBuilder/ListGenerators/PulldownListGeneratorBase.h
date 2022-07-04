@@ -18,7 +18,7 @@ class PULLDOWNBUILDER_API UPulldownListGeneratorBase : public UObject
 public:
 	// Returns a list of data to display in the pull-down menu.
 	// By default, it returns the value of "GetPulldownRowsFromBlueprint".
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const;
 
 	// Returns whether there is an underlying asset.
 	// If this function returns true, the name of the original asset
@@ -30,7 +30,7 @@ public:
 	
 protected:
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "GetPulldownRows"))
-    TArray<FPulldownRow> GetPulldownRowsFromBlueprint() const;
+    TArray<FPulldownRow> GetPulldownRowsFromBlueprint(const TArray<UObject*>& OuterObjects) const;
 
 	// Update all FPulldownStructBases that reference owner PulldownContents asset.
 	virtual void UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName);

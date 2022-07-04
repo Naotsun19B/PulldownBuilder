@@ -26,7 +26,7 @@ namespace PulldownBuilder
 		virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
 		// End of SGraphPin interface.
 
-		protected:
+	protected:
 		// Rebuilds the list of strings to display in the pull-down menu.
 		virtual void RebuildPulldown();
 
@@ -50,7 +50,10 @@ namespace PulldownBuilder
 		// If specify a property name that does not exist and get it, nullptr is returned.
 		TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;
 		void SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue);
-	
+
+		// Recursively search and return the outer assets of the pin.
+		UObject* GetOuterAsset() const;
+		
 	protected:
 		// A list of values that can be set in FPulldownStructBase::SelectedValue.
 		TArray<TSharedPtr<FPulldownRow>> SelectableValues;

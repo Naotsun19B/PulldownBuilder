@@ -57,7 +57,7 @@ namespace PulldownBuilder
 	
 		if (const auto* Struct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject))
 		{
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(Struct);
+			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(Struct, TArray<UObject*>{ GetOuterAsset() });
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
@@ -134,5 +134,32 @@ namespace PulldownBuilder
 			check(Schema);
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 		}
+	}
+
+	UObject* SPulldownStructGraphPin::GetOuterAsset() const
+	{
+		UEdGraphNode* Node = GraphPinObj->GetOuter();
+		if (!IsValid(Node))
+		{
+			return nullptr;
+		}
+
+		UObject* CurrentObject = Node;
+		while (true)
+		{
+			if (!IsValid(CurrentObject))
+			{
+				break;
+			}
+
+			if (CurrentObject->IsAsset())
+			{
+				return CurrentObject;
+			}
+
+			CurrentObject = CurrentObject->GetOuter();
+		}
+
+		return nullptr;
 	}
 }

@@ -4,9 +4,9 @@
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
 
-TArray<TSharedPtr<FPulldownRow>> UStringTablePulldownListGenerator::GetPulldownRows() const
+TArray<TSharedPtr<FPulldownRow>> UStringTablePulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows();
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from

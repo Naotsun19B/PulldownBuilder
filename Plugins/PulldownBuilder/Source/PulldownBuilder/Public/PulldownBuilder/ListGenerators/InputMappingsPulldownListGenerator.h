@@ -24,7 +24,7 @@ public:
 	// End of UObject interface.
 	
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows() const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const override;
 	// End of UPulldownListGeneratorBase interface.
 
 protected:

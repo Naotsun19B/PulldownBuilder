@@ -110,13 +110,13 @@ const FPulldownStructType& UPulldownContents::GetPulldownStructType() const
 	return PulldownStructType;
 }
 
-TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows() const
+TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
 {
 	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 	
 	if (IsValid(PulldownListGenerator))
 	{
-		PulldownRows = PulldownListGenerator->GetPulldownRows();
+		PulldownRows = PulldownListGenerator->GetPulldownRows(OuterObjects);
 	}
 
 	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.

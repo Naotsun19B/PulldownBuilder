@@ -38,9 +38,9 @@ namespace PulldownBuilder
 		StructPropertyHandle->GetOuterObjects(OuterObjects);
 		for (const auto& OuterObject : OuterObjects)
 		{
-			if (const auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
+			if (auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
 			{
-				return PulldownContents->GetPulldownRows();
+				return PulldownContents->GetPulldownRows(TArray<UObject*>{ PulldownContents });
 			}
 		}
 
