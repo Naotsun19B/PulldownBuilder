@@ -6,6 +6,7 @@
 #include "SGraphPin.h"
 
 struct FPulldownRow;
+struct FStructContainer;
 
 namespace PulldownBuilder
 {
@@ -53,6 +54,9 @@ namespace PulldownBuilder
 
 		// Recursively search and return the outer assets of the pin.
 		UObject* GetOuterAsset() const;
+
+		// Create an F Struct Container from the data of the property pointed to by this pin.
+		bool GenerateStructContainer(FStructContainer& StructContainer) const;
 		
 	protected:
 		// A list of values that can be set in FPulldownStructBase::SelectedValue.

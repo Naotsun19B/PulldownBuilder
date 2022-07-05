@@ -56,9 +56,12 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 	}
 }
 
-TArray<TSharedPtr<FPulldownRow>> UNameArrayPulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
+TArray<TSharedPtr<FPulldownRow>> UNameArrayPulldownListGenerator::GetPulldownRows(
+	const TArray<UObject*>& OuterObjects,
+	const FStructContainer& StructInstance
+) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects);
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from

@@ -6,6 +6,7 @@
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
@@ -208,8 +209,19 @@ namespace PulldownBuilder
 		{
 			TArray<UObject*> OuterObjects;
 			StructPropertyHandle->GetOuterObjects(OuterObjects);
+
+			void* RawData;
+			const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(RawData);
+			if (Result != FPropertyAccess::Success)
+			{
+				RawData = nullptr;
+			}
 			
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(StructProperty->Struct, OuterObjects);
+			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+				StructProperty->Struct,
+				OuterObjects,
+				FStructContainer(StructProperty->Struct, static_cast<uint8*>(RawData))
+			);
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();

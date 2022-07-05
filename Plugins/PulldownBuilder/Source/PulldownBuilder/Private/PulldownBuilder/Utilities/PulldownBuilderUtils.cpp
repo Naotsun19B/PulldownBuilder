@@ -4,10 +4,14 @@
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "UObject/UObjectIterator.h"
 #include "EdGraphSchema_K2.h"
+#include "Serialization/JsonSerializer.h"
+#include "JsonObjectConverter.h"
+#include "Dom/JsonObject.h"
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
 
@@ -110,13 +114,14 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 		const UScriptStruct* InStruct,
-		const TArray<UObject*>& OuterObjects
+		const TArray<UObject*>& OuterObjects,
+		const FStructContainer& StructInstance
 	)
 	{
 		TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 		if (const UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
 		{
-			PulldownRows = FoundItem->GetPulldownRows(OuterObjects);
+			PulldownRows = FoundItem->GetPulldownRows(OuterObjects, StructInstance);
 		}
 
 		return PulldownRows;
@@ -230,6 +235,78 @@ namespace PulldownBuilder
 		NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
 		
 		return MakeShared<FString>(NewDefaultValue);
+	}
+
+	bool FPulldownBuilderUtils::GetStructRawDataFromDefaultValueString(
+		const UScriptStruct* StructType,
+		const FString& DefaultValue,
+		uint8*& RawData
+	)
+	{
+		TSharedPtr<FJsonObject> JsonObject;
+		{
+			FString JsonString;
+			{
+				const FString TrimmedDefaultValue = DefaultValue.Mid(1, DefaultValue.Len() - 2);
+				TMap<FString, FString> PropertyNameToValue;
+				
+				TArray<FString> PropertyStrings;
+				TrimmedDefaultValue.ParseIntoArray(PropertyStrings, TEXT(","));
+				PropertyNameToValue.Reserve(PropertyStrings.Num());
+				
+				for (const auto& PropertyString : PropertyStrings)
+				{
+					FString PropertyName;
+					FString PropertyValue;
+					if (PropertyString.Split(TEXT("="), &PropertyName, &PropertyValue))
+					{
+						if (PropertyValue.Len() > 0)
+						{
+							if (PropertyValue[0] == TEXT('"'))
+							{
+								PropertyValue.MidInline(1, PropertyValue.Len() - 1);
+							}
+							if (PropertyValue[PropertyValue.Len() - 1] == TEXT('"'))
+							{
+								PropertyValue.MidInline(0, PropertyValue.Len() - 1);
+							}
+						}
+						PropertyNameToValue.Add(PropertyName, PropertyValue);
+					}
+				}
+				if (PropertyNameToValue.Num() == 0)
+				{
+					return false;
+				}
+
+				JsonString += TEXT("{");
+				for (const auto& Pair : PropertyNameToValue)
+				{
+					const FString PropertyName = Pair.Key;
+					const FString PropertyValue = Pair.Value;
+					JsonString += FString::Printf(TEXT("\"%s\" : \"%s\","), *PropertyName, *PropertyValue);
+				}
+				JsonString.MidInline(0, JsonString.Len() - 1);
+				JsonString += TEXT("}");
+			}
+
+			const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+			if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) || !JsonObject.IsValid())
+			{
+				return false;
+			}
+		}
+		if (!JsonObject.IsValid())
+		{
+			return false;
+		}
+
+		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), StructType, RawData))
+		{
+			return false;
+		}
+
+		return (RawData != nullptr);
 	}
 
 	ISettingsModule* FPulldownBuilderUtils::GetSettingsModule()

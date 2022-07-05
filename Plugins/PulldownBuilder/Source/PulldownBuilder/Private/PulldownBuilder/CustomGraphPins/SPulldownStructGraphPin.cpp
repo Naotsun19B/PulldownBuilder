@@ -4,6 +4,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 
 namespace PulldownBuilder
@@ -53,11 +54,14 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> SPulldownStructGraphPin::GenerateSelectableValues()
 	{
-		check(GraphPinObj);
-	
-		if (const auto* Struct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject))
+		FStructContainer StructContainer;
+		if (GenerateStructContainer(StructContainer))
 		{
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(Struct, TArray<UObject*>{ GetOuterAsset() });
+			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+				StructContainer.GetScriptStruct(),
+				TArray<UObject*>{ GetOuterAsset() },
+				StructContainer
+			);
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
@@ -161,5 +165,32 @@ namespace PulldownBuilder
 		}
 
 		return nullptr;
+	}
+
+	bool SPulldownStructGraphPin::GenerateStructContainer(FStructContainer& StructContainer) const
+	{
+		check(GraphPinObj);
+
+		const auto* ScriptStruct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject);
+		if (!IsValid(ScriptStruct))
+		{
+			return false;
+		}
+		
+		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
+
+		const bool bWasSuccessful = FPulldownBuilderUtils::GetStructRawDataFromDefaultValueString(
+			ScriptStruct,
+			GraphPinObj->GetDefaultAsString(),
+			RawData
+		);
+		if (bWasSuccessful)
+		{
+			StructContainer = FStructContainer(ScriptStruct, RawData);
+		}
+
+		FMemory::Free(RawData);
+
+		return bWasSuccessful;
 	}
 }

@@ -11,6 +11,7 @@
 #include "PulldownContents.generated.h"
 
 struct FPulldownRow;
+struct FStructContainer;
 class UPulldownListGeneratorBase;
 
 /**
@@ -47,7 +48,10 @@ public:
 	const FPulldownStructType& GetPulldownStructType() const;
 	
 	// Returns the data list to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+		const TArray<UObject*>& OuterObjects,
+		const FStructContainer& StructInstance
+	) const;
 
 	// Returns the name of the class set in the PulldownListGenerator.
 	virtual FString GetPulldownListGeneratorClassName() const;

@@ -34,7 +34,10 @@ public:
 	
 public:
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+		const TArray<UObject*>& OuterObjects,
+		const FStructContainer& StructInstance
+	) const override;
 	virtual bool HasSourceAsset() const override;
 	virtual FString GetSourceAssetName() const override;
 	// End of UPulldownListGeneratorBase interface.
@@ -50,6 +53,12 @@ protected:
 	// See the class description comments for property conditions.
 	virtual bool FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const;
 
+	// Called when changes are made to the data table.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown")
+	void PreSourceDataTableModify();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown")
+	void PostSourceDataTableModify();
+	
 protected:
 	// The data table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")

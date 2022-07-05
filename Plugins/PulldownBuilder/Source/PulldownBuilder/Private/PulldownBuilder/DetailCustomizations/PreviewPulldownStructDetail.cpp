@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PropertyEditorModule.h"
 #include "PropertyHandle.h"
@@ -40,7 +41,24 @@ namespace PulldownBuilder
 		{
 			if (auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
 			{
-				return PulldownContents->GetPulldownRows(TArray<UObject*>{ PulldownContents });
+#if BEFORE_UE_4_24
+				if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+				if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+				{
+					void* RawData;
+					const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(RawData);
+					if (Result != FPropertyAccess::Success)
+					{
+						RawData = nullptr;
+					}
+					
+					return PulldownContents->GetPulldownRows(
+						TArray<UObject*>{ PulldownContents },
+						FStructContainer(StructProperty->Struct, static_cast<uint8*>(RawData))
+					);
+				}
 			}
 		}
 

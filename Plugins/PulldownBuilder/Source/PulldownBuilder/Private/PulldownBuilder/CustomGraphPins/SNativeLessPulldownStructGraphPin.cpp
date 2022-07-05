@@ -5,6 +5,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 
 namespace PulldownBuilder
@@ -93,7 +94,14 @@ namespace PulldownBuilder
 		{
 			if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(*PulldownSource))
 			{
-				return SourceAsset->GetPulldownRows(TArray<UObject*>{ GetOuterAsset() });
+				FStructContainer StructContainer;
+				if (GenerateStructContainer(StructContainer))
+				{
+					return SourceAsset->GetPulldownRows(
+						TArray<UObject*>{ GetOuterAsset() },
+						StructContainer
+					);
+				}
 			}
 		}
 

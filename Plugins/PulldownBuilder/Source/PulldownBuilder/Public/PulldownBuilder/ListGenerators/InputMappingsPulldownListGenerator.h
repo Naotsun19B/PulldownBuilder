@@ -24,15 +24,23 @@ public:
 	// End of UObject interface.
 	
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+		const TArray<UObject*>& OuterObjects,
+		const FStructContainer& StructInstance
+	) const override;
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
+	// Get a list of input information from UInputSettings.
+	TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromInputSettings() const;
+	
 	// Cache a pull-down list of current input mapping.
 	void CachePreChangeDisplayTexts();
 	
 	// Called when action or axis mappings have been changed.
 	void HandleOnActionAxisMappingsChanged();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown")
+	void OnActionAxisMappingsChanged();
 	
 protected:
 	// Whether to include the action mapping in the list in the pulldown menu.

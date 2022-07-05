@@ -7,6 +7,7 @@
 class ISettingsModule;
 class UPulldownContents;
 struct FPulldownRow;
+struct FStructContainer;
 
 namespace PulldownBuilder
 {
@@ -43,7 +44,8 @@ namespace PulldownBuilder
 		// obtained by FindPulldownContentsByStruct.
 		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(
 			const UScriptStruct* InStruct,
-			const TArray<UObject*>& OuterObjects
+			const TArray<UObject*>& OuterObjects,
+			const FStructContainer& StructInstance
 		);
 
 		// Generates "None" only display strings.
@@ -63,6 +65,13 @@ namespace PulldownBuilder
 		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
 		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
 
+		// Generate the raw data of the structure from the string of the default value of the pin.
+		static bool GetStructRawDataFromDefaultValueString(
+			const UScriptStruct* StructType,
+			const FString& DefaultValue,
+			uint8*& RawData
+		);
+		
 		// Returns a module that registers editor preferences etc. added by the plugin.
 		static ISettingsModule* GetSettingsModule();
 

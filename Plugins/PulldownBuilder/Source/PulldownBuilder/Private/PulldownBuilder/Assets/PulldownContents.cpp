@@ -4,6 +4,7 @@
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 
 const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructType");
 const FName UPulldownContents::GeneratorClassTag = TEXT("GeneratorClass");
@@ -114,13 +115,16 @@ const FPulldownStructType& UPulldownContents::GetPulldownStructType() const
 	return PulldownStructType;
 }
 
-TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
+TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows(
+	const TArray<UObject*>& OuterObjects,
+	const FStructContainer& StructInstance
+) const
 {
 	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
 	
 	if (IsValid(PulldownListGenerator))
 	{
-		PulldownRows = PulldownListGenerator->GetPulldownRows(OuterObjects);
+		PulldownRows = PulldownListGenerator->GetPulldownRows(OuterObjects, StructInstance);
 	}
 
 	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.

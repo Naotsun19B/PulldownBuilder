@@ -16,7 +16,10 @@ class PULLDOWNBUILDER_API UStringTablePulldownListGenerator : public UPulldownLi
 
 public:
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(const TArray<UObject*>& OuterObjects) const override;
+	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+		const TArray<UObject*>& OuterObjects,
+		const FStructContainer& StructInstance
+	) const override;
 	virtual bool HasSourceAsset() const override;
 	virtual FString GetSourceAssetName() const override;
 	// End of UPulldownListGeneratorBase interface.

@@ -27,7 +27,25 @@ void UInputMappingsPulldownListGenerator::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
+TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows(
+	const TArray<UObject*>& OuterObjects,
+	const FStructContainer& StructInstance
+) const
+{
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
+
+	// If the return value of the parent GetDisplayStrings is empty,
+	// the list to be displayed in the pull-down menu is generated from
+	// the input settings in consideration of expansion on the Blueprint side.
+	if (PulldownRows.Num() == 0)
+	{
+		PulldownRows = GetPulldownRowsFromInputSettings();
+	}
+
+	return PulldownRows;
+}
+
+TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSettings() const
 {
 	const auto* InputSettings = UInputSettings::GetInputSettings();
 	if (!IsValid(InputSettings))
@@ -150,7 +168,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 
 void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 {
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows(TArray<UObject*>{});
+	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRowsFromInputSettings();
 	
 	PreChangeDisplayTexts.Reset(PulldownRows.Num());
 	
@@ -167,9 +185,11 @@ void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 
 void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 {
+	OnActionAxisMappingsChanged();
+	
 	TArray<FName> PostChangeDisplayTexts;
 	{
-		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRows(TArray<UObject*>{});
+		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRowsFromInputSettings();
 		
 		PostChangeDisplayTexts.Reset(PulldownRows.Num());
 

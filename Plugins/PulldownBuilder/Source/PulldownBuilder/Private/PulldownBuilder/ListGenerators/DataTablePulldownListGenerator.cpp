@@ -6,9 +6,12 @@
 const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName = TEXT("PulldownTooltip");
 const FString UDataTablePulldownListGenerator::TooltipPropertyMeta = TEXT("TooltipProperty");
 
-TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows(const TArray<UObject*>& OuterObjects) const
+TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows(
+	const TArray<UObject*>& OuterObjects,
+	const FStructContainer& StructInstance
+) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects);
+	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from
@@ -69,6 +72,8 @@ void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FData
 	}
 
 	PreChangeRowList = Changed->GetRowNames();
+
+	PreSourceDataTableModify();
 }
 
 void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
@@ -96,6 +101,8 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	}
 
 	PreChangeRowList.Empty();
+
+	PostSourceDataTableModify();
 }
 
 bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const

@@ -5,6 +5,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
@@ -113,10 +114,27 @@ namespace PulldownBuilder
 		PulldownSourceHandle->GetValue(PulldownSource);
 		if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
 		{
-			TArray<UObject*> OuterObjects;
-			StructPropertyHandle->GetOuterObjects(OuterObjects);
+#if BEFORE_UE_4_24
+			if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+			if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+			{
+				TArray<UObject*> OuterObjects;
+				StructPropertyHandle->GetOuterObjects(OuterObjects);
+
+				void* RawData;
+				const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(RawData);
+				if (Result != FPropertyAccess::Success)
+				{
+					RawData = nullptr;
+				}
 			
-			return SourceAsset->GetPulldownRows(OuterObjects);
+				return SourceAsset->GetPulldownRows(
+					OuterObjects,
+					FStructContainer(StructProperty->Struct, static_cast<uint8*>(RawData))
+				);
+			}
 		}
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
