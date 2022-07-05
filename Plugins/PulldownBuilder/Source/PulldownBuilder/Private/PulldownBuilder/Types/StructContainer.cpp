@@ -46,6 +46,7 @@ bool FStructContainer::Identical(const FStructContainer* Other, uint32 PortFlags
 	return true;
 }
 
+#if !BEFORE_UE_4_27
 void FStructContainer::AddStructReferencedObjects(FReferenceCollector& ReferenceCollector)
 {
 	if (::IsValid(ScriptStruct))
@@ -53,6 +54,7 @@ void FStructContainer::AddStructReferencedObjects(FReferenceCollector& Reference
 		ReferenceCollector.AddReferencedObjects(ScriptStruct, GetMutableMemory());
 	}
 }
+#endif
 
 void FStructContainer::GetPreloadDependencies(TArray<UObject*>& Dependencies)
 {

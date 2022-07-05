@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "StructContainer.generated.h"
 
 /**
@@ -73,7 +74,9 @@ public:
 	
 	// TStructOpsTypeTraits interface.
 	bool Identical(const FStructContainer* Other, uint32 PortFlags) const;
+#if !BEFORE_UE_4_27
 	void AddStructReferencedObjects(FReferenceCollector& ReferenceCollector);
+#endif
 	void GetPreloadDependencies(TArray<UObject*>& Dependencies);
 	// End of TStructOpsTypeTraits interface.
 
@@ -133,7 +136,9 @@ struct TStructOpsTypeTraits<FStructContainer> : public TStructOpsTypeTraitsBase2
 	enum
 	{
 		WithIdentical = true,
+#if !BEFORE_UE_4_27
 		WithAddStructReferencedObjects = true,
+#endif
 		WithGetPreloadDependencies = true,
 	};
 };
