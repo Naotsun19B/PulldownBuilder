@@ -3,8 +3,11 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
+
+#define LOCTEXT_NAMESPACE "PulldownContents"
 
 const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructType");
 const FName UPulldownContents::GeneratorClassTag = TEXT("GeneratorClass");
@@ -18,6 +21,14 @@ bool UPulldownContents::IsEditorOnly() const
 void UPulldownContents::PostLoad()
 {
 	Super::PostLoad();
+
+	if (IsValid(GEditor))
+	{
+		if (auto* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>())
+		{
+			AssetEditorSubsystem->OnAssetEditorOpened().AddUObject(this, &UPulldownContents::HandleOnAssetEditorOpened);
+		}
+	}
 	
 	FCoreUObjectDelegates::OnPackageReloaded.AddUObject(this, &UPulldownContents::HandleOnPackageReloaded);
 	
@@ -42,6 +53,11 @@ void UPulldownContents::PreEditChange(FProperty* PropertyAboutToChange)
 	{
 		UnregisterDetailCustomization();
 	}
+
+	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownListGenerator))
+	{
+		PreChangePulldownListGenerator = PulldownListGenerator;
+	}
 }
 
 void UPulldownContents::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -56,6 +72,12 @@ void UPulldownContents::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownStructType))
 	{
 		RegisterDetailCustomization();
+		ModifyPulldownListGenerator();
+	}
+
+	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownListGenerator))
+	{
+		ModifyPulldownListGenerator();
 	}
 }
 
@@ -64,6 +86,14 @@ void UPulldownContents::BeginDestroy()
 	UnregisterDetailCustomization();
 
 	FCoreUObjectDelegates::OnPackageReloaded.RemoveAll(this);
+
+	if (IsValid(GEditor))
+	{
+		if (auto* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>())
+		{
+			AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
+		}
+	}
 	
 	Super::BeginDestroy();
 }
@@ -205,6 +235,59 @@ void UPulldownContents::UnregisterDetailCustomization()
 	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
 }
 
+void UPulldownContents::ModifyPulldownListGenerator()
+{
+	if (IsValid(PulldownListGenerator))
+	{
+		const TArray<UScriptStruct*> FilterPulldownStructTypes = PulldownListGenerator->GetFilterPulldownStructTypes();
+		if (FilterPulldownStructTypes.Num() > 0 &&
+			IsValid(PulldownStructType.SelectedStruct) &&
+			!FilterPulldownStructTypes.Contains(PulldownStructType.SelectedStruct))
+		{
+			FString FilterPulldownStructTypeNames;
+			for (const auto* FilterPulldownStructType : FilterPulldownStructTypes)
+			{
+				if (!IsValid(FilterPulldownStructType))
+				{
+					continue;
+				}
+
+				FilterPulldownStructTypeNames += FString::Printf(TEXT("%s, "), *FilterPulldownStructType->GetName());
+			}
+			if (FilterPulldownStructTypeNames.IsEmpty())
+			{
+				FilterPulldownStructTypeNames = TEXT("None");
+			}
+			else
+			{
+				FilterPulldownStructTypeNames.MidInline(0, FilterPulldownStructTypeNames.Len() - 2);
+			}
+			
+			PulldownBuilder::FPulldownBuilderMessageLog MessageLog;
+			MessageLog.Warning(
+				FText::Format(
+					LOCTEXT("FailedChangePulldownListGenerator", "{0} cannot be used for {1}.\nThe struct types that can be used are as follows:\n{2}"),
+					FText::FromString(GetNameSafe(PulldownListGenerator->GetClass())),
+					FText::FromString(GetNameSafe(PulldownStructType.SelectedStruct)),
+					FText::FromString(FilterPulldownStructTypeNames)
+				)
+			);
+
+			PulldownListGenerator = PreChangePulldownListGenerator;
+		}
+	}
+	
+	PreChangePulldownListGenerator = nullptr;
+}
+
+void UPulldownContents::HandleOnAssetEditorOpened(UObject* OpenedAsset)
+{
+	if (OpenedAsset->GetName() == GetName())
+	{
+		ModifyPulldownListGenerator();
+	}
+}
+
 void UPulldownContents::HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent)
 {
 	if (ReloadPhase == EPackageReloadPhase::PostBatchPostGC)
@@ -213,3 +296,5 @@ void UPulldownContents::HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase,
 		RegisterDetailCustomization();
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

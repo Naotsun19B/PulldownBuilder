@@ -65,6 +65,12 @@ protected:
 	
 	// Unregister the structure set for this asset from detail customization.
 	virtual void UnregisterDetailCustomization();
+
+	// Called when the properties of the PulldownListGenerator need to be changed.
+	virtual void ModifyPulldownListGenerator();
+
+	// Called when the asset editor is opened.
+	void HandleOnAssetEditorOpened(UObject* OpenedAsset);
 	
 	// Called when any asset in any package is reloaded.
 	void HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent);
@@ -83,4 +89,8 @@ protected:
 	// Shows a preview of the pull-down menu built from this PulldownContents.
 	UPROPERTY(EditDefaultsOnly, Transient, Category = "Pulldown")
 	FPreviewPulldownStruct Preview;
+
+	// A cache to restore when the PulldownListGenerator cannot be changed.
+	UPROPERTY(Transient)
+	UPulldownListGeneratorBase* PreChangePulldownListGenerator;
 };

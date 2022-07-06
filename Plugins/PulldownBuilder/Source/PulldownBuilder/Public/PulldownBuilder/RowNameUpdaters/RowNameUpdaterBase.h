@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "UObject/UObjectIterator.h"
+#include "FileHelpers.h"
 #include "RowNameUpdaterBase.generated.h"
 
 class UPulldownContents;
@@ -63,9 +64,19 @@ protected:
 				continue;
 			}
 
+			UPackage* Package = Asset->GetOutermost();
+			if (!IsValid(Package))
+			{
+				continue;
+			}
+			
 			if (Predicate(Asset))
 			{
-				Asset->Modify();
+				Package->MarkPackageDirty();
+				UEditorLoadingAndSavingUtils::SavePackages(
+					TArray<UPackage*>{ Package },
+					true
+				);
 			}
 		}
 	}

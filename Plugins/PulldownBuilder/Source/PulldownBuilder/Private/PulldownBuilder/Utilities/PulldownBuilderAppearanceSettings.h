@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "PulldownBuilder/Types/PulldownBuilderNotificationSeverity.h"
 #include "PulldownBuilderAppearanceSettings.generated.h"
 
 /**
@@ -26,6 +27,10 @@ public:
 	// Whether to automatically inline a single property pull-down structure.
 	UPROPERTY(EditAnywhere, Config, Category = "Details")
 	bool bShouldInlineDisplayWhenSingleProperty;
+
+	// Specifies the severity of the notification.
+	UPROPERTY(EditAnywhere, Config, Category = "Notification")
+	EPulldownBuilderNotificationSeverity NotificationSeverity;
 	
 public:
 	// Constructor.

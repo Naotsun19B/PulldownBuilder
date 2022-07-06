@@ -12,6 +12,7 @@
 #include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
@@ -34,6 +35,9 @@ namespace PulldownBuilder
 		// Register the icons of this plugin.
 		FPulldownBuilderStyle::Register();
 
+		// Register message log.
+		FPulldownBuilderMessageLog::Register();
+		
 		// Register settings.
 		UPulldownBuilderAppearanceSettings::Register();
 		UPulldownBuilderRedirectSettings::Register();
@@ -79,6 +83,9 @@ namespace PulldownBuilder
 		// Unregister settings.
 		UPulldownBuilderRedirectSettings::Unregister();
 		UPulldownBuilderAppearanceSettings::Unregister();
+
+		// Unregister message log.
+		FPulldownBuilderMessageLog::Unregister();
 		
 		// Unregister the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();

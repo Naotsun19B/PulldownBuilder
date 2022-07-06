@@ -4,6 +4,12 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
+#include "Misc/UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "PulldownListGeneratorBase"
+
+const FName UPulldownListGeneratorBase::FilterPulldownStructTypesName = TEXT("FilterPulldownStructTypes");
 
 TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
@@ -22,13 +28,47 @@ TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows(
 
 bool UPulldownListGeneratorBase::HasSourceAsset() const
 {
-	return false;
+	return HasSourceAssetFromBlueprint();
 }
 
 FString UPulldownListGeneratorBase::GetSourceAssetName() const
 {
 	unimplemented(); // Be sure to override it when using this function.
-	return {};
+	return GetSourceAssetNameFromBlueprint();
+}
+
+TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes() const
+{
+	TArray<UScriptStruct*> FilterPulldownStructTypes;
+
+	TArray<FString> FilterPulldownStructTypeNames;
+	if (const UClass* Class = GetClass())
+	{
+		if (Class->HasMetaData(FilterPulldownStructTypesName))
+		{
+			const FString MetaString = Class->GetMetaData(FilterPulldownStructTypesName);
+			MetaString.ParseIntoArray(FilterPulldownStructTypeNames, TEXT(","));
+		}
+	}
+
+	const TArray<FName>& FilterPulldownStructTypeNamesFromBlueprint = GetFilterPulldownStructTypesFromBlueprint();
+	for (const auto& FilterPulldownStructTypeNameFromBlueprint : FilterPulldownStructTypeNamesFromBlueprint)
+	{
+		FilterPulldownStructTypeNames.Add(FilterPulldownStructTypeNameFromBlueprint.ToString());
+	}
+
+	FilterPulldownStructTypes.Reserve(FilterPulldownStructTypeNames.Num());
+	for (auto& FilterPulldownStructTypeName : FilterPulldownStructTypeNames)
+	{
+		FilterPulldownStructTypeName.TrimStartAndEndInline();
+
+		if (auto* FoundStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *FilterPulldownStructTypeName))
+		{
+			FilterPulldownStructTypes.Add(FoundStruct);
+		}
+	}
+	
+	return FilterPulldownStructTypes;
 }
 
 void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)
@@ -44,8 +84,18 @@ void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName
 	{
 		return;
 	}
-
-	UE_LOG(LogPulldownBuilder, Log, TEXT(" The source row name for \"%s\" has changed from \"%s\" to \"%s\"."), *PulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
-
+	
+	PulldownBuilder::FPulldownBuilderMessageLog MessageLog;
+	MessageLog.Info(
+		FText::Format(
+			LOCTEXT("NotifyUpdateDisplayStrings", "The source row name for \"{0}\" has changed from \"{1}\" to \"{2}\"."),
+			FText::FromString(PulldownContents->GetName()),
+			FText::FromName(PreChangeName),
+			FText::FromName(PostChangeName)
+		)
+	)->AddToken(FUObjectToken::Create(PulldownContents));
+	
 	URowNameUpdaterBase::UpdateRowNames(PulldownContents, PreChangeName, PostChangeName);
 }
+
+#undef LOCTEXT_NAMESPACE

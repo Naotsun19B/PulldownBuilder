@@ -34,6 +34,7 @@ public class PulldownBuilder : ModuleRules
 				"ApplicationCore",
 				"Json",
 				"JsonUtilities",
+				"MessageLog",
 				
 				"PulldownStruct",
 			}

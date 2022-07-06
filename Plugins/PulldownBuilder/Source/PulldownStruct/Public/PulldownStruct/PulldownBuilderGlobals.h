@@ -5,6 +5,12 @@
 #include "CoreMinimal.h"
 #include "Version.h"
 
+namespace PulldownBuilder
+{
+	// The name of this plugin.
+	static const FName PluginName = TEXT("PulldownBuilder");
+}
+
 /**
  * Macro to support each engine version.
  */

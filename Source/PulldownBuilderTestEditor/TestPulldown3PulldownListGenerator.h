@@ -9,7 +9,7 @@
 /**
  * A sample that generates a list based on properties other than Selected Value of the pull-down structure.
  */
-UCLASS(DisplayName = "Test Pulldown 3 Pulldown List Generator")
+UCLASS(DisplayName = "Test Pulldown 3 Pulldown List Generator", meta = (FilterPulldownStructTypes = "TestPulldown3"))
 class UTestPulldown3PulldownListGenerator : public UPulldownListGeneratorBase
 {
 	GENERATED_BODY()
