@@ -19,7 +19,7 @@ FText UK2Node_Get_StructContainer::GetNodeTitle(ENodeTitleType::Type TitleType) 
 {
 	if (TitleType != ENodeTitleType::MenuTitle)
 	{
-		if (const UScriptStruct* ValueStruct = GetStructTypeFromStructDataPin())
+		if (const UScriptStruct* ValueStruct = GetStructType())
 		{
 			if (CachedNodeTitle.IsOutOfDate(this))
 			{
@@ -48,14 +48,14 @@ void UK2Node_Get_StructContainer::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
 
-	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, FailedPinName);
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, FStructContainer::StaticStruct(), TargetPinName);
-	if (UEdGraphPin* StructDataPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, StructDataPinName))
-	{
-		StructDataPin->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PN_ReturnValue);
-	}
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, StructDataPinName);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Boolean, UEdGraphSchema_K2::PN_ReturnValue);
+}
+
+bool UK2Node_Get_StructContainer::IsNodePure() const
+{
+	return true;
 }
 
 FText UK2Node_Get_StructContainer::GetMenuCategory() const
@@ -81,66 +81,40 @@ void UK2Node_Get_StructContainer::ExpandNode(FKismetCompilerContext& CompilerCon
 	Super::ExpandNode(CompilerContext, SourceGraph);
 	
 	UK2Node_CallFunction* FunctionNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-	FunctionNode->FunctionReference.SetExternalMember(
-		GET_FUNCTION_NAME_CHECKED(UStructContainerFunctionLibrary, Get_StructContainer),
-		UStructContainerFunctionLibrary::StaticClass()
-	);
-	FunctionNode->AllocateDefaultPins();
+	if (ensure(IsValid(FunctionNode)))
+	{
+		FunctionNode->FunctionReference.SetExternalMember(
+			GET_FUNCTION_NAME_CHECKED(UStructContainerFunctionLibrary, Get_StructContainer),
+			UStructContainerFunctionLibrary::StaticClass()
+		);
+		FunctionNode->AllocateDefaultPins();
 
-	{
-		UEdGraphPin* IntermediateTargetPin = FunctionNode->FindPinChecked(TargetPinName);
-		UEdGraphPin* SourceTargetPin = GetTargetPin();
-		if (ensure(IntermediateTargetPin != nullptr && SourceTargetPin != nullptr))
 		{
-			CompilerContext.MovePinLinksToIntermediate(*SourceTargetPin, *IntermediateTargetPin);
-		}
-	}
-	{
-		UEdGraphPin* IntermediateStructDataPin = FunctionNode->FindPinChecked(StructDataPinName);
-		UEdGraphPin* SourceStructDataPin = GetStructDataPin();
-		if (ensure(IntermediateStructDataPin != nullptr && SourceStructDataPin != nullptr))
-		{
-			IntermediateStructDataPin->PinType = SourceStructDataPin->PinType;
-            IntermediateStructDataPin->PinType.PinSubCategoryObject = SourceStructDataPin->PinType.PinSubCategoryObject;
-            CompilerContext.MovePinLinksToIntermediate(*SourceStructDataPin, *IntermediateStructDataPin);
-		}
-	}
-	{
-		UEdGraphPin* IntermediateExecPin = FunctionNode->GetExecPin();
-		UEdGraphPin* SourceExecPin = GetExecPin();
-		if (ensure(IntermediateExecPin != nullptr && SourceExecPin != nullptr))
-		{
-			CompilerContext.MovePinLinksToIntermediate(*SourceExecPin, *IntermediateExecPin);
-		}
-	}
-	if (auto* BranchNode = CompilerContext.SpawnIntermediateNode<UK2Node_IfThenElse>(this, SourceGraph))
-	{
-		BranchNode->AllocateDefaultPins();
-		
-		{
-			UEdGraphPin* IntermediateThenPin = FunctionNode->GetThenPin();
-			UEdGraphPin* IntermediateReturnPin = FunctionNode->FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue);
-			if (ensure(IntermediateThenPin != nullptr && IntermediateReturnPin != nullptr))
+			UEdGraphPin* IntermediateTargetPin = FunctionNode->FindPinChecked(TargetPinName);
+			UEdGraphPin* SourceTargetPin = GetTargetPin();
+			if (ensure(IntermediateTargetPin != nullptr && SourceTargetPin != nullptr))
 			{
-				IntermediateThenPin->MakeLinkTo(BranchNode->GetExecPin());
-				IntermediateReturnPin->MakeLinkTo(BranchNode->GetConditionPin());
-			}
-		}
-		
-		{
-			UEdGraphPin* BranchNodeThenPin = BranchNode->GetThenPin();
-			UEdGraphPin* SourceThenPin = GetThenPin();
-			if (ensure(BranchNodeThenPin != nullptr && SourceThenPin != nullptr))
-			{
-				CompilerContext.MovePinLinksToIntermediate(*SourceThenPin, *BranchNodeThenPin);
+				IntermediateTargetPin->PinType = SourceTargetPin->PinType;
+				IntermediateTargetPin->PinType.PinSubCategoryObject = SourceTargetPin->PinType.PinSubCategoryObject;
+				CompilerContext.MovePinLinksToIntermediate(*SourceTargetPin, *IntermediateTargetPin);
 			}
 		}
 		{
-			UEdGraphPin* BranchNodeFailedPin = BranchNode->GetElsePin();
-			UEdGraphPin* SourceFailedPin = GetFailedPin();
-			if (ensure(BranchNodeFailedPin != nullptr && SourceFailedPin != nullptr))
+			UEdGraphPin* IntermediateStructDataPin = FunctionNode->FindPinChecked(StructDataPinName);
+			UEdGraphPin* SourceStructDataPin = GetStructDataPin();
+			if (ensure(IntermediateStructDataPin != nullptr && SourceStructDataPin != nullptr))
 			{
-				CompilerContext.MovePinLinksToIntermediate(*SourceFailedPin, *BranchNodeFailedPin);
+				IntermediateStructDataPin->PinType = SourceStructDataPin->PinType;
+				IntermediateStructDataPin->PinType.PinSubCategoryObject = SourceStructDataPin->PinType.PinSubCategoryObject;
+				CompilerContext.MovePinLinksToIntermediate(*SourceStructDataPin, *IntermediateStructDataPin);
+			}
+		}
+		{
+			UEdGraphPin* IntermediateReturnValuePin = FunctionNode->GetReturnValuePin();
+			UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
+			if (ensure(IntermediateReturnValuePin != nullptr && SourceReturnValuePin != nullptr))
+			{
+				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
 			}
 		}
 	}
@@ -194,20 +168,6 @@ bool UK2Node_Get_StructContainer::IsConnectionDisallowed(const UEdGraphPin* MyPi
 	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
 }
 
-UEdGraphPin* UK2Node_Get_StructContainer::GetThenPin() const
-{
-	UEdGraphPin* Pin = FindPinChecked(UEdGraphSchema_K2::PN_Then);
-	check(Pin->Direction == EGPD_Output);
-	return Pin;
-}
-
-UEdGraphPin* UK2Node_Get_StructContainer::GetFailedPin() const
-{
-	UEdGraphPin* Pin = FindPinChecked(FailedPinName);
-	check(Pin->Direction == EGPD_Output);
-	return Pin;
-}
-
 UEdGraphPin* UK2Node_Get_StructContainer::GetTargetPin() const
 {
 	UEdGraphPin* Pin = FindPinChecked(TargetPinName);
@@ -222,65 +182,65 @@ UEdGraphPin* UK2Node_Get_StructContainer::GetStructDataPin() const
 	return Pin;
 }
 
+UEdGraphPin* UK2Node_Get_StructContainer::GetReturnValuePin() const
+{
+	UEdGraphPin* Pin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue);
+	check(Pin != nullptr && Pin->Direction == EGPD_Output);
+	return Pin;
+}
+
 UScriptStruct* UK2Node_Get_StructContainer::GetStructType() const
 {
 	const UEdGraphPin* StructDataPin = GetStructDataPin();
-	if (StructDataPin != nullptr && StructDataPin->LinkedTo.Num() > 0)
+	if (StructDataPin == nullptr)
 	{
-		const TArray<UEdGraphPin*>& LinkedTo = StructDataPin->LinkedTo;
-		const UScriptStruct* StructType = Cast<UScriptStruct>(LinkedTo[0]->PinType.PinSubCategoryObject.Get());
-		for (int32 LinkIndex = 1; LinkIndex < LinkedTo.Num(); LinkIndex++)
-		{
-			const UEdGraphPin* Link = LinkedTo[LinkIndex];
-			UScriptStruct* LinkType = Cast<UScriptStruct>(Link->PinType.PinSubCategoryObject.Get());
-			if (IsValid(StructType) && StructType->IsChildOf(LinkType))
-			{
-				return LinkType;
-			}
-		}
+		return nullptr;
 	}
-	
-	return nullptr;
-}
 
-UScriptStruct* UK2Node_Get_StructContainer::GetStructTypeFromStructDataPin() const
-{
-	const UEdGraphPin* StructDataPin = GetStructDataPin();
-	if(StructDataPin != nullptr)
+	const TArray<UEdGraphPin*>& LinkedTo = StructDataPin->LinkedTo;
+	if (LinkedTo.Num() == 0)
 	{
-		if(StructDataPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
-		{
-			return Cast<UScriptStruct>(StructDataPin->PinType.PinSubCategoryObject.Get());
-		}
+		return nullptr;
 	}
 	
-	return nullptr;
+	UScriptStruct* StructType = Cast<UScriptStruct>(LinkedTo[0]->PinType.PinSubCategoryObject.Get());
+	for (int32 LinkIndex = 1; LinkIndex < LinkedTo.Num(); LinkIndex++)
+	{
+		const UEdGraphPin* Link = LinkedTo[LinkIndex];
+		UScriptStruct* LinkType = Cast<UScriptStruct>(Link->PinType.PinSubCategoryObject.Get());
+		if (StructType != nullptr && StructType->IsChildOf(LinkType))
+		{
+			StructType = LinkType;
+		}
+	}
+
+	return StructType;
 }
 
 void UK2Node_Get_StructContainer::RefreshStructDataPinType()
 {
+	UEdGraphPin* StructDataPin = GetStructDataPin();
+	if (StructDataPin == nullptr)
+	{
+		return;
+	}
+
+	const UScriptStruct* OldStructType = Cast<UScriptStruct>(StructDataPin->PinType.PinSubCategoryObject.Get());
 	UScriptStruct* NewStructType = GetStructType();
-	const UScriptStruct* OldStructType = GetStructTypeFromStructDataPin();
 	if (NewStructType != OldStructType)
 	{
-		if (UEdGraphPin* StructDataPin = GetStructDataPin())
+		if (StructDataPin->SubPins.Num() > 0)
 		{
-			if (StructDataPin->SubPins.Num() > 0)
-			{
-				if (const UEdGraphSchema* Schema = GetSchema())
-				{
-					Schema->RecombinePin(StructDataPin);
-				}
-			}
-			
-			StructDataPin->PinType.PinCategory = (
-				IsValid(NewStructType) ?
-				UEdGraphSchema_K2::PC_Struct :
-				UEdGraphSchema_K2::PC_Wildcard
-			);
-			StructDataPin->PinType.PinSubCategoryObject = NewStructType;
+			GetSchema()->RecombinePin(StructDataPin);
 		}
-		
+
+		StructDataPin->PinType.PinCategory = (
+			IsValid(NewStructType) ?
+			UEdGraphSchema_K2::PC_Struct :
+			UEdGraphSchema_K2::PC_Wildcard
+		);
+		StructDataPin->PinType.PinSubCategoryObject = NewStructType;
+
 		CachedNodeTitle.Clear();
 	}
 }

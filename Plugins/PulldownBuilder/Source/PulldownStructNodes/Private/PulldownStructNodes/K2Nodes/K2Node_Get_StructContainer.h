@@ -29,6 +29,7 @@ public:
 	// End of UEdGraphNode interface.
 
 	// UK2Node interface.
+	virtual bool IsNodePure() const override;
 	virtual FText GetMenuCategory() const override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
@@ -39,14 +40,12 @@ public:
 	
 protected:
 	// Functions that get each pin contained in this node.
-	UEdGraphPin* GetThenPin() const;
-	UEdGraphPin* GetFailedPin() const;
 	UEdGraphPin* GetTargetPin() const;
 	UEdGraphPin* GetStructDataPin() const;
+	UEdGraphPin* GetReturnValuePin() const;
 
 	// Returns the type of structure specified by the struct data pin.
 	UScriptStruct* GetStructType() const;
-	UScriptStruct* GetStructTypeFromStructDataPin() const;
 
 	// Refresh the struct data pin type to be the structure type of the connected pin.
 	void RefreshStructDataPinType();

@@ -98,34 +98,34 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 	{
 		FunctionNode->FunctionReference.SetExternalMember(GetFunctionName(), UPulldownStructFunctionLibrary::StaticClass());
 		FunctionNode->AllocateDefaultPins();
-	}
 
-	{
-		UEdGraphPin* IntermediateLhsPin = FunctionNode->FindPinChecked(LhsPinName);
-		UEdGraphPin* SourceLhsPin = GetLhsPin();
-		if (ensure(IntermediateLhsPin != nullptr && SourceLhsPin != nullptr))
 		{
-			IntermediateLhsPin->PinType = SourceLhsPin->PinType;
-			IntermediateLhsPin->PinType.PinSubCategoryObject = SourceLhsPin->PinType.PinSubCategoryObject;
-			CompilerContext.MovePinLinksToIntermediate(*SourceLhsPin, *IntermediateLhsPin);
+			UEdGraphPin* IntermediateLhsPin = FunctionNode->FindPinChecked(LhsPinName);
+			UEdGraphPin* SourceLhsPin = GetLhsPin();
+			if (ensure(IntermediateLhsPin != nullptr && SourceLhsPin != nullptr))
+			{
+				IntermediateLhsPin->PinType = SourceLhsPin->PinType;
+				IntermediateLhsPin->PinType.PinSubCategoryObject = SourceLhsPin->PinType.PinSubCategoryObject;
+				CompilerContext.MovePinLinksToIntermediate(*SourceLhsPin, *IntermediateLhsPin);
+			}
 		}
-	}
-	{
-		UEdGraphPin* IntermediateRhsPin = FunctionNode->FindPinChecked(RhsPinName);
-		UEdGraphPin* SourceRhsPin = GetRhsPin();
-		if (ensure(IntermediateRhsPin != nullptr && SourceRhsPin != nullptr))
 		{
-			IntermediateRhsPin->PinType = SourceRhsPin->PinType;
-			IntermediateRhsPin->PinType.PinSubCategoryObject = SourceRhsPin->PinType.PinSubCategoryObject;
-			CompilerContext.MovePinLinksToIntermediate(*SourceRhsPin, *IntermediateRhsPin);
+			UEdGraphPin* IntermediateRhsPin = FunctionNode->FindPinChecked(RhsPinName);
+			UEdGraphPin* SourceRhsPin = GetRhsPin();
+			if (ensure(IntermediateRhsPin != nullptr && SourceRhsPin != nullptr))
+			{
+				IntermediateRhsPin->PinType = SourceRhsPin->PinType;
+				IntermediateRhsPin->PinType.PinSubCategoryObject = SourceRhsPin->PinType.PinSubCategoryObject;
+				CompilerContext.MovePinLinksToIntermediate(*SourceRhsPin, *IntermediateRhsPin);
+			}
 		}
-	}
-	{
-		UEdGraphPin* IntermediateReturnValuePin = FunctionNode->GetReturnValuePin();
-		UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
-		if (ensure(IntermediateReturnValuePin != nullptr && SourceReturnValuePin != nullptr))
 		{
-			CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
+			UEdGraphPin* IntermediateReturnValuePin = FunctionNode->GetReturnValuePin();
+			UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
+			if (ensure(IntermediateReturnValuePin != nullptr && SourceReturnValuePin != nullptr))
+			{
+				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
+			}
 		}
 	}
 	
