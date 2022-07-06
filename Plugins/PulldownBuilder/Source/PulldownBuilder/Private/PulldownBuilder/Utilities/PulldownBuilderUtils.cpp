@@ -264,11 +264,11 @@ namespace PulldownBuilder
 						{
 							if (PropertyValue[0] == TEXT('"'))
 							{
-								PropertyValue.MidInline(1, PropertyValue.Len() - 1);
+								PropertyValue = PropertyValue.Mid(1, PropertyValue.Len() - 1);
 							}
 							if (PropertyValue[PropertyValue.Len() - 1] == TEXT('"'))
 							{
-								PropertyValue.MidInline(0, PropertyValue.Len() - 1);
+								PropertyValue = PropertyValue.Mid(0, PropertyValue.Len() - 1);
 							}
 						}
 						PropertyNameToValue.Add(PropertyName, PropertyValue);
@@ -286,7 +286,7 @@ namespace PulldownBuilder
 					const FString PropertyValue = Pair.Value;
 					JsonString += FString::Printf(TEXT("\"%s\" : \"%s\","), *PropertyName, *PropertyValue);
 				}
-				JsonString.MidInline(0, JsonString.Len() - 1);
+				JsonString = JsonString.Mid(0, JsonString.Len() - 1);
 				JsonString += TEXT("}");
 			}
 

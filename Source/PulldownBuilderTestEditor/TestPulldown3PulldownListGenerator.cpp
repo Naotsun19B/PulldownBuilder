@@ -2,6 +2,7 @@
 
 #include "TestPulldown3PulldownListGenerator.h"
 #include "PulldownBuilderTest/TestPulldown.h"
+#include "UObject/UObjectIterator.h"
 
 TArray<TSharedPtr<FPulldownRow>> UTestPulldown3PulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,

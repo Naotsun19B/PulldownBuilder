@@ -110,9 +110,9 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 	check(IsValid(RowStruct));
 
 	FString TooltipPropertyName = DefaultPulldownTooltipName;
-	if (const FString* Meta = RowStruct->FindMetaData(*TooltipPropertyMeta))
+	if (RowStruct->HasMetaData(*TooltipPropertyMeta))
 	{
-		TooltipPropertyName = *Meta;
+		TooltipPropertyName = RowStruct->GetMetaData(*TooltipPropertyMeta);
 	}
 	
 #if BEFORE_UE_4_24
@@ -131,7 +131,7 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 			continue;	
 		}
 
-		if (FString* ValuePtr = StringProperty->ContainerPtrToValuePtr<FString>(RowData))
+		if (const FString* ValuePtr = StringProperty->ContainerPtrToValuePtr<FString>(RowData))
 		{
 			TooltipString = *ValuePtr;
 			return true;

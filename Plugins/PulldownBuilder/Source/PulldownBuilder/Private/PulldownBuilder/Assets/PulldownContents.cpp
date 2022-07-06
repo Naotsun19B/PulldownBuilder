@@ -6,6 +6,8 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
+#include "Editor.h"
+#include "Subsystems/AssetEditorSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "PulldownContents"
 
@@ -260,7 +262,7 @@ void UPulldownContents::ModifyPulldownListGenerator()
 			}
 			else
 			{
-				FilterPulldownStructTypeNames.MidInline(0, FilterPulldownStructTypeNames.Len() - 2);
+				FilterPulldownStructTypeNames = FilterPulldownStructTypeNames.Mid(0, FilterPulldownStructTypeNames.Len() - 2);
 			}
 			
 			PulldownBuilder::FPulldownBuilderMessageLog MessageLog;

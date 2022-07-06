@@ -2,11 +2,11 @@
 
 #include "PulldownStructNodes/K2Nodes/K2Node_Get_StructContainer.h"
 #include "PulldownBuilder/Types/StructContainer.h"
+#include "PulldownBuilder/Utilities/StructContainerFunctionLibrary.h"
 #include "EdGraphSchema_K2.h"
 #include "BlueprintNodeSpawner.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "K2Node_CallFunction.h"
-#include "K2Node_IfThenElse.h"
 #include "KismetCompiler.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_Get_StructContainer"

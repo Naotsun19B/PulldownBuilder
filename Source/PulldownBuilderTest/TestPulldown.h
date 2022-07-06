@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownStructBase.h"
+#include "Templates/SubclassOf.h"
 #include "TestPulldown.generated.h"
 
 USTRUCT(BlueprintType)
@@ -33,4 +34,17 @@ struct FTestPulldown3 : public FPulldownStructBase
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<UObject> AssetType;
+};
+
+USTRUCT(BlueprintType)
+struct FTestPulldown4 : public FPulldownStructBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int32 NumOfRows;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FName RowName;
 };
