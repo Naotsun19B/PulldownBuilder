@@ -48,7 +48,7 @@ namespace PulldownBuilder
 		FNativeLessPulldownStructDetail::Register();
 
 		// Load all PulldownContents in the Content Browser.
-		const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+		const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 		IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 		AssetRegistry.OnAssetAdded().AddLambda([](const FAssetData& AssetData)
 		{
