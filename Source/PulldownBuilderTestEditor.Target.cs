@@ -11,6 +11,6 @@ public class PulldownBuilderTestEditorTarget : TargetRules
 #if UE_4_24_OR_LATER
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 #endif
-		ExtraModuleNames.AddRange( new string[] { "PulldownBuilderTest" } );
+		ExtraModuleNames.AddRange( new string[] { "PulldownBuilderTestEditor" } );
 	}
 }

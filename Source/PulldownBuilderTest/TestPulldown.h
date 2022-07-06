@@ -24,3 +24,13 @@ struct FTestPulldown2 : public FPulldownStructBase
 {
 	GENERATED_BODY()
 };
+
+USTRUCT(BlueprintType)
+struct FTestPulldown3 : public FPulldownStructBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UObject> AssetType;
+};

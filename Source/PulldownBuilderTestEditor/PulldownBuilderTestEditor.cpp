@@ -3,4 +3,4 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, PulldownBuilderTest, "PulldownBuilderTest");
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, PulldownBuilderTestEditor, "PulldownBuilderTestEditor");
