@@ -201,7 +201,7 @@ The items that can be set from the editor preferences are as follows.
 ## History  
 
 - (2022/07/07) v1.7  
-  Changed to pass the object with the variable being edited and the variable being edited to the argument of `GetPulldownRows` of` PulldownListGenerator`  
+  Changed to pass the object with the variable being edited and the variable being edited to the argument of `GetPulldownRows` of `PulldownListGenerator`  
 
 - (2022/06/12) v1.6   
   Added comparison blueprint node between pull-down structures  
