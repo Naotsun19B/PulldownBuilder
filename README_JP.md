@@ -28,7 +28,7 @@ G# PulldownBuilder
 
 ## 動作環境  
 
-対象バージョン : UE4.23 ~ 5.0  
+対象バージョン : UE4.24 ~ 5.0  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -146,6 +146,11 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
+引数に編集中の変数を持つオブジェクトと編集中の変数が渡されるため、それを元に生成するリストの内容を変更することができます。  
+
+![BP_TestPulldown4PulldownListGenerator-GetPulldownRowsFromBlueprint](https://user-images.githubusercontent.com/51815450/177553308-a277f778-67d1-41aa-8495-2cba434ed423.png)
+
+https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-be00-2c5b24244a73.mp4
 
 ### ・RowNameUpdater  
 
@@ -177,6 +182,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 | Appearance | Panel Size                                 | プルダウンメニューのパネルサイズを指定します。                                             |
 |            | Is Select when Double Click                | このフラグがtrueの場合、プルダウンメニューの項目を選ぶ時にダブルクリックをする必要があります。                   |
 |            | Should Inline Display When Single Property | このフラグがtrueの場合、プロパティが一つだけのプルダウン構造体をインライン表示します。                       |
+|            | Notification Severity                      | このプラグインによって発行される通知のメッセージログにフォーカスする重大度を指定します。                        |
 | Redirect   | Should Update When Source Row Name Changed | RowNameUpdaterを使ったプルダウンメニューの自動更新処理を行うかを指定します。                       |
 |            | Active Row Name Updater                    | 有効化するRowNameUpdaterのクラスを指定します。ここで設定されているRowNameUpdaterのみが更新処理を行います。 |
 
@@ -193,6 +199,9 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2022/07/07) v1.7  
+  `PulldownListGenerator`の`GetPulldownRows`の引数に編集中の変数を持つオブジェクトと編集中の変数を渡すようにしました  
 
 - (2022/06/12) v1.6   
   プルダウン構造体同士の比較ブループリントノードを追加しました  

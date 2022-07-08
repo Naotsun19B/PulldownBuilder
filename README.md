@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.23 ~ 5.0  
+Target version : UE4.24 ~ 5.0  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -144,8 +144,13 @@ The following three `PulldownListGenerator`s are provided as standard.
 |   NameArrayPulldownListGenerator   | List the elements of the array in the pull-down menu under `SourceNameArray`.                           | Displays the character string set in the Value of each item.                                                                                 |
 | InputMappingsPulldownListGenerator | List the elements of the input mapping set in the input of the project settings in the pull-down menu.  | Displays the name of the button corresponding to the input name.                                                                             |
 
-To create your own `PulldownListGenerator`, inherit the [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) in C++ or BP and override the `GetDisplayStrings`.  
+To create your own `PulldownListGenerator`, inherit the [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) in C++ or BP and override the `GetPulldownRows`.  
 The return value array will be listed in the pull-down menu.  
+Since the object with the variable being edited and the variable being edited are passed as arguments, the contents of the list generated based on it can be changed.  
+
+![BP_TestPulldown4PulldownListGenerator-GetPulldownRowsFromBlueprint](https://user-images.githubusercontent.com/51815450/177553308-a277f778-67d1-41aa-8495-2cba434ed423.png)
+
+https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-be00-2c5b24244a73.mp4
 
 ### ・RowNameUpdater  
 
@@ -177,6 +182,7 @@ The items that can be set from the editor preferences are as follows.
 | Appearance  | Panel Size                                 | Specify the panel size of the pull-down menu.                                                                   |
 |             | Is Select when Double Click                | If this flag is true, you will need to double-click to select an item in the pull-down menu.                    |
 |             | Should Inline Display When Single Property | If this flag is true, automatically inline a single property pull-down structure.                               |
+|             | Notification Severity                      | Specifies the severity to focus the message log of notifications issued by this plugin.                         |
 | Redirect    | Should Update When Source Row Name Changed | Specifies whether to perform automatic update processing of the pull-down menu using RowNameUpdater.            |
 |             | Active Row Name Updater                    | Specifies the RowNameUpdater class to enable. Only the RowNameUpdater set here will perform the update process. |
 
@@ -193,6 +199,9 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2022/07/07) v1.7  
+  Changed to pass the object with the variable being edited and the variable being edited to the argument of `GetPulldownRows` of` PulldownListGenerator`  
 
 - (2022/06/12) v1.6   
   Added comparison blueprint node between pull-down structures  
