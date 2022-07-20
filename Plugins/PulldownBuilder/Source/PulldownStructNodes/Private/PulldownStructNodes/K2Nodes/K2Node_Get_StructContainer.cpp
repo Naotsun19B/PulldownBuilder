@@ -11,13 +11,12 @@
 
 #define LOCTEXT_NAMESPACE "K2Node_Get_StructContainer"
 
-const FName UK2Node_Get_StructContainer::FailedPinName		= TEXT("Failed");
 const FName UK2Node_Get_StructContainer::TargetPinName		= TEXT("Target");
 const FName UK2Node_Get_StructContainer::StructDataPinName	= TEXT("StructData");
 
 FText UK2Node_Get_StructContainer::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (TitleType != ENodeTitleType::MenuTitle)
+	if (ArePinsAllocated() && TitleType != ENodeTitleType::MenuTitle)
 	{
 		if (const UScriptStruct* ValueStruct = GetStructType())
 		{
@@ -166,6 +165,22 @@ bool UK2Node_Get_StructContainer::IsConnectionDisallowed(const UEdGraphPin* MyPi
 	}
 	
 	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
+}
+
+bool UK2Node_Get_StructContainer::ArePinsAllocated() const
+{
+	static const TArray<FName, TInlineAllocator<3>> PinNames = {
+		TargetPinName, StructDataPinName, UEdGraphSchema_K2::PN_ReturnValue
+	};
+	for (const auto& PinName : PinNames)
+	{
+		if (FindPin(PinName) == nullptr)
+		{
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 UEdGraphPin* UK2Node_Get_StructContainer::GetTargetPin() const

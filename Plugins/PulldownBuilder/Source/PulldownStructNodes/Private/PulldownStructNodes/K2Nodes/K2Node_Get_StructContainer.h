@@ -17,7 +17,6 @@ class PULLDOWNSTRUCTNODES_API UK2Node_Get_StructContainer : public UK2Node
 
 public:
 	// Defines the name of the pins contained in this node.
-	static const FName FailedPinName;
 	static const FName TargetPinName;
 	static const FName StructDataPinName;
 	
@@ -39,6 +38,9 @@ public:
 	// End of UK2Node interface.
 	
 protected:
+	// Returns whether the node's pins are already allocated.
+	bool ArePinsAllocated() const;
+	
 	// Functions that get each pin contained in this node.
 	UEdGraphPin* GetTargetPin() const;
 	UEdGraphPin* GetStructDataPin() const;

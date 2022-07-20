@@ -16,7 +16,7 @@ const FName UK2Node_Compare_PulldownStruct::RhsPinName = TEXT("Rhs");
 
 FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (TitleType != ENodeTitleType::MenuTitle)
+	if (ArePinsAllocated() && TitleType != ENodeTitleType::MenuTitle)
 	{
 		if (const UScriptStruct* ValueStruct = GetArgumentStructType())
 		{
@@ -193,6 +193,22 @@ bool UK2Node_Compare_PulldownStruct::IsConnectionDisallowed(const UEdGraphPin* M
 	);
 	
 	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
+}
+
+bool UK2Node_Compare_PulldownStruct::ArePinsAllocated() const
+{
+	static const TArray<FName, TInlineAllocator<3>> PinNames = {
+		LhsPinName, RhsPinName, UEdGraphSchema_K2::PN_ReturnValue
+	};
+	for (const auto& PinName : PinNames)
+	{
+		if (FindPin(PinName) == nullptr)
+		{
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 UEdGraphPin* UK2Node_Compare_PulldownStruct::GetLhsPin() const

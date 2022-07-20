@@ -40,6 +40,9 @@ public:
 	// End of UK2Node interface.
 	
 protected:
+	// Returns whether the node's pins are already allocated.
+	bool ArePinsAllocated() const;
+	
 	// Functions that get each pin contained in this node.
 	UEdGraphPin* GetLhsPin() const;
 	UEdGraphPin* GetRhsPin() const;
