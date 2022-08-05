@@ -3,8 +3,8 @@
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
-const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName = TEXT("PulldownTooltip");
-const FString UDataTablePulldownListGenerator::TooltipPropertyMeta = TEXT("TooltipProperty");
+const FString UDataTablePulldownListGenerator::TooltipPropertyMeta			= TEXT("TooltipProperty");
+const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName	= TEXT("PulldownTooltip");
 
 TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
@@ -22,16 +22,17 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 		{
 			const UScriptStruct* RowStruct = DataTable->GetRowStruct();
 			const TMap<FName, uint8*>& RowMap = DataTable->GetRowMap();
-			const TArray<FName>& RowNames = DataTable->GetRowNames();
-			for (const auto& RowName : RowNames)
+			for (const auto& Pair : RowMap)
 			{
+				const FName& RowName = Pair.Key;
+				uint8* RowData = Pair.Value;
 				if (RowName == NAME_None)
 				{
 					continue;
 				}
 
 				FString TooltipString;
-				if (FindTooltip(RowStruct, RowMap[RowName], TooltipString))
+				if (FindTooltip(RowStruct, RowData, TooltipString))
 				{
 					PulldownRows.Add(MakeShared<FPulldownRow>(RowName, *TooltipString));
 				}
@@ -114,27 +115,60 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 	{
 		TooltipPropertyName = RowStruct->GetMetaData(*TooltipPropertyMeta);
 	}
-	
+
 #if BEFORE_UE_4_24
-	for (UStrProperty* StringProperty : TFieldRange<UStrProperty>(RowStruct))
+	for (UProperty* Property : TFieldRange<UProperty>(RowStruct))
 #else
-	for (FStrProperty* StringProperty : TFieldRange<FStrProperty>(RowStruct))
+	for (FProperty* Property : TFieldRange<FProperty>(RowStruct))
 #endif
 	{
-		if (StringProperty == nullptr)
+		if (Property == nullptr)
 		{
 			continue;
 		}
 
-		if (StringProperty->GetName() != TooltipPropertyName)
+		if (Property->GetName() != TooltipPropertyName)
 		{
 			continue;	
 		}
 
-		if (const FString* ValuePtr = StringProperty->ContainerPtrToValuePtr<FString>(RowData))
+#if BEFORE_UE_4_24
+		if (Property->IsA<UStrProperty>())
+#else
+		if (Property->IsA<FStrProperty>())
+#endif
 		{
-			TooltipString = *ValuePtr;
-			return true;
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FString>(RowData))
+			{
+				TooltipString = *ValuePtr;
+				return true;
+			}
+		}
+
+#if BEFORE_UE_4_24
+		if (Property->IsA<UNameProperty>())
+#else
+		if (Property->IsA<FNameProperty>())
+#endif
+		{
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FName>(RowData))
+			{
+				TooltipString = ValuePtr->ToString();
+				return true;
+			}
+		}
+
+#if BEFORE_UE_4_24
+		if (Property->IsA<UTextProperty>())
+#else
+		if (Property->IsA<FTextProperty>())
+#endif
+		{
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FText>(RowData))
+			{
+				TooltipString = ValuePtr->ToString();
+				return true;
+			}
 		}
 	}
 

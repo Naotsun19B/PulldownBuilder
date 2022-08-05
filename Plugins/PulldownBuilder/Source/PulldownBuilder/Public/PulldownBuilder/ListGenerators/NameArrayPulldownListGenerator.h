@@ -35,7 +35,7 @@ public:
 protected:
 	// The name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
-	TMap<FName, FName> SourceNameArray;
+	mutable TMap<FName, FName> SourceNameArray;
 
 	// Cache of name array before change.
 	UPROPERTY(Transient)
