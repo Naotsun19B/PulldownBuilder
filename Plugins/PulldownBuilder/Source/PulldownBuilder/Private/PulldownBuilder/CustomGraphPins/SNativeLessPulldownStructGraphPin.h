@@ -36,6 +36,9 @@ namespace PulldownBuilder
 		
 		// Called when the value of the PulldownSourceWidget changes.
 		void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
+
+		// Returns the selected pulldown source.
+		TSharedPtr<FPulldownRow> GetPulldownSourceSelection() const;
 		
 	private:
 		// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.

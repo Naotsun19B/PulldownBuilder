@@ -54,7 +54,7 @@ namespace PulldownBuilder
 	void FPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 	{
 		StructPropertyHandle = InStructPropertyHandle;
-		check(StructPropertyHandle);
+		check(StructPropertyHandle.IsValid());
 
 		// Scan the properties of the structure for the property handle of FPulldownStructBase::SelectedValue.
 		uint32 NumChildProperties;
@@ -102,7 +102,7 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 	{
-		check(StructPropertyHandle && SelectedValueHandle);
+		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
 		// Add child properties other than FPulldownStructBase::SelectedValue to the StructBuilder.
 		uint32 NumChildProperties;
@@ -155,7 +155,7 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::RebuildPulldown()
 	{
-		check(StructPropertyHandle && SelectedValueHandle);
+		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
 		// Find PulldownContents in the property structure and
 		// build a list of strings to display in the pull-down menu.
@@ -177,7 +177,7 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::RefreshPulldownWidget()
 	{
-		check(SelectedValueHandle);
+		check(SelectedValueHandle.IsValid());
 	
 		// Check if the currently set string is included in the constructed list.
 		FName CurrentSelectedValue;
@@ -199,7 +199,7 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> FPulldownStructDetail::GenerateSelectableValues()
 	{
-		check(StructPropertyHandle);
+		check(StructPropertyHandle.IsValid());
 	
 #if BEFORE_UE_4_24
 		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
@@ -238,7 +238,7 @@ namespace PulldownBuilder
 	bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
 	#endif
 	{
-		check(InProperty);
+		check(InProperty != nullptr);
 		return (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 	}
 
@@ -251,6 +251,7 @@ namespace PulldownBuilder
 			[
 				SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
 				.ListItemsSource(&SelectableValues)
+				.GetSelection(this, &FPulldownStructDetail::GetSelection)
 				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
 				.OnComboBoxOpened(this, &FPulldownStructDetail::RebuildPulldown)
 			];
@@ -265,6 +266,17 @@ namespace PulldownBuilder
 			});
 
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
+	}
+
+	TSharedPtr<FPulldownRow> FPulldownStructDetail::GetSelection() const
+	{
+		FName SelectedValue = NAME_None;
+		if (SelectedValueHandle.IsValid())
+		{
+			SelectedValueHandle->GetValue(SelectedValue);
+		}
+
+		return FindSelectableValueByName(SelectedValue);
 	}
 
 	void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

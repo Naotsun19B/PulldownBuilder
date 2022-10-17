@@ -153,7 +153,7 @@ namespace PulldownBuilder
 
 	FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* InStruct)
 	{
-		check(InStruct);
+		check(IsValid(InStruct));
 		
 		FString DefaultValueString = TEXT("(");	
 #if BEFORE_UE_4_24

@@ -69,9 +69,6 @@ namespace PulldownBuilder
 
 	TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
 	{
-		const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
-		const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
-	
 		return
 			SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
@@ -80,9 +77,9 @@ namespace PulldownBuilder
 			[
 				SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
 				.ListItemsSource(&SelectableValues)
+				.GetSelection(this, &SPulldownStructGraphPin::GetSelection)
 				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
 				.OnComboBoxOpened(this, &SPulldownStructGraphPin::RebuildPulldown)
-				.InitialSelection(FindSelectableValueByName(NameToFind))
 			];
 	}
 
@@ -95,6 +92,13 @@ namespace PulldownBuilder
 			});
 
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
+	}
+
+	TSharedPtr<FPulldownRow> SPulldownStructGraphPin::GetSelection() const
+	{
+		const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+		const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
+		return FindSelectableValueByName(NameToFind);
 	}
 
 	void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
@@ -114,7 +118,7 @@ namespace PulldownBuilder
 
 	TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName) const
 	{
-		check(GraphPinObj);
+		check(GraphPinObj != nullptr);
 	
 		return FPulldownBuilderUtils::StructStringToMemberValue(
 			GraphPinObj->GetDefaultAsString(),
@@ -124,7 +128,7 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue)
 	{
-		check(GraphPinObj);
+		check(GraphPinObj != nullptr);
 
 		const TSharedPtr<FString> NewDefaultValue = FPulldownBuilderUtils::MemberValueToStructString(
 			GraphPinObj->GetDefaultAsString(),
@@ -135,7 +139,7 @@ namespace PulldownBuilder
 		{
 			// Set the created value for the pin.
 			const UEdGraphSchema* Schema = GraphPinObj->GetSchema();
-			check(Schema);
+			check(IsValid(Schema));
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 		}
 	}
@@ -169,7 +173,7 @@ namespace PulldownBuilder
 
 	bool SPulldownStructGraphPin::GenerateStructContainer(FStructContainer& StructContainer) const
 	{
-		check(GraphPinObj);
+		check(GraphPinObj != nullptr);
 
 		const auto* ScriptStruct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject);
 		if (!IsValid(ScriptStruct))

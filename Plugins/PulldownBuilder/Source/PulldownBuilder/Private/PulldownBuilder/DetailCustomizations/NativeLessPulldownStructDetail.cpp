@@ -70,7 +70,7 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
 	{
-		check(PulldownSourceHandle);
+		check(PulldownSourceHandle.IsValid());
 	
 		// Check if the currently set string is included in the constructed list.
 		FName CurrentPulldownSource;
@@ -94,7 +94,7 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> FNativeLessPulldownStructDetail::GenerateSelectableValues()
 	{
-		check(StructPropertyHandle);
+		check(StructPropertyHandle.IsValid());
 		
 		PulldownContentsNames.Reset();
 		PulldownContentsNames.Add(MakeShared<FPulldownRow>());
@@ -176,6 +176,7 @@ namespace PulldownBuilder
 				[
 					SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
 					.ListItemsSource(&PulldownContentsNames)
+					.GetSelection(this, &FNativeLessPulldownStructDetail::GetPulldownSourceSelection)
 					.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnPulldownSourceChanged)
 					.OnComboBoxOpened(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
 				]
@@ -193,9 +194,20 @@ namespace PulldownBuilder
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
 	}
 
+	TSharedPtr<FPulldownRow> FNativeLessPulldownStructDetail::GetPulldownSourceSelection() const
+	{
+		FName SelectedValue = NAME_None;
+		if (PulldownSourceHandle.IsValid())
+		{
+			PulldownSourceHandle->GetValue(SelectedValue);
+		}
+
+		return FindPulldownContentsNameByName(SelectedValue);
+	}
+
 	void FNativeLessPulldownStructDetail::OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 	{
-		check(PulldownSourceHandle && SelectedValueHandle);
+		check(PulldownSourceHandle.IsValid() && SelectedValueHandle.IsValid());
 	
 		if (!SelectedItem.IsValid())
 		{
@@ -234,7 +246,7 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::OnPulldownSourceCopyAction()
 	{
-		check(PulldownSourceHandle);
+		check(PulldownSourceHandle.IsValid());
 
 		FName SelectedValue;
 		PulldownSourceHandle->GetValue(SelectedValue);
@@ -244,7 +256,7 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::OnPulldownSourcePasteAction()
 	{
-		check(PulldownSourceWidget);
+		check(PulldownSourceWidget.IsValid());
 	
 		FName PastedText;
 		{

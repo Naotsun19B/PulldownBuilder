@@ -108,7 +108,7 @@ namespace PulldownBuilder
 
 	void FPulldownStructTypeDetail::OnPickedStruct(const UScriptStruct* SelectedStruct)
 	{
-		check(SelectedStructHandle && StructPickerAnchor);
+		check(SelectedStructHandle.IsValid() && StructPickerAnchor.IsValid());
 	
 		SelectedStructHandle->SetValue(SelectedStruct);
 		StructPickerAnchor->SetIsOpen(false);
@@ -116,7 +116,7 @@ namespace PulldownBuilder
 
 	FText FPulldownStructTypeDetail::OnGetComboTextValue() const
 	{
-		check(SelectedStructHandle);
+		check(SelectedStructHandle.IsValid());
 	
 		UObject* Value;
 		SelectedStructHandle->GetValue(Value);

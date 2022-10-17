@@ -10,13 +10,16 @@ namespace PulldownBuilder
 	void SPulldownSelectorComboButton::Construct(const FArguments& InArgs)
 	{
 		ListItemsSource = InArgs._ListItemsSource;
-		SelectedPulldownRow = InArgs._InitialSelection;
+		GetSelection = InArgs._GetSelection;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
+
+		check(GetSelection.IsBound());
+		SelectedPulldownRow = GetSelection.Execute();
 		
 		SComboButton::Construct(
 			SComboButton::FArguments()
 			.ContentPadding(FMargin(2, 2, 2, 1))
-			.MenuPlacement(EMenuPlacement::MenuPlacement_BelowAnchor)
+			.MenuPlacement(MenuPlacement_BelowAnchor)
 			.OnComboBoxOpened(InArgs._OnComboBoxOpened)
 			.OnGetMenuContent(this, &SPulldownSelectorComboButton::HandleOnGetMenuContent)
 			.ButtonContent()
@@ -26,6 +29,18 @@ namespace PulldownBuilder
 				.ToolTipText(this, &SPulldownSelectorComboButton::GetTooltipText)
 			]
 		);
+	}
+
+	void SPulldownSelectorComboButton::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+	{
+		SComboButton::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+
+		// In certain environments the initial value may not be passed from the pin,
+		// so if there is no item selected as insurance, it will be reacquired.
+		if (!SelectedPulldownRow.IsValid())
+		{
+			SelectedPulldownRow = GetSelection.Execute();
+		}
 	}
 
 	TSharedPtr<FPulldownRow> SPulldownSelectorComboButton::GetSelectedItem() const

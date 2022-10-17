@@ -18,10 +18,7 @@ namespace PulldownBuilder
 	TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 	{
 		RebuildPulldown();
-
-		const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
-		const FName& NameToFind = (PulldownSource.IsValid() ? *PulldownSource : NAME_None);
-	
+		
 		return
 			SNew(SHorizontalBox)
 			.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
@@ -35,9 +32,9 @@ namespace PulldownBuilder
 				[
 					SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
 					.ListItemsSource(&PulldownContentsNames)
+					.GetSelection(this, &SNativeLessPulldownStructGraphPin::GetPulldownSourceSelection)
 					.OnSelectionChanged(this, &SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged)
 					.OnComboBoxOpened(this, &SNativeLessPulldownStructGraphPin::RebuildPulldown)
-					.InitialSelection(FindPulldownContentsNameByName(NameToFind))
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -139,5 +136,12 @@ namespace PulldownBuilder
 				SPulldownStructGraphPin::RefreshPulldownWidget();
 			}	
 		}
+	}
+
+	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::GetPulldownSourceSelection() const
+	{
+		const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
+		const FName& NameToFind = (PulldownSource.IsValid() ? *PulldownSource : NAME_None);
+		return FindPulldownContentsNameByName(NameToFind);
 	}
 }

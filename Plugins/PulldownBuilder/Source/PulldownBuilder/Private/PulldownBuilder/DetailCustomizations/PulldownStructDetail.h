@@ -61,7 +61,10 @@ namespace PulldownBuilder
 		// Search for the same name as the specified name from the SelectableValues.
 		// If not found, returns nullptr.
 		TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
-	
+
+		// Returns the selected item.
+		TSharedPtr<FPulldownRow> GetSelection() const;
+		
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	

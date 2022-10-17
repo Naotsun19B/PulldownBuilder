@@ -42,7 +42,10 @@ namespace PulldownBuilder
 		// Search for the same name as the specified name from the PulldownContentsNames.
 		// If not found, returns nullptr.
 		TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
-	
+
+		// Returns the selected pulldown source.
+		TSharedPtr<FPulldownRow> GetPulldownSourceSelection() const;
+		
 		// Called when the value of the PulldownSourceWidget changes.
 		void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 

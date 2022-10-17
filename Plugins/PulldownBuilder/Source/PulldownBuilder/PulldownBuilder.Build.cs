@@ -6,6 +6,8 @@ public class PulldownBuilder : ModuleRules
 {
 	public PulldownBuilder(ReadOnlyTargetRules Target) : base(Target)
 	{
+		OptimizeCode = CodeOptimization.Never;
+		
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicDependencyModuleNames.AddRange(
