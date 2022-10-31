@@ -22,7 +22,7 @@ namespace PulldownBuilder
 			.WidthOverride(Settings.PanelSize.X)
 			[
 				SNew(SVerticalBox)
-				+SVerticalBox::Slot()
+				+ SVerticalBox::Slot()
 				.AutoHeight()
 				[
 					SNew(SSearchBox)
@@ -30,7 +30,7 @@ namespace PulldownBuilder
 					.OnTextChanged(this, &SPulldownSelector::HandleOnTextChanged)
 					.DelayChangeNotificationsWhileTyping(true)
 				]
-				+SVerticalBox::Slot()
+				+ SVerticalBox::Slot()
 				.FillHeight(1.0f)
 				[
 					SAssignNew(ListView, SListView<TSharedPtr<FPulldownRow>>)
