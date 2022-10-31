@@ -60,6 +60,8 @@ namespace PulldownBuilder
 		TSharedRef<ITableRow> HandleOnGenerateRow(TSharedPtr<FPulldownRow> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 
 		// Called when an item in the list is clicked.
+		void HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem);
+		void HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem);
 		void OnRowItemClicked(TSharedPtr<FPulldownRow> SelectedItem);
 
 		// Returns whether the items in the list match the filter string.

@@ -14,23 +14,7 @@ namespace PulldownBuilder
 		OnSelectionChanged = InArgs._OnSelectionChanged;
 		
 		const auto& Settings = UPulldownBuilderAppearanceSettings::Get();
-		if (Settings.bIsSelectWhenDoubleClick)
-		{
-			ListView = SNew(SListView<TSharedPtr<FPulldownRow>>)
-			.SelectionMode(ESelectionMode::Single)
-			.ListItemsSource(ListItemsSource)
-			.OnGenerateRow(this, &SPulldownSelector::HandleOnGenerateRow)
-			.OnMouseButtonDoubleClick(this, &SPulldownSelector::OnRowItemClicked);
-		}
-		else
-		{
-			ListView = SNew(SListView<TSharedPtr<FPulldownRow>>)
-			.SelectionMode(ESelectionMode::Single)
-			.ListItemsSource(ListItemsSource)
-			.OnGenerateRow(this, &SPulldownSelector::HandleOnGenerateRow)
-			.OnMouseButtonClick(this, &SPulldownSelector::OnRowItemClicked);
-		}
-
+		
 		ChildSlot
 		[
 			SNew(SBox)
@@ -49,7 +33,12 @@ namespace PulldownBuilder
 				+SVerticalBox::Slot()
 				.FillHeight(1.0f)
 				[
-					ListView.ToSharedRef()
+					SAssignNew(ListView, SListView<TSharedPtr<FPulldownRow>>)
+					.SelectionMode(ESelectionMode::Single)
+					.ListItemsSource(&ListItems)
+					.OnGenerateRow(this, &SPulldownSelector::HandleOnGenerateRow)
+					.OnMouseButtonClick(this, &SPulldownSelector::OnRowItemClicked)
+					.OnMouseButtonDoubleClick(this, &SPulldownSelector::OnRowItemClicked)
 				]
 			]
 		];
@@ -101,7 +90,7 @@ namespace PulldownBuilder
 		RebuildListItems();
 		if (ListView.IsValid())
 		{
-			ListView->RequestListRefresh();
+			ListView->RebuildList();
 		}
 	}
 
@@ -153,6 +142,22 @@ namespace PulldownBuilder
 		[
 			Row
 		];
+	}
+
+	void SPulldownSelector::HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem)
+	{
+		if (!UPulldownBuilderAppearanceSettings::Get().bIsSelectWhenDoubleClick)
+		{
+			OnRowItemClicked(SelectedItem);
+		}
+	}
+
+	void SPulldownSelector::HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem)
+	{
+		if (UPulldownBuilderAppearanceSettings::Get().bIsSelectWhenDoubleClick)
+		{
+			OnRowItemClicked(SelectedItem);
+		}
 	}
 
 	void SPulldownSelector::OnRowItemClicked(TSharedPtr<FPulldownRow> SelectedItem)
