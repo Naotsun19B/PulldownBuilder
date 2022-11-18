@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Package.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownStructType.generated.h"
 
 /**
@@ -25,7 +26,15 @@ public:
 	explicit FPulldownStructType(UScriptStruct* InStructType) : SelectedStruct(InStructType) {}
 	explicit FPulldownStructType(const FName& InStructTypeName)
 	{
-		SelectedStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *InStructTypeName.ToString(), true);
+		SelectedStruct = FindObject<UScriptStruct>(
+#if BEFORE_UE_5_00
+			ANY_PACKAGE,
+#else
+			nullptr,
+#endif
+			*InStructTypeName.ToString(),
+			true
+		);
 	}
 
 	// Overload oprators.

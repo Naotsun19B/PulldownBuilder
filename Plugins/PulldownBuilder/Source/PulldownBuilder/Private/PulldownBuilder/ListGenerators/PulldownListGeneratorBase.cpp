@@ -62,7 +62,15 @@ TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes(
 	{
 		FilterPulldownStructTypeName.TrimStartAndEndInline();
 
-		if (auto* FoundStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *FilterPulldownStructTypeName))
+		auto* FoundStruct = FindObject<UScriptStruct>(
+#if BEFORE_UE_5_00
+			ANY_PACKAGE,
+#else
+			nullptr,
+#endif
+			*FilterPulldownStructTypeName
+		);
+		if (IsValid(FoundStruct))
 		{
 			FilterPulldownStructTypes.Add(FoundStruct);
 		}

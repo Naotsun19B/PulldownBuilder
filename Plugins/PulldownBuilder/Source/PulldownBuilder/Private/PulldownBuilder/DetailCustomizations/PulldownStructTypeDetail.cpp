@@ -3,6 +3,7 @@
 #include "PulldownBuilder/DetailCustomizations/PulldownStructTypeDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "StructViewerModule.h"
 #include "StructViewerFilter.h"
 #include "DetailWidgetRow.h"
@@ -12,6 +13,11 @@
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
+#if BEFORE_UE_5_00
+#include "EditorStyleSet.h"
+#else
+#include "Styling/AppStyle.h"
+#endif
 
 namespace PulldownBuilder
 {
@@ -22,7 +28,11 @@ namespace PulldownBuilder
 		{
 		public:
 			// IStructViewerFilter interface.
-			virtual bool IsStructAllowed(const FStructViewerInitializationOptions& InInitOptions, const UScriptStruct* InStruct, TSharedRef<FStructViewerFilterFuncs> InFilterFuncs) override
+			virtual bool IsStructAllowed(
+				const FStructViewerInitializationOptions& InInitOptions,
+				const UScriptStruct* InStruct,
+				TSharedRef<FStructViewerFilterFuncs> InFilterFuncs
+			) override
 			{
 				bool bIsStructAllowed = false;
 				if (FPulldownBuilderUtils::IsPulldownStruct(InStruct))
@@ -32,8 +42,15 @@ namespace PulldownBuilder
 			
 				return bIsStructAllowed;
 			}
-		
-			virtual bool IsUnloadedStructAllowed(const FStructViewerInitializationOptions& InInitOptions, const FName InStructPath, TSharedRef<FStructViewerFilterFuncs> InFilterFuncs) override
+			virtual bool IsUnloadedStructAllowed(
+				const FStructViewerInitializationOptions& InInitOptions,
+#if BEFORE_UE_5_00
+				const FName InStructPath,
+#else
+				const FSoftObjectPath& InStructPath,
+#endif
+				TSharedRef<FStructViewerFilterFuncs> InFilterFuncs
+			) override
 			{
 				return false;
 			}
@@ -148,7 +165,14 @@ namespace PulldownBuilder
 				[
 					SNew(SBorder)
 					.Padding(4)
-					.BorderImage(FEditorStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+					.BorderImage(
+#if BEFORE_UE_5_00
+					FEditorStyle
+#else
+					FAppStyle
+#endif
+						::GetBrush(TEXT("ToolPanel.GroupBorder"))
+					)
 					[
 						StructViewerModule.CreateStructViewer(Options, FOnStructPicked::CreateSP(this, &FPulldownStructTypeDetail::OnPickedStruct))
 					]
