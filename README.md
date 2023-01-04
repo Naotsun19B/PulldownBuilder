@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.24 ~ 5.0  
+Target version : UE4.24 ~ 5.1  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -199,6 +199,12 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2022/11/08) v1.8  
+  Fixed a crash when searching for a node when the editor language is other than English  
+  Fixed a bug that pin value becomes invalid data  
+  Fixed a bug that the search field did not work properly  
+  Added support for UE5.1  
 
 - (2022/07/07) v1.7  
   Changed to pass the object with the variable being edited and the variable being edited to the argument of `GetPulldownRows` of `PulldownListGenerator`  
