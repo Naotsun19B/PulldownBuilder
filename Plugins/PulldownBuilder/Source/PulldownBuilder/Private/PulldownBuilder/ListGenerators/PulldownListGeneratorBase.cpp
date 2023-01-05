@@ -6,6 +6,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "Misc/UObjectToken.h"
+#include "UObject/UObjectThreadContext.h"
 
 #define LOCTEXT_NAMESPACE "PulldownListGeneratorBase"
 
@@ -28,7 +29,13 @@ TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows(
 
 bool UPulldownListGeneratorBase::HasSourceAsset() const
 {
-	return HasSourceAssetFromBlueprint();
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		return HasSourceAssetFromBlueprint();
+	}
+
+	return false;
 }
 
 FString UPulldownListGeneratorBase::GetSourceAssetName() const
