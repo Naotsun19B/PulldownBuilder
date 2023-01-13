@@ -37,13 +37,15 @@ namespace PulldownBuilder
 		virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
 #endif
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
+		virtual void OnBrowsePulldownContentsAction() override;
+		virtual bool CanBrowsePulldownContentsAction() const override;
 		// End of FPulldownStructDetail interface.
 
 		// Search for the same name as the specified name from the PulldownContentsNames.
 		// If not found, returns nullptr.
 		TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
 
-		// Returns the selected pulldown source.
+		// Returns the selected pull-down source.
 		TSharedPtr<FPulldownRow> GetPulldownSourceSelection() const;
 		
 		// Called when the value of the PulldownSourceWidget changes.

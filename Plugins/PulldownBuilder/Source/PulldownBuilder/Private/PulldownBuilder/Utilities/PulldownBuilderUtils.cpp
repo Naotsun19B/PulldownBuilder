@@ -112,6 +112,18 @@ namespace PulldownBuilder
 		return FoundItem;
 	}
 
+	bool FPulldownBuilderUtils::OpenPulldownContents(UPulldownContents* PulldownContents)
+	{
+		check(IsValid(GEditor) && IsValid(PulldownContents));
+
+		if (auto* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>())
+		{
+			return AssetEditorSubsystem->OpenEditorForAsset(PulldownContents);
+		}
+
+		return false;
+	}
+
 	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 		const UScriptStruct* InStruct,
 		const TArray<UObject*>& OuterObjects,

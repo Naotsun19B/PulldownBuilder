@@ -43,15 +43,15 @@ protected:
 	void OnActionAxisMappingsChanged();
 	
 protected:
-	// Whether to include the action mapping in the list in the pulldown menu.
+	// Whether to include the action mapping in the list in thepull-down menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeActionMappings;
 
-	// Whether to include the axis mapping in the list in the pulldown menu.
+	// Whether to include the axis mapping in the list in the pull-down menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeAxisMappings;
 
-	// Whether to include the speech mapping in the list in the pulldown menu.
+	// Whether to include the speech mapping in the list in the pull-down menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeSpeechMappings;
 

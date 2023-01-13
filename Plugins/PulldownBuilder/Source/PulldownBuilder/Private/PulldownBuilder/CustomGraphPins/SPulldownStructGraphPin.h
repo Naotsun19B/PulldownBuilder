@@ -58,7 +58,7 @@ namespace PulldownBuilder
 		// Recursively search and return the outer assets of the pin.
 		UObject* GetOuterAsset() const;
 
-		// Create an F Struct Container from the data of the property pointed to by this pin.
+		// Create an FStructContainer from the data of the property pointed to by this pin.
 		bool GenerateStructContainer(FStructContainer& StructContainer) const;
 		
 	protected:

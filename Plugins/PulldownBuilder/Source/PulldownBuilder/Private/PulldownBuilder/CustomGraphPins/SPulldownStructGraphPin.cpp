@@ -146,20 +146,9 @@ namespace PulldownBuilder
 
 	UObject* SPulldownStructGraphPin::GetOuterAsset() const
 	{
-		UEdGraphNode* Node = GraphPinObj->GetOuter();
-		if (!IsValid(Node))
+		UObject* CurrentObject = GraphPinObj->GetOuter();
+		while (IsValid(CurrentObject))
 		{
-			return nullptr;
-		}
-
-		UObject* CurrentObject = Node;
-		while (true)
-		{
-			if (!IsValid(CurrentObject))
-			{
-				break;
-			}
-
 			if (CurrentObject->IsAsset())
 			{
 				return CurrentObject;

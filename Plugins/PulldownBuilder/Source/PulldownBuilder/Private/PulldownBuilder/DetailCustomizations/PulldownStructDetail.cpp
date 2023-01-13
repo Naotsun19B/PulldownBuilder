@@ -14,6 +14,8 @@
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Modules/ModuleManager.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
+#include "Toolkits/GlobalEditorCommonCommands.h"
 
 namespace PulldownBuilder
 {
@@ -96,6 +98,20 @@ namespace PulldownBuilder
 					GenerateSelectableValuesWidget()
 				];
 
+			HeaderRow.CopyAction(CreateSelectedValueCopyAction());
+			HeaderRow.PasteAction(CreateSelectedValuePasteAction());
+			
+			const TSharedPtr<FUICommandInfo>& FindInContentBrowser = FGlobalEditorCommonCommands::Get().FindInContentBrowser;
+			if (FindInContentBrowser.IsValid())
+			{
+				HeaderRow.AddCustomContextMenuAction(
+					CreateBrowsePulldownContentsAction(),
+					FindInContentBrowser->GetLabel(),
+					FindInContentBrowser->GetDescription(),
+					FindInContentBrowser->GetIcon()
+				);
+			}
+			
 			RebuildPulldown();
 		}
 	}
@@ -133,8 +149,10 @@ namespace PulldownBuilder
 		if (NumChildProperties > 1 || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
-		
-			StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)))
+			
+			FDetailWidgetRow& DetailWidgetRow = StructBuilder.AddCustomRow(
+				FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
+			)
 				.CopyAction(CreateSelectedValueCopyAction())
 				.PasteAction(CreateSelectedValuePasteAction())
 				.NameContent()
@@ -146,6 +164,17 @@ namespace PulldownBuilder
 				[
 					GenerateSelectableValuesWidget()
 				];
+
+			const TSharedPtr<FUICommandInfo>& FindInContentBrowser = FGlobalEditorCommonCommands::Get().FindInContentBrowser;
+			if (FindInContentBrowser.IsValid())
+			{
+				DetailWidgetRow.AddCustomContextMenuAction(
+					CreateBrowsePulldownContentsAction(),
+					FindInContentBrowser->GetLabel(),
+					FindInContentBrowser->GetDescription(),
+					FindInContentBrowser->GetIcon()
+				);
+			}
 
 			AddCustomRowAfterSelectedValue(StructBuilder);
 
@@ -234,9 +263,9 @@ namespace PulldownBuilder
 
 #if BEFORE_UE_4_24
 	bool FPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
-	#else
+#else
 	bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
-	#endif
+#endif
 	{
 		check(InProperty != nullptr);
 		return (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
@@ -299,7 +328,8 @@ namespace PulldownBuilder
 	{
 		return FUIAction
 		(
-			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnSelectedValueCopyAction)
+			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnSelectedValueCopyAction),
+			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanSelectedValueCopyAction)
 		);
 	}
 
@@ -307,7 +337,17 @@ namespace PulldownBuilder
 	{
 		return FUIAction
 		(
-			FExecuteAction::CreateSP(this, & FPulldownStructDetail::OnSelectedValuePasteAction)
+			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnSelectedValuePasteAction),
+			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanSelectedValuePasteAction)
+		);
+	}
+
+	FUIAction FPulldownStructDetail::CreateBrowsePulldownContentsAction()
+	{
+		return FUIAction
+		(
+			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnBrowsePulldownContentsAction),
+			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanBrowsePulldownContentsAction)
 		);
 	}
 
@@ -343,5 +383,50 @@ namespace PulldownBuilder
 		{
 			SelectedValueWidget->SetSelectedItem(SelectedItem);
 		}
+	}
+
+	void FPulldownStructDetail::OnBrowsePulldownContentsAction()
+	{
+		check(StructPropertyHandle.IsValid());
+		
+#if BEFORE_UE_4_24
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+		{
+			if (UPulldownContents* PulldownContents = FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct))
+			{
+				FPulldownBuilderUtils::OpenPulldownContents(PulldownContents);
+			}
+		}
+	}
+
+	bool FPulldownStructDetail::CanSelectedValueCopyAction() const
+	{
+		return true;
+	}
+
+	bool FPulldownStructDetail::CanSelectedValuePasteAction() const
+	{
+		check(StructPropertyHandle.IsValid());
+	
+		return StructPropertyHandle->IsEditable();
+	}
+
+	bool FPulldownStructDetail::CanBrowsePulldownContentsAction() const
+	{
+		check(StructPropertyHandle.IsValid());
+
+#if BEFORE_UE_4_24
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+		{
+			return IsValid(FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct));
+		}
+
+		return false;
 	}
 }

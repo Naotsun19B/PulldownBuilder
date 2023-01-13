@@ -148,10 +148,12 @@ namespace PulldownBuilder
 
 #if BEFORE_UE_4_24
 	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
-	#else
+#else
 	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
-	#endif
+#endif
 	{
+		check(InProperty != nullptr);
+		
 		return (
 			FPulldownStructDetail::IsCustomizationTarget(InProperty) ||
 			InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
@@ -183,6 +185,27 @@ namespace PulldownBuilder
 			];
 	}
 
+	void FNativeLessPulldownStructDetail::OnBrowsePulldownContentsAction()
+	{
+		check(PulldownSourceHandle.IsValid());
+		
+		FName PulldownSource;
+		PulldownSourceHandle->GetValue(PulldownSource);
+		if (UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
+		{
+			FPulldownBuilderUtils::OpenPulldownContents(SourceAsset);
+		}
+	}
+
+	bool FNativeLessPulldownStructDetail::CanBrowsePulldownContentsAction() const
+	{
+		check(PulldownSourceHandle.IsValid());
+		
+		FName PulldownSource;
+		PulldownSourceHandle->GetValue(PulldownSource);
+		return IsValid(FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource));
+	}
+
 	TSharedPtr<FPulldownRow> FNativeLessPulldownStructDetail::FindPulldownContentsNameByName(const FName& InName) const
 	{
 		const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
@@ -196,6 +219,8 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> FNativeLessPulldownStructDetail::GetPulldownSourceSelection() const
 	{
+		check(PulldownSourceHandle.IsValid());
+		
 		FName SelectedValue = NAME_None;
 		if (PulldownSourceHandle.IsValid())
 		{

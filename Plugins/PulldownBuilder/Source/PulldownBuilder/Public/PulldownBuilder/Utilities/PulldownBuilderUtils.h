@@ -40,6 +40,10 @@ namespace PulldownBuilder
 		// If not found, returns nullptr.
 		static UPulldownContents* FindPulldownContentsByName(const FName& InName);
 
+		// Opens the asset editor for the specified PulldownContents.
+		// Returns whether the asset editor was opened.
+		static bool OpenPulldownContents(UPulldownContents* PulldownContents);
+		
 		// Get the list of character strings to be displayed in the pull-down menu from PulldownContents
 		// obtained by FindPulldownContentsByStruct.
 		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(
