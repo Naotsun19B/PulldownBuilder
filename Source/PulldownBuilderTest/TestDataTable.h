@@ -17,7 +17,7 @@ struct FNativeDataTableStruct : public FTableRowBase
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 TestInt;
+	int32 TestInt = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FString TestString;

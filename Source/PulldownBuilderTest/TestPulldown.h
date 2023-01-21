@@ -14,7 +14,7 @@ struct FTestPulldown : public FPulldownStructBase
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int32 TestInt;
+	int32 TestInt = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString TestString;
@@ -43,7 +43,7 @@ struct FTestPulldown4 : public FPulldownStructBase
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int32 NumOfRows;
+	int32 NumOfRows = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FName RowName;
