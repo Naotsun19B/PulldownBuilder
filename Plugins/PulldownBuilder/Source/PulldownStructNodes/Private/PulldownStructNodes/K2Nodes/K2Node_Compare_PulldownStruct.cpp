@@ -171,10 +171,7 @@ bool UK2Node_Compare_PulldownStruct::IsConnectionDisallowed(const UEdGraphPin* M
 			{
 				if (const UScriptStruct* ConnectionType = Cast<UScriptStruct>(OtherPin->PinType.PinSubCategoryObject.Get()))
 				{
-					bWasDisallowed = !(
-						PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(ConnectionType) ||
-						PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(ConnectionType)
-					);
+					bWasDisallowed = !PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(ConnectionType, false);
 				}
 			}
 			else if (OtherPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)

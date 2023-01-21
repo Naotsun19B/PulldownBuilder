@@ -69,19 +69,22 @@ namespace PulldownBuilder
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 		// Create a FUIAction that works with the pull-down struct's context menu.
-		virtual FUIAction CreateSelectedValueCopyAction();
-		virtual FUIAction CreateSelectedValuePasteAction();
-		virtual FUIAction CreateBrowsePulldownContentsAction();
+		FUIAction CreateSelectedValueCopyAction();
+		FUIAction CreateSelectedValuePasteAction();
+		FUIAction CreateBrowseSourceAssetAction();
 
+		// Add an action to browse source asset to the specified detail widget row.
+		void AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow);
+		
 		// Called when a function is invoked from the pull-down struct's context menu.
 		virtual void OnSelectedValueCopyAction();
 		virtual void OnSelectedValuePasteAction();
-		virtual void OnBrowsePulldownContentsAction();
+		virtual void OnBrowseSourceAssetAction();
 
 		// Returns whether the function can be called from the pull-down struct's context menu.
 		virtual bool CanSelectedValueCopyAction() const;
 		virtual bool CanSelectedValuePasteAction() const;
-		virtual bool CanBrowsePulldownContentsAction() const;
+		virtual bool CanBrowseSourceAssetAction() const;
 
 	protected:
 		// The property handle of the structure that inherits the FPulldownStructBase

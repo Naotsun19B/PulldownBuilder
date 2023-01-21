@@ -185,7 +185,7 @@ namespace PulldownBuilder
 			];
 	}
 
-	void FNativeLessPulldownStructDetail::OnBrowsePulldownContentsAction()
+	void FNativeLessPulldownStructDetail::OnBrowseSourceAssetAction()
 	{
 		check(PulldownSourceHandle.IsValid());
 		
@@ -197,7 +197,7 @@ namespace PulldownBuilder
 		}
 	}
 
-	bool FNativeLessPulldownStructDetail::CanBrowsePulldownContentsAction() const
+	bool FNativeLessPulldownStructDetail::CanBrowseSourceAssetAction() const
 	{
 		check(PulldownSourceHandle.IsValid());
 		

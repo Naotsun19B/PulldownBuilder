@@ -21,7 +21,10 @@ namespace PulldownBuilder
 		static bool IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct);
 	
 		// Checks if the specified structure is inherits FPulldownStructBase.
-		static bool IsPulldownStruct(const UScriptStruct* InTestStruct);
+		static bool IsPulldownStruct(
+			const UScriptStruct* InTestStruct,
+			const bool bExcludeNativeLessPulldownStruct = true
+		);
 
 		// Checks if the specified structure is FNativeLessPulldownStruct or a structure that inherits FNativeLessPulldownStruct.
 		static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);

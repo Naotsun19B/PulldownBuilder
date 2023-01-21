@@ -1,6 +1,7 @@
 ﻿// Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
@@ -14,8 +15,8 @@
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Modules/ModuleManager.h"
-#include "PulldownBuilder/Assets/PulldownContents.h"
-#include "Toolkits/GlobalEditorCommonCommands.h"
+
+#define LOCTEXT_NAMESPACE "PulldownStructDetail"
 
 namespace PulldownBuilder
 {
@@ -100,17 +101,7 @@ namespace PulldownBuilder
 
 			HeaderRow.CopyAction(CreateSelectedValueCopyAction());
 			HeaderRow.PasteAction(CreateSelectedValuePasteAction());
-			
-			const TSharedPtr<FUICommandInfo>& FindInContentBrowser = FGlobalEditorCommonCommands::Get().FindInContentBrowser;
-			if (FindInContentBrowser.IsValid())
-			{
-				HeaderRow.AddCustomContextMenuAction(
-					CreateBrowsePulldownContentsAction(),
-					FindInContentBrowser->GetLabel(),
-					FindInContentBrowser->GetDescription(),
-					FindInContentBrowser->GetIcon()
-				);
-			}
+			AddBrowseSourceAssetAction(HeaderRow);
 			
 			RebuildPulldown();
 		}
@@ -165,17 +156,8 @@ namespace PulldownBuilder
 					GenerateSelectableValuesWidget()
 				];
 
-			const TSharedPtr<FUICommandInfo>& FindInContentBrowser = FGlobalEditorCommonCommands::Get().FindInContentBrowser;
-			if (FindInContentBrowser.IsValid())
-			{
-				DetailWidgetRow.AddCustomContextMenuAction(
-					CreateBrowsePulldownContentsAction(),
-					FindInContentBrowser->GetLabel(),
-					FindInContentBrowser->GetDescription(),
-					FindInContentBrowser->GetIcon()
-				);
-			}
-
+			AddBrowseSourceAssetAction(DetailWidgetRow);
+			
 			AddCustomRowAfterSelectedValue(StructBuilder);
 
 			RebuildPulldown();
@@ -342,12 +324,22 @@ namespace PulldownBuilder
 		);
 	}
 
-	FUIAction FPulldownStructDetail::CreateBrowsePulldownContentsAction()
+	FUIAction FPulldownStructDetail::CreateBrowseSourceAssetAction()
 	{
 		return FUIAction
 		(
-			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnBrowsePulldownContentsAction),
-			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanBrowsePulldownContentsAction)
+			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnBrowseSourceAssetAction),
+			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanBrowseSourceAssetAction)
+		);
+	}
+
+	void FPulldownStructDetail::AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow)
+	{
+		DetailWidgetRow.AddCustomContextMenuAction(
+			CreateBrowseSourceAssetAction(),
+			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
+			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
+			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("SystemWideCommands.FindInContentBrowser"))
 		);
 	}
 
@@ -385,7 +377,7 @@ namespace PulldownBuilder
 		}
 	}
 
-	void FPulldownStructDetail::OnBrowsePulldownContentsAction()
+	void FPulldownStructDetail::OnBrowseSourceAssetAction()
 	{
 		check(StructPropertyHandle.IsValid());
 		
@@ -414,7 +406,7 @@ namespace PulldownBuilder
 		return StructPropertyHandle->IsEditable();
 	}
 
-	bool FPulldownStructDetail::CanBrowsePulldownContentsAction() const
+	bool FPulldownStructDetail::CanBrowseSourceAssetAction() const
 	{
 		check(StructPropertyHandle.IsValid());
 
@@ -430,3 +422,5 @@ namespace PulldownBuilder
 		return false;
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

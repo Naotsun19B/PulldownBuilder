@@ -14,7 +14,7 @@ namespace PulldownBuilder
 	class PULLDOWNBUILDER_API FNativeLessPulldownStructGraphPinFactory : public FGraphPanelPinFactory
 	{
 	public:
-		// Register FPulldownStructGraphPinFactory in the list of graph pin factory.
+		// Register-Unregister FPulldownStructGraphPinFactory in the list of graph pin factory.
 		static void Register();
 		static void Unregister();
 

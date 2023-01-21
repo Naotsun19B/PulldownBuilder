@@ -37,8 +37,8 @@ namespace PulldownBuilder
 		virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
 #endif
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
-		virtual void OnBrowsePulldownContentsAction() override;
-		virtual bool CanBrowsePulldownContentsAction() const override;
+		virtual void OnBrowseSourceAssetAction() override;
+		virtual bool CanBrowseSourceAssetAction() const override;
 		// End of FPulldownStructDetail interface.
 
 		// Search for the same name as the specified name from the PulldownContentsNames.

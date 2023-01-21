@@ -32,10 +32,18 @@ namespace PulldownBuilder
 		return (bValidStruct && bBasedOnSuperStruct);
 	}
 
-	bool FPulldownBuilderUtils::IsPulldownStruct(const UScriptStruct* InTestStruct)
+	bool FPulldownBuilderUtils::IsPulldownStruct(
+		const UScriptStruct* InTestStruct,
+		const bool bExcludeNativeLessPulldownStruct /* = true */
+	)
 	{
 		const bool bBasedOnPulldownStructBase = IsChildStruct(FPulldownStructBase::StaticStruct(), InTestStruct);
-		const bool bBasedOnNativeLessPulldownStruct = IsNativeLessPulldownStruct(InTestStruct);
+
+		bool bBasedOnNativeLessPulldownStruct = false;
+		if (bExcludeNativeLessPulldownStruct)
+		{
+			bBasedOnNativeLessPulldownStruct = IsNativeLessPulldownStruct(InTestStruct);
+		}
 		
 		// Note: The return value of "UEdGraphSchema_K2::IsAllowableBlueprintVariableType" is true
 		// because the structure that inherits any of the structures will be automatically added

@@ -26,6 +26,7 @@ public class PulldownBuilder : ModuleRules
 				"Slate",
 				"SlateCore",
 				"UnrealEd",
+				"ToolMenus",
 				"AssetTools",
 				"EditorStyle",
 				"GraphEditor",
