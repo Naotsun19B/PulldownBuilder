@@ -1,13 +1,16 @@
 ﻿// Copyright 2021-2022 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_Compare_PulldownStruct.h"
-#include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
-#include "EdGraphSchema_K2.h"
-#include "BlueprintNodeSpawner.h"
+#include "PulldownStruct/PulldownStructBase.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "FindInBlueprintManager.h"
 #include "BlueprintActionDatabaseRegistrar.h"
-#include "K2Node_CallFunction.h"
+#include "BlueprintFieldNodeSpawner.h"
 #include "KismetCompiler.h"
+#include "K2Node_CallFunction.h"
+#include "K2Node_BreakStruct.h"
+#include "K2Node_TemporaryVariable.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_Compare_PulldownStruct"
 
@@ -16,30 +19,24 @@ const FName UK2Node_Compare_PulldownStruct::RhsPinName = TEXT("Rhs");
 
 FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (ArePinsAllocated() && TitleType != ENodeTitleType::MenuTitle)
+	if (IsValid(PulldownStruct))
 	{
-		if (const UScriptStruct* ValueStruct = GetArgumentStructType())
+		if (CachedNodeTitle.IsOutOfDate(this))
 		{
-			if (CachedNodeTitle.IsOutOfDate(this))
-			{
-				CachedNodeTitle.SetCachedText(
-					FText::Format(
-						LOCTEXT("NodeTitleFormat", "{CompareMethodName} ({StructName})"),
-						GetCompareMethodName(),
-						ValueStruct->GetDisplayNameText()
-					),
-					this
-				);
-			}
-		
-			return CachedNodeTitle;
+			CachedNodeTitle.SetCachedText(
+				FText::Format(
+					LOCTEXT("NodeTitleFormat", "{CompareMethodName} ({StructName})"),
+					GetCompareMethodName(),
+					PulldownStruct->GetDisplayNameText()
+				),
+				this
+			);
 		}
+		
+		return CachedNodeTitle;
 	}
 	
-	return FText::Format(
-		LOCTEXT("NodeTitle", "{CompareMethodName} (Pulldown Struct)"),
-		GetCompareMethodName()
-	);
+	return LOCTEXT("NodeTitle", "Equal (Unknown Pulldown Struct)");
 }
 
 FText UK2Node_Compare_PulldownStruct::GetKeywords() const
@@ -47,12 +44,41 @@ FText UK2Node_Compare_PulldownStruct::GetKeywords() const
 	return GetCompareMethodOperator();
 }
 
+void UK2Node_Compare_PulldownStruct::AddPinSearchMetaDataInfo(const UEdGraphPin* Pin, TArray<FSearchTagDataPair>& OutTaggedMetaData) const
+{
+	Super::AddPinSearchMetaDataInfo(Pin, OutTaggedMetaData);
+
+	if (!IsValid(PulldownStruct) && Pin != nullptr)
+	{
+		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+		check(!IsValid(K2Schema));
+
+		if (K2Schema->IsExecPin(*Pin) && Pin->Direction == EGPD_Output && PulldownStruct->IsNative())
+		{
+			// Allow native struct pins to be searchable by C++ struct name.
+			OutTaggedMetaData.Add(
+				FSearchTagDataPair(
+					FFindInBlueprintSearchTags::FiB_NativeName,
+					FText::FromString(Pin->GetName())
+				)
+			);
+		}
+	}
+}
+
 void UK2Node_Compare_PulldownStruct::AllocateDefaultPins()
 {
-	Super::AllocateDefaultPins();
-
-	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, LhsPinName);
-	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, RhsPinName);
+	if (IsValid(PulldownStruct))
+	{
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, PulldownStruct, LhsPinName);
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, PulldownStruct, RhsPinName);
+	}
+	else
+	{
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, LhsPinName);
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, RhsPinName);
+	}
+	
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Boolean, UEdGraphSchema_K2::PN_ReturnValue);
 }
 
@@ -73,254 +99,118 @@ FText UK2Node_Compare_PulldownStruct::GetCompactNodeTitle() const
 
 FText UK2Node_Compare_PulldownStruct::GetMenuCategory() const
 {
-	return LOCTEXT("MenuCategory", "Pulldown Struct");
+	return FText::Format(
+		LOCTEXT("MenuCategory", "Pulldown Struct|{CompareMethodName}"),
+		GetCompareMethodName()
+	);
 }
 
 void UK2Node_Compare_PulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
-	Super::GetMenuActions(ActionRegistrar);
+	ActionRegistrar.RegisterStructActions(
+		FBlueprintActionDatabaseRegistrar::FMakeStructSpawnerDelegate::CreateWeakLambda(
+			this, [this](const UScriptStruct* Struct) -> UBlueprintNodeSpawner*
+			{
+				if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
+				{
+					return nullptr;
+				}
+				
+				UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
+				if (!IsValid(NodeSpawner))
+				{
+					return nullptr;
+				}
 
-	const UClass* ActionKey = GetClass();
-	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
-	{
-		UBlueprintNodeSpawner* NodeSpawner = UBlueprintNodeSpawner::Create(GetClass());
-		check(IsValid(NodeSpawner));
-		ActionRegistrar.AddBlueprintAction(ActionKey, NodeSpawner);
-	}
+				struct FNodeFieldSetter
+				{
+				public:
+					static void SetNodeStruct(UEdGraphNode* NewNode, FFieldVariant Field)
+					{
+						auto* Struct = Field.Get<UScriptStruct>();
+						if (!IsValid(Struct))
+						{
+							return;
+						}
+			
+						if (auto* CastedNode = Cast<UK2Node_Compare_PulldownStruct>(NewNode))
+						{
+							CastedNode->PulldownStruct = Struct;
+						}
+					}
+				};
+	
+				NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
+					&FNodeFieldSetter::SetNodeStruct
+				);
+
+				return NodeSpawner;
+			}
+		)
+	);
 }
 
 void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
-	Super::ExpandNode(CompilerContext, SourceGraph);
-	
-	UK2Node_CallFunction* FunctionNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-	if (ensure(IsValid(FunctionNode)))
+	if (IsValid(PulldownStruct))
 	{
-		FunctionNode->FunctionReference.SetExternalMember(GetFunctionName(), UPulldownStructFunctionLibrary::StaticClass());
-		FunctionNode->AllocateDefaultPins();
+		auto* CompareNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+		check(IsValid(CompareNode));
+		CompareNode->FunctionReference.SetExternalMember(
+			GetFunctionName(),
+			UKismetMathLibrary::StaticClass()
+		);
+		CompareNode->AllocateDefaultPins();
+
+		auto LinkSourcePinToCompareNodePin = [&](const FName& SourcePinName, const FName& CompareNodePinName)
+		{
+			const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
+			check(IsValid(K2Schema));
+
+			auto* BreakNode = CompilerContext.SpawnIntermediateNode<UK2Node_BreakStruct>(this, SourceGraph);
+			check(IsValid(BreakNode));
+			BreakNode->StructType = PulldownStruct;
+			BreakNode->bMadeAfterOverridePinRemoval = true;
+			BreakNode->AllocateDefaultPins();
+			
+			UEdGraphPin* SourcePin = FindPinChecked(SourcePinName, EGPD_Input);
+			UEdGraphPin* BreakNodePin = BreakNode->FindPinChecked(PulldownStruct->GetFName(), EGPD_Input);
+			check(SourcePin != nullptr && BreakNodePin != nullptr);
+			// #TODO: I have to deal with the case where the pin is the default value.
+			// if (SourcePin->LinkedTo.Num() == 0)
+			// {
+			// 	
+			// }
+			// else
+			{
+				CompilerContext.MovePinLinksToIntermediate(*SourcePin, *BreakNodePin);
+			}
+			
+			UEdGraphPin* BreakNodeValuePin = BreakNode->FindPinChecked(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), EGPD_Output);
+			UEdGraphPin* CompareNodePin = CompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
+			check(BreakNodeValuePin != nullptr && CompareNodePin != nullptr)
+			K2Schema->TryCreateConnection(BreakNodeValuePin, CompareNodePin);
+		};
+
+		LinkSourcePinToCompareNodePin(LhsPinName, TEXT("A"));
+		LinkSourcePinToCompareNodePin(RhsPinName, TEXT("B"));
 
 		{
-			UEdGraphPin* IntermediateLhsPin = FunctionNode->FindPinChecked(LhsPinName);
-			UEdGraphPin* SourceLhsPin = GetLhsPin();
-			if (ensure(IntermediateLhsPin != nullptr && SourceLhsPin != nullptr))
-			{
-				IntermediateLhsPin->PinType = SourceLhsPin->PinType;
-				IntermediateLhsPin->PinType.PinSubCategoryObject = SourceLhsPin->PinType.PinSubCategoryObject;
-				CompilerContext.MovePinLinksToIntermediate(*SourceLhsPin, *IntermediateLhsPin);
-			}
-		}
-		{
-			UEdGraphPin* IntermediateRhsPin = FunctionNode->FindPinChecked(RhsPinName);
-			UEdGraphPin* SourceRhsPin = GetRhsPin();
-			if (ensure(IntermediateRhsPin != nullptr && SourceRhsPin != nullptr))
-			{
-				IntermediateRhsPin->PinType = SourceRhsPin->PinType;
-				IntermediateRhsPin->PinType.PinSubCategoryObject = SourceRhsPin->PinType.PinSubCategoryObject;
-				CompilerContext.MovePinLinksToIntermediate(*SourceRhsPin, *IntermediateRhsPin);
-			}
-		}
-		{
-			UEdGraphPin* IntermediateReturnValuePin = FunctionNode->GetReturnValuePin();
-			UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
-			if (ensure(IntermediateReturnValuePin != nullptr && SourceReturnValuePin != nullptr))
-			{
-				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
-			}
+			UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
+			UEdGraphPin* CompareNodeReturnValuePin = CompareNode->GetReturnValuePin();
+			check(SourceReturnValuePin != nullptr && CompareNodeReturnValuePin != nullptr);
+			CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *CompareNodeReturnValuePin);
 		}
 	}
 	
 	BreakAllNodeLinks();
 }
 
-void UK2Node_Compare_PulldownStruct::PostReconstructNode()
+void UK2Node_Compare_PulldownStruct::PreloadRequiredAssets()
 {
-	Super::PostReconstructNode();
-
-	RefreshArgumentStructType();
-}
-
-void UK2Node_Compare_PulldownStruct::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
-{
-	Super::NotifyPinConnectionListChanged(Pin);
-
-	RefreshArgumentStructType();
-}
-
-bool UK2Node_Compare_PulldownStruct::IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const
-{
-	if (!ensure(MyPin != nullptr && OtherPin != nullptr))
+	if (IsValid(PulldownStruct))
 	{
-		return true;
-	}
-	
-	bool bWasDisallowed = true;
-	EnumerateArgumentPins(
-		[&](const UEdGraphPin& ArgumentPin) -> bool
-		{
-			if (MyPin != &ArgumentPin)
-			{
-				return true;
-			}
-			
-			if (MyPin->PinType.PinCategory != UEdGraphSchema_K2::PC_Wildcard)
-			{
-				return true;
-			}
-			
-			if (OtherPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct)
-			{
-				if (const UScriptStruct* ConnectionType = Cast<UScriptStruct>(OtherPin->PinType.PinSubCategoryObject.Get()))
-				{
-					bWasDisallowed = !PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(ConnectionType, false);
-				}
-			}
-			else if (OtherPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)
-			{
-				bWasDisallowed = false;
-			}
-
-			if (bWasDisallowed)
-			{
-				OutReason = LOCTEXT("DisallowedReason", "The type of the structure specified in the argument must be a structure that inherits PulldownStructBase or NativeLessPulldownStruct.").ToString();
-				return false;
-			}
-
-			return true;
-		}
-	);
-	
-	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
-}
-
-bool UK2Node_Compare_PulldownStruct::ArePinsAllocated() const
-{
-	static const TArray<FName, TInlineAllocator<3>> PinNames = {
-		LhsPinName, RhsPinName, UEdGraphSchema_K2::PN_ReturnValue
-	};
-	for (const auto& PinName : PinNames)
-	{
-		if (FindPin(PinName) == nullptr)
-		{
-			return false;
-		}
-	}
-	
-	return true;
-}
-
-UEdGraphPin* UK2Node_Compare_PulldownStruct::GetLhsPin() const
-{
-	UEdGraphPin* Pin = FindPinChecked(LhsPinName);
-	check(Pin != nullptr && Pin->Direction == EGPD_Input);
-	return Pin;
-}
-
-UEdGraphPin* UK2Node_Compare_PulldownStruct::GetRhsPin() const
-{
-	UEdGraphPin* Pin = FindPinChecked(RhsPinName);
-	check(Pin != nullptr && Pin->Direction == EGPD_Input);
-	return Pin;
-}
-
-UEdGraphPin* UK2Node_Compare_PulldownStruct::GetReturnValuePin() const
-{
-	UEdGraphPin* Pin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue);
-	check(Pin != nullptr && Pin->Direction == EGPD_Output);
-	return Pin;
-}
-
-void UK2Node_Compare_PulldownStruct::EnumerateArgumentPins(const TFunction<bool(UEdGraphPin& ArgumentPin)>& Predicate) const
-{
-	TArray<UEdGraphPin*, TInlineAllocator<2>> ArgumentPins { GetLhsPin(), GetRhsPin() };
-	for (auto* ArgumentPin : ArgumentPins)
-	{
-		if (ArgumentPin == nullptr)
-		{
-			continue;
-		}
-
-		if (!Predicate(*ArgumentPin))
-		{
-			break;
-		}
-	}
-}
-
-UScriptStruct* UK2Node_Compare_PulldownStruct::GetArgumentStructType() const
-{
-	UScriptStruct* ArgumentStructType = nullptr;
-	
-	EnumerateArgumentPins(
-		[&](const UEdGraphPin& ArgumentPin) -> bool
-		{
-			if (ArgumentPin.LinkedTo.Num() == 0)
-			{
-				return true;
-			}
-
-			const TArray<UEdGraphPin*>& LinkedTo = ArgumentPin.LinkedTo;
-			ArgumentStructType = Cast<UScriptStruct>(LinkedTo[0]->PinType.PinSubCategoryObject.Get());
-			for (int32 LinkIndex = 1; LinkIndex < LinkedTo.Num(); LinkIndex++)
-			{
-				const UEdGraphPin* Link = LinkedTo[LinkIndex];
-				UScriptStruct* LinkType = Cast<UScriptStruct>(Link->PinType.PinSubCategoryObject.Get());
-				if (ArgumentStructType != nullptr && ArgumentStructType->IsChildOf(LinkType))
-				{
-					ArgumentStructType = LinkType;
-				}
-			}
-
-			return (ArgumentStructType == nullptr);
-		}
-	);
-
-	return ArgumentStructType;
-}
-
-void UK2Node_Compare_PulldownStruct::RefreshArgumentStructType()
-{
-	const UScriptStruct* OldArgumentStructType = nullptr;
-	EnumerateArgumentPins(
-		[&](const UEdGraphPin& ArgumentPin) -> bool
-		{
-			if (ArgumentPin.PinType.PinCategory != UEdGraphSchema_K2::PC_Struct)
-			{
-				return true;
-			}
-
-			OldArgumentStructType = Cast<UScriptStruct>(ArgumentPin.PinType.PinSubCategoryObject.Get());
-			if (IsValid(OldArgumentStructType))
-			{
-				return false;
-			}
-
-			return true;
-		}
-	);
-
-	UScriptStruct* NewArgumentStructType = GetArgumentStructType();
-	if (NewArgumentStructType != OldArgumentStructType)
-	{
-		EnumerateArgumentPins(
-			[&](UEdGraphPin& ArgumentPin) -> bool
-			{
-				if (ArgumentPin.SubPins.Num() > 0)
-				{
-					GetSchema()->RecombinePin(&ArgumentPin);
-				}
-
-				ArgumentPin.PinType.PinCategory = (
-					IsValid(NewArgumentStructType) ?
-					UEdGraphSchema_K2::PC_Struct :
-					UEdGraphSchema_K2::PC_Wildcard
-				);
-				ArgumentPin.PinType.PinSubCategoryObject = NewArgumentStructType;
-				
-				return true;
-			}
-		);
-
-		CachedNodeTitle.Clear();
+		PreloadObject(PulldownStruct);
 	}
 }
 

@@ -4,11 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
-#include "EdGraph/EdGraphNodeUtils.h"
 #include "K2Node_Compare_PulldownStruct.generated.h"
 
 /**
- * Base class for blueprint nodes that compare pull-down structures.
+ * Compares FPulldownStructBase::SelectedValue between pull-down structures of the same type and returns if the values are equal.
  */
 UCLASS(Abstract)
 class PULLDOWNSTRUCTNODES_API UK2Node_Compare_PulldownStruct : public UK2Node
@@ -24,6 +23,7 @@ public:
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetKeywords() const override;
+	virtual void AddPinSearchMetaDataInfo(const UEdGraphPin* Pin, TArray<struct FSearchTagDataPair>& OutTaggedMetaData) const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
 
@@ -34,37 +34,24 @@ public:
 	virtual FText GetMenuCategory() const override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual void PostReconstructNode() override;
-	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
-	virtual bool IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const override;
+	virtual void PreloadRequiredAssets() override;
 	// End of UK2Node interface.
-	
+
 protected:
-	// Returns whether the node's pins are already allocated.
-	bool ArePinsAllocated() const;
-	
-	// Functions that get each pin contained in this node.
-	UEdGraphPin* GetLhsPin() const;
-	UEdGraphPin* GetRhsPin() const;
-	UEdGraphPin* GetReturnValuePin() const;
-	void EnumerateArgumentPins(const TFunction<bool(UEdGraphPin& ArgumentPin)>& Predicate) const;
-
-	// Returns the type of the structure specified in the argument pins.
-	UScriptStruct* GetArgumentStructType() const;
-
-	// Refresh so that the types of the two input pins are the same structure type.
-	void RefreshArgumentStructType();
-
 	// Returns the name of the comparison method used in the node title, etc.
-	virtual FText GetCompareMethodName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodName, { return FText::GetEmpty(); });
+	virtual FText GetCompareMethodName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodName, return FText::GetEmpty(););
 
 	// Returns the operator of the comparison method used in the node title, etc.
-	virtual FText GetCompareMethodOperator() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodOperator, { return FText::GetEmpty(); });
+	virtual FText GetCompareMethodOperator() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodOperator, return FText::GetEmpty(););
 	
 	// Get the name of the function to actually execute.
-	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, { return NAME_None; });
+	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, return NAME_None;);
 	
-protected:
+private:
+	// A pull-down struct to compare on this node.
+	UPROPERTY()
+	TObjectPtr<UScriptStruct> PulldownStruct;
+
 	// A cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
 };

@@ -14,7 +14,7 @@ class PULLDOWNSTRUCTNODES_API UK2Node_NotEqual_PulldownStruct : public UK2Node_C
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	// UK2Node_Compare_PulldownStruct interface.
 	virtual FText GetCompareMethodName() const override;
 	virtual FText GetCompareMethodOperator() const override;
