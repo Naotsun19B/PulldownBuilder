@@ -34,7 +34,10 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 		return CachedNodeTitle;
 	}
 	
-	return LOCTEXT("NodeTitle", "Equal (Unknown Pulldown Struct)");
+	return FText::Format(
+		LOCTEXT("NodeTitle", "{CompareMethodName} (Unknown Pulldown Struct)"),
+		GetCompareMethodName()
+	);
 }
 
 FText UK2Node_Compare_PulldownStruct::GetKeywords() const
@@ -46,10 +49,10 @@ void UK2Node_Compare_PulldownStruct::AddPinSearchMetaDataInfo(const UEdGraphPin*
 {
 	Super::AddPinSearchMetaDataInfo(Pin, OutTaggedMetaData);
 
-	if (!IsValid(PulldownStruct) && Pin != nullptr)
+	if (IsValid(PulldownStruct) && Pin != nullptr)
 	{
 		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
-		check(!IsValid(K2Schema));
+		check(IsValid(K2Schema));
 
 		if (K2Schema->IsExecPin(*Pin) && Pin->Direction == EGPD_Output && PulldownStruct->IsNative())
 		{

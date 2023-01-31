@@ -8,7 +8,7 @@
 #include "StructContainer.generated.h"
 
 /**
- * A container structure for putting different types of structures and passing them to the blueprint.
+ * A container struct for putting different types of structures and passing them to the blueprint.
  * A simplified version of FInstancedStruct included in the StructUtils module for UE5.0 and above.
  */
 USTRUCT(BlueprintType, BlueprintInternalUseOnly)
@@ -84,16 +84,16 @@ public:
 	// Initializes from struct type and optional data.
 	void InitializeAs(const UScriptStruct* InScriptStruct, const uint8* InStructMemory = nullptr);
 	
-	// Returns whether the data of the structure stored in the container is valid.
+	// Returns whether the data of the struct stored in the container is valid.
 	bool IsValid() const;
 
 	// Empty the data stored in this container.
 	void Reset();
 	
-	// Returns the type of the structure stored in this container.
+	// Returns the type of the struct stored in this container.
 	const UScriptStruct* GetScriptStruct() const;
 
-	// Returns the raw data of the structure stored in this container.
+	// Returns the raw data of the struct stored in this container.
 	const uint8* GetMemory() const;
 	uint8* GetMutableMemory() const;
 	
@@ -117,17 +117,17 @@ protected:
 	// Initializes for new struct type (does nothing if same type) and returns mutable struct.
 	UScriptStruct* ReinitializeAs(const UScriptStruct* InScriptStruct);
 
-	// Discard the structure data stored in this container.
+	// Discard the struct data stored in this container.
 	void DestroyScriptStruct() const;
 
-	// Set new values for structure types and values.
+	// Set new values for struct types and values.
 	void SetStructData(const UScriptStruct* InScriptStruct, const uint8* InStructMemory);
 
 protected:
-	// The type of structure stored in this container.
+	// The type of struct stored in this container.
 	const UScriptStruct* ScriptStruct;
 
-	// The raw data of the structure stored in this container.
+	// The raw data of the struct stored in this container.
 	const uint8* StructMemory;
 };
 

@@ -6,11 +6,11 @@
 #include "PulldownStructBase.generated.h"
 
 /**
- * Base structure of the structure displayed as a pull-down menu.
- * To create a pull-down menu structure in C++, define a structure that inherits this structure.
+ * Base struct of the struct displayed as a pull-down menu.
+ * To create a pull-down menu struct in C++, define a struct that inherits this struct.
  * If the inherited child struct is used only internally and cannot be used from within Blueprint and
  * cannot be selected by FPulldownStructType, it is necessary to specify "NotBlueprintType" and
- * "BlueprintInternalUseOnly" in the USTRUCT of the child structure.
+ * "BlueprintInternalUseOnly" in the USTRUCT of the child struct.
  */
 USTRUCT(BlueprintInternalUseOnly)
 struct FPulldownStructBase
@@ -41,7 +41,7 @@ FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
 	return GetTypeHash(PulldownStruct.SelectedValue);
 }
 
-// A meta-struct that checks if it is a structure that inherits FPulldownStructBase.
+// A meta-struct that checks if it is a struct that inherits FPulldownStructBase.
 template<class TPulldownStruct>
 struct TIsPulldownStruct
 {

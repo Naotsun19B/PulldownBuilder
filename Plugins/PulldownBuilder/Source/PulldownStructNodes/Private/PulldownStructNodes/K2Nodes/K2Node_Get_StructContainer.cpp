@@ -160,7 +160,7 @@ bool UK2Node_Get_StructContainer::IsConnectionDisallowed(const UEdGraphPin* MyPi
 	
 	if (bWasDisallowed)
 	{
-		OutReason = LOCTEXT("DisallowedReason", "Struct Data pin can only be used with structure types.").ToString();
+		OutReason = LOCTEXT("DisallowedReason", "Struct Data pin can only be used with struct types.").ToString();
 		return false;
 	}
 	

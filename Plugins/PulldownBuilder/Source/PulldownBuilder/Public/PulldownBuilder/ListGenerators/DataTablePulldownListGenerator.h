@@ -14,9 +14,9 @@ using IDataTableListener = FDataTableEditorUtils::INotifyOnDataTableChanged;
 /**
  * Generate a list to be displayed in the pull-down menu from the row name of the data table asset.
  * To set the text to display in a tooltip, you need to define a variable of
- * type FString or FName or FText named "PulldownTooltip" in the row structure or
+ * type FString or FName or FText named "PulldownTooltip" in the row struct or
  * specifies the FString or FName or FText property used in the tooltip,
- * such as TooltipProperty = "PropertyName" in the USTRUCT meta-specifier of the data table structure.
+ * such as TooltipProperty = "PropertyName" in the USTRUCT meta-specifier of the data table struct.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UDataTablePulldownListGenerator

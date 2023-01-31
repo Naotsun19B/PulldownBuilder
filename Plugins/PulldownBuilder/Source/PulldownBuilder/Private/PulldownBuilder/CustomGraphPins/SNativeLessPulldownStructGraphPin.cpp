@@ -70,7 +70,7 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> SNativeLessPulldownStructGraphPin::GenerateSelectableValues()
 	{
-		check(GraphPinObj);
+		check(GraphPinObj != nullptr);
 		
 		PulldownContentsNames.Reset();
 		PulldownContentsNames.Add(MakeShared<FPulldownRow>());
@@ -92,10 +92,10 @@ namespace PulldownBuilder
 			if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(*PulldownSource))
 			{
 				FStructContainer StructContainer;
-				if (GenerateStructContainer(StructContainer))
+				if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
 				{
 					return SourceAsset->GetPulldownRows(
-						TArray<UObject*>{ GetOuterAsset() },
+						TArray<UObject*>{ FPulldownBuilderUtils::GetOuterAssetFromPin(GraphPinObj) },
 						StructContainer
 					);
 				}

@@ -6,7 +6,7 @@
 #include "PulldownRow.generated.h"
 
 /**
- * A structure that summarizes the data used in the pull-down menu row.
+ * A struct that summarizes the data used in the pull-down menu row.
  */
 USTRUCT(BlueprintType)
 struct FPulldownRow

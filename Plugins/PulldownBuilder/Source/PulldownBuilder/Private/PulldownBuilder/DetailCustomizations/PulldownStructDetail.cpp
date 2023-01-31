@@ -59,7 +59,7 @@ namespace PulldownBuilder
 		StructPropertyHandle = InStructPropertyHandle;
 		check(StructPropertyHandle.IsValid());
 
-		// Scan the properties of the structure for the property handle of FPulldownStructBase::SelectedValue.
+		// Scan the properties of the struct for the property handle of FPulldownStructBase::SelectedValue.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)
@@ -168,7 +168,7 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
-		// Find PulldownContents in the property structure and
+		// Find PulldownContents in the property struct and
 		// build a list of strings to display in the pull-down menu.
 		void* StructValueData = nullptr;
 		const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);

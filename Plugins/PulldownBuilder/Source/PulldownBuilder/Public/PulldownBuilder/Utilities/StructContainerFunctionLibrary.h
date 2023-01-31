@@ -16,7 +16,7 @@ class PULLDOWNBUILDER_API UStructContainerFunctionLibrary : public UBlueprintFun
 	GENERATED_BODY()
 
 public:
-	// Returns the data of the structure stored in the container.
+	// Returns the data of the struct stored in the container.
 	UFUNCTION(BlueprintPure, CustomThunk, meta = (BlueprintInternalUseOnly = true, CustomStructureParam = "StructData"))
 	static bool Get_StructContainer(const FStructContainer& Target, int32& StructData);
 	static bool GenericGet_StructContainer(

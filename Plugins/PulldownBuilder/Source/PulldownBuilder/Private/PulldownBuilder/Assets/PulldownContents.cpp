@@ -104,7 +104,7 @@ void UPulldownContents::PostDuplicate(bool bDuplicateForPIE)
 {
 	Super::PostDuplicate(bDuplicateForPIE);
 
-	// Prevent the same structure from being registered when duplicated.
+	// Prevent the same struct from being registered when duplicated.
 	PulldownStructType = FPulldownStructType();
 }
 
@@ -112,7 +112,7 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 {
 	Super::GetAssetRegistryTags(OutTags);
 
-	// Added the name of the structure registered in this asset to AssetRegistryTags.
+	// Added the name of the struct registered in this asset to AssetRegistryTags.
 	OutTags.Add(FAssetRegistryTag(
 		RegisteredStructTypeTag,
 		FName(*PulldownStructType).ToString(),

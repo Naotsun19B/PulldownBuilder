@@ -46,9 +46,9 @@ namespace PulldownBuilder
 		}
 		
 		// Note: The return value of "UEdGraphSchema_K2::IsAllowableBlueprintVariableType" is true
-		// because the structure that inherits any of the structures will be automatically added
+		// because the struct that inherits any of the structures will be automatically added
 		// "BlueprintType" unless "NotBlueprintType" and "BlueprintInternalUseOnly" is added in
-		// the USTRUCT of the child structure.
+		// the USTRUCT of the child struct.
 		const bool bIsBlueprintType = UEdGraphSchema_K2::IsAllowableBlueprintVariableType(InTestStruct);
 
 		return (bBasedOnPulldownStructBase && !bBasedOnNativeLessPulldownStruct && bIsBlueprintType);
@@ -196,7 +196,7 @@ namespace PulldownBuilder
 
 	TMap<FString, FString> FPulldownBuilderUtils::StructStringToPropertyMap(const FString& StructString)
 	{
-		// Remove parentheses at both ends of the structure string and double quotes used in string types.
+		// Remove parentheses at both ends of the struct string and double quotes used in string types.
 		FString PropertyValues = StructString;
 		PropertyValues = PropertyValues.Replace(TEXT("("), TEXT(""));
 		PropertyValues = PropertyValues.Replace(TEXT(")"), TEXT(""));
@@ -246,7 +246,7 @@ namespace PulldownBuilder
 			PropertiesMap[PropertyName.ToString()] = NewPropertyValue.ToString();
 		}
 
-		// Create a structure string from the property map.
+		// Create a struct string from the property map.
 		FString NewDefaultValue = TEXT("(");
 		for (const auto& PropertyPair : PropertiesMap)
 		{
@@ -327,6 +327,51 @@ namespace PulldownBuilder
 		}
 
 		return (RawData != nullptr);
+	}
+
+	UObject* FPulldownBuilderUtils::GetOuterAssetFromPin(const UEdGraphPin* Pin)
+	{
+		check(Pin != nullptr);
+		
+		UObject* CurrentObject = Pin->GetOuter();
+		while (IsValid(CurrentObject))
+		{
+			if (CurrentObject->IsAsset())
+			{
+				return CurrentObject;
+			}
+
+			CurrentObject = CurrentObject->GetOuter();
+		}
+
+		return nullptr;
+	}
+
+	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer)
+	{
+		check(Pin != nullptr);
+
+		const auto* ScriptStruct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject);
+		if (!IsValid(ScriptStruct))
+		{
+			return false;
+		}
+		
+		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
+
+		const bool bWasSuccessful = GetStructRawDataFromDefaultValueString(
+			ScriptStruct,
+			Pin->GetDefaultAsString(),
+			RawData
+		);
+		if (bWasSuccessful)
+		{
+			StructContainer = FStructContainer(ScriptStruct, RawData);
+		}
+
+		FMemory::Free(RawData);
+
+		return bWasSuccessful;
 	}
 
 	ISettingsModule* FPulldownBuilderUtils::GetSettingsModule()

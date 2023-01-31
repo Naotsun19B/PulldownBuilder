@@ -59,7 +59,7 @@ namespace PulldownBuilder
 			return false;
 		}
 
-		// The pull-down struct pin must be a structure type.
+		// The pull-down struct pin must be a struct type.
 		if (!ensure(PulldownStructPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct))
 		{
 			return false;

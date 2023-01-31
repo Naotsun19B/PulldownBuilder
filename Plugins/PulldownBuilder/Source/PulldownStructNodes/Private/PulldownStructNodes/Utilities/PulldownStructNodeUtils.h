@@ -12,7 +12,7 @@ class FKismetCompilerContext;
 namespace PulldownBuilder
 {
 	/**
-	 * Utility function library class that defines the processes used in pulldown struct nodes.
+	 * Utility function library class that defines the processes used in pull-down struct nodes.
 	 */
 	class PULLDOWNSTRUCTNODES_API FPulldownStructNodeUtils
 	{
@@ -20,7 +20,7 @@ namespace PulldownBuilder
 		// Finds the pin of FPulldownStructBase::SelectedValue from the pull-down struct pins.
 		static UEdGraphPin* FindSelectedValueSubPin(const UEdGraphSchema_K2* K2Schema, UEdGraphPin* PulldownStructPin);
 
-		// Connect the input pin of the pulldown struct and the input pin of FName.
+		// Connect the input pin of the pull-down struct and the input pin of FName.
 		static bool LinkPulldownStructPinToNamePin(
 			UK2Node* SourceNode,
 			FKismetCompilerContext& CompilerContext,

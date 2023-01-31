@@ -7,7 +7,7 @@
 #include "NativeLessPulldownStruct.generated.h"
 
 /**
- * A pull-down structure that can be defined without using C++.
+ * A pull-down struct that can be defined without using C++.
  * Toggle the pull-down menu by specifying PulldownContents.
  */
 USTRUCT(BlueprintType)

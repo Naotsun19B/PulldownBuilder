@@ -14,8 +14,8 @@ class IPropertyHandle;
 namespace PulldownBuilder
 {
 	/**
-	 * Detail Customizetion that allows you to specify a structure that inherits from 
-	 * FPulldownStructBase using the structure picker.
+	 * Detail Customizetion that allows you to specify a struct that inherits from 
+	 * FPulldownStructBase using the struct picker.
 	 */
 	class PULLDOWNBUILDER_API FPulldownStructTypeDetail : public IPropertyTypeCustomization
 	{
@@ -31,13 +31,13 @@ namespace PulldownBuilder
 		// End of IPropertyTypeCustomization interface.
 
 	private:
-		// Called when a structure is selected from the list.
+		// Called when a struct is selected from the list.
 		void OnPickedStruct(const UScriptStruct* SelectedStruct);
 
 		// Returns the text displayed on the combo button.
 		FText OnGetComboTextValue() const;
 
-		// Create the same structure picker that you see when you create the data table asset.
+		// Create the same struct picker that you see when you create the data table asset.
 		TSharedRef<SWidget> GenerateStructPicker();
 
 	private:

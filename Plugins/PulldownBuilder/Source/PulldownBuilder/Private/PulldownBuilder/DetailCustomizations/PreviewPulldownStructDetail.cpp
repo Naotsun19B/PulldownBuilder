@@ -34,7 +34,7 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> FPreviewPulldownStructDetail::GenerateSelectableValues()
 	{
-		// Get the list of strings to display from PulldownContents that owns this structure.
+		// Get the list of strings to display from PulldownContents that owns this struct.
 		TArray<UObject*> OuterObjects;
 		StructPropertyHandle->GetOuterObjects(OuterObjects);
 		for (const auto& OuterObject : OuterObjects)

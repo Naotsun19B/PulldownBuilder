@@ -6,6 +6,7 @@
 
 class ISettingsModule;
 class UScriptStruct;
+class UEdGraphPin;
 class UPulldownContents;
 struct FPulldownRow;
 struct FStructContainer;
@@ -18,16 +19,16 @@ namespace PulldownBuilder
 	class PULLDOWNBUILDER_API FPulldownBuilderUtils
 	{
 	public:
-		// Checks if the specified structure inherits the specified structure.
+		// Checks if the specified struct inherits the specified struct.
 		static bool IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct);
 	
-		// Checks if the specified structure is inherits FPulldownStructBase.
+		// Checks if the specified struct is inherits FPulldownStructBase.
 		static bool IsPulldownStruct(
 			const UScriptStruct* InTestStruct,
 			const bool bExcludeNativeLessPulldownStruct = true
 		);
 
-		// Checks if the specified structure is FNativeLessPulldownStruct or a structure that inherits FNativeLessPulldownStruct.
+		// Checks if the specified struct is FNativeLessPulldownStruct or a struct that inherits FNativeLessPulldownStruct.
 		static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);
 
 		// Scans all PulldownContents present in the Content Browser.
@@ -36,7 +37,7 @@ namespace PulldownBuilder
 		// Gets all PulldownContents that exist on the Content Browser.
 		static TArray<UPulldownContents*> GetAllPulldownContents();
 
-		// Finds PulldownContents that has the specified structure set.
+		// Finds PulldownContents that has the specified struct set.
 		// If not found, returns nullptr.
 		static UPulldownContents* FindPulldownContentsByStruct(const UScriptStruct* InStruct);
 
@@ -59,13 +60,13 @@ namespace PulldownBuilder
 		// Generates "None" only display strings.
 		static TArray<TSharedPtr<FPulldownRow>> GetEmptyPulldownRows();
 	
-		// Returns whether the specified structure is already registered.
+		// Returns whether the specified struct is already registered.
 		static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);
 
-		// Generates a string that represents the default value of the structure.
+		// Generates a string that represents the default value of the struct.
 		static FString GenerateStructDefaultValueString(const UScriptStruct* InStruct);
 
-		// Gets the value of the string state structure as a map of variable names and values.
+		// Gets the value of the string state struct as a map of variable names and values.
 		static TMap<FString, FString> StructStringToPropertyMap(const FString& StructString);
 	
 		// Gets or sets the value of a variable with the specified name.
@@ -73,12 +74,18 @@ namespace PulldownBuilder
 		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
 		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
 
-		// Generates the raw data of the structure from the string of the default value of the pin.
+		// Generates the raw data of the struct from the string of the default value of the pin.
 		static bool GetStructRawDataFromDefaultValueString(
 			const UScriptStruct* StructType,
 			const FString& DefaultValue,
 			uint8*& RawData
 		);
+
+		// Recursively searches and returns the outer assets of the pin.
+		static UObject* GetOuterAssetFromPin(const UEdGraphPin* Pin);
+
+		// Creates an FStructContainer from the data of the property pointed to by this pin.
+		static bool GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer);
 		
 		// Returns a module that registers editor preferences etc. added by the plugin.
 		static ISettingsModule* GetSettingsModule();

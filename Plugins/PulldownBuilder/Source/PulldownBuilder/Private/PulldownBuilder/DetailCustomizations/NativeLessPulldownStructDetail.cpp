@@ -42,7 +42,7 @@ namespace PulldownBuilder
 	{
 		FPulldownStructDetail::CustomizeHeader(InStructPropertyHandle, HeaderRow, StructCustomizationUtils);
 
-		// Scan the properties of the structure for the property handle of FNativeLessPulldownStruct::PulldownContentsName.
+		// Scan the properties of the struct for the property handle of FNativeLessPulldownStruct::PulldownContentsName.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)

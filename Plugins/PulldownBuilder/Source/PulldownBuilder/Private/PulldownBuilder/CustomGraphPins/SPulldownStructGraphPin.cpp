@@ -23,7 +23,7 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::RebuildPulldown()
 	{
-		// Find Pulldown Contents in the property structure and
+		// Find Pulldown Contents in the property struct and
 		// build a list of strings to display in the pull-down menu.
 		SelectableValues = GenerateSelectableValues();
 
@@ -54,12 +54,14 @@ namespace PulldownBuilder
 
 	TArray<TSharedPtr<FPulldownRow>> SPulldownStructGraphPin::GenerateSelectableValues()
 	{
+		check(GraphPinObj != nullptr);
+		
 		FStructContainer StructContainer;
-		if (GenerateStructContainer(StructContainer))
+		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
 		{
 			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 				StructContainer.GetScriptStruct(),
-				TArray<UObject*>{ GetOuterAsset() },
+				TArray<UObject*>{ FPulldownBuilderUtils::GetOuterAssetFromPin(GraphPinObj) },
 				StructContainer
 			);
 		}
@@ -142,48 +144,5 @@ namespace PulldownBuilder
 			check(IsValid(Schema));
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 		}
-	}
-
-	UObject* SPulldownStructGraphPin::GetOuterAsset() const
-	{
-		UObject* CurrentObject = GraphPinObj->GetOuter();
-		while (IsValid(CurrentObject))
-		{
-			if (CurrentObject->IsAsset())
-			{
-				return CurrentObject;
-			}
-
-			CurrentObject = CurrentObject->GetOuter();
-		}
-
-		return nullptr;
-	}
-
-	bool SPulldownStructGraphPin::GenerateStructContainer(FStructContainer& StructContainer) const
-	{
-		check(GraphPinObj != nullptr);
-
-		const auto* ScriptStruct = Cast<UScriptStruct>(GraphPinObj->PinType.PinSubCategoryObject);
-		if (!IsValid(ScriptStruct))
-		{
-			return false;
-		}
-		
-		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
-
-		const bool bWasSuccessful = FPulldownBuilderUtils::GetStructRawDataFromDefaultValueString(
-			ScriptStruct,
-			GraphPinObj->GetDefaultAsString(),
-			RawData
-		);
-		if (bWasSuccessful)
-		{
-			StructContainer = FStructContainer(ScriptStruct, RawData);
-		}
-
-		FMemory::Free(RawData);
-
-		return bWasSuccessful;
 	}
 }

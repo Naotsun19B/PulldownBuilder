@@ -54,12 +54,6 @@ namespace PulldownBuilder
 		// If specify a property name that does not exist and get it, nullptr is returned.
 		TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;
 		void SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue);
-
-		// Recursively search and return the outer assets of the pin.
-		UObject* GetOuterAsset() const;
-
-		// Create an FStructContainer from the data of the property pointed to by this pin.
-		bool GenerateStructContainer(FStructContainer& StructContainer) const;
 		
 	protected:
 		// A list of values that can be set in FPulldownStructBase::SelectedValue.

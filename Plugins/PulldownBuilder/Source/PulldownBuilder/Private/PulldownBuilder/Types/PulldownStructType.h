@@ -8,7 +8,7 @@
 #include "PulldownStructType.generated.h"
 
 /**
- * A structure for specifying the type of structure that inherits from FPulldownStructBase.
+ * A struct for specifying the type of struct that inherits from FPulldownStructBase.
  */
 USTRUCT(BlueprintInternalUseOnly)
 struct FPulldownStructType
@@ -16,7 +16,7 @@ struct FPulldownStructType
 	GENERATED_BODY()
 
 public:
-	// StaticStruct pointer for the specified structure.
+	// StaticStruct pointer for the specified struct.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	UScriptStruct* SelectedStruct;
 
@@ -59,7 +59,7 @@ public:
 	}
 	// End of overload oprators.
 	
-	// Returns whether the structure information is empty.
+	// Returns whether the struct information is empty.
 	bool IsEmpty() const { return !IsValid(SelectedStruct); }
 };
 

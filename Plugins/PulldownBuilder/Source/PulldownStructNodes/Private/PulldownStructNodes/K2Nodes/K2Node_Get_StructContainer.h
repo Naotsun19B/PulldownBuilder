@@ -8,7 +8,7 @@
 #include "K2Node_Get_StructContainer.generated.h"
 
 /**
- * Returns the data of the structure stored in the container..
+ * Returns the data of the struct stored in the container..
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_Get_StructContainer : public UK2Node
@@ -46,10 +46,10 @@ protected:
 	UEdGraphPin* GetStructDataPin() const;
 	UEdGraphPin* GetReturnValuePin() const;
 
-	// Returns the type of structure specified by the struct data pin.
+	// Returns the type of struct specified by the struct data pin.
 	UScriptStruct* GetStructType() const;
 
-	// Refresh the struct data pin type to be the structure type of the connected pin.
+	// Refresh the struct data pin type to be the struct type of the connected pin.
 	void RefreshStructDataPinType();
 	
 protected:

@@ -87,7 +87,7 @@ namespace PulldownBuilder
 		virtual bool CanBrowseSourceAssetAction() const;
 
 	protected:
-		// The property handle of the structure that inherits the FPulldownStructBase
+		// The property handle of the struct that inherits the FPulldownStructBase
 		// that is the target of this detail customization.
 		TSharedPtr<IPropertyHandle> StructPropertyHandle;
 	

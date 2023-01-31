@@ -24,7 +24,7 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Selector")
 	bool bIsSelectWhenDoubleClick;
 
-	// Whether to automatically inline a single property pull-down structure.
+	// Whether to automatically inline a single property pull-down struct.
 	UPROPERTY(EditAnywhere, Config, Category = "Details")
 	bool bShouldInlineDisplayWhenSingleProperty;
 

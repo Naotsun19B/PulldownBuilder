@@ -31,7 +31,7 @@ namespace PulldownBuilder
 				if (FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
 				{
 					// Since the DefaultValue of the pin when it is created is empty,
-					// the default structure string is generated and set.
+					// the default struct string is generated and set.
 					if (InPin->DefaultValue.IsEmpty())
 					{
 						InPin->DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
