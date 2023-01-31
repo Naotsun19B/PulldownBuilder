@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 class ISettingsModule;
+class UScriptStruct;
 class UPulldownContents;
 struct FPulldownRow;
 struct FStructContainer;
@@ -12,7 +13,7 @@ struct FStructContainer;
 namespace PulldownBuilder
 {
 	/**
-	 * Utility function library class that defines the processes widely used in this module.
+	 * Utility function library class that defines the processes widely used in this plugin.
 	 */
 	class PULLDOWNBUILDER_API FPulldownBuilderUtils
 	{
@@ -47,7 +48,7 @@ namespace PulldownBuilder
 		// Returns whether the asset editor was opened.
 		static bool OpenPulldownContents(UPulldownContents* PulldownContents);
 		
-		// Get the list of character strings to be displayed in the pull-down menu from PulldownContents
+		// Gets the list of character strings to be displayed in the pull-down menu from PulldownContents
 		// obtained by FindPulldownContentsByStruct.
 		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(
 			const UScriptStruct* InStruct,
@@ -72,7 +73,7 @@ namespace PulldownBuilder
 		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
 		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
 
-		// Generate the raw data of the structure from the string of the default value of the pin.
+		// Generates the raw data of the structure from the string of the default value of the pin.
 		static bool GetStructRawDataFromDefaultValueString(
 			const UScriptStruct* StructType,
 			const FString& DefaultValue,

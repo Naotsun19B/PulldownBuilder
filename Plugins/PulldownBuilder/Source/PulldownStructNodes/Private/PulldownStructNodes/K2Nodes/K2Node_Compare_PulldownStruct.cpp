@@ -1,16 +1,14 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_Compare_PulldownStruct.h"
+#include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
-#include "PulldownStruct/PulldownStructBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "FindInBlueprintManager.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
 #include "KismetCompiler.h"
 #include "K2Node_CallFunction.h"
-#include "K2Node_BreakStruct.h"
-#include "K2Node_TemporaryVariable.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_Compare_PulldownStruct"
 
@@ -165,31 +163,19 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 		auto LinkSourcePinToCompareNodePin = [&](const FName& SourcePinName, const FName& CompareNodePinName)
 		{
 			const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
-			check(IsValid(K2Schema));
-
-			auto* BreakNode = CompilerContext.SpawnIntermediateNode<UK2Node_BreakStruct>(this, SourceGraph);
-			check(IsValid(BreakNode));
-			BreakNode->StructType = PulldownStruct;
-			BreakNode->bMadeAfterOverridePinRemoval = true;
-			BreakNode->AllocateDefaultPins();
-			
 			UEdGraphPin* SourcePin = FindPinChecked(SourcePinName, EGPD_Input);
-			UEdGraphPin* BreakNodePin = BreakNode->FindPinChecked(PulldownStruct->GetFName(), EGPD_Input);
-			check(SourcePin != nullptr && BreakNodePin != nullptr);
-			// #TODO: I have to deal with the case where the pin is the default value.
-			// if (SourcePin->LinkedTo.Num() == 0)
-			// {
-			// 	
-			// }
-			// else
-			{
-				CompilerContext.MovePinLinksToIntermediate(*SourcePin, *BreakNodePin);
-			}
-			
-			UEdGraphPin* BreakNodeValuePin = BreakNode->FindPinChecked(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), EGPD_Output);
 			UEdGraphPin* CompareNodePin = CompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
-			check(BreakNodeValuePin != nullptr && CompareNodePin != nullptr)
-			K2Schema->TryCreateConnection(BreakNodeValuePin, CompareNodePin);
+			check(IsValid(K2Schema) && SourcePin != nullptr && CompareNodePin != nullptr);
+
+			check(
+				PulldownBuilder::FPulldownStructNodeUtils::LinkPulldownStructPinToNamePin(
+					this,
+					CompilerContext,
+					K2Schema,
+					SourcePin,
+					CompareNodePin
+				)
+			);
 		};
 
 		LinkSourcePinToCompareNodePin(LhsPinName, TEXT("A"));
