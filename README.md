@@ -167,7 +167,7 @@ In order to support assets other than these, it is necessary to inherit [`URowNa
 
 ### ・Nodes
 
-![Nodes](https://user-images.githubusercontent.com/51815450/173224288-acde9271-fff3-40eb-bd4a-47529f90a62a.PNG)
+![Nodes](https://user-images.githubusercontent.com/51815450/215983400-ff079fc3-0a8b-4512-bd82-5b359e9e800b.PNG)
 
 Nodes are available that compare pull-down structures of the same type.
 
@@ -199,6 +199,13 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2023/02/01) v1.9  
+  Fixed a bug that crashes when starting the editor  
+  Fixed a bug where generic not equal node was converted to pull-down struct not equal node  
+  Fixed a bug that the display was not updated when the default value of the graph pin was changed  
+  Default values can now be copied or pasted from the graph pin context menu  
+  You can now open the PulldownContents asset underlying the variable pulldown structure from the context menu of the graph pin or details panel  
 
 - (2022/11/08) v1.8  
   Fixed a crash when searching for a node when the editor language is other than English  

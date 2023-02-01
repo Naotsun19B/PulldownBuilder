@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 1.8,
-	"VersionName": "1.8",
+	"Version": 1.9,
+	"VersionName": "1.9",
 	"FriendlyName": "PulldownBuilder",
 	"Description": "By creating the PulldownContents asset added by this plugin, you can easily add a structure that displays a pull-down menu based on a data table, string table, etc.\r\nWhen using C ++, define a structure that inherits FPulldownStructBase and set it in the PulldownContents asset.\r\nWhen not using C ++, use NativeLessPulldownStruct to specify the Pulldown Contents from which the pull-down menu is based.",
 	"Category": "Misc",
