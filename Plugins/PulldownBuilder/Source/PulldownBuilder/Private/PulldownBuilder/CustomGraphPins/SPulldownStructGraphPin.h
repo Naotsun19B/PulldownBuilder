@@ -21,7 +21,11 @@ namespace PulldownBuilder
 		SLATE_BEGIN_ARGS(SPulldownStructGraphPin) {}
 		SLATE_END_ARGS()
 
+		// Constructor.
 		void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
+
+		// Destructor.
+		virtual ~SPulldownStructGraphPin() override;
 
 		// SGraphPin interface.
 		virtual TSharedRef<SWidget> GetDefaultValueWidget() override;

@@ -4,6 +4,7 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownStruct/PulldownStructBase.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "ToolMenus.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "UObject/UObjectIterator.h"
@@ -11,8 +12,11 @@
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphNode.h"
 #include "EdGraph/EdGraphPin.h"
-#include "Kismet2/BlueprintEditorUtils.h"
-#include "Kismet2/KismetEditorUtilities.h"
+#if WITH_SLATE_DEBUGGING
+#include "Editor.h"
+#include "GraphEditorActions.h"
+#include "Debugging/SlateDebugging.h"
+#endif
 #if BEFORE_UE_5_00
 #include "EditorStyleSet.h"
 #else
@@ -24,6 +28,7 @@
 namespace PulldownBuilder
 {
 	const FName FGraphPinContextMenuExtender::ExtensionSectionName = TEXT("PulldownBuilder.GraphPinContextMenuExtender");
+	FGraphPinContextMenuExtender::FOnPinDefaultValueChanged FGraphPinContextMenuExtender::OnPinDefaultValueChanged;
 	
 	void FGraphPinContextMenuExtender::Register()
 	{
@@ -46,10 +51,18 @@ namespace PulldownBuilder
 				)
 			);
 		}
+
+#if WITH_SLATE_DEBUGGING
+		CommandRunHandle = FSlateDebugging::CommandRun.AddStatic(&FGraphPinContextMenuExtender::HandleOnCommandRun);
+#endif
 	}
 
 	void FGraphPinContextMenuExtender::Unregister()
 	{
+#if WITH_SLATE_DEBUGGING
+		FSlateDebugging::CommandRun.Remove(CommandRunHandle);
+#endif
+		
 		auto* ToolMenus = UToolMenus::Get();
 		check(IsValid(ToolMenus));
 
@@ -269,10 +282,7 @@ namespace PulldownBuilder
 		{
 			Node->PinDefaultValueChanged(Pin);
 
-			if (UBlueprint* Blueprint = FBlueprintEditorUtils::FindBlueprintForNode(Node))
-			{
-				FKismetEditorUtilities::CompileBlueprint(Blueprint, EBlueprintCompileOptions::SkipSave);
-			}
+			OnPinDefaultValueChanged.Broadcast();
 		}
 	}
 
@@ -338,6 +348,34 @@ namespace PulldownBuilder
 
 		return IsValid(FPulldownBuilderUtils::FindPulldownContentsByStruct(Struct));
 	}
+
+#if WITH_SLATE_DEBUGGING
+	void FGraphPinContextMenuExtender::HandleOnCommandRun(const FName& CommandName, const FText& CommandLabel)
+	{
+		// When you reset a pin to its default value, the pin's
+		// appearance will not be reflected if you do not update it.
+		const TSharedPtr<FUICommandInfo>& ResetPinToDefaultValue = FGraphEditorCommands::Get().ResetPinToDefaultValue;
+		check(ResetPinToDefaultValue.IsValid());
+
+		if (CommandName.IsEqual(ResetPinToDefaultValue->GetCommandName()) &&
+			CommandLabel.EqualTo(ResetPinToDefaultValue->GetLabel()))
+		{
+			check(IsValid(GEditor));
+
+			// Throw an event in the next frame because the default value of the pin must be reset
+			// before the update process can take place.
+			const TSharedRef<FTimerManager>& TimerManager = GEditor->GetTimerManager();
+			TimerManager->SetTimerForNextTick(
+				[]()
+				{
+					OnPinDefaultValueChanged.Broadcast();
+				}
+			);
+		}
+	}
+
+	FDelegateHandle FGraphPinContextMenuExtender::CommandRunHandle;
+#endif
 }
 
 #undef LOCTEXT_NAMESPACE

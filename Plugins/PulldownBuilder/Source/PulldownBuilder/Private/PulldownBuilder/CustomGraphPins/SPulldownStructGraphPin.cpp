@@ -1,6 +1,7 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/CustomGraphPins/SPulldownStructGraphPin.h"
+#include "PulldownBuilder/CustomGraphPins/GraphPinContextMenuExtender.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
@@ -12,6 +13,13 @@ namespace PulldownBuilder
 	void SPulldownStructGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
+
+		FGraphPinContextMenuExtender::OnPinDefaultValueChanged.AddRaw(this, &SPulldownStructGraphPin::RebuildPulldown);
+	}
+
+	SPulldownStructGraphPin::~SPulldownStructGraphPin()
+	{
+		FGraphPinContextMenuExtender::OnPinDefaultValueChanged.RemoveAll(this);
 	}
 
 	TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()

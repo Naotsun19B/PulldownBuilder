@@ -349,7 +349,7 @@ namespace PulldownBuilder
 		return nullptr;
 	}
 
-	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer)
+	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(UEdGraphPin* Pin, FStructContainer& StructContainer)
 	{
 		check(Pin != nullptr);
 
@@ -358,12 +358,20 @@ namespace PulldownBuilder
 		{
 			return false;
 		}
+
+		// If the default value is empty, the raw data of the structure cannot be generated,
+		// so set the default value in advance.
+		FString& DefaultValue = Pin->DefaultValue;
+		if (DefaultValue.IsEmpty())
+		{
+			DefaultValue = GenerateStructDefaultValueString(ScriptStruct);
+		}
 		
 		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
 
 		const bool bWasSuccessful = GetStructRawDataFromDefaultValueString(
 			ScriptStruct,
-			Pin->GetDefaultAsString(),
+			DefaultValue,
 			RawData
 		);
 		if (bWasSuccessful)
