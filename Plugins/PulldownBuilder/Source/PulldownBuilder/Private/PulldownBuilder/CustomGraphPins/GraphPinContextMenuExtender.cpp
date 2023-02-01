@@ -179,7 +179,8 @@ namespace PulldownBuilder
 			),
 			FToolUIActionChoice(
 				FUIAction(
-					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnSelectedValueCopyAction, WeakContext)
+					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnSelectedValueCopyAction, WeakContext),
+					FCanExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::CanSelectedValueCopyAction, WeakContext)
 				)
 			)
 		);
@@ -309,6 +310,22 @@ namespace PulldownBuilder
     	}
 	}
 
+	bool FGraphPinContextMenuExtender::CanSelectedValueCopyAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context)
+	{
+		if (!Context.IsValid())
+		{
+			return false;
+		}
+		
+		const UEdGraphPin* Pin = Context->Pin;
+		if (Pin == nullptr)
+		{
+			return false;
+		}
+
+		return (Pin->LinkedTo.Num() == 0); 
+	}
+
 	bool FGraphPinContextMenuExtender::CanSelectedValuePasteAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context)
 	{
 		if (!Context.IsValid())
@@ -316,13 +333,19 @@ namespace PulldownBuilder
 			return false;
 		}
 
-		const UEdGraph* Graph = Context->Graph;
-		if (!IsValid(Graph))
+		bool bIsGraphEditable = false;
+		if (const UEdGraph* Graph = Context->Graph)
 		{
-			return false;
+			bIsGraphEditable = Graph->bEditable;
 		}
 
-		return Graph->bEditable;
+		bool bHasAnyPinConnection = true;
+		if (const UEdGraphPin* Pin = Context->Pin)
+		{
+			bHasAnyPinConnection = (Pin->LinkedTo.Num() != 0);
+		}
+		
+		return (bIsGraphEditable && !bHasAnyPinConnection);
 	}
 
 	bool FGraphPinContextMenuExtender::CanBrowsePulldownContentsAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context)

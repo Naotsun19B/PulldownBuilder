@@ -40,6 +40,7 @@ namespace PulldownBuilder
 		static void OnBrowsePulldownContentsAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
 
 		// Returns whether the function can be called from the pull-down struct's context menu.
+		static bool CanSelectedValueCopyAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
 		static bool CanSelectedValuePasteAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
 		static bool CanBrowsePulldownContentsAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
 		
