@@ -42,14 +42,12 @@ namespace PulldownBuilder
 		// Returns whether the function can be called from the pull-down struct's context menu.
 		static bool CanSelectedValuePasteAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
 		static bool CanBrowsePulldownContentsAction(TWeakObjectPtr<const UGraphNodeContextMenuContext> Context);
-
-#if WITH_SLATE_DEBUGGING
+		
 		// Called when the command executes.
 		static void HandleOnCommandRun(const FName& CommandName, const FText& CommandLabel);
 		
 	private:
 		// A handle to the event that is called when the command executes.
 		static FDelegateHandle CommandRunHandle;
-#endif
 	};
 }

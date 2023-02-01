@@ -12,11 +12,9 @@
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphNode.h"
 #include "EdGraph/EdGraphPin.h"
-#if WITH_SLATE_DEBUGGING
+#include "Debugging/SlateDebugging.h"
 #include "Editor.h"
 #include "GraphEditorActions.h"
-#include "Debugging/SlateDebugging.h"
-#endif
 #if BEFORE_UE_5_00
 #include "EditorStyleSet.h"
 #else
@@ -348,8 +346,7 @@ namespace PulldownBuilder
 
 		return IsValid(FPulldownBuilderUtils::FindPulldownContentsByStruct(Struct));
 	}
-
-#if WITH_SLATE_DEBUGGING
+	
 	void FGraphPinContextMenuExtender::HandleOnCommandRun(const FName& CommandName, const FText& CommandLabel)
 	{
 		// When you reset a pin to its default value, the pin's
@@ -375,7 +372,6 @@ namespace PulldownBuilder
 	}
 
 	FDelegateHandle FGraphPinContextMenuExtender::CommandRunHandle;
-#endif
 }
 
 #undef LOCTEXT_NAMESPACE
