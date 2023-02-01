@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
+#include "EdGraph/EdGraphNodeUtils.h"
 #include "K2Node_Compare_PulldownStruct.generated.h"
+
+class UBlueprintNodeSpawner;
 
 /**
  * Compares FPulldownStructBase::SelectedValue between pull-down structs of the same type and returns values comparison result.
@@ -23,7 +26,6 @@ public:
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetKeywords() const override;
-	virtual void AddPinSearchMetaDataInfo(const UEdGraphPin* Pin, TArray<struct FSearchTagDataPair>& OutTaggedMetaData) const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
 
@@ -48,9 +50,13 @@ protected:
 	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, return NAME_None;);
 	
 private:
+	// Called when creating an instance of this node for each pull-down structs.
+	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;
+	
+private:
 	// A pull-down struct to compare on this node.
 	UPROPERTY()
-	TObjectPtr<UScriptStruct> PulldownStruct;
+	UScriptStruct* PulldownStruct;
 
 	// A cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;

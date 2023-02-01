@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 class UToolMenu;
+class UGraphNodeContextMenuContext;
 
 namespace PulldownBuilder
 {

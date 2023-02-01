@@ -14,6 +14,8 @@
 #include "Dom/JsonObject.h"
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
+#include "Editor.h"
+#include "Subsystems/AssetEditorSubsystem.h"
 
 namespace PulldownBuilder
 {

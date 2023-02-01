@@ -15,6 +15,11 @@
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Modules/ModuleManager.h"
+#if BEFORE_UE_5_00
+#include "EditorStyleSet.h"
+#else
+#include "Styling/AppStyle.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "PulldownStructDetail"
 
@@ -339,7 +344,14 @@ namespace PulldownBuilder
 			CreateBrowseSourceAssetAction(),
 			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
 			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("SystemWideCommands.FindInContentBrowser"))
+			FSlateIcon(
+#if BEFORE_UE_5_00
+				FEditorStyle::GetStyleSetName(),
+#else
+				FAppStyle::GetAppStyleSetName(),
+#endif
+				TEXT("SystemWideCommands.FindInContentBrowser")
+			)
 		);
 	}
 

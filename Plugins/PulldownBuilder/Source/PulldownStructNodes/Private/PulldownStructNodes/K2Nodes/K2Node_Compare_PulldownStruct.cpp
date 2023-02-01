@@ -45,28 +45,6 @@ FText UK2Node_Compare_PulldownStruct::GetKeywords() const
 	return GetCompareMethodOperator();
 }
 
-void UK2Node_Compare_PulldownStruct::AddPinSearchMetaDataInfo(const UEdGraphPin* Pin, TArray<FSearchTagDataPair>& OutTaggedMetaData) const
-{
-	Super::AddPinSearchMetaDataInfo(Pin, OutTaggedMetaData);
-
-	if (IsValid(PulldownStruct) && Pin != nullptr)
-	{
-		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
-		check(IsValid(K2Schema));
-
-		if (K2Schema->IsExecPin(*Pin) && Pin->Direction == EGPD_Output && PulldownStruct->IsNative())
-		{
-			// Allow native struct pins to be searchable by C++ struct name.
-			OutTaggedMetaData.Add(
-				FSearchTagDataPair(
-					FFindInBlueprintSearchTags::FiB_NativeName,
-					FText::FromString(Pin->GetName())
-				)
-			);
-		}
-	}
-}
-
 void UK2Node_Compare_PulldownStruct::AllocateDefaultPins()
 {
 	if (IsValid(PulldownStruct))
@@ -109,44 +87,8 @@ FText UK2Node_Compare_PulldownStruct::GetMenuCategory() const
 void UK2Node_Compare_PulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
 	ActionRegistrar.RegisterStructActions(
-		FBlueprintActionDatabaseRegistrar::FMakeStructSpawnerDelegate::CreateWeakLambda(
-			this, [this](const UScriptStruct* Struct) -> UBlueprintNodeSpawner*
-			{
-				if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
-				{
-					return nullptr;
-				}
-				
-				UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
-				if (!IsValid(NodeSpawner))
-				{
-					return nullptr;
-				}
-
-				struct FNodeFieldSetter
-				{
-				public:
-					static void SetNodeStruct(UEdGraphNode* NewNode, FFieldVariant Field)
-					{
-						auto* Struct = Field.Get<UScriptStruct>();
-						if (!IsValid(Struct))
-						{
-							return;
-						}
-			
-						if (auto* CastedNode = Cast<UK2Node_Compare_PulldownStruct>(NewNode))
-						{
-							CastedNode->PulldownStruct = Struct;
-						}
-					}
-				};
-	
-				NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
-					&FNodeFieldSetter::SetNodeStruct
-				);
-
-				return NodeSpawner;
-			}
+		FBlueprintActionDatabaseRegistrar::FMakeStructSpawnerDelegate::CreateUObject(
+			this, &UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner
 		)
 	);
 }
@@ -201,6 +143,41 @@ void UK2Node_Compare_PulldownStruct::PreloadRequiredAssets()
 	{
 		PreloadObject(PulldownStruct);
 	}
+}
+
+UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
+{
+	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
+	{
+		return nullptr;
+	}
+				
+	UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
+	if (!IsValid(NodeSpawner))
+	{
+		return nullptr;
+	}
+
+	struct FNodeFieldSetter
+	{
+	public:
+		static void SetNodeField(UEdGraphNode* NewNode, FFieldVariant Field)
+		{
+			if (auto* Struct = Field.Get<UScriptStruct>())
+			{
+				if (auto* CastedNode = Cast<UK2Node_Compare_PulldownStruct>(NewNode))
+				{
+					CastedNode->PulldownStruct = Struct;
+				}
+			}
+		}
+	};
+	
+	NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
+		&FNodeFieldSetter::SetNodeField
+	);
+
+	return NodeSpawner;
 }
 
 #undef LOCTEXT_NAMESPACE

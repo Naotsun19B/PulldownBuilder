@@ -5,8 +5,19 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "ToolMenus.h"
-#include "Styling/AppStyle.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "UObject/UObjectIterator.h"
+#include "EdGraphSchema_K2.h"
+#include "EdGraph/EdGraph.h"
+#include "EdGraph/EdGraphNode.h"
+#include "EdGraph/EdGraphPin.h"
+#include "Kismet2/BlueprintEditorUtils.h"
+#include "Kismet2/KismetEditorUtilities.h"
+#if BEFORE_UE_5_00
+#include "EditorStyleSet.h"
+#else
+#include "Styling/AppStyle.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "GraphPinContextMenuExtender"
 
@@ -147,31 +158,33 @@ namespace PulldownBuilder
 			TEXT("CopyPinValue"),
 			LOCTEXT("CopyPinValueLabel", "Copy"),
 			LOCTEXT("CopyPinValueTooltip", "Copies the value selected in the pin's pulldown struct to the clipboard."),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("GenericCommands.Copy")),
+			FSlateIcon(
+#if BEFORE_UE_5_00
+				FEditorStyle::GetStyleSetName(),
+#else
+				FAppStyle::GetAppStyleSetName(),
+#endif
+				TEXT("GenericCommands.Copy")
+			),
 			FToolUIActionChoice(
 				FUIAction(
 					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnSelectedValueCopyAction, WeakContext)
 				)
 			)
 		);
-
+		
 		MenuSection.AddMenuEntry(
 			TEXT("PastePinValue"),
 			LOCTEXT("PastePinValueLabel", "Paste"),
 			LOCTEXT("PastePinValueTooltip", "Pastes the value from the clipboard into the pin's pulldown struct."),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("GenericCommands.Paste")),
-			FToolUIActionChoice(
-				FUIAction(
-					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnSelectedValueCopyAction, WeakContext)
-				)
-			)
-		);
-
-		MenuSection.AddMenuEntry(
-			TEXT("PastePinValue"),
-			LOCTEXT("PastePinValueLabel", "Paste"),
-			LOCTEXT("PastePinValueTooltip", "Pastes the value from the clipboard into the pin's pulldown struct."),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("GenericCommands.Paste")),
+			FSlateIcon(
+#if BEFORE_UE_5_00
+				FEditorStyle::GetStyleSetName(),
+#else
+				FAppStyle::GetAppStyleSetName(),
+#endif
+				TEXT("GenericCommands.Paste")
+			),
 			FToolUIActionChoice(
 				FUIAction(
 					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnSelectedValuePasteAction, WeakContext),
@@ -184,7 +197,14 @@ namespace PulldownBuilder
 			TEXT("OpenSourceAsset"),
 			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
 			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("SystemWideCommands.FindInContentBrowser")),
+			FSlateIcon(
+#if BEFORE_UE_5_00
+				FEditorStyle::GetStyleSetName(),
+#else
+				FAppStyle::GetAppStyleSetName(),
+#endif
+				TEXT("SystemWideCommands.FindInContentBrowser")
+			),
 			FToolUIActionChoice(
 				FUIAction(
 					FExecuteAction::CreateStatic(&FGraphPinContextMenuExtender::OnBrowsePulldownContentsAction, WeakContext),
@@ -224,7 +244,7 @@ namespace PulldownBuilder
 			return;
 		}
 
-		const UEdGraphPin* Pin = Context->Pin;
+		auto* Pin = const_cast<UEdGraphPin*>(Context->Pin);
 		if (Pin == nullptr)
 		{
 			return;
@@ -242,7 +262,17 @@ namespace PulldownBuilder
 		{
 			const UEdGraphSchema* Schema = Pin->GetSchema();
 			check(IsValid(Schema));
-			Schema->TrySetDefaultValue(const_cast<UEdGraphPin&>(*Pin), *NewDefaultValue);
+			Schema->TrySetDefaultValue(*Pin, *NewDefaultValue);
+		}
+
+		if (UEdGraphNode* Node = Pin->GetOwningNode())
+		{
+			Node->PinDefaultValueChanged(Pin);
+
+			if (UBlueprint* Blueprint = FBlueprintEditorUtils::FindBlueprintForNode(Node))
+			{
+				FKismetEditorUtilities::CompileBlueprint(Blueprint, EBlueprintCompileOptions::SkipSave);
+			}
 		}
 	}
 
