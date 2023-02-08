@@ -3,6 +3,7 @@
 #include "PulldownStructNodes/K2Nodes/K2Node_SwitchPulldownStruct.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -16,6 +17,32 @@
 UK2Node_SwitchPulldownStruct::UK2Node_SwitchPulldownStruct()
 {
 	bHasDefaultPin = false;
+}
+
+void UK2Node_SwitchPulldownStruct::PostLoad()
+{
+	Super::PostLoad();
+
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
+}
+
+void UK2Node_SwitchPulldownStruct::BeginDestroy()
+{
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.RemoveAll(this);
+	
+	Super::BeginDestroy();
+}
+
+void UK2Node_SwitchPulldownStruct::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+
+	// If the timing is too early, PulldownContents is not loaded, and even if it is reinitialized after loading,
+	// the connected pin will be cut off, so save the selected values.
+	if (Ar.IsSaving() && Ar.IsLoading())
+	{
+		Ar << SelectedValues;
+	}
 }
 
 FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
@@ -311,17 +338,21 @@ void UK2Node_SwitchPulldownStruct::CreateCasePins()
 				TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 				StructContainer
 			);
-
-			SelectedValues.Reset(PulldownRows.Num());
-
-			for (const auto& PulldownRow : PulldownRows)
+			
+			// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
+			if (PulldownRows.Num() > 0)
 			{
-				if (!PulldownRow.IsValid())
-				{
-					continue;
-				}
+				SelectedValues.Reset(PulldownRows.Num());
 
-				SelectedValues.Add(*PulldownRow->DisplayText.ToString());
+				for (const auto& PulldownRow : PulldownRows)
+				{
+					if (!PulldownRow.IsValid())
+					{
+						continue;
+					}
+
+					SelectedValues.Add(*PulldownRow->DisplayText.ToString());
+				}
 			}
 		}
 	}
@@ -366,6 +397,11 @@ FName UK2Node_SwitchPulldownStruct::GetPinNameGivenIndex(int32 Index) const
 	}
 	
 	return NAME_None;
+}
+
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents)
+{
+	ReconstructNode();
 }
 
 #undef LOCTEXT_NAMESPACE

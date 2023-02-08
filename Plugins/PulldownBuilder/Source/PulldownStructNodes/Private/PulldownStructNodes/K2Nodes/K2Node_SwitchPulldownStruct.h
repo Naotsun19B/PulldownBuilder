@@ -6,6 +6,8 @@
 #include "K2Node_Switch.h"
 #include "K2Node_SwitchPulldownStruct.generated.h"
 
+class UPulldownContents;
+
 /**
  * Switch node for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
  */
@@ -17,6 +19,12 @@ class PULLDOWNSTRUCTNODES_API UK2Node_SwitchPulldownStruct : public UK2Node_Swit
 public:
 	// Constructor.
 	UK2Node_SwitchPulldownStruct();
+
+	// UObject interface.
+	virtual void PostLoad() override;
+	virtual void BeginDestroy() override;
+	virtual void Serialize(FArchive& Ar) override;
+	// End of UObject interface.
 	
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
@@ -48,6 +56,10 @@ public:
 	virtual void RemovePin(UEdGraphPin* TargetPin) override;
 	virtual FName GetPinNameGivenIndex(int32 Index) const override;
 	// End of UK2Node_Switch interface.
+
+private:
+	// Called when PulldownContents has been loaded.
+	void HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents);
 	
 private:
 	// A pull-down struct to switch on this node.

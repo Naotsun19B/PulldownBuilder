@@ -50,6 +50,12 @@ namespace PulldownBuilder
 			);
 		}
 
+		// Unregister a graph pin context menu extension when before editor close.
+		if (IsValid(GEditor))
+		{
+			GEditor->OnEditorClose().AddStatic(&FGraphPinContextMenuExtender::Unregister);
+		}
+
 #if WITH_SLATE_DEBUGGING
 		CommandRunHandle = FSlateDebugging::CommandRun.AddStatic(&FGraphPinContextMenuExtender::HandleOnCommandRun);
 #endif

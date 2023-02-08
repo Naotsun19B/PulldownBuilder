@@ -2,9 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-#include "AssetRegistry/IAssetRegistry.h"
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
-#include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/GraphPinContextMenuExtender.h"
@@ -15,7 +14,6 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 namespace PulldownBuilder
 {
@@ -38,6 +36,9 @@ namespace PulldownBuilder
 
 		// Register message log.
 		FPulldownBuilderMessageLog::Register();
+
+		// Register pulldown contents loader.
+		FPulldownContentsLoader::Register();
 		
 		// Register settings.
 		UPulldownBuilderAppearanceSettings::Register();
@@ -54,30 +55,6 @@ namespace PulldownBuilder
 		FPulldownStructTypeDetail::Register();
 		FPreviewPulldownStructDetail::Register();
 		FNativeLessPulldownStructDetail::Register();
-
-		// Load all PulldownContents in the Content Browser.
-		auto& AssetRegistry = IAssetRegistry::GetChecked();
-		AssetRegistry.OnAssetAdded().AddLambda(
-			[](const FAssetData& AssetData)
-			{
-				if (const UClass* Class = AssetData.GetClass())
-				{
-					if (Class->IsChildOf<UPulldownContents>())
-					{
-						if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
-						{
-							UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *PulldownContents->GetName());
-						}
-					}
-				}
-			}
-		);
-
-		// Unregister a graph pin context menu extension when before editor close.
-		if (IsValid(GEditor))
-		{
-			GEditor->OnEditorClose().AddStatic(&FGraphPinContextMenuExtender::Unregister);
-		}
 	}
 
 	void FPulldownBuilderModule::ShutdownModule()
