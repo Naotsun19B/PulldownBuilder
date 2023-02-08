@@ -92,7 +92,6 @@ namespace PulldownBuilder
 			BreakNode->AllocateDefaultPins();
 
 			UEdGraphPin* StructPin = BreakNode->FindPinChecked(PulldownStruct->GetFName(), EGPD_Input);
-			check(StructPin != nullptr);
 			const FPinConnectionResponse& Response = CompilerContext.MovePinLinksToIntermediate(
 				*PulldownStructPin,
 				*StructPin
@@ -103,7 +102,6 @@ namespace PulldownBuilder
 			}
 			
 			UEdGraphPin* SelectedValuePin = BreakNode->FindPinChecked(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), EGPD_Output);
-			check(SelectedValuePin != nullptr);
 			if (!K2Schema->TryCreateConnection(SelectedValuePin, NamePin))
 			{
 				bConnectionResult = false;

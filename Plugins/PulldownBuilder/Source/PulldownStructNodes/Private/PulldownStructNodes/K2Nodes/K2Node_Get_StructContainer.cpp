@@ -79,43 +79,32 @@ void UK2Node_Get_StructContainer::ExpandNode(FKismetCompilerContext& CompilerCon
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 	
-	UK2Node_CallFunction* FunctionNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-	if (ensure(IsValid(FunctionNode)))
-	{
-		FunctionNode->FunctionReference.SetExternalMember(
-			GET_FUNCTION_NAME_CHECKED(UStructContainerFunctionLibrary, Get_StructContainer),
-			UStructContainerFunctionLibrary::StaticClass()
-		);
-		FunctionNode->AllocateDefaultPins();
+	UK2Node_CallFunction* GetStructContainerNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+	check(IsValid(GetStructContainerNode));
+	GetStructContainerNode->FunctionReference.SetExternalMember(
+		GET_FUNCTION_NAME_CHECKED(UStructContainerFunctionLibrary, Get_StructContainer),
+		UStructContainerFunctionLibrary::StaticClass()
+	);
+	GetStructContainerNode->AllocateDefaultPins();
 
-		{
-			UEdGraphPin* IntermediateTargetPin = FunctionNode->FindPinChecked(TargetPinName);
-			UEdGraphPin* SourceTargetPin = GetTargetPin();
-			if (ensure(IntermediateTargetPin != nullptr && SourceTargetPin != nullptr))
-			{
-				IntermediateTargetPin->PinType = SourceTargetPin->PinType;
-				IntermediateTargetPin->PinType.PinSubCategoryObject = SourceTargetPin->PinType.PinSubCategoryObject;
-				CompilerContext.MovePinLinksToIntermediate(*SourceTargetPin, *IntermediateTargetPin);
-			}
-		}
-		{
-			UEdGraphPin* IntermediateStructDataPin = FunctionNode->FindPinChecked(StructDataPinName);
-			UEdGraphPin* SourceStructDataPin = GetStructDataPin();
-			if (ensure(IntermediateStructDataPin != nullptr && SourceStructDataPin != nullptr))
-			{
-				IntermediateStructDataPin->PinType = SourceStructDataPin->PinType;
-				IntermediateStructDataPin->PinType.PinSubCategoryObject = SourceStructDataPin->PinType.PinSubCategoryObject;
-				CompilerContext.MovePinLinksToIntermediate(*SourceStructDataPin, *IntermediateStructDataPin);
-			}
-		}
-		{
-			UEdGraphPin* IntermediateReturnValuePin = FunctionNode->GetReturnValuePin();
-			UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
-			if (ensure(IntermediateReturnValuePin != nullptr && SourceReturnValuePin != nullptr))
-			{
-				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
-			}
-		}
+	{
+		UEdGraphPin* IntermediateTargetPin = GetStructContainerNode->FindPinChecked(TargetPinName);
+		UEdGraphPin* SourceTargetPin = GetTargetPin();
+		IntermediateTargetPin->PinType = SourceTargetPin->PinType;
+		IntermediateTargetPin->PinType.PinSubCategoryObject = SourceTargetPin->PinType.PinSubCategoryObject;
+		CompilerContext.MovePinLinksToIntermediate(*SourceTargetPin, *IntermediateTargetPin);
+	}
+	{
+		UEdGraphPin* IntermediateStructDataPin = GetStructContainerNode->FindPinChecked(StructDataPinName);
+		UEdGraphPin* SourceStructDataPin = GetStructDataPin();
+		IntermediateStructDataPin->PinType = SourceStructDataPin->PinType;
+		IntermediateStructDataPin->PinType.PinSubCategoryObject = SourceStructDataPin->PinType.PinSubCategoryObject;
+		CompilerContext.MovePinLinksToIntermediate(*SourceStructDataPin, *IntermediateStructDataPin);
+	}
+	{
+		UEdGraphPin* IntermediateReturnValuePin = GetStructContainerNode->GetReturnValuePin();
+		UEdGraphPin* SourceReturnValuePin = GetReturnValuePin();
+		CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *IntermediateReturnValuePin);
 	}
 	
 	BreakAllNodeLinks();
@@ -218,11 +207,11 @@ UScriptStruct* UK2Node_Get_StructContainer::GetStructType() const
 		return nullptr;
 	}
 	
-	UScriptStruct* StructType = Cast<UScriptStruct>(LinkedTo[0]->PinType.PinSubCategoryObject.Get());
+	auto* StructType = Cast<UScriptStruct>(LinkedTo[0]->PinType.PinSubCategoryObject.Get());
 	for (int32 LinkIndex = 1; LinkIndex < LinkedTo.Num(); LinkIndex++)
 	{
 		const UEdGraphPin* Link = LinkedTo[LinkIndex];
-		UScriptStruct* LinkType = Cast<UScriptStruct>(Link->PinType.PinSubCategoryObject.Get());
+		auto* LinkType = Cast<UScriptStruct>(Link->PinType.PinSubCategoryObject.Get());
 		if (StructType != nullptr && StructType->IsChildOf(LinkType))
 		{
 			StructType = LinkType;
@@ -240,7 +229,7 @@ void UK2Node_Get_StructContainer::RefreshStructDataPinType()
 		return;
 	}
 
-	const UScriptStruct* OldStructType = Cast<UScriptStruct>(StructDataPin->PinType.PinSubCategoryObject.Get());
+	const auto* OldStructType = Cast<UScriptStruct>(StructDataPin->PinType.PinSubCategoryObject.Get());
 	UScriptStruct* NewStructType = GetStructType();
 	if (NewStructType != OldStructType)
 	{

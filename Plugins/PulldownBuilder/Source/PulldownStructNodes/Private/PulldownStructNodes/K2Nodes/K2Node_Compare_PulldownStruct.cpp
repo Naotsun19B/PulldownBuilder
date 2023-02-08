@@ -4,7 +4,6 @@
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "FindInBlueprintManager.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
 #include "KismetCompiler.h"
@@ -23,7 +22,7 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTitleFormat", "{CompareMethodName} ({StructName})"),
+					LOCTEXT("NodeTitleFormat", "{0} ({1})"),
 					GetCompareMethodName(),
 					PulldownStruct->GetDisplayNameText()
 				),
@@ -35,7 +34,7 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 	}
 	
 	return FText::Format(
-		LOCTEXT("NodeTitle", "{CompareMethodName} (Unknown Pulldown Struct)"),
+		LOCTEXT("NodeTitle", "{0} (Unknown Pulldown Struct)"),
 		GetCompareMethodName()
 	);
 }
@@ -79,7 +78,7 @@ FText UK2Node_Compare_PulldownStruct::GetCompactNodeTitle() const
 FText UK2Node_Compare_PulldownStruct::GetMenuCategory() const
 {
 	return FText::Format(
-		LOCTEXT("MenuCategory", "Pulldown Struct|{CompareMethodName}"),
+		LOCTEXT("MenuCategoryFormat", "Utilities|Operators|Pulldown Struct|{0}"),
 		GetCompareMethodName()
 	);
 }
@@ -108,9 +107,10 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 		auto LinkSourcePinToCompareNodePin = [&](const FName& SourcePinName, const FName& CompareNodePinName)
 		{
 			const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
+			check(IsValid(K2Schema));
+			
 			UEdGraphPin* SourcePin = FindPinChecked(SourcePinName, EGPD_Input);
 			UEdGraphPin* CompareNodePin = CompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
-			check(IsValid(K2Schema) && SourcePin != nullptr && CompareNodePin != nullptr);
 
 			check(
 				PulldownBuilder::FPulldownStructNodeUtils::LinkPulldownStructPinToNamePin(
@@ -129,7 +129,6 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 		{
 			UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
 			UEdGraphPin* CompareNodeReturnValuePin = CompareNode->GetReturnValuePin();
-			check(SourceReturnValuePin != nullptr && CompareNodeReturnValuePin != nullptr);
 			CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *CompareNodeReturnValuePin);
 		}
 	}

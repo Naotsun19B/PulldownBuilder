@@ -32,7 +32,7 @@ namespace PulldownBuilder
 		static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);
 
 		// Scans all PulldownContents present in the Content Browser.
-		static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback);
+		static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback);
 	
 		// Gets all PulldownContents that exist on the Content Browser.
 		static TArray<UPulldownContents*> GetAllPulldownContents();
@@ -85,7 +85,7 @@ namespace PulldownBuilder
 		static UObject* GetOuterAssetFromPin(const UEdGraphPin* Pin);
 
 		// Creates an FStructContainer from the data of the property pointed to by this pin.
-		static bool GenerateStructContainerFromPin(UEdGraphPin* Pin, FStructContainer& StructContainer);
+		static bool GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer);
 		
 		// Returns a module that registers editor preferences etc. added by the plugin.
 		static ISettingsModule* GetSettingsModule();

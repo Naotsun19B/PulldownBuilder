@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetRegistry/IAssetRegistry.h"
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
@@ -56,8 +56,7 @@ namespace PulldownBuilder
 		FNativeLessPulldownStructDetail::Register();
 
 		// Load all PulldownContents in the Content Browser.
-		const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-		IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+		auto& AssetRegistry = IAssetRegistry::GetChecked();
 		AssetRegistry.OnAssetAdded().AddLambda(
 			[](const FAssetData& AssetData)
 			{

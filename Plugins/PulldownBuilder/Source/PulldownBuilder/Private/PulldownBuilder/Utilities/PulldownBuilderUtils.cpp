@@ -7,7 +7,6 @@
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
-#include "UObject/UObjectIterator.h"
 #include "EdGraphSchema_K2.h"
 #include "Serialization/JsonSerializer.h"
 #include "JsonObjectConverter.h"
@@ -16,6 +15,7 @@
 #include "ISettingsModule.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
+#include "AssetRegistry/IAssetRegistry.h"
 
 namespace PulldownBuilder
 {
@@ -65,13 +65,23 @@ namespace PulldownBuilder
 		return ((bIsNativeLessPulldownStruct || bBasedOnNativeLessPulldownStruct) && bIsBlueprintType);
 	}
 
-	void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents*)>& Callback)
+	void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback)
 	{
-		for (UPulldownContents* PulldownContents : TObjectRange<UPulldownContents>())
+		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
+		check(IsValid(PulldownContentsClass));
+		const FTopLevelAssetPath& ClassPathName = PulldownContentsClass->GetClassPathName();
+		
+		TArray<FAssetData> AssetDataList;
+		if (!IAssetRegistry::GetChecked().GetAssetsByClass(ClassPathName, AssetDataList))
 		{
-			if (IsValid(PulldownContents))
+			return;
+		}
+
+		for (const auto& AssetData : AssetDataList)
+		{
+			if (auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
 			{
-				Callback(PulldownContents);
+				Callback(*PulldownContents);
 			}
 		}
 	}
@@ -79,9 +89,9 @@ namespace PulldownBuilder
 	TArray<UPulldownContents*> FPulldownBuilderUtils::GetAllPulldownContents()
 	{
 		TArray<UPulldownContents*> PulldownContentsList;
-		EnumeratePulldownContents([&](UPulldownContents* PulldownContents) -> bool
+		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
 		{
-			PulldownContentsList.Add(PulldownContents);
+			PulldownContentsList.Add(&PulldownContents);
 			return true;
 		});
 		
@@ -91,11 +101,11 @@ namespace PulldownBuilder
 	UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByStruct(const UScriptStruct* InStruct)
 	{
 		UPulldownContents* FoundItem = nullptr;
-		EnumeratePulldownContents([&](UPulldownContents* PulldownContents) -> bool
+		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
 	    {
-	        if (InStruct == PulldownContents->GetPulldownStructType().SelectedStruct)
+	        if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
 	        {
-        		FoundItem = PulldownContents;
+        		FoundItem = &PulldownContents;
 	            return false;
 	        }
 			
@@ -108,11 +118,11 @@ namespace PulldownBuilder
 	UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByName(const FName& InName)
 	{
 		UPulldownContents* FoundItem = nullptr;
-		EnumeratePulldownContents([&](UPulldownContents* PulldownContents) -> bool
+		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
 		{
-			if (InName == PulldownContents->GetFName())
+			if (InName == PulldownContents.GetFName())
 			{
-				FoundItem = PulldownContents;
+				FoundItem = &PulldownContents;
 				return false;
 			}
 			
@@ -159,9 +169,9 @@ namespace PulldownBuilder
 	bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InStruct)
 	{
 		bool bIsRegistered = false;
-		EnumeratePulldownContents([&](const UPulldownContents* PulldownContents) -> bool
+		EnumeratePulldownContents([&](const UPulldownContents& PulldownContents) -> bool
 	    {
-			if (InStruct == PulldownContents->GetPulldownStructType().SelectedStruct)
+			if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
 			{
 				bIsRegistered = true;
 				return false;
@@ -349,7 +359,7 @@ namespace PulldownBuilder
 		return nullptr;
 	}
 
-	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(UEdGraphPin* Pin, FStructContainer& StructContainer)
+	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer)
 	{
 		check(Pin != nullptr);
 
@@ -361,10 +371,10 @@ namespace PulldownBuilder
 
 		// If the default value is empty, the raw data of the structure cannot be generated,
 		// so set the default value in advance.
-		FString& DefaultValue = Pin->DefaultValue;
+		const FString& DefaultValue = Pin->DefaultValue;
 		if (DefaultValue.IsEmpty())
 		{
-			DefaultValue = GenerateStructDefaultValueString(ScriptStruct);
+			const_cast<FString&>(DefaultValue) = GenerateStructDefaultValueString(ScriptStruct);
 		}
 		
 		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
