@@ -23,6 +23,9 @@ public:
 	static const FName RhsPinName;
 	
 public:
+	// Constructor.
+	UK2Node_Compare_PulldownStruct();
+	
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetKeywords() const override;
@@ -37,8 +40,12 @@ public:
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual void PreloadRequiredAssets() override;
+	virtual bool ShouldShowNodeProperties() const override;
 	// End of UK2Node interface.
 
+	// Returns whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
+	bool ShouldStrictComparison() const;
+	
 protected:
 	// Returns the name of the comparison method used in the node title, etc.
 	virtual FText GetCompareMethodName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodName, return FText::GetEmpty(););
@@ -60,4 +67,8 @@ private:
 
 	// A cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
+
+	// Whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
+	UPROPERTY(EditAnywhere)
+	bool bStrictComparison;
 };

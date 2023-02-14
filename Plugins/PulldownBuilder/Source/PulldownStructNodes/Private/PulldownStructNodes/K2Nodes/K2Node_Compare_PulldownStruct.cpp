@@ -14,6 +14,11 @@
 const FName UK2Node_Compare_PulldownStruct::LhsPinName = TEXT("Lhs");
 const FName UK2Node_Compare_PulldownStruct::RhsPinName = TEXT("Rhs");
 
+UK2Node_Compare_PulldownStruct::UK2Node_Compare_PulldownStruct()
+	: bStrictComparison(true)
+{
+}
+
 FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (IsValid(PulldownStruct))
@@ -96,29 +101,47 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 {
 	if (IsValid(PulldownStruct))
 	{
-		auto* CompareNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-		check(IsValid(CompareNode));
-		CompareNode->FunctionReference.SetExternalMember(
+		const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
+		check(IsValid(K2Schema));
+		
+		auto* SelectedValueCompareNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+		check(IsValid(SelectedValueCompareNode));
+		SelectedValueCompareNode->FunctionReference.SetExternalMember(
 			GetFunctionName(),
 			UKismetMathLibrary::StaticClass()
 		);
-		CompareNode->AllocateDefaultPins();
+		SelectedValueCompareNode->AllocateDefaultPins();
+
+		UK2Node_CallFunction* PulldownSourceCompareNode = nullptr;
+		if (ShouldStrictComparison())
+		{
+			PulldownSourceCompareNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+			check(IsValid(PulldownSourceCompareNode));
+			PulldownSourceCompareNode->FunctionReference.SetExternalMember(
+				GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, EqualEqual_NameName),
+				UKismetMathLibrary::StaticClass()
+			);
+			PulldownSourceCompareNode->AllocateDefaultPins();
+		}
 
 		auto LinkSourcePinToCompareNodePin = [&](const FName& SourcePinName, const FName& CompareNodePinName)
 		{
-			const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
-			check(IsValid(K2Schema));
-			
 			UEdGraphPin* SourcePin = FindPinChecked(SourcePinName, EGPD_Input);
-			UEdGraphPin* CompareNodePin = CompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
-
+			UEdGraphPin* SelectedValueCompareNodePin = SelectedValueCompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
+			UEdGraphPin* PulldownSourceCompareNodePin = nullptr;
+			if (IsValid(PulldownSourceCompareNode))
+			{
+				PulldownSourceCompareNodePin = PulldownSourceCompareNode->FindPinChecked(CompareNodePinName, EGPD_Input);
+			}
+			
 			check(
 				PulldownBuilder::FPulldownStructNodeUtils::LinkPulldownStructPinToNamePin(
 					this,
 					CompilerContext,
 					K2Schema,
 					SourcePin,
-					CompareNodePin
+					SelectedValueCompareNodePin,
+					PulldownSourceCompareNodePin
 				)
 			);
 		};
@@ -126,9 +149,35 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 		LinkSourcePinToCompareNodePin(LhsPinName, TEXT("A"));
 		LinkSourcePinToCompareNodePin(RhsPinName, TEXT("B"));
 
+		UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
+		if (IsValid(PulldownSourceCompareNode))
 		{
-			UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
-			UEdGraphPin* CompareNodeReturnValuePin = CompareNode->GetReturnValuePin();
+			auto* BoolAndNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+			check(IsValid(BoolAndNode));
+			BoolAndNode->FunctionReference.SetExternalMember(
+				GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, BooleanAND),
+				UKismetMathLibrary::StaticClass()
+			);
+			BoolAndNode->AllocateDefaultPins();
+			
+			{
+				UEdGraphPin* PulldownSourceReturnValuePin = PulldownSourceCompareNode->GetReturnValuePin();
+				UEdGraphPin* BoolAndLhsPin = BoolAndNode->FindPinChecked(TEXT("A"), EGPD_Input);
+				check(K2Schema->TryCreateConnection(PulldownSourceReturnValuePin, BoolAndLhsPin));
+			}
+			{
+				UEdGraphPin* SelectedValueReturnValuePin = SelectedValueCompareNode->GetReturnValuePin();
+				UEdGraphPin* BoolAndRhsPin = BoolAndNode->FindPinChecked(TEXT("B"), EGPD_Input);
+				check(K2Schema->TryCreateConnection(SelectedValueReturnValuePin, BoolAndRhsPin));
+			}
+			{
+				UEdGraphPin* BoolAndReturnValue = BoolAndNode->GetReturnValuePin();
+				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *BoolAndReturnValue);
+			}
+		}
+		else
+		{
+			UEdGraphPin* CompareNodeReturnValuePin = SelectedValueCompareNode->GetReturnValuePin();
 			CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *CompareNodeReturnValuePin);
 		}
 	}
@@ -144,9 +193,19 @@ void UK2Node_Compare_PulldownStruct::PreloadRequiredAssets()
 	}
 }
 
+bool UK2Node_Compare_PulldownStruct::ShouldShowNodeProperties() const
+{
+	return PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(PulldownStruct);
+}
+
+bool UK2Node_Compare_PulldownStruct::ShouldStrictComparison() const
+{
+	return (ShouldShowNodeProperties() && bStrictComparison);
+}
+
 UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
 {
-	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
+	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct, false))
 	{
 		return nullptr;
 	}

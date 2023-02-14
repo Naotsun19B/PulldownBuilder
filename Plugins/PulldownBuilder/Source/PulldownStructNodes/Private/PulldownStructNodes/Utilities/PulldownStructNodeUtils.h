@@ -17,16 +17,17 @@ namespace PulldownBuilder
 	class PULLDOWNSTRUCTNODES_API FPulldownStructNodeUtils
 	{
 	public:
-		// Finds the pin of FPulldownStructBase::SelectedValue from the pull-down struct pins.
-		static UEdGraphPin* FindSelectedValueSubPin(const UEdGraphSchema_K2* K2Schema, UEdGraphPin* PulldownStructPin);
-
+		// Finds the FName pin from the pull-down struct pins.
+		static UEdGraphPin* FindNameSubPin(const UEdGraphSchema_K2* K2Schema, UEdGraphPin* PulldownStructPin, const FName& SubPinName);
+		
 		// Connect the input pin of the pull-down struct and the input pin of FName.
 		static bool LinkPulldownStructPinToNamePin(
 			UK2Node* SourceNode,
 			FKismetCompilerContext& CompilerContext,
 			const UEdGraphSchema_K2* K2Schema,
 			UEdGraphPin* PulldownStructPin,
-			UEdGraphPin* NamePin
+			UEdGraphPin* SelectedValueNamePin,
+			UEdGraphPin* PulldownSourceNamePin = nullptr
 		);
 	};
 }
