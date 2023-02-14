@@ -40,8 +40,13 @@ bool UPulldownListGeneratorBase::HasSourceAsset() const
 
 FString UPulldownListGeneratorBase::GetSourceAssetName() const
 {
-	unimplemented(); // Be sure to override it when using this function.
-	return GetSourceAssetNameFromBlueprint();
+	const FString& SourceAssetName = GetSourceAssetNameFromBlueprint();;
+	if (SourceAssetName.IsEmpty())
+	{
+		unimplemented(); // Be sure to override it when using this function.
+	}
+	
+	return SourceAssetName;
 }
 
 TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes() const

@@ -64,8 +64,6 @@ FText UK2Node_Get_StructContainer::GetMenuCategory() const
 
 void UK2Node_Get_StructContainer::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
-	Super::GetMenuActions(ActionRegistrar);
-
 	const UClass* ActionKey = GetClass();
 	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
 	{
