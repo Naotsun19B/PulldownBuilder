@@ -121,7 +121,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 		if (SelectedItem.IsValid() && CurrentPulldownSource.IsValid())
 		{
-			if (*SelectedItem != CurrentPulldownSource->ToString())
+			if (SelectedItem->DisplayText.ToString() != CurrentPulldownSource->ToString())
 			{
 				SetPropertyValue(
 					GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),

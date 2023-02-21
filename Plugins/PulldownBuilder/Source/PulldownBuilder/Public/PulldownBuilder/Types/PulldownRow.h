@@ -30,7 +30,7 @@ public:
 		, TooltipText(InTooltipText)
 	{
 	}
-	FPulldownRow(const FText& InDisplayText)
+	explicit FPulldownRow(const FText& InDisplayText)
 		: DisplayText(InDisplayText)
 	{
 	}
@@ -39,7 +39,7 @@ public:
 		, TooltipText(FText::FromString(InTooltipString))
 	{
 	}
-	FPulldownRow(const FString& InDisplayString)
+	explicit FPulldownRow(const FString& InDisplayString)
 		: DisplayText(FText::FromString(InDisplayString))
 	{
 	}
@@ -48,7 +48,7 @@ public:
 		, TooltipText(FText::FromName(InTooltipName))
 	{
 	}
-	FPulldownRow(const FName& InDisplayName)
+	explicit FPulldownRow(const FName& InDisplayName)
 		: DisplayText(FText::FromName(InDisplayName))
 	{
 	}

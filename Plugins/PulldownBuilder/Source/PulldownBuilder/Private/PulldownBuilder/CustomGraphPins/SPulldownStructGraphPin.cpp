@@ -116,7 +116,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		if (SelectedItem.IsValid() && CurrentSelectedValue.IsValid())
 		{
-			if (*SelectedItem != CurrentSelectedValue->ToString())
+			if (SelectedItem->DisplayText.ToString() != CurrentSelectedValue->ToString())
 			{
 				SetPropertyValue(
 					GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),

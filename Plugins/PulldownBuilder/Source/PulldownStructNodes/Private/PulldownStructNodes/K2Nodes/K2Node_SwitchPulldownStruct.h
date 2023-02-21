@@ -57,14 +57,17 @@ public:
 	virtual FName GetPinNameGivenIndex(int32 Index) const override;
 	// End of UK2Node_Switch interface.
 
-private:
-	// Called when PulldownContents has been loaded.
-	void HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents);
+protected:
+	// Collect the selected values to choose from before creating the case pin.
+	virtual void FillSelectedValues();
 	
-private:
+	// Called when PulldownContents has been loaded.
+	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents);
+	
+protected:
 	// A pull-down struct to switch on this node.
 	UPROPERTY()
-	TObjectPtr<UScriptStruct> PulldownStruct;
+	UScriptStruct* PulldownStruct;
 
 	// A list of the current entries in the struct.
 	UPROPERTY()

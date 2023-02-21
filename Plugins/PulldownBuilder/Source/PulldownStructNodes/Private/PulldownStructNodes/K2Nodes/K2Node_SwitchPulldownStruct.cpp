@@ -63,7 +63,7 @@ FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType)
 		return CachedNodeTitle;
 	}
 	
-	return LOCTEXT("NodeTitle", "Switch (Unknown Pulldown Struct)");
+	return LOCTEXT("NodeTitle", "Switch on Unknown Pulldown Struct");
 }
 
 void UK2Node_SwitchPulldownStruct::AllocateDefaultPins()
@@ -172,6 +172,13 @@ void UK2Node_SwitchPulldownStruct::ExpandNode(FKismetCompilerContext& CompilerCo
 		UEdGraphPin* ThisNodeSelectedValuePin = FindPinChecked(SelectedValue, EGPD_Output);
 		UEdGraphPin* SwitchNameNodeSelectedValuePin = SwitchNameNode->FindPinChecked(SelectedValue, EGPD_Output);
 		CompilerContext.MovePinLinksToIntermediate(*ThisNodeSelectedValuePin, *SwitchNameNodeSelectedValuePin);
+	}
+
+	if (bHasDefaultPin)
+	{
+		UEdGraphPin* ThisNodeDefaultPin = GetDefaultPin();
+		UEdGraphPin* SwitchNameNodeDefaultPin = SwitchNameNode->GetDefaultPin();
+		CompilerContext.MovePinLinksToIntermediate(*ThisNodeDefaultPin, *SwitchNameNodeDefaultPin);
 	}
 	
 	BreakAllNodeLinks();
@@ -328,34 +335,7 @@ void UK2Node_SwitchPulldownStruct::CreateSelectionPin()
 
 void UK2Node_SwitchPulldownStruct::CreateCasePins()
 {
-	if (const UEdGraphPin* SelectionPin = GetSelectionPin())
-	{
-		FStructContainer StructContainer;
-		if (PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(SelectionPin, StructContainer))
-		{
-			const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
-				StructContainer.GetScriptStruct(),
-				TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
-				StructContainer
-			);
-			
-			// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
-			if (PulldownRows.Num() > 0)
-			{
-				SelectedValues.Reset(PulldownRows.Num());
-
-				for (const auto& PulldownRow : PulldownRows)
-				{
-					if (!PulldownRow.IsValid())
-					{
-						continue;
-					}
-
-					SelectedValues.Add(*PulldownRow->DisplayText.ToString());
-				}
-			}
-		}
-	}
+	FillSelectedValues();
 	
 	const bool bShouldUseAdvancedView = (SelectedValues.Num() > 5);
 	if (bShouldUseAdvancedView && (ENodeAdvancedPins::NoPins == AdvancedPinDisplay))
@@ -399,8 +379,49 @@ FName UK2Node_SwitchPulldownStruct::GetPinNameGivenIndex(int32 Index) const
 	return NAME_None;
 }
 
+void UK2Node_SwitchPulldownStruct::FillSelectedValues()
+{
+	const UEdGraphPin* SelectionPin = GetSelectionPin();
+	if (SelectionPin == nullptr)
+	{
+		return;
+	}
+	
+	FStructContainer StructContainer;
+    if (!PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(SelectionPin, StructContainer))
+    {
+    	return;
+    }
+
+	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+		StructContainer.GetScriptStruct(),
+		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
+		StructContainer
+	);
+	
+	// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
+	if (PulldownRows.Num() == 0)
+	{
+		return;
+	}
+
+	SelectedValues.Reset(PulldownRows.Num());
+
+	for (const auto& PulldownRow : PulldownRows)
+	{
+		if (!PulldownRow.IsValid())
+		{
+			continue;
+		}
+
+		SelectedValues.Add(*PulldownRow->DisplayText.ToString());
+	}
+}
+
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents)
 {
+	// Nodes that load quickly, such as level blueprints, use serialized selected values,
+	// so they need to be rebuilt when the asset is loaded.
 	ReconstructNode();
 }
 
