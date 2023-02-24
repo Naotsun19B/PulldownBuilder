@@ -2,17 +2,22 @@
 
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "AssetRegistry/IAssetRegistry.h"
 
 namespace PulldownBuilder
 {
 	FPulldownContentsLoader::FOnPulldownContentsLoaded FPulldownContentsLoader::OnPulldownContentsLoaded;
+	FPulldownContentsLoader::FOnPulldownRowAddedOrRemoved FPulldownContentsLoader::OnPulldownRowAddedOrRemoved;
+	FPulldownContentsLoader::FOnPulldownRowChanged FPulldownContentsLoader::OnPulldownRowChanged;
 	
 	void FPulldownContentsLoader::Register()
 	{
 		auto& AssetRegistry = IAssetRegistry::GetChecked();
 		AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
+		
+		OnPulldownRowChanged.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
 	}
 
 	void FPulldownContentsLoader::HandleOnAssetAdded(const FAssetData& AssetData)

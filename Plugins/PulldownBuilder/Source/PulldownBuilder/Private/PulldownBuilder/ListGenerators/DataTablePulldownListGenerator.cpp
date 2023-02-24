@@ -99,9 +99,13 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 			const FName PostChangeName = PostChangeRowList[Index];
 			if (PreChangeName != PostChangeName)
 			{
-				UpdateDisplayStrings(PreChangeName, PostChangeName);
+				NotifyPulldownRowChanged(PreChangeName, PostChangeName);
 			}
 		}
+	}
+	else
+	{
+		NotifyPulldownRowAddedOrRemoved();
 	}
 
 	PreChangeRowList.Empty();

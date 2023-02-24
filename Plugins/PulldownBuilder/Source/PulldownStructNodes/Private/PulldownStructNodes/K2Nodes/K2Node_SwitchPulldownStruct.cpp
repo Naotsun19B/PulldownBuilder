@@ -24,10 +24,14 @@ void UK2Node_SwitchPulldownStruct::PostLoad()
 	Super::PostLoad();
 
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAddedOrRemoved);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged);
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.RemoveAll(this);
 	
 	Super::BeginDestroy();
@@ -418,11 +422,80 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 	}
 }
 
-void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents)
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
 {
+	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
+	if (!IsValid(LoadedPulldownContents) || !IsValid(TargetPulldownContents))
+	{
+		return;
+	}
+
+	if (LoadedPulldownContents != TargetPulldownContents)
+	{
+		return;
+	}
+	
 	// Nodes that load quickly, such as level blueprints, use serialized selected values,
 	// so they need to be rebuilt when the asset is loaded.
 	ReconstructNode();
+}
+
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAddedOrRemoved(UPulldownContents* ModifiedPulldownContents)
+{
+	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
+	if (!IsValid(ModifiedPulldownContents) || !IsValid(TargetPulldownContents))
+	{
+		return;
+	}
+
+	if (ModifiedPulldownContents != TargetPulldownContents)
+	{
+		return;
+	}
+
+	ReconstructNode();
+}
+
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged(
+	UPulldownContents* ModifiedPulldownContents,
+	const FName& PreChangeName,
+	const FName& PostChangeName
+)
+{
+	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
+	if (!IsValid(ModifiedPulldownContents) || !IsValid(TargetPulldownContents))
+	{
+		return;
+	}
+
+	if (ModifiedPulldownContents != TargetPulldownContents)
+	{
+		return;
+	}
+
+	TArray<UEdGraphPin*> LinkedPins;
+	if (const UEdGraphPin* OldNamePin = FindPin(PreChangeName, EGPD_Output))
+	{
+		LinkedPins = OldNamePin->LinkedTo;
+	}
+
+	ReconstructNode();
+
+	if (UEdGraphPin* NewNamePin = FindPin(PostChangeName, EGPD_Output))
+	{
+		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+		check(IsValid(K2Schema));
+		
+		for (auto* LinkedPin : LinkedPins)
+		{
+			if (LinkedPin == nullptr)
+			{
+				continue;
+			}
+
+			K2Schema->TryCreateConnection(NewNamePin, LinkedPin);
+		}
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

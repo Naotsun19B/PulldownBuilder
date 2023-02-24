@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PulldownContents.h"
 
 class UPulldownContents;
 struct FAssetData;
@@ -19,6 +20,14 @@ namespace PulldownBuilder
 		// Called when PulldownContents has been loaded.
 		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownContentsLoaded, const UPulldownContents* LoadedPulldownContents);
 		static FOnPulldownContentsLoaded OnPulldownContentsLoaded;
+
+		// Called when a value added to or removed from the pulldown menu.
+		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownRowAddedOrRemoved, UPulldownContents* ModifiedPulldownContents);
+		static FOnPulldownRowAddedOrRemoved OnPulldownRowAddedOrRemoved;
+		
+		// Called when a value contained in the pulldown menu has been renamed.
+		DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPulldownRowChanged, UPulldownContents* ModifiedPulldownContents, const FName& PreChangeName, const FName& PostChangeName);
+		static FOnPulldownRowChanged OnPulldownRowChanged;
 		
 	public:
 		// Register a pulldown contents loader.

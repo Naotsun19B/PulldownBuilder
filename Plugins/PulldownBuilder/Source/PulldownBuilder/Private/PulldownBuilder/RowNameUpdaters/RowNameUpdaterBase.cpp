@@ -4,8 +4,12 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "Misc/UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "RowNameUpdaterBase"
 
 void URowNameUpdaterBase::UpdateRowNames(
 	UPulldownContents* PulldownContents,
@@ -13,6 +17,22 @@ void URowNameUpdaterBase::UpdateRowNames(
 	const FName& PostChangeName
 )
 {
+	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
+	if (!Settings.bShouldUpdateWhenSourceRowNameChanged)
+	{
+		return;
+	}
+	
+	PulldownBuilder::FPulldownBuilderMessageLog MessageLog;
+	MessageLog.Info(
+		FText::Format(
+			LOCTEXT("NotifyUpdateDisplayStrings", "The source row name for \"{0}\" has changed from \"{1}\" to \"{2}\"."),
+			FText::FromString(PulldownContents->GetName()),
+			FText::FromName(PreChangeName),
+			FText::FromName(PostChangeName)
+		)
+	)->AddToken(FUObjectToken::Create(PulldownContents));
+	
 	// All upload processing of the class created by inheriting this class is performed.
 	for (const UClass* Class : TObjectRange<UClass>())
 	{
@@ -114,3 +134,5 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 
 	return bIsModified;
 }
+
+#undef LOCTEXT_NAMESPACE

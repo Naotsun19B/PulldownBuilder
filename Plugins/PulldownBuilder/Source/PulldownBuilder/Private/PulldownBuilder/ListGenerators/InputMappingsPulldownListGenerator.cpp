@@ -206,6 +206,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 
 	if (PreChangeDisplayTexts.Num() != PostChangeDisplayTexts.Num())
 	{
+		NotifyPulldownRowAddedOrRemoved();
 		return;
 	}
 
@@ -215,7 +216,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 		const FName PostChangeName = PostChangeDisplayTexts[Index];
 		if (PreChangeName != PostChangeName)
 		{
-			UpdateDisplayStrings(PreChangeName, PostChangeName);
+			NotifyPulldownRowChanged(PreChangeName, PostChangeName);
 		}
 	}
 	

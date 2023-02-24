@@ -43,8 +43,11 @@ public:
 	virtual TArray<UScriptStruct*> GetFilterPulldownStructTypes() const;
 	
 protected:
-	// Update all FPulldownStructBases that reference owner PulldownContents asset.
-	virtual void UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName);
+	// Notify a value added to or removed from the pulldown menu.
+	virtual void NotifyPulldownRowAddedOrRemoved();
+	
+	// Notify a value contained in the pulldown menu has been renamed.
+	virtual void NotifyPulldownRowChanged(const FName& PreChangeName, const FName& PostChangeName);
 	
 	// Expansion points for implementation in blueprints.
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Pulldown Rows"))

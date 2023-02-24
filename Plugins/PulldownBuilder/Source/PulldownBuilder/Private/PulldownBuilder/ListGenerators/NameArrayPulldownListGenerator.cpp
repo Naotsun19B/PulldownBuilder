@@ -47,9 +47,13 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 					PreChangeName != NAME_None &&
 					PostChangeName != NAME_None)
 				{
-					UpdateDisplayStrings(PreChangeName, PostChangeName);
+					NotifyPulldownRowChanged(PreChangeName, PostChangeName);
 				}
 			}
+		}
+		else
+		{
+			NotifyPulldownRowAddedOrRemoved();
 		}
 
 		PreChangeNameArray.Empty();

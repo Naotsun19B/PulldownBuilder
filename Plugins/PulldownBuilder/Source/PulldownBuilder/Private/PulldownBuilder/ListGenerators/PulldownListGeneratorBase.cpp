@@ -2,13 +2,8 @@
 
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
-#include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
-#include "Misc/UObjectToken.h"
+#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "UObject/UObjectThreadContext.h"
-
-#define LOCTEXT_NAMESPACE "PulldownListGeneratorBase"
 
 const FName UPulldownListGeneratorBase::FilterPulldownStructTypesName = TEXT("FilterPulldownStructTypes");
 
@@ -91,31 +86,18 @@ TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes(
 	return FilterPulldownStructTypes;
 }
 
-void UPulldownListGeneratorBase::UpdateDisplayStrings(const FName& PreChangeName, const FName& PostChangeName)
+void UPulldownListGeneratorBase::NotifyPulldownRowAddedOrRemoved()
 {
-	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
-	if (!Settings.bShouldUpdateWhenSourceRowNameChanged)
-	{
-		return;
-	}
-	
-	auto* PulldownContents = Cast<UPulldownContents>(GetOuter());
-	if (!IsValid(PulldownContents))
-	{
-		return;
-	}
-	
-	PulldownBuilder::FPulldownBuilderMessageLog MessageLog;
-	MessageLog.Info(
-		FText::Format(
-			LOCTEXT("NotifyUpdateDisplayStrings", "The source row name for \"{0}\" has changed from \"{1}\" to \"{2}\"."),
-			FText::FromString(PulldownContents->GetName()),
-			FText::FromName(PreChangeName),
-			FText::FromName(PostChangeName)
-		)
-	)->AddToken(FUObjectToken::Create(PulldownContents));
-	
-	URowNameUpdaterBase::UpdateRowNames(PulldownContents, PreChangeName, PostChangeName);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.Broadcast(
+		GetTypedOuter<UPulldownContents>()
+	);
 }
 
-#undef LOCTEXT_NAMESPACE
+void UPulldownListGeneratorBase::NotifyPulldownRowChanged(const FName& PreChangeName, const FName& PostChangeName)
+{
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.Broadcast(
+		GetTypedOuter<UPulldownContents>(),
+		PreChangeName,
+		PostChangeName
+	);
+}

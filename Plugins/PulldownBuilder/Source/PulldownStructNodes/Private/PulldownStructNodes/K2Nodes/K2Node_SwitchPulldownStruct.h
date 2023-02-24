@@ -62,7 +62,17 @@ protected:
 	virtual void FillSelectedValues();
 	
 	// Called when PulldownContents has been loaded.
-	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* PulldownContents);
+	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
+
+	// Called when a value added to or removed from the pulldown menu.
+	virtual void HandleOnPulldownRowAddedOrRemoved(UPulldownContents* ModifiedPulldownContents);
+
+	// Called when a value contained in the pulldown menu has been renamed.
+	virtual void HandleOnPulldownRowChanged(
+		UPulldownContents* ModifiedPulldownContents,
+		const FName& PreChangeName,
+		const FName& PostChangeName
+	);
 	
 protected:
 	// A pull-down struct to switch on this node.
