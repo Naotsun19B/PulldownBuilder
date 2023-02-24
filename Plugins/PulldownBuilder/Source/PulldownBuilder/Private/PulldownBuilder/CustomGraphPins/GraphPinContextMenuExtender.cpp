@@ -15,10 +15,10 @@
 #include "Debugging/SlateDebugging.h"
 #include "Editor.h"
 #include "GraphEditorActions.h"
-#if BEFORE_UE_5_00
-#include "EditorStyleSet.h"
-#else
+#if UE_5_01_OR_LATER
 #include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "GraphPinContextMenuExtender"
@@ -176,10 +176,10 @@ namespace PulldownBuilder
 			LOCTEXT("CopyPinValueLabel", "Copy"),
 			LOCTEXT("CopyPinValueTooltip", "Copies the value selected in the pin's pulldown struct to the clipboard."),
 			FSlateIcon(
-#if BEFORE_UE_5_00
-				FEditorStyle::GetStyleSetName(),
-#else
+#if UE_5_01_OR_LATER
 				FAppStyle::GetAppStyleSetName(),
+#else
+				FEditorStyle::GetStyleSetName(),
 #endif
 				TEXT("GenericCommands.Copy")
 			),
@@ -196,10 +196,10 @@ namespace PulldownBuilder
 			LOCTEXT("PastePinValueLabel", "Paste"),
 			LOCTEXT("PastePinValueTooltip", "Pastes the value from the clipboard into the pin's pulldown struct."),
 			FSlateIcon(
-#if BEFORE_UE_5_00
-				FEditorStyle::GetStyleSetName(),
-#else
+#if UE_5_01_OR_LATER
 				FAppStyle::GetAppStyleSetName(),
+#else
+				FEditorStyle::GetStyleSetName(),
 #endif
 				TEXT("GenericCommands.Paste")
 			),
@@ -216,10 +216,10 @@ namespace PulldownBuilder
 			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
 			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
 			FSlateIcon(
-#if BEFORE_UE_5_00
-				FEditorStyle::GetStyleSetName(),
-#else
+#if UE_5_01_OR_LATER
 				FAppStyle::GetAppStyleSetName(),
+#else
+				FEditorStyle::GetStyleSetName(),
 #endif
 				TEXT("SystemWideCommands.FindInContentBrowser")
 			),

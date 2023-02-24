@@ -31,10 +31,10 @@ namespace PulldownBuilder
 		virtual void RefreshPulldownWidget() override;
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 		virtual void OnMultipleSelected() override;
-#if BEFORE_UE_4_24
-		virtual bool IsCustomizationTarget(UProperty* InProperty) const override;
-#else
+#if UE_4_25_OR_LATER
 		virtual bool IsCustomizationTarget(FProperty* InProperty) const override;
+#else
+		virtual bool IsCustomizationTarget(UProperty* InProperty) const override;
 #endif
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
 		virtual void OnBrowseSourceAssetAction() override;

@@ -3,10 +3,10 @@
 #include "PulldownBuilder/ListGenerators/NameArrayPulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
-#if BEFORE_UE_4_24
-void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)
-#else
+#if UE_4_25_OR_LATER
 void UNameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToChange)
+#else
+void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)
 #endif
 {
 	Super::PreEditChange(PropertyAboutToChange);

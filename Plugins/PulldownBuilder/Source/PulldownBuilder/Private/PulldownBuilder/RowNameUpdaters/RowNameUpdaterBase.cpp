@@ -72,10 +72,10 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 {
 	bool bIsModified = false;
 	
-#if BEFORE_UE_4_24
-	for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(Struct))
-#else
+#if UE_4_25_OR_LATER
 	for (FStructProperty* StructProperty : TFieldRange<FStructProperty>(Struct))
+#else
+	for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(Struct))
 #endif
 	{
 		if (StructProperty == nullptr)

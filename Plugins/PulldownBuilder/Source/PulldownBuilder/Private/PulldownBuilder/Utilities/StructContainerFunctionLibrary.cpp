@@ -29,12 +29,12 @@ DEFINE_FUNCTION(UStructContainerFunctionLibrary::execGet_StructContainer)
 {
 	P_GET_STRUCT_REF(FStructContainer, Target);
 	Stack.MostRecentProperty = nullptr;
-#if BEFORE_UE_4_24
-	Stack.StepCompiledIn<UStructProperty>(nullptr);
-	const auto* StructProperty = Cast<UStructProperty>(Stack.MostRecentProperty);
-#else
+#if UE_4_25_OR_LATER
 	Stack.StepCompiledIn<FStructProperty>(nullptr);
 	const auto* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+#else
+	Stack.StepCompiledIn<UStructProperty>(nullptr);
+	const auto* StructProperty = Cast<UStructProperty>(Stack.MostRecentProperty);
 #endif
 	void* StructRawData = Stack.MostRecentPropertyAddress;
 

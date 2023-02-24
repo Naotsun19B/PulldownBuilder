@@ -15,10 +15,10 @@
 #include "IDetailChildrenBuilder.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Modules/ModuleManager.h"
-#if BEFORE_UE_5_00
-#include "EditorStyleSet.h"
-#else
+#if UE_5_01_OR_LATER
 #include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "PulldownStructDetail"
@@ -72,10 +72,10 @@ namespace PulldownBuilder
 			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 			if (ChildPropertyHandle.IsValid())
 			{
-#if BEFORE_UE_4_24
-				if (const UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#else
+#if UE_4_25_OR_LATER
 				if (const FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#else
+				if (const UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
 #endif
 				{
 					if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
@@ -124,10 +124,10 @@ namespace PulldownBuilder
 			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 			if (ChildPropertyHandle.IsValid())
 			{
-#if BEFORE_UE_4_24
-				if (UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#else
+#if UE_4_25_OR_LATER
 				if (FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#else
+				if (UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
 #endif
 				{
 					if (!IsCustomizationTarget(ChildProperty))
@@ -217,10 +217,10 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid());
 	
-#if BEFORE_UE_4_24
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
+#if UE_4_25_OR_LATER
 		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
 			TArray<UObject*> OuterObjects;
@@ -248,10 +248,10 @@ namespace PulldownBuilder
 		SelectableValues.Reset();
 	}
 
-#if BEFORE_UE_4_24
-	bool FPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
-#else
+#if UE_4_25_OR_LATER
 	bool FPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
+#else
+	bool FPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
 #endif
 	{
 		check(InProperty != nullptr);
@@ -345,10 +345,10 @@ namespace PulldownBuilder
 			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
 			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
 			FSlateIcon(
-#if BEFORE_UE_5_00
-				FEditorStyle::GetStyleSetName(),
-#else
+#if UE_5_01_OR_LATER
 				FAppStyle::GetAppStyleSetName(),
+#else
+				FEditorStyle::GetStyleSetName(),
 #endif
 				TEXT("SystemWideCommands.FindInContentBrowser")
 			)
@@ -393,10 +393,10 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid());
 		
-#if BEFORE_UE_4_24
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
+#if UE_4_25_OR_LATER
 		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
 			if (UPulldownContents* PulldownContents = FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct))
@@ -422,10 +422,10 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid());
 
-#if BEFORE_UE_4_24
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
+#if UE_4_25_OR_LATER
 		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
 			return IsValid(FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct));

@@ -27,10 +27,10 @@ public:
 	explicit FPulldownStructType(const FName& InStructTypeName)
 	{
 		SelectedStruct = FindObject<UScriptStruct>(
-#if BEFORE_UE_5_00
-			ANY_PACKAGE,
-#else
+#if UE_5_01_OR_LATER
 			nullptr,
+#else
+			ANY_PACKAGE,
 #endif
 			*InStructTypeName.ToString(),
 			true

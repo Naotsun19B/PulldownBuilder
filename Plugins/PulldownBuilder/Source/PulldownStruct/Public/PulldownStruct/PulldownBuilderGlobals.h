@@ -14,22 +14,25 @@ namespace PulldownBuilder
 /**
  * Macro to support each engine version.
  */
-#if (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION <= 0) || ENGINE_MAJOR_VERSION < 5
-#define BEFORE_UE_5_00 1
+#define ENGINE_VERSION_NUMBER(MajorVersion, MinorVersion) (MajorVersion * 100 + MinorVersion)
+#define COMPARE_ENGINE_VERSION(MajorVersion, MinorVersion) ENGINE_VERSION_NUMBER(ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION) >= ENGINE_VERSION_NUMBER(MajorVersion, MinorVersion)
+
+#if COMPARE_ENGINE_VERSION(5, 1)
+#define UE_5_01_OR_LATER 1
 #else
-#define BEFORE_UE_5_00 0
+#define UE_5_01_OR_LATER 0
 #endif
 
-#if ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION <= 27
-#define BEFORE_UE_4_27 1
+#if COMPARE_ENGINE_VERSION(5, 0)
+#define UE_5_00_OR_LATER 1
 #else
-#define BEFORE_UE_4_27 0
+#define UE_5_00_OR_LATER 0
 #endif
 
-#if ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION <= 24
-#define BEFORE_UE_4_24 1
+#if COMPARE_ENGINE_VERSION(4, 25)
+#define UE_4_25_OR_LATER 1
 #else
-#define BEFORE_UE_4_24 0
+#define UE_4_25_OR_LATER 0
 #endif
 
 /**

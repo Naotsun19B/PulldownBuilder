@@ -33,10 +33,10 @@ public:
 	// UObject interface.
 	virtual bool IsEditorOnly() const override;
 	virtual void PostLoad() override;
-#if BEFORE_UE_4_24
-	virtual void PreEditChange(UProperty* PropertyAboutToChange) override;
-#else
+#if UE_4_25_OR_LATER
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
+#else
+	virtual void PreEditChange(UProperty* PropertyAboutToChange) override;
 #endif
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void BeginDestroy() override;

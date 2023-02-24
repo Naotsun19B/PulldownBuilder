@@ -37,10 +37,10 @@ void UPulldownContents::PostLoad()
 	RegisterDetailCustomization();
 }
 
-#if BEFORE_UE_4_24
-void UPulldownContents::PreEditChange(UProperty* PropertyAboutToChange)
-#else
+#if UE_4_25_OR_LATER
 void UPulldownContents::PreEditChange(FProperty* PropertyAboutToChange)
+#else
+void UPulldownContents::PreEditChange(UProperty* PropertyAboutToChange)
 #endif
 {
 	Super::PreEditChange(PropertyAboutToChange);

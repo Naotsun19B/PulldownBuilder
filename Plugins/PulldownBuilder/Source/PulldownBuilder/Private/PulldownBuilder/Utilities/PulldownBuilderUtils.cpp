@@ -188,10 +188,10 @@ namespace PulldownBuilder
 		check(IsValid(InStruct));
 		
 		FString DefaultValueString = TEXT("(");	
-#if BEFORE_UE_4_24
-		for (UProperty* Property : TFieldRange<UProperty>(InStruct))
-#else
+#if UE_4_25_OR_LATER
 		for (FProperty* Property : TFieldRange<FProperty>(InStruct))
+#else
+		for (UProperty* Property : TFieldRange<UProperty>(InStruct))
 #endif
 		{
 			if (Property == nullptr)

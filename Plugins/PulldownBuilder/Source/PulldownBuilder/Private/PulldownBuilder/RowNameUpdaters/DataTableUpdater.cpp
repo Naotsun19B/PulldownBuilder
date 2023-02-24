@@ -18,10 +18,10 @@ void UDataTableUpdater::UpdateRowNamesInternal(
 		const TArray<FName> RowNames = DataTable->GetRowNames();
 		for (const auto& RowName : RowNames)
 		{
-#if BEFORE_UE_4_24
-			for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(RowType))
-#else
+#if UE_4_25_OR_LATER
 			for (FStructProperty* StructProperty : TFieldRange<FStructProperty>(RowType))
+#else
+			for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(RowType))
 #endif
 			{
 				if (StructProperty == nullptr)

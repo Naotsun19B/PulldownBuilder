@@ -13,10 +13,10 @@
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
-#if BEFORE_UE_5_00
-#include "EditorStyleSet.h"
-#else
+#if UE_5_01_OR_LATER
 #include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
 #endif
 
 namespace PulldownBuilder
@@ -44,10 +44,10 @@ namespace PulldownBuilder
 			}
 			virtual bool IsUnloadedStructAllowed(
 				const FStructViewerInitializationOptions& InInitOptions,
-#if BEFORE_UE_5_00
-				const FName InStructPath,
-#else
+#if UE_5_01_OR_LATER
 				const FSoftObjectPath& InStructPath,
+#else
+				const FName InStructPath,
 #endif
 				TSharedRef<FStructViewerFilterFuncs> InFilterFuncs
 			) override
@@ -166,10 +166,10 @@ namespace PulldownBuilder
 					SNew(SBorder)
 					.Padding(4)
 					.BorderImage(
-#if BEFORE_UE_5_00
-					FEditorStyle
-#else
+#if UE_5_01_OR_LATER
 					FAppStyle
+#else
+					FEditorStyle
 #endif
 						::GetBrush(TEXT("ToolPanel.GroupBorder"))
 					)

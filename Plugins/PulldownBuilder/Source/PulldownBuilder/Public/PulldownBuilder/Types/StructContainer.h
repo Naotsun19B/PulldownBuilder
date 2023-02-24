@@ -75,7 +75,7 @@ public:
 	
 	// TStructOpsTypeTraits interface.
 	bool Identical(const FStructContainer* Other, uint32 PortFlags) const;
-#if !BEFORE_UE_4_27
+#if UE_5_00_OR_LATER
 	void AddStructReferencedObjects(FReferenceCollector& ReferenceCollector);
 #endif
 	void GetPreloadDependencies(TArray<UObject*>& Dependencies);
@@ -137,7 +137,7 @@ struct TStructOpsTypeTraits<FStructContainer> : public TStructOpsTypeTraitsBase2
 	enum
 	{
 		WithIdentical = true,
-#if !BEFORE_UE_4_27
+#if UE_5_00_OR_LATER
 		WithAddStructReferencedObjects = true,
 #endif
 		WithGetPreloadDependencies = true,

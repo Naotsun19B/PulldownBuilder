@@ -45,10 +45,10 @@ namespace PulldownBuilder
 		virtual void OnMultipleSelected();
 
 		// Returns whether the specified property is the property to be customized.
-#if BEFORE_UE_4_24
-		virtual bool IsCustomizationTarget(UProperty* InProperty) const;
-#else
+#if UE_4_25_OR_LATER
 		virtual bool IsCustomizationTarget(FProperty* InProperty) const;
+#else
+		virtual bool IsCustomizationTarget(UProperty* InProperty) const;
 #endif
 
 		// Set custom properties before and after FPulldownStructBase::SelectedValue.

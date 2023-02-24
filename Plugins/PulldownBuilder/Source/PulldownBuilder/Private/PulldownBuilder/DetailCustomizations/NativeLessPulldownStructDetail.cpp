@@ -50,10 +50,10 @@ namespace PulldownBuilder
 			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 			if (ChildPropertyHandle.IsValid())
 			{
-#if BEFORE_UE_4_24
-				if (const UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#else
+#if UE_4_25_OR_LATER
 				if (const FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
+#else
+				if (const UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
 #endif
 				{
 					if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource))
@@ -114,10 +114,10 @@ namespace PulldownBuilder
 		PulldownSourceHandle->GetValue(PulldownSource);
 		if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
 		{
-#if BEFORE_UE_4_24
-			if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
+#if UE_4_25_OR_LATER
 			if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+			if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 			{
 				TArray<UObject*> OuterObjects;
@@ -146,10 +146,10 @@ namespace PulldownBuilder
 		FPulldownStructDetail::OnMultipleSelected();
 	}
 
-#if BEFORE_UE_4_24
-	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
-#else
+#if UE_4_25_OR_LATER
 	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
+#else
+	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
 #endif
 	{
 		check(InProperty != nullptr);

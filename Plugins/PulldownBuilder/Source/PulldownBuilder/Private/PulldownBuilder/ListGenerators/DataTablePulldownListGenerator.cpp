@@ -2,7 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
-#if !BEFORE_UE_4_24
+#if UE_4_25_OR_LATER
 #include "UObject/TextProperty.h"
 #endif
 
@@ -119,10 +119,10 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 		TooltipPropertyName = RowStruct->GetMetaData(*TooltipPropertyMeta);
 	}
 
-#if BEFORE_UE_4_24
-	for (UProperty* Property : TFieldRange<UProperty>(RowStruct))
-#else
+#if UE_4_25_OR_LATER
 	for (FProperty* Property : TFieldRange<FProperty>(RowStruct))
+#else
+	for (UProperty* Property : TFieldRange<UProperty>(RowStruct))
 #endif
 	{
 		if (Property == nullptr)
@@ -135,10 +135,10 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 			continue;	
 		}
 
-#if BEFORE_UE_4_24
-		if (Property->IsA<UStrProperty>())
-#else
+#if UE_4_25_OR_LATER
 		if (Property->IsA<FStrProperty>())
+#else
+		if (Property->IsA<UStrProperty>())
 #endif
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FString>(RowData))
@@ -148,10 +148,10 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 			}
 		}
 
-#if BEFORE_UE_4_24
-		if (Property->IsA<UNameProperty>())
-#else
+#if UE_4_25_OR_LATER
 		if (Property->IsA<FNameProperty>())
+#else
+		if (Property->IsA<UNameProperty>())
 #endif
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FName>(RowData))
@@ -161,10 +161,10 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 			}
 		}
 
-#if BEFORE_UE_4_24
-		if (Property->IsA<UTextProperty>())
-#else
+#if UE_4_25_OR_LATER
 		if (Property->IsA<FTextProperty>())
+#else
+		if (Property->IsA<UTextProperty>())
 #endif
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FText>(RowData))

@@ -46,7 +46,7 @@ bool FStructContainer::Identical(const FStructContainer* Other, uint32 PortFlags
 	return true;
 }
 
-#if !BEFORE_UE_4_27
+#if UE_5_00_OR_LATER
 void FStructContainer::AddStructReferencedObjects(FReferenceCollector& ReferenceCollector)
 {
 	if (::IsValid(ScriptStruct))

@@ -41,10 +41,10 @@ namespace PulldownBuilder
 		{
 			if (auto* PulldownContents = Cast<UPulldownContents>(OuterObject))
 			{
-#if BEFORE_UE_4_24
-				if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#else
+#if UE_4_25_OR_LATER
 				if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+				if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 				{
 					void* RawData;
