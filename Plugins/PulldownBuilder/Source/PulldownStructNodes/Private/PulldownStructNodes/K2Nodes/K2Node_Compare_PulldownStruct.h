@@ -60,7 +60,7 @@ private:
 	// Called when creating an instance of this node for each pull-down structs.
 	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;
 	
-private:
+protected:
 	// A pull-down struct to compare on this node.
 	UPROPERTY()
 	UScriptStruct* PulldownStruct;
@@ -69,6 +69,6 @@ private:
 	FNodeTextCache CachedNodeTitle;
 
 	// Whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	bool bStrictComparison;
 };

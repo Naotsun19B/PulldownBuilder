@@ -167,9 +167,16 @@ In order to support assets other than these, it is necessary to inherit [`URowNa
 
 ### ・Nodes
 
-![Nodes](https://user-images.githubusercontent.com/51815450/215983400-ff079fc3-0a8b-4512-bd82-5b359e9e800b.PNG)
+![CompareNodes](https://user-images.githubusercontent.com/51815450/223067854-f48de6a1-9766-4bdb-ad28-6944a9c86913.PNG)
 
-Nodes are available that compare pull-down structures of the same type.
+Nodes is available that compares pull-down structures of the same type.  
+If the comparison target is `NativeLessPulldownStruct`, you can set whether to also compare `Pulldown Source` of `NativeLessPulldownStruct` when comparing with `Strict Comparison` property from node details panel.  
+
+![SwitchNodes](https://user-images.githubusercontent.com/51815450/223068042-7e42c339-aa07-4c57-bda1-9f8fe0d4665a.PNG)
+
+Switch nodes is available that consists of the items that appear in the pull-down menu of the pull-down structure.  
+If the target pulldown structure is `NativeLessPulldownStruct`, the property `Pulldown Contents` from the node details panel allows you to select the asset that the node's pin items are based on.    
+Also, if the target pulldown structure is `Native Less Pulldown Struct` and a value that is not one of the items is passed, it will be output to the default pin.  
 
 ## Settings  
 
@@ -200,12 +207,16 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2023/03/06) v2.0  
+  Added compare nodes for `NativeLessPulldownStruct`  
+  Added switch nodes for pull-down structure  
+
 - (2023/02/01) v1.9  
   Fixed a bug that crashes when starting the editor  
-  Fixed a bug where generic not equal node was converted to pull-down struct not equal node  
+  Fixed a bug where generic not equal node was converted to pull-down structure not equal node  
   Fixed a bug that the display was not updated when the default value of the graph pin was changed  
   Default values can now be copied or pasted from the graph pin context menu  
-  You can now open the PulldownContents asset underlying the variable pulldown structure from the context menu of the graph pin or details panel  
+  You can now open the PulldownContents asset underlying the variable pull-down structure from the context menu of the graph pin or details panel  
 
 - (2022/11/08) v1.8  
   Fixed a crash when searching for a node when the editor language is other than English  
@@ -219,7 +230,7 @@ The items that can be set from the editor preferences are as follows.
 - (2022/06/12) v1.6   
   Added comparison blueprint node between pull-down structures  
   The settings related to appearance are saved for each individual, and the settings related to redirect processing are saved in the project share  
-  Added `PulldownListGenerator` to generate a pulldown list from the input settings
+  Added `PulldownListGenerator` to generate a pull-down list from the input settings
 
 - (2022/04/06) v1.5   
   Fixed errors when building with strict includes

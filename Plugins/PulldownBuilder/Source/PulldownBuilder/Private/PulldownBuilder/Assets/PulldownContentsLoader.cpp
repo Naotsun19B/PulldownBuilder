@@ -4,7 +4,13 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#if UE_4_26_OR_LATER
 #include "AssetRegistry/IAssetRegistry.h"
+#else
+#include "Modules/ModuleManager.h"
+#include "AssetRegistryModule.h"
+#include "IAssetRegistry.h"
+#endif
 
 namespace PulldownBuilder
 {
@@ -14,7 +20,12 @@ namespace PulldownBuilder
 	
 	void FPulldownContentsLoader::Register()
 	{
+#if UE_4_26_OR_LATER
 		auto& AssetRegistry = IAssetRegistry::GetChecked();
+#else
+		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+		auto& AssetRegistry = AssetRegistryModule.Get();
+#endif
 		AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
 		
 		OnPulldownRowChanged.AddStatic(&URowNameUpdaterBase::UpdateRowNames);

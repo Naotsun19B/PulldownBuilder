@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PulldownContents.h"
+#include "PulldownBUilder/Assets/PulldownContents.h"
 
 class UPulldownContents;
 struct FAssetData;
@@ -18,15 +18,15 @@ namespace PulldownBuilder
 	{
 	public:
 		// Called when PulldownContents has been loaded.
-		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownContentsLoaded, const UPulldownContents* LoadedPulldownContents);
+		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownContentsLoaded, const UPulldownContents* /* LoadedPulldownContents */);
 		static FOnPulldownContentsLoaded OnPulldownContentsLoaded;
 
 		// Called when a value added to or removed from the pulldown menu.
-		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownRowAddedOrRemoved, UPulldownContents* ModifiedPulldownContents);
+		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownRowAddedOrRemoved, UPulldownContents* /* ModifiedPulldownContents */);
 		static FOnPulldownRowAddedOrRemoved OnPulldownRowAddedOrRemoved;
 		
 		// Called when a value contained in the pulldown menu has been renamed.
-		DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPulldownRowChanged, UPulldownContents* ModifiedPulldownContents, const FName& PreChangeName, const FName& PostChangeName);
+		DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPulldownRowChanged, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* PreChangeName */, const FName& /* PostChangeName */);
 		static FOnPulldownRowChanged OnPulldownRowChanged;
 		
 	public:

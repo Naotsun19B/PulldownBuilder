@@ -2,9 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
-#if UE_4_25_OR_LATER
 #include "UObject/TextProperty.h"
-#endif
 
 const FString UDataTablePulldownListGenerator::TooltipPropertyMeta			= TEXT("TooltipProperty");
 const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName	= TEXT("PulldownTooltip");

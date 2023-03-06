@@ -70,15 +70,6 @@ FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType)
 	return LOCTEXT("NodeTitle", "Switch on Unknown Pulldown Struct");
 }
 
-void UK2Node_SwitchPulldownStruct::AllocateDefaultPins()
-{
-	Super::AllocateDefaultPins();
-
-	// Remove the function pin to avoid errors,
-	// as it doesn't make use of the Switch node's standard comparison mechanism.
-	UEdGraphNode::RemovePin(GetFunctionPin());
-}
-
 FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const
 {
 	static FNodeTextCache CachedCategory;
@@ -99,44 +90,8 @@ FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const
 void UK2Node_SwitchPulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
 	ActionRegistrar.RegisterStructActions(
-		FBlueprintActionDatabaseRegistrar::FMakeStructSpawnerDelegate::CreateWeakLambda(
-			this, [this](const UScriptStruct* Struct) -> UBlueprintNodeSpawner*
-			{
-				if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
-				{
-					return nullptr;
-				}
-				
-				UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
-				if (!IsValid(NodeSpawner))
-				{
-					return nullptr;
-				}
-
-				struct FNodeFieldSetter
-				{
-				public:
-					static void SetNodeStruct(UEdGraphNode* NewNode, FFieldVariant Field)
-					{
-						auto* Struct = Field.Get<UScriptStruct>();
-						if (!IsValid(Struct))
-						{
-							return;
-						}
-			
-						if (auto* CastedNode = Cast<UK2Node_SwitchPulldownStruct>(NewNode))
-						{
-							CastedNode->PulldownStruct = Struct;
-						}
-					}
-				};
-	
-				NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
-					&FNodeFieldSetter::SetNodeStruct
-				);
-
-				return NodeSpawner;
-			}
+		FBlueprintActionDatabaseRegistrar::FMakeStructSpawnerDelegate::CreateUObject(
+			this, &UK2Node_SwitchPulldownStruct::HandleOnMakeStructSpawner
 		)
 	);
 }
@@ -368,9 +323,14 @@ void UK2Node_SwitchPulldownStruct::CreateCasePins()
 	}
 }
 
+void UK2Node_SwitchPulldownStruct::CreateFunctionPin()
+{
+	// Don't make the function pin to avoid errors, as it doesn't make use of the Switch node's standard comparison mechanism.
+}
+
 void UK2Node_SwitchPulldownStruct::RemovePin(UEdGraphPin* TargetPin)
 {
-	// Don't support removing pins from an struct.
+	// Don't support removing pins from this switch node.
 }
 
 FName UK2Node_SwitchPulldownStruct::GetPinNameGivenIndex(int32 Index) const
@@ -390,6 +350,18 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 	{
 		return;
 	}
+
+	const auto* Struct = Cast<UScriptStruct>(SelectionPin->PinType.PinSubCategoryObject);
+	if (!IsValid(Struct))
+	{
+		return;
+	}
+
+	// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
+	if (!PulldownBuilder::FPulldownBuilderUtils::IsRegisteredPulldownStruct(Struct))
+	{
+		return;
+	}
 	
 	FStructContainer StructContainer;
     if (!PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(SelectionPin, StructContainer))
@@ -402,12 +374,6 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer
 	);
-	
-	// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
-	if (PulldownRows.Num() == 0)
-	{
-		return;
-	}
 
 	SelectedValues.Reset(PulldownRows.Num());
 
@@ -424,13 +390,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
 {
-	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
-	if (!IsValid(LoadedPulldownContents) || !IsValid(TargetPulldownContents))
-	{
-		return;
-	}
-
-	if (LoadedPulldownContents != TargetPulldownContents)
+	if (!NeedToReconstructNode(LoadedPulldownContents))
 	{
 		return;
 	}
@@ -442,13 +402,7 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldow
 
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAddedOrRemoved(UPulldownContents* ModifiedPulldownContents)
 {
-	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
-	if (!IsValid(ModifiedPulldownContents) || !IsValid(TargetPulldownContents))
-	{
-		return;
-	}
-
-	if (ModifiedPulldownContents != TargetPulldownContents)
+	if (!NeedToReconstructNode(ModifiedPulldownContents))
 	{
 		return;
 	}
@@ -462,13 +416,7 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged(
 	const FName& PostChangeName
 )
 {
-	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
-	if (!IsValid(ModifiedPulldownContents) || !IsValid(TargetPulldownContents))
-	{
-		return;
-	}
-
-	if (ModifiedPulldownContents != TargetPulldownContents)
+	if (!NeedToReconstructNode(ModifiedPulldownContents))
 	{
 		return;
 	}
@@ -496,6 +444,108 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged(
 			K2Schema->TryCreateConnection(NewNamePin, LinkedPin);
 		}
 	}
+}
+
+bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents* PulldownContents) const
+{
+	const UPulldownContents* TargetPulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(PulldownStruct);
+	if (!IsValid(PulldownContents) || !IsValid(TargetPulldownContents))
+	{
+		return false;
+	}
+
+	if (PulldownContents != TargetPulldownContents)
+	{
+		return false;
+	}
+
+	const UEdGraphPin* SelectionPin = GetSelectionPin();
+	if (SelectionPin == nullptr)
+	{
+		return false;
+	}
+
+	FStructContainer StructContainer;
+	if (!PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(SelectionPin, StructContainer))
+	{
+		return false;
+	}
+
+	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+		StructContainer.GetScriptStruct(),
+		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
+		StructContainer
+	);
+
+	const int32 NumOfPulldownRows = PulldownRows.Num();
+	if (NumOfPulldownRows != SelectedValues.Num())
+	{
+		return true;
+	}
+
+	for (int32 Index = 0; Index < NumOfPulldownRows; Index++)
+	{
+		const TSharedPtr<FPulldownRow> PulldownRow = PulldownRows[Index];
+		if (PulldownRow.IsValid())
+		{
+			return true;
+		}
+
+		const FString DisplayString = PulldownRow->DisplayText.ToString();
+		const FString SelectedValueString = SelectedValues[Index].ToString();
+		if (!DisplayString.Equals(SelectedValueString))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+UBlueprintNodeSpawner* UK2Node_SwitchPulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
+{
+	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
+	{
+		return nullptr;
+	}
+				
+	UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
+	if (!IsValid(NodeSpawner))
+	{
+		return nullptr;
+	}
+
+	struct FNodeFieldSetter
+	{
+	public:
+#if UE_4_25_OR_LATER
+		static void SetNodeField(UEdGraphNode* NewNode, FFieldVariant Field)
+#else
+		static void SetNodeField(UEdGraphNode* NewNode, const UField* Field, const TWeakObjectPtr<UScriptStruct> WeakStruct)
+#endif
+		{
+#if UE_4_25_OR_LATER
+			if (auto* Struct = Field.Get<UScriptStruct>())
+#else
+			if (auto* Struct = WeakStruct.Get())
+#endif
+			{
+				if (auto* CastedNode = Cast<UK2Node_SwitchPulldownStruct>(NewNode))
+				{
+					CastedNode->PulldownStruct = Struct;
+				}
+			}
+		}
+	};
+	
+	NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
+		&FNodeFieldSetter::SetNodeField
+#if !UE_4_25_OR_LATER
+		, TWeakObjectPtr<UScriptStruct>(Struct)
+#endif
+	);
+
+	return NodeSpawner;
 }
 
 #undef LOCTEXT_NAMESPACE

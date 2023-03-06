@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "K2Node_Switch.h"
+#include "EdGraph/EdGraphNodeUtils.h"
 #include "K2Node_SwitchPulldownStruct.generated.h"
 
 class UPulldownContents;
+class UBlueprintNodeSpawner;
 
 /**
  * Switch node for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
@@ -28,7 +30,6 @@ public:
 	
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
 
 	// UK2Node interface.
@@ -53,6 +54,7 @@ public:
 	virtual void RemovePinFromSwitchNode(UEdGraphPin* TargetPin) override;
 	virtual void CreateSelectionPin() override;
 	virtual void CreateCasePins() override;
+	virtual void CreateFunctionPin() override;
 	virtual void RemovePin(UEdGraphPin* TargetPin) override;
 	virtual FName GetPinNameGivenIndex(int32 Index) const override;
 	// End of UK2Node_Switch interface.
@@ -73,6 +75,13 @@ protected:
 		const FName& PreChangeName,
 		const FName& PostChangeName
 	);
+
+	// Returns whether the passed UPulldownContents is related to itself and node is required reconstruct.
+	bool NeedToReconstructNode(const UPulldownContents* PulldownContents) const;
+	
+private:
+	// Called when creating an instance of this node for each pull-down structs.
+	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;
 	
 protected:
 	// A pull-down struct to switch on this node.

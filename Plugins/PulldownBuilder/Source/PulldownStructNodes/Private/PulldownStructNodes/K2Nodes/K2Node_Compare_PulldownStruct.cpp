@@ -3,6 +3,7 @@
 #include "PulldownStructNodes/K2Nodes/K2Node_Compare_PulldownStruct.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
@@ -219,9 +220,17 @@ UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner
 	struct FNodeFieldSetter
 	{
 	public:
+#if UE_4_25_OR_LATER
 		static void SetNodeField(UEdGraphNode* NewNode, FFieldVariant Field)
+#else
+		static void SetNodeField(UEdGraphNode* NewNode, const UField* Field, const TWeakObjectPtr<UScriptStruct> WeakStruct)
+#endif
 		{
+#if UE_4_25_OR_LATER
 			if (auto* Struct = Field.Get<UScriptStruct>())
+#else
+			if (auto* Struct = WeakStruct.Get())
+#endif
 			{
 				if (auto* CastedNode = Cast<UK2Node_Compare_PulldownStruct>(NewNode))
 				{
@@ -233,6 +242,9 @@ UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner
 	
 	NodeSpawner->SetNodeFieldDelegate = UBlueprintFieldNodeSpawner::FSetNodeFieldDelegate::CreateStatic(
 		&FNodeFieldSetter::SetNodeField
+#if !UE_4_25_OR_LATER
+		, TWeakObjectPtr<UScriptStruct>(Struct)
+#endif
 	);
 
 	return NodeSpawner;

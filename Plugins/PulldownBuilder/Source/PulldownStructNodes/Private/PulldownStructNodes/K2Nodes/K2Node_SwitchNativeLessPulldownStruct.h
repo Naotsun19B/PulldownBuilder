@@ -40,6 +40,6 @@ public:
 
 protected:
 	// The PulldownContents from which this switch node's pins originate.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	TSoftObjectPtr<UPulldownContents> PulldownContents;
 };

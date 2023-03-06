@@ -167,9 +167,16 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 
 ### ・ノード  
 
-![Nodes](https://user-images.githubusercontent.com/51815450/215983400-ff079fc3-0a8b-4512-bd82-5b359e9e800b.PNG)
+![CompareNodes](https://user-images.githubusercontent.com/51815450/223067854-f48de6a1-9766-4bdb-ad28-6944a9c86913.PNG)
 
 同じ型のプルダウン構造体同士を比較するノードが利用できます。  
+比較対象が`NativeLessPulldownStruct`の場合、ノードの詳細パネルから`Strict Comparison`というプロパティで比較時に`NativeLessPulldownStruct`の`Pulldown Source`も比較するかどうかを設定できます。  
+
+![SwitchNodes](https://user-images.githubusercontent.com/51815450/223068042-7e42c339-aa07-4c57-bda1-9f8fe0d4665a.PNG)
+
+プルダウン構造体のプルダウンメニューに表示される項目のスイッチノードが利用できます。  
+対象のプルダウン構造体が`NativeLessPulldownStruct`の場合、ノードの詳細パネルから`Pulldown Contents`というプロパティでノードのピンの項目の元となるアセットを選択できます。  
+また、対象のプルダウン構造体が`NativeLessPulldownStruct`の場合で、いずれの項目でもない値が渡された場合はデフォルトピンに出力されます。  
 
 ## オプション  
 
@@ -199,6 +206,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2023/03/06) v2.0  
+  `NativeLessPulldownStruct`用の比較ノードを追加しました  
+  プルダウン構造体用のスイッチノードを追加しました  
 
 - (2023/02/01) v1.9  
   エディタ起動時にクラッシュする不具合を修正しました  

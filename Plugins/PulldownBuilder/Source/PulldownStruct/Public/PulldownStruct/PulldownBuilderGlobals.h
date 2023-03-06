@@ -29,6 +29,12 @@ namespace PulldownBuilder
 #define UE_5_00_OR_LATER 0
 #endif
 
+#if COMPARE_ENGINE_VERSION(4, 26)
+#define UE_4_26_OR_LATER 1
+#else
+#define UE_4_26_OR_LATER 0
+#endif
+
 #if COMPARE_ENGINE_VERSION(4, 25)
 #define UE_4_25_OR_LATER 1
 #else

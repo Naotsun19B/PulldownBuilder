@@ -15,7 +15,13 @@
 #include "ISettingsModule.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
+#if UE_4_26_OR_LATER
 #include "AssetRegistry/IAssetRegistry.h"
+#else
+#include "Modules/ModuleManager.h"
+#include "AssetRegistryModule.h"
+#include "IAssetRegistry.h"
+#endif
 
 namespace PulldownBuilder
 {
@@ -69,10 +75,18 @@ namespace PulldownBuilder
 	{
 		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
 		check(IsValid(PulldownContentsClass));
-		const FTopLevelAssetPath& ClassPathName = PulldownContentsClass->GetClassPathName();
-		
+
 		TArray<FAssetData> AssetDataList;
+#if UE_5_01_OR_LATER
+		const FTopLevelAssetPath& ClassPathName = PulldownContentsClass->GetClassPathName();
 		if (!IAssetRegistry::GetChecked().GetAssetsByClass(ClassPathName, AssetDataList))
+#elif UE_4_26_OR_LATER
+		if (!IAssetRegistry::GetChecked().GetAssetsByClass(PulldownContentsClass->GetFName(), AssetDataList))
+#else
+		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+		const auto& AssetRegistry = AssetRegistryModule.Get();
+		if (!AssetRegistry.GetAssetsByClass(PulldownContentsClass->GetFName(), AssetDataList))
+#endif
 		{
 			return;
 		}
