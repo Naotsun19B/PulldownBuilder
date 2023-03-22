@@ -33,8 +33,8 @@ namespace PulldownBuilder
 			return;
 		}
 	
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyModule.RegisterCustomPropertyTypeLayout(
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 			*StructType,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructDetail::MakeInstance)
 		);
@@ -48,8 +48,8 @@ namespace PulldownBuilder
 			return;
 		}
 
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyModule.UnregisterCustomPropertyTypeLayout(
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
 			*StructType
 		);
 	}

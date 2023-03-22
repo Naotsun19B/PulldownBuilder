@@ -60,18 +60,20 @@ namespace PulldownBuilder
 
 	void FPulldownStructTypeDetail::Register()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			*GetNameSafe(FPulldownStructType::StaticStruct()),
+		CachedPropertyTypeName = GetNameSafe(FPulldownStructType::StaticStruct());
+		
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructTypeDetail::MakeInstance)
 		);
 	}
 
 	void FPulldownStructTypeDetail::Unregister()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyModule.UnregisterCustomPropertyTypeLayout(
-			*GetNameSafe(FPulldownStructType::StaticStruct())
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName
 		);
 	}
 
@@ -179,4 +181,6 @@ namespace PulldownBuilder
 				]
 			];
 	}
+
+	FString FPulldownStructTypeDetail::CachedPropertyTypeName;
 }

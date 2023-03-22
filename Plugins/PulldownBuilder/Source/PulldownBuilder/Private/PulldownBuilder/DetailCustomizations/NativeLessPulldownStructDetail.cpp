@@ -18,18 +18,20 @@ namespace PulldownBuilder
 {
 	void FNativeLessPulldownStructDetail::Register()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			*GetNameSafe(FNativeLessPulldownStruct::StaticStruct()),
+		CachedPropertyTypeName = GetNameSafe(FNativeLessPulldownStruct::StaticStruct());
+			
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FNativeLessPulldownStructDetail::MakeInstance)
 		);
 	}
 
 	void FNativeLessPulldownStructDetail::Unregister()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.UnregisterCustomPropertyTypeLayout(
-			*GetNameSafe(FNativeLessPulldownStruct::StaticStruct())
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName
 		);
 	}
 
@@ -296,4 +298,6 @@ namespace PulldownBuilder
 			PulldownSourceWidget->SetSelectedItem(SelectedItem);
 		}
 	}
+
+	FString FNativeLessPulldownStructDetail::CachedPropertyTypeName;
 }

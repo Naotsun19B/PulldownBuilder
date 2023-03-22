@@ -24,5 +24,9 @@ namespace PulldownBuilder
 		// FPulldownStructDetail interface.
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 		// End of FPulldownStructDetail interface.
+
+	private:
+		// A cache of type names for properties that utilize this details panel.
+		static FString CachedPropertyTypeName;
 	};
 }

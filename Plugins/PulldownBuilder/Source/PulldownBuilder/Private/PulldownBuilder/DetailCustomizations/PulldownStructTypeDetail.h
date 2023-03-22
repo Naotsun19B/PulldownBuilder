@@ -46,5 +46,8 @@ namespace PulldownBuilder
 
 		// ComboButton to launch the struct picker when you click on a property.
 		TSharedPtr<SComboButton> StructPickerAnchor;
+
+		// A cache of type names for properties that utilize this details panel.
+		static FString CachedPropertyTypeName;
 	};
 }

@@ -12,18 +12,20 @@ namespace PulldownBuilder
 {
 	void FPreviewPulldownStructDetail::Register()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			*GetNameSafe(FPreviewPulldownStruct::StaticStruct()),
+		CachedPropertyTypeName = GetNameSafe(FPreviewPulldownStruct::StaticStruct());
+		
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPreviewPulldownStructDetail::MakeInstance)
 		);
 	}
 
 	void FPreviewPulldownStructDetail::Unregister()
 	{
-		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.UnregisterCustomPropertyTypeLayout(
-			*GetNameSafe(FPreviewPulldownStruct::StaticStruct())
+		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
+			*CachedPropertyTypeName
 		);
 	}
 
@@ -64,4 +66,6 @@ namespace PulldownBuilder
 
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
 	}
+
+	FString FPreviewPulldownStructDetail::CachedPropertyTypeName;
 }

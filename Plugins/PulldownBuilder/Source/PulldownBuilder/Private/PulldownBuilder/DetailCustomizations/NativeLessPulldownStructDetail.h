@@ -68,5 +68,8 @@ namespace PulldownBuilder
 
 		// A widget that displays a pull-down menu based on the PulldownContentsNames.
 		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
+
+		// A cache of type names for properties that utilize this details panel.
+		static FString CachedPropertyTypeName;
 	};
 }
