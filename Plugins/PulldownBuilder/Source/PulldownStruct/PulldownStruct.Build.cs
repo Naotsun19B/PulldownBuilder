@@ -31,5 +31,7 @@ public class PulldownStruct : ModuleRules
 				Path.Combine(EngineDirectory, "Source", "Runtime", "Launch", "Resources"),
 			}
 		);
+		
+		PublicDefinitions.Add("WITH_PULLDOWN_BUILDER");
 	}
 }
