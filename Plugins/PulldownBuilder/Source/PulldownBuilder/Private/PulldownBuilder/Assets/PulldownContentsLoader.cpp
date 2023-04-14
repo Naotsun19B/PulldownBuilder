@@ -12,8 +12,6 @@
 #include "IAssetRegistry.h"
 #endif
 
-#define LOCTEXT_NAMESPACE "PulldownContentsLoader"
-
 namespace PulldownBuilder
 {
 	FPulldownContentsLoader::FOnPulldownContentsLoaded FPulldownContentsLoader::OnPulldownContentsLoaded;
@@ -103,5 +101,3 @@ namespace PulldownBuilder
 		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
 	}
 }
-
-#undef LOCTEXT_NAMESPACE
