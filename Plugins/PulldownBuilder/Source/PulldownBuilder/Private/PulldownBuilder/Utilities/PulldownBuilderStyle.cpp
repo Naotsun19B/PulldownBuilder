@@ -2,43 +2,36 @@
 
 #include "PulldownBuilderStyle.h"
 #include "Styling/SlateStyleRegistry.h"
+#include "Styling/SlateStyleMacros.h"
 
 namespace PulldownBuilder
 {
-	namespace IconSize
-	{
-		static const FVector2D Icon16x16(16.0f, 16.0f);
-		static const FVector2D Icon64x64(64.0f, 64.0f);
-	}
-	
 	FPulldownBuilderStyle::FPulldownBuilderStyle()
 		: FSlateStyleSet(TEXT("PulldownContentsStyle"))
 	{
 	}
 
-#define IMAGE_BRUSH(RelativePath, ...) FSlateImageBrush(Instance->RootToContentDir(TEXT(RelativePath), TEXT(".png")), __VA_ARGS__)
+	void FPulldownBuilderStyle::RegisterInternal()
+	{
+		SetCoreContentRoot(FPaths::EngineContentDir());
+		SetContentRoot(FPaths::EngineContentDir() / TEXT("Editor"));
+
+		Set(
+			TEXT("ClassIcon.PulldownContents"),
+			new IMAGE_BRUSH("Slate/Icons/AssetIcons/UserDefinedEnum_16x", CoreStyleConstants::Icon16x16)
+		);
+		Set(
+			TEXT("ClassThumbnail.PulldownContents"),
+			new IMAGE_BRUSH("Slate/Icons/AssetIcons/UserDefinedEnum_64x", CoreStyleConstants::Icon64x64)
+		);
+	}
 	
 	void FPulldownBuilderStyle::Register()
 	{
-		const FString StyleContentRoot = FPaths::ConvertRelativePathToFull(FPaths::Combine(
-			FPaths::EngineContentDir(),
-			TEXT("Editor"),
-			TEXT("Slate"),
-			TEXT("Icons"),
-			TEXT("AssetIcons")
-		));
-		
 		Instance = MakeShared<FPulldownBuilderStyle>();
-		Instance->SetContentRoot(StyleContentRoot);
-		Instance->SetCoreContentRoot(StyleContentRoot);
-		
-		Instance->Set(TEXT("ClassIcon.PulldownContents"), new IMAGE_BRUSH("UserDefinedEnum_16x", IconSize::Icon16x16));
-		Instance->Set(TEXT("ClassThumbnail.PulldownContents"), new IMAGE_BRUSH("UserDefinedEnum_64x", IconSize::Icon64x64));
-		
+		Instance->RegisterInternal();
 		FSlateStyleRegistry::RegisterSlateStyle(*Instance);
 	}
-
-#undef IMAGE_BRUSH
 
 	void FPulldownBuilderStyle::Unregister()
 	{

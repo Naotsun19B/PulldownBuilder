@@ -16,6 +16,11 @@ namespace PulldownBuilder
 		// Constructor.
 		FPulldownBuilderStyle();
 		
+	private:
+		// The actual registration process for this class.
+		void RegisterInternal();
+
+	public:
 		// Register-Unregister and instance getter this class.
 		static void Register();
 		static void Unregister();
