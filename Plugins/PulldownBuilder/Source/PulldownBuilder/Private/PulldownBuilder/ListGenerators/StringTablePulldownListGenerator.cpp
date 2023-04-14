@@ -9,6 +9,23 @@ UStringTablePulldownListGenerator::UStringTablePulldownListGenerator()
 {
 }
 
+void UStringTablePulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	
+	if (PropertyChangedEvent.MemberProperty == nullptr)
+	{
+		return;
+	}
+
+	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UStringTablePulldownListGenerator, SourceStringTable))
+	{
+		NotifyPulldownContentsSourceChanged();
+		PreChangeRowNames.Empty();
+		bInitialized = false;
+	}
+}
+
 TArray<TSharedPtr<FPulldownRow>> UStringTablePulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
@@ -75,7 +92,10 @@ void UStringTablePulldownListGenerator::Tick(float DeltaTime)
 
 bool UStringTablePulldownListGenerator::IsTickable() const
 {
-	return !IsTemplate();
+	return (
+		!IsTemplate() &&
+		SourceStringTable.IsValid()
+	);
 }
 
 TStatId UStringTablePulldownListGenerator::GetStatId() const

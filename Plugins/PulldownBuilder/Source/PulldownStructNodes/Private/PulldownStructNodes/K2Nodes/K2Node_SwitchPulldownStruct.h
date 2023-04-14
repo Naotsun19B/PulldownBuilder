@@ -66,18 +66,21 @@ protected:
 	// Called when PulldownContents has been loaded.
 	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
 
-	// Called when a value added to the pulldown menu.
+	// Called when a value added to the pull-down menu.
 	virtual void HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName);
 
-	// Called when a value removed from the pulldown menu.
+	// Called when a value removed from the pull-down menu.
 	virtual void HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName);
 
-	// Called when a value contained in the pulldown menu has been renamed.
+	// Called when a value contained in the pull-down menu has been renamed.
 	virtual void HandleOnPulldownRowRenamed(
 		UPulldownContents* ModifiedPulldownContents,
 		const FName& PreChangeName,
 		const FName& PostChangeName
 	);
+
+	// Called when the underlying data for the pull-down menu has changed.
+	virtual void HandleOnPulldownContentsSourceChanged(UPulldownContents* ModifiedPulldownContents);
 
 	// Returns whether the passed UPulldownContents is related to itself and node is required reconstruct.
 	bool NeedToReconstructNode(const UPulldownContents* PulldownContents) const;

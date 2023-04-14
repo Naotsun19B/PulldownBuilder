@@ -1,6 +1,7 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
@@ -276,6 +277,11 @@ void UPulldownContents::ModifyPulldownListGenerator()
 			);
 
 			PulldownListGenerator = PreChangePulldownListGenerator;
+		}
+
+		if (PreChangePulldownListGenerator != PulldownListGenerator)
+		{
+			PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.Broadcast(this);
 		}
 	}
 	

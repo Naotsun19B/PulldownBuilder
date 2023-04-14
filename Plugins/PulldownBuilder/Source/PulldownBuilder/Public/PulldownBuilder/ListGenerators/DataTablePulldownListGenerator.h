@@ -33,6 +33,10 @@ public:
 	static const FString DefaultPulldownTooltipName;
 	
 public:
+	// UObject interface.
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	// End of UObject interface.
+	
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,

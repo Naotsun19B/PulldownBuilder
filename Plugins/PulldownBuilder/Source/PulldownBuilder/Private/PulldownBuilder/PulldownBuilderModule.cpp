@@ -71,7 +71,10 @@ namespace PulldownBuilder
 		// Unregister settings.
 		UPulldownBuilderRedirectSettings::Unregister();
 		UPulldownBuilderAppearanceSettings::Unregister();
-
+		
+		// Unregister pulldown contents loader.
+		FPulldownContentsLoader::Unregister();
+		
 		// Unregister message log.
 		FPulldownBuilderMessageLog::Unregister();
 		

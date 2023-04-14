@@ -27,10 +27,12 @@ void UK2Node_SwitchPulldownStruct::PostLoad()
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.RemoveAll(this);
@@ -446,6 +448,11 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed(
 			K2Schema->TryCreateConnection(NewNamePin, LinkedPin);
 		}
 	}
+}
+
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged(UPulldownContents* ModifiedPulldownContents)
+{
+	HandleOnPulldownContentsLoaded(ModifiedPulldownContents);
 }
 
 bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents* PulldownContents) const

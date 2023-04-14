@@ -111,6 +111,13 @@ void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChange
 	);
 }
 
+void UPulldownListGeneratorBase::NotifyPulldownContentsSourceChanged()
+{
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.Broadcast(
+		GetTypedOuter<UPulldownContents>()
+	);
+}
+
 bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeRowNames, const TArray<FName>& PostChangeRowNames)
 {
 	bool bModified = true;

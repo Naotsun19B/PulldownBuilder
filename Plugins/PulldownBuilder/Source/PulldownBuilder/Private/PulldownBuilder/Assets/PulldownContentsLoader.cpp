@@ -18,6 +18,7 @@ namespace PulldownBuilder
 	FPulldownContentsLoader::FOnPulldownRowAdded FPulldownContentsLoader::OnPulldownRowAdded;
 	FPulldownContentsLoader::FOnPulldownRowRemoved FPulldownContentsLoader::OnPulldownRowRemoved;
 	FPulldownContentsLoader::FOnPulldownRowRenamed FPulldownContentsLoader::OnPulldownRowRenamed;
+	FPulldownContentsLoader::FOnPulldownContentsSourceChanged FPulldownContentsLoader::OnPulldownContentsSourceChanged;
 	
 	void FPulldownContentsLoader::Register()
 	{
@@ -27,14 +28,32 @@ namespace PulldownBuilder
 		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 		auto& AssetRegistry = AssetRegistryModule.Get();
 #endif
-		AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
+		OnAssetAddedHandle = AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
 
-		OnPulldownContentsLoaded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownContentsLoaded);
-		OnPulldownRowAdded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowAdded);
-		OnPulldownRowRemoved.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRemoved);
-		OnPulldownRowRenamed.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRenamed);
-	
-		OnPulldownRowRenamed.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
+		OnPulldownContentsLoadedHandle = OnPulldownContentsLoaded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownContentsLoaded);
+		OnPulldownRowAddedHandle = OnPulldownRowAdded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowAdded);
+		OnPulldownRowRemovedHandle = OnPulldownRowRemoved.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRemoved);
+		OnPulldownRowRenamedHandle = OnPulldownRowRenamed.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRenamed);
+		OnPulldownContentsSourceChangedHandle = OnPulldownContentsSourceChanged.AddStatic(&FPulldownContentsLoader::HandleOnPulldownContentsSourceChanged);
+	}
+
+	void FPulldownContentsLoader::Unregister()
+	{
+		OnPulldownContentsSourceChanged.Remove(OnPulldownContentsSourceChangedHandle);
+		OnPulldownRowRenamed.Remove(OnPulldownRowRenamedHandle);
+		OnPulldownRowRemoved.Remove(OnPulldownRowRemovedHandle);
+		OnPulldownRowAdded.Remove(OnPulldownRowAddedHandle);
+		OnPulldownContentsLoaded.Remove(OnPulldownContentsLoadedHandle);
+		
+#if UE_4_26_OR_LATER
+		if (auto* AssetRegistry = IAssetRegistry::Get())
+#else
+		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+		if (auto* AssetRegistry = AssetRegistryModule.TryGet())
+#endif
+		{
+			AssetRegistry->OnAssetAdded().Remove(OnAssetAddedHandle);
+		}
 	}
 
 	void FPulldownContentsLoader::HandleOnAssetAdded(const FAssetData& AssetData)
@@ -52,7 +71,6 @@ namespace PulldownBuilder
 
 		if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
 		{
-			
 			OnPulldownContentsLoaded.Broadcast(PulldownContents);
 		}
 	}
@@ -86,18 +104,35 @@ namespace PulldownBuilder
 
 		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *ModifiedPulldownContents->GetName(), *RemovedRowName.ToString());
 	}
-
+	
 	void FPulldownContentsLoader::HandleOnPulldownRowRenamed(
 		UPulldownContents* ModifiedPulldownContents,
 		const FName& PreChangeName,
 		const FName& PostChangeName
 	)
 	{
+		if (IsValid(ModifiedPulldownContents))
+		{
+			UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
+		}
+		
+		URowNameUpdaterBase::UpdateRowNames(ModifiedPulldownContents, PreChangeName, PostChangeName);
+	}
+
+	void FPulldownContentsLoader::HandleOnPulldownContentsSourceChanged(UPulldownContents* ModifiedPulldownContents)
+	{
 		if (!IsValid(ModifiedPulldownContents))
 		{
 			return;
 		}
-
-		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
+		
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected modification of underlying data of %s."), *ModifiedPulldownContents->GetName());
 	}
+
+	FDelegateHandle FPulldownContentsLoader::OnAssetAddedHandle;
+	FDelegateHandle FPulldownContentsLoader::OnPulldownContentsLoadedHandle;
+	FDelegateHandle FPulldownContentsLoader::OnPulldownRowAddedHandle;
+	FDelegateHandle FPulldownContentsLoader::OnPulldownRowRemovedHandle;
+	FDelegateHandle FPulldownContentsLoader::OnPulldownRowRenamedHandle;
+	FDelegateHandle FPulldownContentsLoader::OnPulldownContentsSourceChangedHandle;
 }
