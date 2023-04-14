@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TMap<FName, FName> SourceNameArray;
 
-	// Cache of name array before change.
+	// Cache of row list before change.
 	UPROPERTY(Transient)
-	TArray<FName> PreChangeNameArray;
+	TArray<FName> PreChangeRowNames;
 };

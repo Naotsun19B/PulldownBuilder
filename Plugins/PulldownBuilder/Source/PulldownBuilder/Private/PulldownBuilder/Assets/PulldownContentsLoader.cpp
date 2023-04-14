@@ -12,11 +12,14 @@
 #include "IAssetRegistry.h"
 #endif
 
+#define LOCTEXT_NAMESPACE "PulldownContentsLoader"
+
 namespace PulldownBuilder
 {
 	FPulldownContentsLoader::FOnPulldownContentsLoaded FPulldownContentsLoader::OnPulldownContentsLoaded;
-	FPulldownContentsLoader::FOnPulldownRowAddedOrRemoved FPulldownContentsLoader::OnPulldownRowAddedOrRemoved;
-	FPulldownContentsLoader::FOnPulldownRowChanged FPulldownContentsLoader::OnPulldownRowChanged;
+	FPulldownContentsLoader::FOnPulldownRowAdded FPulldownContentsLoader::OnPulldownRowAdded;
+	FPulldownContentsLoader::FOnPulldownRowRemoved FPulldownContentsLoader::OnPulldownRowRemoved;
+	FPulldownContentsLoader::FOnPulldownRowRenamed FPulldownContentsLoader::OnPulldownRowRenamed;
 	
 	void FPulldownContentsLoader::Register()
 	{
@@ -27,8 +30,13 @@ namespace PulldownBuilder
 		auto& AssetRegistry = AssetRegistryModule.Get();
 #endif
 		AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
-		
-		OnPulldownRowChanged.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
+
+		OnPulldownContentsLoaded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownContentsLoaded);
+		OnPulldownRowAdded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowAdded);
+		OnPulldownRowRemoved.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRemoved);
+		OnPulldownRowRenamed.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowRenamed);
+	
+		OnPulldownRowRenamed.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
 	}
 
 	void FPulldownContentsLoader::HandleOnAssetAdded(const FAssetData& AssetData)
@@ -46,8 +54,54 @@ namespace PulldownBuilder
 
 		if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
 		{
-			UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *PulldownContents->GetName());
+			
 			OnPulldownContentsLoaded.Broadcast(PulldownContents);
 		}
 	}
+
+	void FPulldownContentsLoader::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
+	{
+		if (!IsValid(LoadedPulldownContents))
+		{
+			return;
+		}
+		
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *LoadedPulldownContents->GetName());
+	}
+
+	void FPulldownContentsLoader::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName)
+	{
+		if (!IsValid(ModifiedPulldownContents))
+		{
+			return;
+		}
+
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *ModifiedPulldownContents->GetName(), *AddedRowName.ToString());
+	}
+
+	void FPulldownContentsLoader::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName)
+	{
+		if (!IsValid(ModifiedPulldownContents))
+		{
+			return;
+		}
+
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *ModifiedPulldownContents->GetName(), *RemovedRowName.ToString());
+	}
+
+	void FPulldownContentsLoader::HandleOnPulldownRowRenamed(
+		UPulldownContents* ModifiedPulldownContents,
+		const FName& PreChangeName,
+		const FName& PostChangeName
+	)
+	{
+		if (!IsValid(ModifiedPulldownContents))
+		{
+			return;
+		}
+
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
+	}
 }
+
+#undef LOCTEXT_NAMESPACE

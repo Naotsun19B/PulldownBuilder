@@ -10,11 +10,16 @@
  * Generate a list to be displayed in the pull-down menu from the row name of the string table asset.
  */
 UCLASS()
-class PULLDOWNBUILDER_API UStringTablePulldownListGenerator : public UPulldownListGeneratorBase
+class PULLDOWNBUILDER_API UStringTablePulldownListGenerator
+	: public UPulldownListGeneratorBase
+	, public FTickableEditorObject
 {
 	GENERATED_BODY()
 
 public:
+	// Constructor.
+	UStringTablePulldownListGenerator();
+	
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,
@@ -24,8 +29,26 @@ public:
 	virtual FString GetSourceAssetName() const override;
 	// End of UPulldownListGeneratorBase interface.
 
+	// FTickableObjectBase interface.
+	virtual void Tick(float DeltaTime) override;
+	virtual bool IsTickable() const override;
+	virtual TStatId GetStatId() const override;
+	// End of FTickableObjectBase interface.
+	
+protected:
+	// Cache a pull-down list of current keys of string table.
+	void CacheStringTableKeys(TArray<FName>& StringTableKeys) const;
+	
 protected:
 	// The string table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TSoftObjectPtr<UStringTable> SourceStringTable;
+
+	// Whether PostInitProperties was called.
+	UPROPERTY(Transient)
+	bool bInitialized;
+	
+	// Cache of row list before change.
+	UPROPERTY(Transient)
+	TArray<FName> PreChangeRowNames;
 };

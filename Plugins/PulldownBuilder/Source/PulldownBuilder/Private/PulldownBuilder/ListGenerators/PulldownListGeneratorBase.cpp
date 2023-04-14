@@ -86,18 +86,76 @@ TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes(
 	return FilterPulldownStructTypes;
 }
 
-void UPulldownListGeneratorBase::NotifyPulldownRowAddedOrRemoved()
+void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedChangeName)
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.Broadcast(
-		GetTypedOuter<UPulldownContents>()
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.Broadcast(
+		GetTypedOuter<UPulldownContents>(),
+		AddedChangeName
 	);
 }
 
-void UPulldownListGeneratorBase::NotifyPulldownRowChanged(const FName& PreChangeName, const FName& PostChangeName)
+void UPulldownListGeneratorBase::NotifyPulldownRowRemoved(const FName& RemovedChangeName)
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.Broadcast(
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.Broadcast(
+		GetTypedOuter<UPulldownContents>(),
+		RemovedChangeName
+	);
+}
+
+void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChangeName, const FName& PostChangeName)
+{
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
 		PreChangeName,
 		PostChangeName
 	);
+}
+
+bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeRowNames, const TArray<FName>& PostChangeRowNames)
+{
+	bool bModified = true;
+	
+	if (PreChangeRowNames.Num() < PostChangeRowNames.Num())
+	{
+		const TArray<FName> AddedRowNames = PostChangeRowNames.FilterByPredicate(
+			[&](const FName& RowName) -> bool
+			{
+				return !PreChangeRowNames.Contains(RowName);
+			}
+		);
+		for (const auto& AddedRowName : AddedRowNames)
+		{
+			NotifyPulldownRowAdded(AddedRowName);
+		}
+	}
+	else if (PreChangeRowNames.Num() > PostChangeRowNames.Num())
+	{
+		const TArray<FName> RemovedRowNames = PreChangeRowNames.FilterByPredicate(
+			[&](const FName& RowName) -> bool
+			{
+				return !PostChangeRowNames.Contains(RowName);
+			}
+		);
+		for (const auto& RemovedRowName : RemovedRowNames)
+		{
+			NotifyPulldownRowRemoved(RemovedRowName);
+		}
+	}
+	else
+	{
+		bModified = false;
+		
+		for (int32 Index = 0; Index < PostChangeRowNames.Num(); Index++)
+		{
+			const FName PreChangeName = PreChangeRowNames[Index];
+			const FName PostChangeName = PostChangeRowNames[Index];
+			if (PreChangeName != PostChangeName)
+			{
+				NotifyPulldownRowRenamed(PreChangeName, PostChangeName);
+				bModified = true;
+			}
+		}
+	}
+
+	return bModified;
 }

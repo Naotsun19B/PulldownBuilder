@@ -73,7 +73,7 @@ void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FData
 		return;
 	}
 
-	PreChangeRowList = Changed->GetRowNames();
+	PreChangeRowNames = Changed->GetRowNames();
 
 	PreSourceDataTableModify();
 }
@@ -88,26 +88,12 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 		return;
 	}
 
-	const TArray<FName> PostChangeRowList = Changed->GetRowNames();
-	if (PreChangeRowList.Num() == PostChangeRowList.Num())
+	const TArray<FName> PostChangeRowNames = Changed->GetRowNames();
+	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
 	{
-		for (int32 Index = 0; Index < PostChangeRowList.Num(); Index++)
-		{
-			const FName PreChangeName = PreChangeRowList[Index];
-			const FName PostChangeName = PostChangeRowList[Index];
-			if (PreChangeName != PostChangeName)
-			{
-				NotifyPulldownRowChanged(PreChangeName, PostChangeName);
-			}
-		}
+		PreChangeRowNames.Empty();
 	}
-	else
-	{
-		NotifyPulldownRowAddedOrRemoved();
-	}
-
-	PreChangeRowList.Empty();
-
+	
 	PostSourceDataTableModify();
 }
 

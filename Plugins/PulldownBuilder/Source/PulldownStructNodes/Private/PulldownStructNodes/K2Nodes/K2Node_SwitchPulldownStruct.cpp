@@ -24,14 +24,16 @@ void UK2Node_SwitchPulldownStruct::PostLoad()
 	Super::PostLoad();
 
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAddedOrRemoved);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowChanged.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAddedOrRemoved.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.RemoveAll(this);
 	
 	Super::BeginDestroy();
@@ -400,17 +402,17 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldow
 	ReconstructNode();
 }
 
-void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAddedOrRemoved(UPulldownContents* ModifiedPulldownContents)
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName)
 {
-	if (!NeedToReconstructNode(ModifiedPulldownContents))
-	{
-		return;
-	}
-
-	ReconstructNode();
+	HandleOnPulldownContentsLoaded(ModifiedPulldownContents);
 }
 
-void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowChanged(
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName)
+{
+	HandleOnPulldownContentsLoaded(ModifiedPulldownContents);
+}
+
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed(
 	UPulldownContents* ModifiedPulldownContents,
 	const FName& PreChangeName,
 	const FName& PostChangeName

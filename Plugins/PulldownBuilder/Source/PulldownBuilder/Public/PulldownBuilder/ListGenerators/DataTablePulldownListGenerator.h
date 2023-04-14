@@ -66,5 +66,5 @@ protected:
 
 	// Cache of row list before change.
 	UPROPERTY(Transient)
-	TArray<FName> PreChangeRowList;
+	TArray<FName> PreChangeRowNames;
 };

@@ -22,7 +22,7 @@ void URowNameUpdaterBase::UpdateRowNames(
 	{
 		return;
 	}
-	
+
 	PulldownBuilder::FPulldownBuilderMessageLog MessageLog;
 	MessageLog.Info(
 		FText::Format(

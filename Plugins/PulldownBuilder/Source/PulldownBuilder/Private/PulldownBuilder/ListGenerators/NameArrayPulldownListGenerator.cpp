@@ -18,8 +18,8 @@ void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToCh
 
 	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
 	{
-		PreChangeNameArray.Reset();
-		SourceNameArray.GenerateKeyArray(PreChangeNameArray);
+		PreChangeRowNames.Reset();
+		SourceNameArray.GenerateKeyArray(PreChangeRowNames);
 	}
 }
 
@@ -34,29 +34,13 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
 	{
-		if (PreChangeNameArray.Num() == SourceNameArray.Num())
+		TArray<FName> PostChangeRowNames;
+		SourceNameArray.GenerateKeyArray(PostChangeRowNames);
+		
+		if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
 		{
-			TArray<FName> PostChangeNameArray;
-			SourceNameArray.GenerateKeyArray(PostChangeNameArray);
-			
-			for (int32 Index = 0; Index < SourceNameArray.Num(); Index++)
-			{
-				const FName PreChangeName = PreChangeNameArray[Index];
-				const FName PostChangeName = PostChangeNameArray[Index];
-				if (PreChangeName != PostChangeName &&
-					PreChangeName != NAME_None &&
-					PostChangeName != NAME_None)
-				{
-					NotifyPulldownRowChanged(PreChangeName, PostChangeName);
-				}
-			}
+			PreChangeRowNames.Empty();
 		}
-		else
-		{
-			NotifyPulldownRowAddedOrRemoved();
-		}
-
-		PreChangeNameArray.Empty();
 	}
 }
 
