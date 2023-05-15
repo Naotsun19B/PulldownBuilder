@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
+#include "TickableEditorObject.h"
 #include "StringTablePulldownListGenerator.generated.h"
 
 /**

@@ -89,7 +89,7 @@ namespace PulldownBuilder
 		static FPropertyEditorModule& GetPropertyEditorModule();
 		
 		// Returns a module that registers editor preferences etc. added by the plugin.
-		static ISettingsModule* GetSettingsModule();
+		static ISettingsModule& GetSettingsModule();
 
 		// Registers custom setting class in the editor preferences etc.
 		static void RegisterSettings(

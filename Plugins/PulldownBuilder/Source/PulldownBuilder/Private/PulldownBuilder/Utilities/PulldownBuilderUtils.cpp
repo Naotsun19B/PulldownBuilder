@@ -11,17 +11,17 @@
 #include "Serialization/JsonSerializer.h"
 #include "JsonObjectConverter.h"
 #include "Dom/JsonObject.h"
-#include "Modules/ModuleManager.h"
-#include "ISettingsModule.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 #if UE_4_26_OR_LATER
 #include "AssetRegistry/IAssetRegistry.h"
 #else
-#include "Modules/ModuleManager.h"
 #include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
 #endif
+#include "Modules/ModuleManager.h"
+#include "ISettingsModule.h"
+#include "PropertyEditorModule.h"
 
 namespace PulldownBuilder
 {
@@ -413,9 +413,9 @@ namespace PulldownBuilder
 		return FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 	}
 
-	ISettingsModule* FPulldownBuilderUtils::GetSettingsModule()
+	ISettingsModule& FPulldownBuilderUtils::GetSettingsModule()
 	{
-		return FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"));
+		return FModuleManager::LoadModuleChecked<ISettingsModule>(TEXT("Settings"));
 	}
 
 	void FPulldownBuilderUtils::RegisterSettings(
@@ -427,17 +427,15 @@ namespace PulldownBuilder
 		const TWeakObjectPtr<UObject>& SettingsObject
 	)
 	{
-		if (ISettingsModule* SettingsModule = GetSettingsModule())
-		{
-			SettingsModule->RegisterSettings(
-				ContainerName,
-				CategoryName,
-				SectionName,
-				DisplayName,
-				Description,
-				SettingsObject
-			);
-		}
+		ISettingsModule& SettingsModule = GetSettingsModule();
+		SettingsModule.RegisterSettings(
+			ContainerName,
+			CategoryName,
+			SectionName,
+			DisplayName,
+			Description,
+			SettingsObject
+		);
 	}
 
 	void FPulldownBuilderUtils::UnregisterSettings(
@@ -446,13 +444,11 @@ namespace PulldownBuilder
 		const FName& SectionName
 	)
 	{
-		if (ISettingsModule* SettingsModule = GetSettingsModule())
-		{
-			SettingsModule->UnregisterSettings(
-				ContainerName,
-				CategoryName,
-				SectionName
-			);
-		}
+		ISettingsModule& SettingsModule = GetSettingsModule();
+		SettingsModule.UnregisterSettings(
+			ContainerName,
+			CategoryName,
+			SectionName
+		);
 	}
 }

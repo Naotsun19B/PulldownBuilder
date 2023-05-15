@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownStructBase.generated.h"
 
 /**
@@ -48,17 +49,22 @@ struct TIsPulldownStruct
 public:
 	static constexpr bool Value = (
 		TIsDerivedFrom<TPulldownStruct, FPulldownStructBase>::IsDerived &&
+#if UE_5_02_OR_LATER
+		!std::is_same_v<TPulldownStruct, FPulldownStructBase>
+#else
 		!TIsSame<TPulldownStruct, FPulldownStructBase>::Value
+#endif
 	);
 };
 
-// Functions for comparing structures that inherit from FPulldownStructBase.
-// Make it possible to compare only structures of the same type.
+// Compares structs of the same type inheriting FPulldownStructBase and returns whether the values are equal.
 template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
-	return (Lhs.SelectedValue == Rhs.SelectedValue);
+	return Lhs.SelectedValue.IsEqual(Rhs.SelectedValue, ENameCase::CaseSensitive);
 }
+
+// Compares structs of the same type inheriting FPulldownStructBase and returns whether the values are not equal.
 template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator!=(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
