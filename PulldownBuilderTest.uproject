@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -26,6 +26,11 @@
 			"Name": "PulldownBuilder",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/02ffb84382fb4c7e8c7af28514cf1d14"
+		},
+		{
+			"Name": "PluginBuilder",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/8480a6b969b047aca3ab8957509730dd"
 		}
 	]
 }
