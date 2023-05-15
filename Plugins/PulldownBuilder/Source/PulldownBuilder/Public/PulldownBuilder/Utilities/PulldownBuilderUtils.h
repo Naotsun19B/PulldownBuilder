@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+class IAssetRegistry;
 class ISettingsModule;
 class FPropertyEditorModule;
 class UScriptStruct;
@@ -85,6 +86,9 @@ namespace PulldownBuilder
 		// Creates an FStructContainer from the data of the property pointed to by this pin.
 		static bool GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer);
 
+		// Returns an asset registry from the asset registry module.
+		static IAssetRegistry* GetAssetRegistry();
+		
 		// Returns a reference to the property editor module.
 		static FPropertyEditorModule& GetPropertyEditorModule();
 		

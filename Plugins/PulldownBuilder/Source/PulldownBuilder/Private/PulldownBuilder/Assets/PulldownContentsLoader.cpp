@@ -2,18 +2,24 @@
 
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #if UE_4_26_OR_LATER
 #include "AssetRegistry/IAssetRegistry.h"
 #else
-#include "Modules/ModuleManager.h"
-#include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
 #endif
 
 namespace PulldownBuilder
 {
+#if UE_4_26_OR_LATER
+	namespace PulldownContentsLoaderUtils
+	{
+		
+	}
+#endif
+	
 	FPulldownContentsLoader::FOnPulldownContentsLoaded FPulldownContentsLoader::OnPulldownContentsLoaded;
 	FPulldownContentsLoader::FOnPulldownRowAdded FPulldownContentsLoader::OnPulldownRowAdded;
 	FPulldownContentsLoader::FOnPulldownRowRemoved FPulldownContentsLoader::OnPulldownRowRemoved;
@@ -22,13 +28,13 @@ namespace PulldownBuilder
 	
 	void FPulldownContentsLoader::Register()
 	{
-#if UE_4_26_OR_LATER
-		auto& AssetRegistry = IAssetRegistry::GetChecked();
-#else
-		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-		auto& AssetRegistry = AssetRegistryModule.Get();
-#endif
-		OnAssetAddedHandle = AssetRegistry.OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
+		IAssetRegistry* AssetRegistry = FPulldownBuilderUtils::GetAssetRegistry();
+		if (AssetRegistry == nullptr)
+		{
+			return;
+		}
+		
+		OnAssetAddedHandle = AssetRegistry->OnAssetAdded().AddStatic(&FPulldownContentsLoader::HandleOnAssetAdded);
 
 		OnPulldownContentsLoadedHandle = OnPulldownContentsLoaded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownContentsLoaded);
 		OnPulldownRowAddedHandle = OnPulldownRowAdded.AddStatic(&FPulldownContentsLoader::HandleOnPulldownRowAdded);
@@ -44,13 +50,8 @@ namespace PulldownBuilder
 		OnPulldownRowRemoved.Remove(OnPulldownRowRemovedHandle);
 		OnPulldownRowAdded.Remove(OnPulldownRowAddedHandle);
 		OnPulldownContentsLoaded.Remove(OnPulldownContentsLoadedHandle);
-		
-#if UE_4_26_OR_LATER
-		if (auto* AssetRegistry = IAssetRegistry::Get())
-#else
-		const auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-		if (auto* AssetRegistry = AssetRegistryModule.TryGet())
-#endif
+
+		if (auto* AssetRegistry = FPulldownBuilderUtils::GetAssetRegistry())
 		{
 			AssetRegistry->OnAssetAdded().Remove(OnAssetAddedHandle);
 		}
