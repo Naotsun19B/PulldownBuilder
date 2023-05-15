@@ -7,7 +7,7 @@
 #include "DataAssetUpdater.generated.h"
 
 /**
- * A class that updates the FPulldownStructBase contained in a blueprint asset.
+ * A class that updates the FPulldownStructBase contained in a data asset.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UDataAssetUpdater : public URowNameUpdaterBase

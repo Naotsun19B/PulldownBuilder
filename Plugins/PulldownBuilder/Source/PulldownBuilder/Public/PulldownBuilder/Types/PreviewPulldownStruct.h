@@ -7,7 +7,7 @@
 #include "PreviewPulldownStruct.generated.h"
 
 /**
-* Structure for previewing pull-down menus in the PulldownContents.
+* A struct that previewing pull-down menus in the PulldownContents.
 */
 USTRUCT(NotBlueprintType, BlueprintInternalUseOnly)
 struct FPreviewPulldownStruct : public FPulldownStructBase

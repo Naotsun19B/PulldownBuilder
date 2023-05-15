@@ -15,8 +15,7 @@ struct FStructContainer;
 class UPulldownListGeneratorBase;
 
 /**
- * A class that defines a struct that displays a pull-down menu and 
- * builds the list that is the basis of the pull-down menu.
+ * An asset class that defines a struct that displays a pull-down menu and builds the list that is the basis of the pull-down menu.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UPulldownContents : public UObject
@@ -44,7 +43,7 @@ public:
 	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
 	// End of UObject interface.
 
-	// Get information about the target struct.
+	// Gets information about the target struct.
 	const FPulldownStructType& GetPulldownStructType() const;
 	
 	// Returns the data list to display in the pull-down menu.
@@ -60,10 +59,10 @@ public:
 	virtual FString GetTooltip() const;
 	
 protected:
-	// Register the struct set for this asset in detail customization.
+	// Registers the struct set for this asset in detail customization.
 	virtual void RegisterDetailCustomization();
 	
-	// Unregister the struct set for this asset from detail customization.
+	// Unregisters the struct set for this asset from detail customization.
 	virtual void UnregisterDetailCustomization();
 
 	// Called when the properties of the PulldownListGenerator need to be changed.
@@ -76,7 +75,7 @@ protected:
 	void HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent);
 	
 protected:	
-	// Structure that displays a pull-down menu.
+	// A struct type that displays a pull-down menu.
 	// It must be a struct that inherits from FPulldownStructBase.
 	UPROPERTY(EditDefaultsOnly, Category = "Pulldown")
 	FPulldownStructType PulldownStructType;

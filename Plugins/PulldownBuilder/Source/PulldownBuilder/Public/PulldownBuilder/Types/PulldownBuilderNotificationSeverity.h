@@ -6,7 +6,7 @@
 #include "PulldownBuilderNotificationSeverity.generated.h"
 
 /**
- * Enum to decide from which severity to notify.
+ * An enum to decide from which severity to notify.
  */
 UENUM()
 enum class EPulldownBuilderNotificationSeverity : uint8

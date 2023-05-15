@@ -11,7 +11,7 @@ class UPulldownContents;
 class UBlueprintNodeSpawner;
 
 /**
- * Switch node for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
+ * A switch node for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_SwitchPulldownStruct : public UK2Node_Switch
@@ -30,6 +30,7 @@ public:
 	
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	// End of UEdGraphNode interface.
 
 	// UK2Node interface.
@@ -60,7 +61,7 @@ public:
 	// End of UK2Node_Switch interface.
 
 protected:
-	// Collect the selected values to choose from before creating the case pin.
+	// Collects the selected values to choose from before creating the case pin.
 	virtual void FillSelectedValues();
 	
 	// Called when PulldownContents has been loaded.
@@ -100,4 +101,10 @@ protected:
 
 	// A cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
+
+	// A cache of text for the tooltip of this node.
+	FNodeTextCache CachedNodeTooltip;
+	
+	// A cache of text for the category of this node.
+	FNodeTextCache CachedNodeCategory;
 };

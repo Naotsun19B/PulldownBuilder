@@ -11,12 +11,12 @@ struct FPulldownRow;
 namespace PulldownBuilder
 {
 	/**
-	 * Pull-down menu widget with search field.
+	 * A custom list view widget that lists the items of a pull-down struct.
 	 */
 	class PULLDOWNBUILDER_API SPulldownSelector : public SCompoundWidget
 	{
 	public:
-		// Definition of the event that will be called when a new item is selected.
+		// Define the event that will be called when a new item is selected.
 		using FOnSelectionChanged = TSlateDelegates<TSharedPtr<FPulldownRow>>::FOnSelectionChanged;
 
 	public:
@@ -25,10 +25,10 @@ namespace PulldownBuilder
 			, _InitialSelection(nullptr)
 		{}
 
-		// Data that is the basis of the items displayed in the pull-down menu.
+		// A source data that is the basis of the items displayed in the pull-down menu.
 		SLATE_ARGUMENT(const TArray<TSharedPtr<FPulldownRow>>*, ListItemsSource)
 	
-		// Specifies the item that should be selected first.
+		// Sets the item that should be selected first.
 		SLATE_ARGUMENT(TSharedPtr<FPulldownRow>, InitialSelection)
 
 		// Called when a new item is selected.
@@ -46,11 +46,11 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> GetSelectedItem() const;
 		void SetSelectedItem(TSharedPtr<FPulldownRow> NewItem);
 	
-		// Rebuild the list.
+		// Rebuilds the list.
 		void RefreshList();
 
 	private:
-		// Rebuild the underlying data of the list.
+		// Rebuilds the underlying data of the list.
 		void RebuildListItems();
 	
 		// Called when the text in the search field changes.
@@ -68,19 +68,19 @@ namespace PulldownBuilder
 		bool FilterRow(TSharedPtr<FPulldownRow> InListItem) const;
 	
 	private:
-		// List view widget for internal use.
+		// A list view widget for internal use.
 		TSharedPtr<SListView<TSharedPtr<FPulldownRow>>> ListView;
 
 		// A pointer to the underlying data to use when building ListItems.
 		const TArray<TSharedPtr<FPulldownRow>>* ListItemsSource = nullptr;
 	
-		// Items to display in the list.
+		// A list of items to display in the list.
 		TArray<TSharedPtr<FPulldownRow>> ListItems;
 	
-		// The string by which to filter language codes.
+		// A string by which to filter language codes.
 		FString FilterString;
 	
-		// The event that is called when a new item is selected.
+		// An event that is called when a new item is selected.
 		FOnSelectionChanged OnSelectionChanged;
 	};
 }

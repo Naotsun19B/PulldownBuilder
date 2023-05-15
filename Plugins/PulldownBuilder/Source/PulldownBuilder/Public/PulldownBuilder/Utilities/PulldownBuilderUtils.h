@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 class ISettingsModule;
+class FPropertyEditorModule;
 class UScriptStruct;
 class UEdGraphPin;
 class UPulldownContents;
@@ -14,43 +15,40 @@ struct FStructContainer;
 namespace PulldownBuilder
 {
 	/**
-	 * Utility function library class that defines the processes widely used in this plugin.
+	 * A utility class that defines the processes widely used in this plugin.
 	 */
 	class PULLDOWNBUILDER_API FPulldownBuilderUtils
 	{
 	public:
-		// Checks if the specified struct inherits the specified struct.
+		// Returns whether the specified struct inherits from the specified struct.
 		static bool IsChildStruct(const UScriptStruct* InSuperStruct, const UScriptStruct* InTestStruct);
 	
-		// Checks if the specified struct is inherits FPulldownStructBase.
+		// Returns whether the specified struct inherits from FPulldownStructBase.
 		static bool IsPulldownStruct(
 			const UScriptStruct* InTestStruct,
 			const bool bExcludeNativeLessPulldownStruct = true
 		);
 
-		// Checks if the specified struct is FNativeLessPulldownStruct or a struct that inherits FNativeLessPulldownStruct.
+		// Returns whether the specified struct is a FNativeLessPulldownStruct or a struct that inherits from it.
 		static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);
 
-		// Scans all PulldownContents present in the Content Browser.
+		// Enumerates all PulldownContents present in the Content Browser.
 		static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback);
 	
 		// Gets all PulldownContents that exist on the Content Browser.
 		static TArray<UPulldownContents*> GetAllPulldownContents();
 
 		// Finds PulldownContents that has the specified struct set.
-		// If not found, returns nullptr.
 		static UPulldownContents* FindPulldownContentsByStruct(const UScriptStruct* InStruct);
 
 		// Finds PulldownContents with the specified name.
-		// If not found, returns nullptr.
 		static UPulldownContents* FindPulldownContentsByName(const FName& InName);
 
 		// Opens the asset editor for the specified PulldownContents.
 		// Returns whether the asset editor was opened.
 		static bool OpenPulldownContents(UPulldownContents* PulldownContents);
 		
-		// Gets the list of character strings to be displayed in the pull-down menu from PulldownContents
-		// obtained by FindPulldownContentsByStruct.
+		// Gets the list of character strings to be displayed in the pull-down menu from PulldownContents obtained by FindPulldownContentsByStruct.
 		static TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromStruct(
 			const UScriptStruct* InStruct,
 			const TArray<UObject*>& OuterObjects,
@@ -81,16 +79,19 @@ namespace PulldownBuilder
 			uint8*& RawData
 		);
 
-		// Recursively searches and returns the outer assets of the pin.
+		// Searches and returns the outer assets of the pin recursively.
 		static UObject* GetOuterAssetFromPin(const UEdGraphPin* Pin);
 
 		// Creates an FStructContainer from the data of the property pointed to by this pin.
 		static bool GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer);
+
+		// Returns a reference to the property editor module.
+		static FPropertyEditorModule& GetPropertyEditorModule();
 		
 		// Returns a module that registers editor preferences etc. added by the plugin.
 		static ISettingsModule* GetSettingsModule();
 
-		// Register custom setting class in the editor preferences etc.
+		// Registers custom setting class in the editor preferences etc.
 		static void RegisterSettings(
 			const FName& ContainerName,
 			const FName& CategoryName,
@@ -100,7 +101,7 @@ namespace PulldownBuilder
 			const TWeakObjectPtr<UObject>& SettingsObject
 		);
 
-		// Unregister the custom setting class registered in the editor preference etc.
+		// Unregisters the custom setting class registered in the editor preference etc.
 		static void UnregisterSettings(
 			const FName& ContainerName,
 			const FName& CategoryName,

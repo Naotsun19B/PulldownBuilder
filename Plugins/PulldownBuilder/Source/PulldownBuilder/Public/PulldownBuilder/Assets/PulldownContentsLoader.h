@@ -11,8 +11,7 @@ struct FAssetData;
 namespace PulldownBuilder
 {
 	/**
-	 * Helper class that loads the PulldownContents on editor startup to
-	 * register the details panel customizations for the pull-down struct.
+	 * A helper class that loads the PulldownContents on editor startup to register the details panel customizations for the pull-down struct.
 	 */
 	class PULLDOWNBUILDER_API FPulldownContentsLoader
 	{
@@ -38,7 +37,7 @@ namespace PulldownBuilder
 		static FOnPulldownContentsSourceChanged OnPulldownContentsSourceChanged;
 		
 	public:
-		// Register-Unregister a pulldown contents loader.
+		// Registers-Unregisters a pulldown contents loader.
 		static void Register();
 		static void Unregister();
 		

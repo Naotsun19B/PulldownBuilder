@@ -14,7 +14,7 @@ namespace PulldownBuilder
 	class PULLDOWNBUILDER_API FAssetTypeActions_PulldownContents : public FAssetTypeActions_Base
 	{
 	public:
-		// Register-Unregister.
+		// Registers-Unregisters in the asset type actions.
 		static void Register();
 		static void Unregister();
 	

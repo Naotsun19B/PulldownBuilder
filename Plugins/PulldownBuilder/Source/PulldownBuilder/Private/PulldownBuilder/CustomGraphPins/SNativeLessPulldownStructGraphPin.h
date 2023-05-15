@@ -10,7 +10,7 @@ namespace PulldownBuilder
 	class SPulldownSelectorComboButton;
 
 	/**
-	 * A custom graph pin that applies to structures that inherit from FNativeLessPulldownStruct.
+	 * A custom graph pin widget that applies to structures that inherit from FNativeLessPulldownStruct.
 	 */
 	class PULLDOWNBUILDER_API SNativeLessPulldownStructGraphPin : public SPulldownStructGraphPin
 	{
@@ -30,8 +30,7 @@ namespace PulldownBuilder
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
 		// End of SPulldownStructGraphPin interface.
 		
-		// Search for the same name as the specified name from the PulldownContentsNames.
-		// If not found, returns nullptr.
+		// Finds for the same name as the specified name from the PulldownContentsNames.
 		TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
 		
 		// Called when the value of the PulldownSourceWidget changes.

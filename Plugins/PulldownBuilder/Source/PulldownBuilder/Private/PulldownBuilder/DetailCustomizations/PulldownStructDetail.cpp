@@ -27,13 +27,13 @@ namespace PulldownBuilder
 {
 	void FPulldownStructDetail::Register(const FPulldownStructType& StructType)
 	{
-		if (StructType.IsEmpty())
+		if (!StructType.IsValid())
 		{
 			UE_LOG(LogPulldownBuilder, Warning, TEXT("You have tried to register an empty struct..."));
 			return;
 		}
 	
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 			*StructType,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructDetail::MakeInstance)
@@ -42,13 +42,13 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::Unregister(const FPulldownStructType& StructType)
 	{
-		if (StructType.IsEmpty())
+		if (!StructType.IsValid())
 		{
 			UE_LOG(LogPulldownBuilder, Warning, TEXT("You have tried to unregister an empty struct..."));
 			return;
 		}
 
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
 			*StructType
 		);

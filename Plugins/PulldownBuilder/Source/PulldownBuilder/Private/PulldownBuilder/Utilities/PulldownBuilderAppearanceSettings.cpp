@@ -9,9 +9,9 @@ namespace PulldownBuilder
 {
 	namespace AppearanceSettings
 	{
-		static const FName ContainerName			= TEXT("Editor");
-		static const FName CategoryName				= TEXT("Plugins");
-		static const FName SectionName				= TEXT("PulldownBuilderAppearanceSettings");
+		static const FName ContainerName	= TEXT("Editor");
+		static const FName CategoryName		= TEXT("Plugins");
+		static const FName SectionName		= TEXT("PulldownBuilderAppearanceSettings");
 	}
 }
 

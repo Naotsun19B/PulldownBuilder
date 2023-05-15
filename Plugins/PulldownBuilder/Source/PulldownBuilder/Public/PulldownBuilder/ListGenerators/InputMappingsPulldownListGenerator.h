@@ -7,7 +7,7 @@
 #include "InputMappingsPulldownListGenerator.generated.h"
 
 /**
- * Generate a list to be displayed in the pull-down menu from the input mappings set in the project settings.
+ * A generator class that generates a list to be displayed in the pull-down menu from the input mappings set in the project settings.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UInputMappingsPulldownListGenerator : public UPulldownListGeneratorBase
@@ -31,15 +31,17 @@ public:
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
-	// Get a list of input information from UInputSettings.
+	// Gets a list of input information from UInputSettings.
 	TArray<TSharedPtr<FPulldownRow>> GetPulldownRowsFromInputSettings() const;
 	
-	// Cache a pull-down list of current input mapping.
+	// Caches a pull-down list of current input mapping.
 	void CachePreChangeDisplayTexts();
 	
 	// Called when action or axis mappings have been changed.
 	void HandleOnActionAxisMappingsChanged();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown")
+
+	// Expansion point for implementation in blueprints.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called when action or axis mappings have been changed."))
 	void OnActionAxisMappingsChanged();
 	
 protected:
@@ -55,7 +57,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeSpeechMappings;
 
-	// Keep the data of the pull-down list before the change for the redirect process.
+	// A cache of the pull-down list before the change for the redirect process.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

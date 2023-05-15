@@ -35,8 +35,7 @@ namespace PulldownBuilder
 	{
 		SComboButton::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
-		// In certain environments the initial value may not be passed from the pin,
-		// so if there is no item selected as insurance, it will be reacquired.
+		// In certain environments the initial value may not be passed from the pin, so if there is no item selected as insurance, it will be reacquired.
 		if (!SelectedPulldownRow.IsValid())
 		{
 			SelectedPulldownRow = GetSelection.Execute();

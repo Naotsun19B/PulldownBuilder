@@ -19,7 +19,7 @@ namespace PulldownBuilder
 	class PULLDOWNBUILDER_API SPulldownSelectorComboButton : public SComboButton
 	{
 	public:
-		// Definition of an event to get the selected item.
+		// Define the event to get the selected item.
 		DECLARE_DELEGATE_RetVal(TSharedPtr<FPulldownRow>, FGetSelection);
 		
 	public:
@@ -27,7 +27,7 @@ namespace PulldownBuilder
 			: _ListItemsSource(nullptr)
 		{}
 
-		// Data that is the basis of the items displayed in the pull-down menu.
+		// A source data that is the basis of the items displayed in the pull-down menu.
 		SLATE_ARGUMENT(const TArray<TSharedPtr<FPulldownRow>>*, ListItemsSource)
 
 		// Called when getting the selected item.
@@ -41,6 +41,7 @@ namespace PulldownBuilder
 	
 		SLATE_END_ARGS()
 
+		// Constructor.
 		void Construct(const FArguments& InArgs);
 
 		// SWidget interface.
@@ -51,7 +52,7 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> GetSelectedItem() const;
 		void SetSelectedItem(TSharedPtr<FPulldownRow> NewItem);
 	
-		// Rebuild the list.
+		// Rebuilds the list.
 		void RefreshList();
 
 	private:
@@ -74,13 +75,13 @@ namespace PulldownBuilder
 		// A pointer to the underlying data to use when building ListItems.
 		const TArray<TSharedPtr<FPulldownRow>>* ListItemsSource = nullptr;
 	
-		// Data for the currently selected PulldownRow.
+		// A source data for the currently selected PulldownRow.
 		TSharedPtr<FPulldownRow> SelectedPulldownRow;
 
-		// The event to get selected item.
+		// An event to get selected item.
 		FGetSelection GetSelection;
 		
-		// The event that is called when the value of the PulldownSelector changes.
+		// An event that is called when the value of the PulldownSelector changes.
 		SPulldownSelector::FOnSelectionChanged OnSelectionChanged;
 	};
 }

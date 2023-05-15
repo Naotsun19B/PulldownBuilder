@@ -10,12 +10,12 @@ struct FPulldownRow;
 namespace PulldownBuilder
 {
 	/**
-	 * Detail customization applied to structures that inherit from FPulldownStructBase.
+	 * A detail customization class that applied to structures that inherit from FPulldownStructBase.
 	 */
 	class PULLDOWNBUILDER_API FPreviewPulldownStructDetail : public FPulldownStructDetail
 	{
 	public:
-		// Register-Unregister and instantiate this customization.
+		// Registers-Unregisters and instantiate this customization.
 		static void Register();
 		static void Unregister();
 		static TSharedRef<IPropertyTypeCustomization> MakeInstance();

@@ -7,7 +7,7 @@
 #include "BlueprintUpdater.generated.h"
 
 /**
- * A class that updates the FPulldownStructBase contained in a blueprint asset.
+ * A class that updates the FPulldownStructBase contained in a blueprint.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UBlueprintUpdater : public URowNameUpdaterBase
@@ -23,7 +23,7 @@ protected:
 	) override;
 	// End of URowNameUpdaterBase interface.
 
-	// Update the default values for the pins placed on the graph.
+	// Updates the default values for the pins placed on the graph.
 	bool UpdateGraphPins(
 		const UBlueprint* Blueprint,
 		const UPulldownContents* PulldownContents,

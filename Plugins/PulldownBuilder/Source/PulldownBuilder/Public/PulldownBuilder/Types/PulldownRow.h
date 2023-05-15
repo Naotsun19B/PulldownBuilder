@@ -14,11 +14,11 @@ struct FPulldownRow
 	GENERATED_BODY()
 
 public:
-	// Text displayed in a pull-down menu row.
+	// A text displayed in a pull-down menu row.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText DisplayText;
 
-	// Tooltip text that appears when you hover over a row in a pull-down menu.
+	// A tooltip text that appears when you hover over a row in a pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText TooltipText;
 

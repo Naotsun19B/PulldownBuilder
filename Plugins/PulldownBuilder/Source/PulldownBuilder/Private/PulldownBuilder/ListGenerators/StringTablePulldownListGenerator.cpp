@@ -84,8 +84,12 @@ void UStringTablePulldownListGenerator::Tick(float DeltaTime)
 	TArray<FName> PostChangeRowNames;
 	CacheStringTableKeys(PostChangeRowNames);
 
+	PreSourceStringTableModify();
+	
 	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
 	{
+		PostSourceStringTableModify();
+		
 		PreChangeRowNames = MoveTemp(PostChangeRowNames);
 	}
 }

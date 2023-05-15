@@ -38,6 +38,11 @@ FText UK2Node_Get_StructContainer::GetNodeTitle(ENodeTitleType::Type TitleType) 
 	return LOCTEXT("NodeTitle", "Get (Struct Container)");
 }
 
+FText UK2Node_Get_StructContainer::GetTooltipText() const
+{
+	return LOCTEXT("NodeTooltip", "Returns the data of the struct stored in the container.");
+}
+
 FText UK2Node_Get_StructContainer::GetKeywords() const
 {
 	return LOCTEXT("Keywords", "Get (Struct Container)");

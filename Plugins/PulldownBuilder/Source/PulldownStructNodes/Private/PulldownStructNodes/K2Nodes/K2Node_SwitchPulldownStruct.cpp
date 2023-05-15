@@ -74,13 +74,32 @@ FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType)
 	return LOCTEXT("NodeTitle", "Switch on Unknown Pulldown Struct");
 }
 
+FText UK2Node_SwitchPulldownStruct::GetTooltipText() const
+{
+	if (IsValid(PulldownStruct))
+	{
+		if (CachedNodeTooltip.IsOutOfDate(this))
+		{
+			CachedNodeTooltip.SetCachedText(
+				FText::Format(
+					LOCTEXT("NodeTooltipFormat", "Branch processing for each value that can be set for {0}."),
+					FText::FromString(PulldownStruct->GetName())
+				),
+				this
+			);
+		}
+	
+		return CachedNodeTooltip;
+	}
+
+	return LOCTEXT("NodeTooltip", "Branch processing for each value that can be set for FPulldownStructBase::SelectedValue.");
+}
+
 FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const
 {
-	static FNodeTextCache CachedCategory;
-	if (CachedCategory.IsOutOfDate(this))
+	if (CachedNodeCategory.IsOutOfDate(this))
 	{
-		// FText::Format() is slow, so we cache this to save on performance.
-		CachedCategory.SetCachedText(
+		CachedNodeCategory.SetCachedText(
 			FText::Format(
 				LOCTEXT("MenuCategoryFormat", "{0}|Pulldown Struct"),
 				Super::GetMenuCategory()
@@ -88,7 +107,8 @@ FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const
 			this
 		);
 	}
-	return CachedCategory;
+	
+	return CachedNodeCategory;
 }
 
 void UK2Node_SwitchPulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const

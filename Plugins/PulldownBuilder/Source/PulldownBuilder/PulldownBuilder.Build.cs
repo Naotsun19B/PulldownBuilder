@@ -21,12 +21,14 @@ public class PulldownBuilder : ModuleRules
 				"CoreUObject",
 				"InputCore",
 				"Engine",
+				"UnrealEd",
 				"Slate",
 				"SlateCore",
-				"UnrealEd",
+				"EditorStyle",
+				"MessageLog",
+				"Projects",
 				"ToolMenus",
 				"AssetTools",
-				"EditorStyle",
 				"GraphEditor",
 				"StructViewer",
 				"AssetRegistry",
@@ -35,8 +37,7 @@ public class PulldownBuilder : ModuleRules
 				"ApplicationCore",
 				"Json",
 				"JsonUtilities",
-				"MessageLog",
-				
+
 				"PulldownStruct",
 			}
 		);

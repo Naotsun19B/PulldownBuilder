@@ -8,7 +8,7 @@
 #include "NameArrayPulldownListGenerator.generated.h"
 
 /**
- * Generate a list to be displayed in the pull-down menu from the name array.
+ * A generator class that generates a list to be displayed in the pull-down menu from the name array.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
@@ -33,11 +33,18 @@ public:
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
-	// The name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
+	// Expansion points for implementation in blueprints.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called before a source name array is changed."))
+	void PreSourceNameArrayModify();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called after a source name array has been changed."))
+	void PostSourceNameArrayModify();
+	
+protected:
+	// A map of name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TMap<FName, FName> SourceNameArray;
 
-	// Cache of row list before change.
+	// A cache of row list before change.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

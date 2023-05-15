@@ -32,6 +32,8 @@ public class PulldownStruct : ModuleRules
 			}
 		);
 		
+		// Defines a macro that indicates whether this plugin is enabled and the pull-down struct is available.
+		// This is useful when you want to embed a pull-down struct without depending on this plugin.
 		PublicDefinitions.Add("WITH_PULLDOWN_BUILDER");
 	}
 }

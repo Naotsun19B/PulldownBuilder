@@ -378,18 +378,15 @@ namespace PulldownBuilder
 	
 	void FGraphPinContextMenuExtender::HandleOnCommandRun(const FName& CommandName, const FText& CommandLabel)
 	{
-		// When you reset a pin to its default value, the pin's
-		// appearance will not be reflected if you do not update it.
+		// When you reset a pin to its default value, the pin's appearance will not be reflected if you do not update it.
 		const TSharedPtr<FUICommandInfo>& ResetPinToDefaultValue = FGraphEditorCommands::Get().ResetPinToDefaultValue;
 		check(ResetPinToDefaultValue.IsValid());
 
-		if (CommandName.IsEqual(ResetPinToDefaultValue->GetCommandName()) &&
-			CommandLabel.EqualTo(ResetPinToDefaultValue->GetLabel()))
+		if (CommandName.IsEqual(ResetPinToDefaultValue->GetCommandName()) && CommandLabel.EqualTo(ResetPinToDefaultValue->GetLabel()))
 		{
 			check(IsValid(GEditor));
 
-			// Throw an event in the next frame because the default value of the pin must be reset
-			// before the update process can take place.
+			// Throw an event in the next frame because the default value of the pin must be reset before the update process can take place.
 			const TSharedRef<FTimerManager>& TimerManager = GEditor->GetTimerManager();
 			TimerManager->SetTimerForNextTick(
 				[]()

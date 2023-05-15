@@ -21,13 +21,13 @@ namespace PulldownBuilder
 		void RegisterInternal();
 
 	public:
-		// Register-Unregister and instance getter this class.
+		// Registers-Unregisters and instance getter this class.
 		static void Register();
 		static void Unregister();
 		static const ISlateStyle& Get();
 
 	private:
 		// An instance of this style class.
-		static TSharedPtr<FPulldownBuilderStyle> Instance;
+		static TUniquePtr<FPulldownBuilderStyle> Instance;
 	};
 }

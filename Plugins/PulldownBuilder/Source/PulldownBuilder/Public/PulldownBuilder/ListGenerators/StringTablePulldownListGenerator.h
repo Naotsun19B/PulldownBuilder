@@ -7,7 +7,7 @@
 #include "StringTablePulldownListGenerator.generated.h"
 
 /**
- * Generate a list to be displayed in the pull-down menu from the row name of the string table asset.
+ * A generator class that generates a list to be displayed in the pull-down menu from the row name of the string table asset.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UStringTablePulldownListGenerator
@@ -40,11 +40,17 @@ public:
 	// End of FTickableObjectBase interface.
 	
 protected:
-	// Cache a pull-down list of current keys of string table.
+	// Caches a pull-down list of current keys of string table.
 	void CacheStringTableKeys(TArray<FName>& StringTableKeys) const;
+
+	// Expansion points for implementation in blueprints.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called before the underlying string table is changed."))
+	void PreSourceStringTableModify();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called after the underlying string table has been changed."))
+	void PostSourceStringTableModify();
 	
 protected:
-	// The string table asset from which the list displayed in the pull-down menu is based.
+	// A string table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TSoftObjectPtr<UStringTable> SourceStringTable;
 
@@ -52,7 +58,7 @@ protected:
 	UPROPERTY(Transient)
 	bool bInitialized;
 	
-	// Cache of row list before change.
+	// A cache of row list before change.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

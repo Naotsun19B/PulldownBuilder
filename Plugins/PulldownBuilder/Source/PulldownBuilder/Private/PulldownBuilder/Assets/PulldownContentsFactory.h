@@ -7,7 +7,7 @@
 #include "PulldownContentsFactory.generated.h"
 
 /**
- * Pulldown Contents Factory class that creates assets.
+ * A factory class that creates PulldownContents assets.
  */
 UCLASS(NotBlueprintable, HideCategories = "Object")
 class PULLDOWNBUILDER_API UPulldownContentsFactory : public UFactory

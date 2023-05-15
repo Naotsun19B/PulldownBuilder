@@ -13,7 +13,7 @@ namespace PulldownBuilder
 	class SPulldownSelectorComboButton;
 	
 	/**
-	 * A custom graph pin that applies to structures that inherit from FPulldownStructBase.
+	 * A custom graph pin widget that applies to structures that inherit from FPulldownStructBase.
 	 */
 	class PULLDOWNBUILDER_API SPulldownStructGraphPin : public SGraphPin
 	{
@@ -35,7 +35,7 @@ namespace PulldownBuilder
 		// Rebuilds the list of strings to display in the pull-down menu.
 		virtual void RebuildPulldown();
 
-		// Refresh the widget in the pull-down menu.
+		// Refreshes the widget in the pull-down menu.
 		virtual void RefreshPulldownWidget();
 
 		// Generates a list of strings to display in the pull-down menu.
@@ -44,8 +44,7 @@ namespace PulldownBuilder
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
-		// Search for the same name as the specified name from the SelectableValues.
-		// If not found, returns nullptr.
+		// Finds for the same name as the specified name from the SelectableValues.
 		TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
 
 		// Returns the selected item.

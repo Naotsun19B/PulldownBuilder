@@ -16,12 +16,12 @@ namespace PulldownBuilder
 	class SPulldownSelectorComboButton;
 	
 	/**
-	 * Detail customization applied to structures that inherit from FPulldownStructBase.
+	 * A detail customization class that applied to structures that inherit from FPulldownStructBase.
 	 */
 	class PULLDOWNBUILDER_API FPulldownStructDetail : public IPropertyTypeCustomization
 	{
 	public:
-		// Register-Unregister and instantiate this customization.
+		// Registers-Unregisters and instantiate this customization.
 		static void Register(const FPulldownStructType& StructType);
 		static void Unregister(const FPulldownStructType& StructType);
 		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
@@ -35,13 +35,13 @@ namespace PulldownBuilder
 		// Rebuilds the list of strings to display in the pull-down menu.
 		virtual void RebuildPulldown();
 
-		// Refresh the widget in the pull-down menu.
+		// Refreshes the widget in the pull-down menu.
 		virtual void RefreshPulldownWidget();
 
 		// Generates a list of strings to display in the pull-down menu.
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
 	
-		// Behavior when multiple are selected. 
+		// Called when multiple properties are selected.
 		virtual void OnMultipleSelected();
 
 		// Returns whether the specified property is the property to be customized.
@@ -51,14 +51,14 @@ namespace PulldownBuilder
 		virtual bool IsCustomizationTarget(UProperty* InProperty) const;
 #endif
 
-		// Set custom properties before and after FPulldownStructBase::SelectedValue.
+		// Sets custom properties before and after FPulldownStructBase::SelectedValue.
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 		virtual void AddCustomRowAfterSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
-		// Search for the same name as the specified name from the SelectableValues.
+		// Finds for the same name as the specified name from the SelectableValues.
 		// If not found, returns nullptr.
 		TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
 
@@ -68,12 +68,12 @@ namespace PulldownBuilder
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
-		// Create a FUIAction that works with the pull-down struct's context menu.
+		// Creates a FUIAction that works with the pull-down struct's context menu.
 		FUIAction CreateSelectedValueCopyAction();
 		FUIAction CreateSelectedValuePasteAction();
 		FUIAction CreateBrowseSourceAssetAction();
 
-		// Add an action to browse source asset to the specified detail widget row.
+		// Adds an action to browse source asset to the specified detail widget row.
 		void AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow);
 		
 		// Called when a function is invoked from the pull-down struct's context menu.
@@ -87,14 +87,13 @@ namespace PulldownBuilder
 		virtual bool CanBrowseSourceAssetAction() const;
 
 	protected:
-		// The property handle of the struct that inherits the FPulldownStructBase
-		// that is the target of this detail customization.
+		// A property handle of the struct that inherits the FPulldownStructBase that is the target of this detail customization.
 		TSharedPtr<IPropertyHandle> StructPropertyHandle;
 	
 		// A list of values that can be set in FPulldownStructBase::SelectedValue.
 		TArray<TSharedPtr<FPulldownRow>> SelectableValues;
 
-		// FPulldownStructBase::SelectedValue property handle.
+		// A property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
 		// A widget that displays a pull-down menu based on the SelectableValues.

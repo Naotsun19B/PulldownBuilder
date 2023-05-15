@@ -1,11 +1,25 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
-#include "PulldownBuilderStyle.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "Interfaces/IPluginManager.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Styling/SlateStyleMacros.h"
+#if UE_5_00_OR_LATER
+#include "Styling/CoreStyle.h"
+#endif
+#include "Misc/Paths.h"
 
 namespace PulldownBuilder
 {
+#if !UE_5_00_OR_LATER
+	namespace CoreStyleConstants
+	{
+		static const FVector2D Icon16x16(16.f, 16.f);
+		static const FVector2D Icon64x64(64.f, 64.f);
+	}
+#endif
+	
 	FPulldownBuilderStyle::FPulldownBuilderStyle()
 		: FSlateStyleSet(TEXT("PulldownContentsStyle"))
 	{
@@ -14,21 +28,31 @@ namespace PulldownBuilder
 	void FPulldownBuilderStyle::RegisterInternal()
 	{
 		SetCoreContentRoot(FPaths::EngineContentDir());
-		SetContentRoot(FPaths::EngineContentDir() / TEXT("Editor"));
+		{
+			FString StyleContentRoot;
+			{
+				const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(Global::PluginName.ToString());
+				check(Plugin.IsValid());
+				StyleContentRoot = FPaths::ConvertRelativePathToFull(
+					Plugin->GetBaseDir() / TEXT("Resources") / TEXT("Icons")
+				);
+			}
+			SetContentRoot(StyleContentRoot);
+		}
 
 		Set(
 			TEXT("ClassIcon.PulldownContents"),
-			new IMAGE_BRUSH("Slate/Icons/AssetIcons/UserDefinedEnum_16x", CoreStyleConstants::Icon16x16)
+			new CORE_IMAGE_BRUSH("Editor/Slate/Icons/AssetIcons/UserDefinedEnum_16x", CoreStyleConstants::Icon16x16)
 		);
 		Set(
 			TEXT("ClassThumbnail.PulldownContents"),
-			new IMAGE_BRUSH("Slate/Icons/AssetIcons/UserDefinedEnum_64x", CoreStyleConstants::Icon64x64)
+			new CORE_IMAGE_BRUSH("Editor/Slate/Icons/AssetIcons/UserDefinedEnum_64x", CoreStyleConstants::Icon64x64)
 		);
 	}
 	
 	void FPulldownBuilderStyle::Register()
 	{
-		Instance = MakeShared<FPulldownBuilderStyle>();
+		Instance = MakeUnique<FPulldownBuilderStyle>();
 		Instance->RegisterInternal();
 		FSlateStyleRegistry::RegisterSlateStyle(*Instance);
 	}
@@ -45,5 +69,5 @@ namespace PulldownBuilder
 		return *Instance.Get();
 	}
 
-	TSharedPtr<FPulldownBuilderStyle> FPulldownBuilderStyle::Instance = nullptr;
+	TUniquePtr<FPulldownBuilderStyle> FPulldownBuilderStyle::Instance = nullptr;
 }

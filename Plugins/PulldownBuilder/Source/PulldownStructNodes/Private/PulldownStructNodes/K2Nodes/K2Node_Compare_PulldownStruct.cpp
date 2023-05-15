@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
+#include "EditorCategoryUtils.h"
 #include "KismetCompiler.h"
 #include "K2Node_CallFunction.h"
 
@@ -22,9 +23,9 @@ UK2Node_Compare_PulldownStruct::UK2Node_Compare_PulldownStruct()
 
 FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (IsValid(PulldownStruct))
+	if (CachedNodeTitle.IsOutOfDate(this))
 	{
-		if (CachedNodeTitle.IsOutOfDate(this))
+		if (IsValid(PulldownStruct))
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
@@ -35,14 +36,36 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 				this
 			);
 		}
+		else
+		{
+			CachedNodeTitle.SetCachedText(
+				FText::Format(
+					LOCTEXT("NodeTitle", "{0} (Unknown Pulldown Struct)"),
+					GetCompareMethodName()
+				),
+				this
+			);
+		}
+	}
 		
-		return CachedNodeTitle;
+	return CachedNodeTitle;
+}
+
+FText UK2Node_Compare_PulldownStruct::GetTooltipText() const
+{
+	if (CachedNodeTooltip.IsOutOfDate(this))
+	{
+		CachedNodeTitle.SetCachedText(
+			FText::Format(
+				LOCTEXT("NodeTooltipFormat", "Compare the values of SelectedValue in {0} and return if they are {1}."),
+				FText::FromString(GetNameSafe(PulldownStruct)),
+				FText::FromString(FName::NameToDisplayString(GetCompareMethodName().ToString(), false).ToLower())
+			),
+			this
+		);
 	}
 	
-	return FText::Format(
-		LOCTEXT("NodeTitle", "{0} (Unknown Pulldown Struct)"),
-		GetCompareMethodName()
-	);
+	return CachedNodeTooltip;
 }
 
 FText UK2Node_Compare_PulldownStruct::GetKeywords() const
@@ -83,10 +106,19 @@ FText UK2Node_Compare_PulldownStruct::GetCompactNodeTitle() const
 
 FText UK2Node_Compare_PulldownStruct::GetMenuCategory() const
 {
-	return FText::Format(
-		LOCTEXT("MenuCategoryFormat", "Utilities|Operators|Pulldown Struct|{0}"),
-		GetCompareMethodName()
-	);
+	if (CachedNodeCategory.IsOutOfDate(this))
+	{
+		CachedNodeCategory.SetCachedText(
+			FText::Format(
+				LOCTEXT("MenuCategoryFormat", "{0}|Operators|Pulldown Struct|{1}"),
+				FEditorCategoryUtils::GetCommonCategory(FCommonEditorCategory::Utilities),
+				GetCompareMethodName()
+			),
+			this
+		);
+	}
+	
+	return CachedNodeCategory;
 }
 
 void UK2Node_Compare_PulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
@@ -235,6 +267,8 @@ UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner
 				if (auto* CastedNode = Cast<UK2Node_Compare_PulldownStruct>(NewNode))
 				{
 					CastedNode->PulldownStruct = Struct;
+					CastedNode->CachedNodeTitle.Clear();
+					CastedNode->CachedNodeTooltip.Clear();
 				}
 			}
 		}

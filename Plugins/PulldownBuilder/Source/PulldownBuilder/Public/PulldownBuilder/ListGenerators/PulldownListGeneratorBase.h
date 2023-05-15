@@ -10,8 +10,8 @@
 
 /**
  * A generator class that generates a list to display in a pull-down menu.
- * You can filter the structures that can use this class by using the meta specifier in
- * the PulldownListGenerator class as follows:
+ * You can filter the structures that can use this class by using the meta specifier in the PulldownListGenerator class as follows:
+ * 
  * UCLASS(meta = (FilterPulldownStructTypes = "<StructName>, <StructName>..."))
  */
 UCLASS(Abstract, Blueprintable, EditInlineNew)
@@ -32,8 +32,7 @@ public:
 	) const;
 
 	// Returns whether there is an underlying asset.
-	// If this function returns true, the name of the original asset
-	// will be displayed in the PulldownContents pop-up display.
+	// If this function returns true, the name of the original asset will be displayed in the PulldownContents pop-up display.
 	virtual bool HasSourceAsset() const;
 
 	// Returns the name of the underlying asset only if "HasSourceAsset" returns true.
@@ -59,18 +58,18 @@ protected:
 	bool NotifyPulldownRowChanged(const TArray<FName>& PreChangeRowNames, const TArray<FName>& PostChangeRowNames);
 	
 	// Expansion points for implementation in blueprints.
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Pulldown Rows"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Pulldown Rows", Tooltip = "Returns a list of data to display in the pull-down menu."))
     TArray<FPulldownRow> GetPulldownRowsFromBlueprint(
     	const TArray<UObject*>& OuterObjects,
     	const FStructContainer& StructInstance
     ) const;
 
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Has Source Asset"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Has Source Asset", Tooltip = "Returns whether there is an underlying asset.\nIf this function returns true, the name of the original asset will be displayed in the PulldownContents pop-up display."))
 	bool HasSourceAssetFromBlueprint() const;
 
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Source Asset Name"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Source Asset Name", Tooltip = "Returns the name of the underlying asset only if \"HasSourceAsset\" returns true."))
 	FString GetSourceAssetNameFromBlueprint() const;
 
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Filter Pulldown Struct Types"))
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Filter Pulldown Struct Types", Tooltip = "Returns the types of structures that can use this pull-down list generator."))
 	TArray<FName> GetFilterPulldownStructTypesFromBlueprint() const;
 };

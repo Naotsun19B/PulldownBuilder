@@ -9,7 +9,7 @@
 class UPulldownContents;
 
 /**
- * Switch node for the value of FNativelessPulldownStructBase::SelectedValue in the pull-down structs.
+ * A switch node for the value of FNativelessPulldownStructBase::SelectedValue in the pull-down structs.
  */
 UCLASS(HideCategories = "PinOptions")
 class PULLDOWNSTRUCTNODES_API UK2Node_SwitchNativeLessPulldownStruct : public UK2Node_SwitchPulldownStruct
@@ -39,7 +39,7 @@ public:
 	// End of UK2Node_SwitchPulldownStruct interface.
 
 protected:
-	// The PulldownContents from which this switch node's pins originate.
+	// A PulldownContents asset from which this switch node's pins originate.
 	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	TSoftObjectPtr<UPulldownContents> PulldownContents;
 };

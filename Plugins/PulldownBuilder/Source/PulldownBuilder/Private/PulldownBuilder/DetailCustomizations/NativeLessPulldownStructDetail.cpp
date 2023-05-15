@@ -20,7 +20,7 @@ namespace PulldownBuilder
 	{
 		CachedPropertyTypeName = GetNameSafe(FNativeLessPulldownStruct::StaticStruct());
 			
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 			*CachedPropertyTypeName,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FNativeLessPulldownStructDetail::MakeInstance)
@@ -29,7 +29,7 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::Unregister()
 	{
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
 			*CachedPropertyTypeName
 		);

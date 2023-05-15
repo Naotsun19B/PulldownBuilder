@@ -8,7 +8,7 @@
 #include "K2Node_Get_StructContainer.generated.h"
 
 /**
- * Returns the data of the struct stored in the container..
+ * A node to get the actual value from the struct container.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_Get_StructContainer : public UK2Node
@@ -23,6 +23,7 @@ public:
 public:
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	virtual FText GetKeywords() const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.

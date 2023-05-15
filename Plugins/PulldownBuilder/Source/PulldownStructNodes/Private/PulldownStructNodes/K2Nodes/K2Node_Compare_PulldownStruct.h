@@ -10,7 +10,7 @@
 class UBlueprintNodeSpawner;
 
 /**
- * Compares FPulldownStructBase::SelectedValue between pull-down structs of the same type and returns values comparison result.
+ * A compare node that compares the values in A and returns the result.
  */
 UCLASS(Abstract)
 class PULLDOWNSTRUCTNODES_API UK2Node_Compare_PulldownStruct : public UK2Node
@@ -28,6 +28,7 @@ public:
 	
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	virtual FText GetKeywords() const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
@@ -53,7 +54,7 @@ protected:
 	// Returns the operator of the comparison method used in the node title, etc.
 	virtual FText GetCompareMethodOperator() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetCompareMethodOperator, return FText::GetEmpty(););
 	
-	// Get the name of the function to actually execute.
+	// Gets the name of the function to actually execute.
 	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, return NAME_None;);
 	
 private:
@@ -65,10 +66,16 @@ protected:
 	UPROPERTY()
 	UScriptStruct* PulldownStruct;
 
-	// A cache of text for the title of this node.
-	FNodeTextCache CachedNodeTitle;
-
 	// Whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
 	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	bool bStrictComparison;
+
+	// A cache of text for the title of this node.
+	FNodeTextCache CachedNodeTitle;
+
+	// A cache of text for the tooltip of this node.
+	FNodeTextCache CachedNodeTooltip;
+	
+	// A cache of text for the category of this node.
+	FNodeTextCache CachedNodeCategory;
 };

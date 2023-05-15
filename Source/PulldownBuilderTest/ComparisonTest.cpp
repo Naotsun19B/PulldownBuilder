@@ -2,7 +2,7 @@
 
 #include "TestPulldown.h"
 
-namespace EqualTest
+namespace ComparisonTest
 {
 	void TestFunction()
 	{

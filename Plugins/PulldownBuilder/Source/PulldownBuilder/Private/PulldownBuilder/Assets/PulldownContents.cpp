@@ -211,7 +211,7 @@ void UPulldownContents::RegisterDetailCustomization()
 	}
 
 	// If the Pulldown Struct Type is empty, the process will be skipped.
-	if (PulldownStructType.IsEmpty())
+	if (!PulldownStructType.IsValid())
 	{
 		return;
 	}
@@ -229,7 +229,7 @@ void UPulldownContents::UnregisterDetailCustomization()
 	}
 
 	// If the Pulldown Struct Type is empty, the process will be skipped.
-	if (PulldownStructType.IsEmpty())
+	if (!PulldownStructType.IsValid())
 	{
 		return;
 	}

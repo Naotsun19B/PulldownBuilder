@@ -16,7 +16,7 @@ struct FPulldownStructType
 	GENERATED_BODY()
 
 public:
-	// StaticStruct pointer for the specified struct.
+	// A StaticStruct pointer for the specified struct.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	UScriptStruct* SelectedStruct;
 
@@ -50,7 +50,7 @@ public:
 
 	FORCEINLINE FName operator *() const
 	{
-		if (IsValid(SelectedStruct))
+		if (::IsValid(SelectedStruct))
 		{
 			return SelectedStruct->GetFName();
 		}
@@ -59,8 +59,8 @@ public:
 	}
 	// End of overload oprators.
 	
-	// Returns whether the struct information is empty.
-	bool IsEmpty() const { return !IsValid(SelectedStruct); }
+	// Returns whether the struct information is valid.
+	bool IsValid() const { return !::IsValid(SelectedStruct); }
 };
 
 // Define a GetTypeHash function so that it can be used as a map key.

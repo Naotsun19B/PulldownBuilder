@@ -19,11 +19,13 @@
 #include "EditorStyleSet.h"
 #endif
 
+#define LOCTEXT_NAMESPACE "PulldownStructTypeDetail"
+
 namespace PulldownBuilder
 {
 	namespace StructFilter
 	{
-		// Filter class for displaying only structs that inherit from FPulldownStructBase in the struct picker.
+		// A filter class for displaying only structs that inherit from FPulldownStructBase in the struct picker.
 		class FPulldownStructFilter : public IStructViewerFilter
 		{
 		public:
@@ -62,7 +64,7 @@ namespace PulldownBuilder
 	{
 		CachedPropertyTypeName = GetNameSafe(FPulldownStructType::StaticStruct());
 		
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 			*CachedPropertyTypeName,
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructTypeDetail::MakeInstance)
@@ -71,7 +73,7 @@ namespace PulldownBuilder
 
 	void FPulldownStructTypeDetail::Unregister()
 	{
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
 		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
 			*CachedPropertyTypeName
 		);
@@ -144,12 +146,12 @@ namespace PulldownBuilder
 			return FText::AsCultureInvariant(Struct->GetName());
 		}
 
-		return NSLOCTEXT("PulldownStructTypeDetail", "NoSelectedStruct", "None");
+		return LOCTEXT("NoSelectedStruct", "None");
 	}
 
 	TSharedRef<SWidget> FPulldownStructTypeDetail::GenerateStructPicker()
 	{
-		FStructViewerModule& StructViewerModule = FModuleManager::LoadModuleChecked<FStructViewerModule>("StructViewer");
+		FStructViewerModule& StructViewerModule = FModuleManager::LoadModuleChecked<FStructViewerModule>(TEXT("StructViewer"));
 
 		FStructViewerInitializationOptions Options;
 		Options.StructFilter = MakeShared<StructFilter::FPulldownStructFilter>();
@@ -184,3 +186,5 @@ namespace PulldownBuilder
 
 	FString FPulldownStructTypeDetail::CachedPropertyTypeName;
 }
+
+#undef LOCTEXT_NAMESPACE

@@ -408,9 +408,14 @@ namespace PulldownBuilder
 		return bWasSuccessful;
 	}
 
+	FPropertyEditorModule& FPulldownBuilderUtils::GetPropertyEditorModule()
+	{
+		return FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+	}
+
 	ISettingsModule* FPulldownBuilderUtils::GetSettingsModule()
 	{
-		return FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+		return FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"));
 	}
 
 	void FPulldownBuilderUtils::RegisterSettings(

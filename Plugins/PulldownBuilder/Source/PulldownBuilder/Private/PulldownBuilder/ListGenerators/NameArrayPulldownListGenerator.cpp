@@ -20,6 +20,8 @@ void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToCh
 	{
 		PreChangeRowNames.Reset();
 		SourceNameArray.GenerateKeyArray(PreChangeRowNames);
+
+		PreSourceNameArrayModify();
 	}
 }
 
@@ -36,6 +38,8 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 	{
 		TArray<FName> PostChangeRowNames;
 		SourceNameArray.GenerateKeyArray(PostChangeRowNames);
+
+		PostSourceNameArrayModify();
 		
 		if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
 		{

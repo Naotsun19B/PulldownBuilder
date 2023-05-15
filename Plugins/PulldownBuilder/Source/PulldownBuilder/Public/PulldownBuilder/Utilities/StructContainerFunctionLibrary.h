@@ -8,7 +8,7 @@
 #include "StructContainerFunctionLibrary.generated.h"
 
 /**
- * A class that defines a blueprint node for FStructContainer.
+ * A utility class that defines a blueprint node for FStructContainer.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UStructContainerFunctionLibrary : public UBlueprintFunctionLibrary

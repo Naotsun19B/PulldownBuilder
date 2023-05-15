@@ -23,7 +23,7 @@ namespace PulldownBuilder
 		static FOnPinDefaultValueChanged OnPinDefaultValueChanged;
 		
 	public:
-		// Register-Unregister a graph pin context menu extension.
+		// Registers-Unregisters a graph pin context menu extension.
 		static void Register();
 		static void Unregister();
 

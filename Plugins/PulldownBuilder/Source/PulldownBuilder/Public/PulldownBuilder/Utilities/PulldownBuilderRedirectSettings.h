@@ -9,7 +9,7 @@
 #include "PulldownBuilderRedirectSettings.generated.h"
 
 /**
- * Settings related to redirect processing when changes are made to the data that is the source of the pull-down list.
+ * A editor preferences class for redirect processing when changes are made to the data that is the source of the pull-down list.
  */
 UCLASS(Config = Editor, DefaultConfig)
 class PULLDOWNBUILDER_API UPulldownBuilderRedirectSettings : public UObject
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Redirect", DisplayName = "Should Update When Source Row Name Changed (Experimental)")
 	bool bShouldUpdateWhenSourceRowNameChanged;
 
-	// Active per-asset updater class.
+	// A list of active per-asset updater class.
 	// Blueprint, data table, and data asset are provided by default.
 	UPROPERTY(EditAnywhere, Config, Category = "Redirect", meta = (EditCondition = "bShouldUpdateWhenSourceRowNameChanged"))
 	TArray<TSubclassOf<URowNameUpdaterBase>> ActiveRowNameUpdater;
@@ -38,7 +38,7 @@ public:
     // Constructor.
 	UPulldownBuilderRedirectSettings();
 
-	// Register - unregister in the editor setting item.
+	// Registers-Unregisters in the editor setting item.
 	static void Register();
 	static void Unregister();
 

@@ -11,8 +11,7 @@
 class UPulldownContents;
 
 /**
- * A base class that replaces an already used value with a new one
- * when the display string list of PulldownContents is updated.
+ * A base class that replaces an already used value with a new one when the display string list of PulldownContents is updated.
  */
 UCLASS(Abstract)
 class PULLDOWNBUILDER_API URowNameUpdaterBase : public UObject
@@ -20,7 +19,7 @@ class PULLDOWNBUILDER_API URowNameUpdaterBase : public UObject
 	GENERATED_BODY()
 
 public:
-	// Update all FPulldownStructBase that reference owner PulldownContents asset.
+	// Updates all pull-down struct that reference owner PulldownContents asset.
 	static void UpdateRowNames(
 		UPulldownContents* PulldownContents,
 		const FName& PreChangeName,
@@ -28,7 +27,8 @@ public:
 	);
 
 protected:
-	// The actual upload process. Perform processing according to the asset type in the inherited class.
+	// The actual update process.
+	// Performs processing according to the asset type in the inherited class.
 	virtual void UpdateRowNamesInternal(
 		UPulldownContents* PulldownContents,
 		const FName& PreChangeName,
@@ -38,7 +38,7 @@ protected:
 	// Returns whether to perform the upload process.
 	virtual bool ShouldUpdateProcess() const;
 	
-	// Update the FPulldownStructBase in the member variable of the specified class.
+	// Updates the FPulldownStructBase in the member variable of the specified class.
 	virtual bool UpdateMemberVariables(
 		UClass* Class,
 		UPulldownContents* PulldownContents,
@@ -53,7 +53,7 @@ protected:
 		const FName& PostChangeName
 	);
 
-	// Scans objects of the specified class.
+	// Enumerates objects of the specified class.
 	template<class TAsset>
 	void EnumerateAssets(TFunction<bool(TAsset* Asset)> Predicate)
 	{

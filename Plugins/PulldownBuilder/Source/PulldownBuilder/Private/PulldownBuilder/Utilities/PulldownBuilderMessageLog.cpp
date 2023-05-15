@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
+#include "PulldownBuilder/Types/PulldownBuilderNotificationSeverity.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Modules/ModuleManager.h"
 #include "MessageLogModule.h"
@@ -15,8 +16,8 @@ namespace PulldownBuilder
 		Options.bShowFilters = true;
 		auto& MessageLogModule = FModuleManager::LoadModuleChecked<FMessageLogModule>(TEXT("MessageLog"));
 		MessageLogModule.RegisterLogListing(
-			PluginName,
-			FText::FromString(FName::NameToDisplayString(PluginName.ToString(), false)),
+			Global::PluginName,
+			FText::FromString(FName::NameToDisplayString(Global::PluginName.ToString(), false)),
 			Options
 		);
 	}
@@ -24,7 +25,7 @@ namespace PulldownBuilder
 	void FPulldownBuilderMessageLog::Unregister()
 	{
 		auto& MessageLogModule = FModuleManager::LoadModuleChecked<FMessageLogModule>(TEXT("MessageLog"));
-		MessageLogModule.UnregisterLogListing(PluginName);
+		MessageLogModule.UnregisterLogListing(Global::PluginName);
 	}
 	
 	TSharedRef<FTokenizedMessage> FPulldownBuilderMessageLog::Info(const FText& InMessage)
@@ -42,9 +43,9 @@ namespace PulldownBuilder
 		return Message(EMessageSeverity::Error, InMessage);
 	}
 
-	TSharedRef<FTokenizedMessage> FPulldownBuilderMessageLog::Message(EMessageSeverity::Type InSeverity, const FText& InMessage)
+	TSharedRef<FTokenizedMessage> FPulldownBuilderMessageLog::Message(const EMessageSeverity::Type InSeverity, const FText& InMessage)
 	{
-		FMessageLog MessageLog(PluginName);
+		FMessageLog MessageLog(Global::PluginName);
 		TSharedRef<FTokenizedMessage> TokenizedMessage = MessageLog.Message(InSeverity, InMessage);
 		
 		TOptional<EMessageSeverity::Type> MessageSeverity;

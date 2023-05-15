@@ -8,13 +8,12 @@
 namespace PulldownBuilder
 {
 	/**
-	 * A factory class that registers a custom graph pin that displays a pull-down menu for
-	 * structures that inherit FPulldownStructBase.
+	 * A factory class that registers a custom graph pin that displays a pull-down menu for structures that inherit FPulldownStructBase.
 	 */
 	class PULLDOWNBUILDER_API FPulldownStructGraphPinFactory : public FGraphPanelPinFactory
 	{
 	public:
-		// Register-Unregister FPulldownStructGraphPinFactory in the list of graph pin factory.
+		// Registers-Unregisters FPulldownStructGraphPinFactory in the list of graph pin factory.
 		static void Register();
 		static void Unregister();
 

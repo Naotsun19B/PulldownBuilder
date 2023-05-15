@@ -26,7 +26,7 @@ public:
 	// Destructor.
 	~FStructContainer();
 
-	// Copy operator.
+	// Overload operators.
 	FStructContainer& operator=(const FStructContainer& Other)
 	{
 		if (this != &Other)
@@ -35,8 +35,6 @@ public:
 		}
 		return *this;
 	}
-
-	// Move operator.
 	FStructContainer& operator=(FStructContainer&& Other) noexcept
 	{
 		if (this != &Other)
@@ -48,8 +46,6 @@ public:
 		}
 		return *this;
 	}
-
-	// Comparison operators.
 	bool operator==(const FStructContainer& Other) const
 	{
 		return Identical(&Other, PPF_None);
@@ -72,6 +68,7 @@ public:
 	{
 		return !operator==(Other);
 	}
+	// End of overload operators.
 	
 	// TStructOpsTypeTraits interface.
 	bool Identical(const FStructContainer* Other, uint32 PortFlags) const;
@@ -87,7 +84,7 @@ public:
 	// Returns whether the data of the struct stored in the container is valid.
 	bool IsValid() const;
 
-	// Empty the data stored in this container.
+	// Empties the data stored in this container.
 	void Reset();
 	
 	// Returns the type of the struct stored in this container.
@@ -97,7 +94,7 @@ public:
 	const uint8* GetMemory() const;
 	uint8* GetMutableMemory() const;
 	
-	// Cast the data stored in the container to TStruct and return it.
+	// Casts the data stored in the container to TStruct and return it.
 	template<typename TStruct>
 	const TStruct* Get() const
 	{
@@ -117,17 +114,17 @@ protected:
 	// Initializes for new struct type (does nothing if same type) and returns mutable struct.
 	UScriptStruct* ReinitializeAs(const UScriptStruct* InScriptStruct);
 
-	// Discard the struct data stored in this container.
+	// Discards the struct data stored in this container.
 	void DestroyScriptStruct() const;
 
-	// Set new values for struct types and values.
+	// Sets new values for struct types and values.
 	void SetStructData(const UScriptStruct* InScriptStruct, const uint8* InStructMemory);
 
 protected:
-	// The type of struct stored in this container.
+	// A type of struct stored in this container.
 	const UScriptStruct* ScriptStruct;
 
-	// The raw data of the struct stored in this container.
+	// A raw data of the struct stored in this container.
 	const uint8* StructMemory;
 };
 

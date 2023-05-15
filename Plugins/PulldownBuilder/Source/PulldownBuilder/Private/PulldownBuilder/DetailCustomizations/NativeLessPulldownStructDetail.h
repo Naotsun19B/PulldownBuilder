@@ -12,12 +12,12 @@ namespace PulldownBuilder
 	class SPulldownSelectorComboButton;
 	
 	/**
-	 * Detail customization applied to structures that inherit from FPulldownStructBase.
+	 * A detail customization class that applied to structures that inherit from FPulldownStructBase.
 	 */
 	class PULLDOWNBUILDER_API FNativeLessPulldownStructDetail : public FPulldownStructDetail
 	{
 	public:
-		// Register-Unregister and instantiate this customization.
+		// Registers-Unregisters and instantiate this customization.
 		static void Register();
 		static void Unregister();
 		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
@@ -41,8 +41,7 @@ namespace PulldownBuilder
 		virtual bool CanBrowseSourceAssetAction() const override;
 		// End of FPulldownStructDetail interface.
 
-		// Search for the same name as the specified name from the PulldownContentsNames.
-		// If not found, returns nullptr.
+		// Finds for the same name as the specified name from the PulldownContentsNames.
 		TSharedPtr<FPulldownRow> FindPulldownContentsNameByName(const FName& InName) const;
 
 		// Returns the selected pull-down source.
@@ -51,7 +50,7 @@ namespace PulldownBuilder
 		// Called when the value of the PulldownSourceWidget changes.
 		void OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 
-		// Create a FUIAction from a copy-paste FNativeLessPulldownStruct::PulldownSource callback function.
+		// Creates a FUIAction from a copy-paste FNativeLessPulldownStruct::PulldownSource callback function.
 		FUIAction CreatePulldownSourceCopyAction();
 		FUIAction CreatePulldownSourcePasteAction();
 
@@ -63,7 +62,7 @@ namespace PulldownBuilder
 		// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
 		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
 	
-		// FNativeLessPulldownStruct::PulldownContentsName property handle.
+		// A property handle of FNativeLessPulldownStruct::PulldownContentsName.
 		TSharedPtr<IPropertyHandle> PulldownSourceHandle;
 
 		// A widget that displays a pull-down menu based on the PulldownContentsNames.

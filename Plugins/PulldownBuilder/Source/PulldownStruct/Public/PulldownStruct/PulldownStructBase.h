@@ -6,7 +6,7 @@
 #include "PulldownStructBase.generated.h"
 
 /**
- * Base struct of the struct displayed as a pull-down menu.
+ * A base struct of the struct displayed as a pull-down menu.
  * To create a pull-down menu struct in C++, define a struct that inherits this struct.
  * If the inherited child struct is used only internally and cannot be used from within Blueprint and
  * cannot be selected by FPulldownStructType, it is necessary to specify "NotBlueprintType" and
@@ -18,7 +18,7 @@ struct FPulldownStructBase
 	GENERATED_BODY()
 
 public:
-	// Variable to store the item selected in the pull-down menu.
+	// A variable to store the item selected in the pull-down menu.
 	// Stores the value used at runtime.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FName SelectedValue;
@@ -30,7 +30,7 @@ public:
 	virtual ~FPulldownStructBase() = default;
 
 	// Conversion functions.
-	const FName& ToName() const { return SelectedValue; }
+	const FName& operator* () const { return SelectedValue; }
 	FString ToString() const { return SelectedValue.ToString(); }
 	FText ToText() const { return FText::FromName(SelectedValue); }
 };
@@ -52,14 +52,13 @@ public:
 	);
 };
 
-// A function for comparing structures that inherit from FPulldownStructBase.
+// Functions for comparing structures that inherit from FPulldownStructBase.
 // Make it possible to compare only structures of the same type.
 template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
 	return (Lhs.SelectedValue == Rhs.SelectedValue);
 }
-
 template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator!=(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {

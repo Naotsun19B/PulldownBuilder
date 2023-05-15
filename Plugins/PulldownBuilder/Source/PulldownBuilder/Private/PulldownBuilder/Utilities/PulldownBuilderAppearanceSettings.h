@@ -8,7 +8,7 @@
 #include "PulldownBuilderAppearanceSettings.generated.h"
 
 /**
- * Settings related to the appearance of editor extensions that display a list of pull-downs.
+ * A editor preferences class for the appearance of editor extensions that display a list of pull-downs.
  */
 UCLASS(Config = Editor)
 class UPulldownBuilderAppearanceSettings : public UObject
@@ -16,7 +16,7 @@ class UPulldownBuilderAppearanceSettings : public UObject
 	GENERATED_BODY()
 	
 public:
-	// Size of the PulldownSelector widget.
+	// A size of the PulldownSelector widget.
 	UPROPERTY(EditAnywhere, Config, Category = "Selector")
 	FVector2D PanelSize;
 
@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Details")
 	bool bShouldInlineDisplayWhenSingleProperty;
 
-	// Specifies the severity of the notification.
+	// A severity of the notification.
 	UPROPERTY(EditAnywhere, Config, Category = "Notification")
 	EPulldownBuilderNotificationSeverity NotificationSeverity;
 	
@@ -36,7 +36,7 @@ public:
 	// Constructor.
 	UPulldownBuilderAppearanceSettings();
 
-	// Register - unregister in the editor setting item.
+	// Registers-Unregisters in the editor setting item.
 	static void Register();
 	static void Unregister();
 

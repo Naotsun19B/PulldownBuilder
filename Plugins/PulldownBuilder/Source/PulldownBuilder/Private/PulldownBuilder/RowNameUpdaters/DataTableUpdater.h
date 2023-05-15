@@ -7,7 +7,7 @@
 #include "DataTableUpdater.generated.h"
 
 /**
- * A class that updates the FPulldownStructBase contained in a data table asset.
+ * A class that updates the FPulldownStructBase contained in a data table.
  */
 UCLASS()
 class PULLDOWNBUILDER_API UDataTableUpdater : public URowNameUpdaterBase

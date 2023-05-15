@@ -12,9 +12,9 @@ namespace PulldownBuilder
 {
 	namespace RedirectSettings
 	{
-		static const FName ContainerName			= TEXT("Editor");
-		static const FName CategoryName				= TEXT("Plugins");
-		static const FName SectionName				= TEXT("PulldownBuilderRedirectSettings");
+		static const FName ContainerName	= TEXT("Editor");
+		static const FName CategoryName		= TEXT("Plugins");
+		static const FName SectionName		= TEXT("PulldownBuilderRedirectSettings");
 	}
 }
 
