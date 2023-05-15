@@ -207,6 +207,11 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2023/05/16) v2.1  
+  Fixed a bug that crashes when exiting the editor    
+  Added macro to indicate if pulldown structure is available  
+  Added support for UE5.2  
+
 - (2023/03/06) v2.0  
   Added compare nodes for `NativeLessPulldownStruct`  
   Added switch nodes for pull-down structure  
