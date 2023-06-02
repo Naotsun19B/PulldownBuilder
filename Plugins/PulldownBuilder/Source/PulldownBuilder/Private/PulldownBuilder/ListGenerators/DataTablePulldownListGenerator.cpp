@@ -70,12 +70,7 @@ bool UDataTablePulldownListGenerator::HasSourceAsset() const
 
 FString UDataTablePulldownListGenerator::GetSourceAssetName() const
 {
-	if (const UDataTable* DataTable = SourceDataTable.LoadSynchronous())
-	{
-		return DataTable->GetName();
-	}
-
-	return TEXT("SourceDataTable is not set");
+	return SourceDataTable.GetAssetName();
 }
 
 void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)

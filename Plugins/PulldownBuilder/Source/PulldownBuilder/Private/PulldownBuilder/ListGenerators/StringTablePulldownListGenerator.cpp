@@ -65,12 +65,7 @@ bool UStringTablePulldownListGenerator::HasSourceAsset() const
 
 FString UStringTablePulldownListGenerator::GetSourceAssetName() const
 {
-	if (const UStringTable* StringTable = SourceStringTable.LoadSynchronous())
-	{
-		return StringTable->GetName();
-	}
-
-	return TEXT("SourceStringTable is not set");
+	return SourceStringTable.GetAssetName();
 }
 
 void UStringTablePulldownListGenerator::Tick(float DeltaTime)

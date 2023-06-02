@@ -128,19 +128,21 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	));
 
 	// Added the name of the underlying asset of the PulldownListGenerator to AssetRegistryTags.
-	FName SourceAssetName = NAME_None;
+	FString SourceAssetName = LexToString(NAME_None);
 	if (IsValid(PulldownListGenerator))
 	{
 		if (PulldownListGenerator->HasSourceAsset())
 		{
-			SourceAssetName = *PulldownListGenerator->GetSourceAssetName();
+			SourceAssetName = PulldownListGenerator->GetSourceAssetName();
 		}
 	}
-	OutTags.Add(FAssetRegistryTag(
-		SourceAssetTag,
-		SourceAssetName.ToString(),
-		FAssetRegistryTag::TT_Alphabetical
-	));
+	OutTags.Add(
+		FAssetRegistryTag(
+			SourceAssetTag,
+			SourceAssetName,
+			FAssetRegistryTag::TT_Alphabetical
+		)
+	);
 }
 
 const FPulldownStructType& UPulldownContents::GetPulldownStructType() const
