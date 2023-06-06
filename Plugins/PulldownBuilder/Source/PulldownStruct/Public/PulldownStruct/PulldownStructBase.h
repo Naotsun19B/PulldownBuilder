@@ -34,16 +34,13 @@ public:
 	const FName& operator* () const { return SelectedValue; }
 	FString ToString() const { return SelectedValue.ToString(); }
 	FText ToText() const { return FText::FromName(SelectedValue); }
+	
+	// Returns whether no valid value is selected.
+    bool IsNone() const { return SelectedValue.IsNone(); }
 };
 
-// Define a GetTypeHash function so that it can be used as a map key.
-FORCEINLINE uint32 GetTypeHash(const FPulldownStructBase& PulldownStruct)
-{
-	return GetTypeHash(PulldownStruct.SelectedValue);
-}
-
 // A meta-struct that checks if it is a struct that inherits FPulldownStructBase.
-template<class TPulldownStruct>
+template<typename TPulldownStruct>
 struct TIsPulldownStruct
 {
 public:
@@ -58,15 +55,29 @@ public:
 };
 
 // Compares structs of the same type inheriting FPulldownStructBase and returns whether the values are equal.
-template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
+template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
 	return Lhs.SelectedValue.IsEqual(Rhs.SelectedValue, ENameCase::CaseSensitive);
 }
 
 // Compares structs of the same type inheriting FPulldownStructBase and returns whether the values are not equal.
-template<class TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
+template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator!=(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
 	return !(Lhs == Rhs);
+}
+
+// Define a GetTypeHash function so that it can be used as a map key.
+template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
+FORCEINLINE_DEBUGGABLE uint32 GetTypeHash(const TPulldownStruct& PulldownStruct)
+{
+	return GetTypeHash(PulldownStruct.SelectedValue);
+}
+
+// Returns the SelectedValue of the structs that inherits FPulldownStructBase in the type of FString.
+template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
+FORCEINLINE_DEBUGGABLE FString LexToString(const TPulldownStruct& PulldownStruct)
+{
+	return PulldownStruct.ToString();
 }
