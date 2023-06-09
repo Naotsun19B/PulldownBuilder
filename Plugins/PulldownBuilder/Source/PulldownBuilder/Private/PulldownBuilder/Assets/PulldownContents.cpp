@@ -10,6 +10,10 @@
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownContents)
+#endif
+
 #define LOCTEXT_NAMESPACE "PulldownContents"
 
 const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructType");

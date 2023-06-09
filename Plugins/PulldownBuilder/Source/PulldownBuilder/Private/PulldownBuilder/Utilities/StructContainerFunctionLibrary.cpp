@@ -3,6 +3,10 @@
 #include "PulldownBuilder/Utilities/StructContainerFunctionLibrary.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(StructContainerFunctionLibrary)
+#endif
+
 bool UStructContainerFunctionLibrary::Get_StructContainer(const FStructContainer& Target, int32& StructData)
 {
 	unimplemented();

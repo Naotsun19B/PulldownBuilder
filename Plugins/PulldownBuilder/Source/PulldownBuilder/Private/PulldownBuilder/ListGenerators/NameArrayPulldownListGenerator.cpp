@@ -3,6 +3,10 @@
 #include "PulldownBuilder/ListGenerators/NameArrayPulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(NameArrayPulldownListGenerator)
+#endif
+
 #if UE_4_25_OR_LATER
 void UNameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToChange)
 #else

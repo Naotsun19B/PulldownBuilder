@@ -1,7 +1,12 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Engine/DataAsset.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DataAssetUpdater)
+#endif
 
 void UDataAssetUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,

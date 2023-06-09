@@ -2,6 +2,11 @@
 
 #include "PulldownBuilder/Assets/PulldownContentsFactory.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownContentsFactory)
+#endif
 
 UPulldownContentsFactory::UPulldownContentsFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

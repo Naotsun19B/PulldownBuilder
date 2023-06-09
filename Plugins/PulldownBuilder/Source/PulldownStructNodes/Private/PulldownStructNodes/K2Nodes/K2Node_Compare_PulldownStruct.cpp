@@ -11,6 +11,10 @@
 #include "KismetCompiler.h"
 #include "K2Node_CallFunction.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(K2Node_Compare_PulldownStruct)
+#endif
+
 #define LOCTEXT_NAMESPACE "K2Node_Compare_PulldownStruct"
 
 const FName UK2Node_Compare_PulldownStruct::LhsPinName = TEXT("Lhs");

@@ -7,7 +7,12 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Misc/UObjectToken.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RowNameUpdaterBase)
+#endif
 
 #define LOCTEXT_NAMESPACE "RowNameUpdaterBase"
 

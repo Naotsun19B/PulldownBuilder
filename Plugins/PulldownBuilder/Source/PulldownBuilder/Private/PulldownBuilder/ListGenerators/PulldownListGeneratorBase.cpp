@@ -3,7 +3,12 @@
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "UObject/UObjectThreadContext.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownListGeneratorBase)
+#endif
 
 const FName UPulldownListGeneratorBase::FilterPulldownStructTypesName = TEXT("FilterPulldownStructTypes");
 

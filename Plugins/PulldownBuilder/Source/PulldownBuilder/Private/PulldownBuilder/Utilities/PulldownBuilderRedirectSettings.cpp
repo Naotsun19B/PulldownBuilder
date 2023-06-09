@@ -5,6 +5,11 @@
 #include "PulldownBuilder/RowNameUpdaters/BlueprintUpdater.h"
 #include "PulldownBuilder/RowNameUpdaters/DataAssetUpdater.h"
 #include "PulldownBuilder/RowNameUpdaters/DataTableUpdater.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownBuilderRedirectSettings)
+#endif
 
 #define LOCTEXT_NAMESPACE "PulldownBuilderRedirectSettings"
 

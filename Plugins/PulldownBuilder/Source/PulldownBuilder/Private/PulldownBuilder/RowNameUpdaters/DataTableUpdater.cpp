@@ -4,6 +4,10 @@
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Engine/DataTable.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DataTableUpdater)
+#endif
+
 void UDataTableUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
 	const FName& PreChangeName,

@@ -6,8 +6,13 @@
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(K2Node_SwitchNativeLessPulldownStruct)
+#endif
 
 #define LOCTEXT_NAMESPACE "K2Node_SwitchNativeLessPulldownStruct"
 

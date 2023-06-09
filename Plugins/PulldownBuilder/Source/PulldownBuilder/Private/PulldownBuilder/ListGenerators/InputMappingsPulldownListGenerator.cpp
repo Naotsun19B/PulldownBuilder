@@ -1,8 +1,13 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/InputMappingsPulldownListGenerator.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "GameFramework/InputSettings.h"
 #include "Editor.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(InputMappingsPulldownListGenerator)
+#endif
 
 UInputMappingsPulldownListGenerator::UInputMappingsPulldownListGenerator()
 	: bIncludeActionMappings(true)

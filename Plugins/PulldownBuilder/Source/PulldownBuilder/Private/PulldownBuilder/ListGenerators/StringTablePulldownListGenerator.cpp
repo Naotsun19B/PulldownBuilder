@@ -1,8 +1,13 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/StringTablePulldownListGenerator.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(StringTablePulldownListGenerator)
+#endif
 
 UStringTablePulldownListGenerator::UStringTablePulldownListGenerator()
 	: bInitialized(false)

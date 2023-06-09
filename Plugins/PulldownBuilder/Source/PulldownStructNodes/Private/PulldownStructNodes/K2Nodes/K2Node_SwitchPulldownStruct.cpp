@@ -6,11 +6,15 @@
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
-#include "EdGraphUtilities.h"
 #include "KismetCompiler.h"
 #include "K2Node_SwitchName.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(K2Node_SwitchPulldownStruct)
+#endif
 
 #define LOCTEXT_NAMESPACE "K2Node_SwitchPulldownStruct"
 

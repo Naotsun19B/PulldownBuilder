@@ -10,7 +10,7 @@
 /**
  * A editor preferences class for the appearance of editor extensions that display a list of pull-downs.
  */
-UCLASS(Config = Editor)
+UCLASS(Config = Editor, GlobalUserConfig)
 class UPulldownBuilderAppearanceSettings : public UObject
 {
 	GENERATED_BODY()

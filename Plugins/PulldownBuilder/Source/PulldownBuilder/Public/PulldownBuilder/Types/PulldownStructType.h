@@ -57,10 +57,10 @@ public:
 
 		return NAME_None;
 	}
-	// End of overload oprators.
+	// End of overload operators.
 	
 	// Returns whether the struct information is valid.
-	bool IsValid() const { return !::IsValid(SelectedStruct); }
+	bool IsValid() const { return ::IsValid(SelectedStruct); }
 };
 
 // Define a GetTypeHash function so that it can be used as a map key.

@@ -5,9 +5,14 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Engine/Blueprint.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraphSchema_K2.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BlueprintUpdater)
+#endif
 
 void UBlueprintUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
