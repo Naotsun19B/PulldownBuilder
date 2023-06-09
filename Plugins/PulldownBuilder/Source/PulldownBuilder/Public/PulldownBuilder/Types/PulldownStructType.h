@@ -37,7 +37,7 @@ public:
 		);
 	}
 
-	// Overload oprators.
+	// Overload operators.
 	FORCEINLINE bool operator ==(const FPulldownStructType& Other) const
 	{
 		return (SelectedStruct == Other.SelectedStruct);

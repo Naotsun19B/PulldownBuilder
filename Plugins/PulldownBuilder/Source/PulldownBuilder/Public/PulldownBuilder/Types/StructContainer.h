@@ -121,10 +121,10 @@ protected:
 	void SetStructData(const UScriptStruct* InScriptStruct, const uint8* InStructMemory);
 
 protected:
-	// A type of struct stored in this container.
+	// The type of struct stored in this container.
 	const UScriptStruct* ScriptStruct;
 
-	// A raw data of the struct stored in this container.
+	// The raw data of the struct stored in this container.
 	const uint8* StructMemory;
 };
 

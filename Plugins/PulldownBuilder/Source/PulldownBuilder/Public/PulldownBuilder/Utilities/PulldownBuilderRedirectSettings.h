@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Redirect", DisplayName = "Should Update When Source Row Name Changed (Experimental)")
 	bool bShouldUpdateWhenSourceRowNameChanged;
 
-	// A list of active per-asset updater class.
+	// The list of active per-asset updater class.
 	// Blueprint, data table, and data asset are provided by default.
 	UPROPERTY(EditAnywhere, Config, Category = "Redirect", meta = (EditCondition = "bShouldUpdateWhenSourceRowNameChanged"))
 	TArray<TSubclassOf<URowNameUpdaterBase>> ActiveRowNameUpdater;

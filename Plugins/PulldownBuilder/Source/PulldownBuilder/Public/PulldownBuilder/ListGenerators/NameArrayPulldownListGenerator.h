@@ -40,11 +40,11 @@ protected:
 	void PostSourceNameArrayModify();
 	
 protected:
-	// A map of name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
+	// The map of name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TMap<FName, FName> SourceNameArray;
 
-	// A cache of row list before change.
+	// The cache of row list before change.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

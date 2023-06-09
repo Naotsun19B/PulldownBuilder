@@ -27,7 +27,7 @@ namespace PulldownBuilder
 		// End of FAssetTypeActions_Base interface.
 
 	private:
-		// An instance of this style class.
+		// The instance of this style class.
 		static TSharedPtr<FAssetTypeActions_PulldownContents> Instance;
 	};
 }

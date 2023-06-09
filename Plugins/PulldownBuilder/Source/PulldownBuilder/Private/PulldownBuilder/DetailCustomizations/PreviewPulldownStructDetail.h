@@ -26,7 +26,7 @@ namespace PulldownBuilder
 		// End of FPulldownStructDetail interface.
 
 	private:
-		// A cache of type names for properties that utilize this details panel.
+		// The cache of type names for properties that utilize this details panel.
 		static FString CachedPropertyTypeName;
 	};
 }

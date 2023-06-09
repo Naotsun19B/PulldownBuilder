@@ -59,16 +59,16 @@ namespace PulldownBuilder
 		void OnPulldownSourcePasteAction();
 	
 	private:
-		// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
+		// The list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
 		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
 	
-		// A property handle of FNativeLessPulldownStruct::PulldownContentsName.
+		// The property handle of FNativeLessPulldownStruct::PulldownContentsName.
 		TSharedPtr<IPropertyHandle> PulldownSourceHandle;
 
-		// A widget that displays a pull-down menu based on the PulldownContentsNames.
+		// The widget that displays a pull-down menu based on the PulldownContentsNames.
 		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
 
-		// A cache of type names for properties that utilize this details panel.
+		// The cache of type names for properties that utilize this details panel.
 		static FString CachedPropertyTypeName;
 	};
 }

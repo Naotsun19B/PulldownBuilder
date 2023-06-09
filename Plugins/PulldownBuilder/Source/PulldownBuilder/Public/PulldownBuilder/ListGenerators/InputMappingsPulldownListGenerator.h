@@ -57,7 +57,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeSpeechMappings;
 
-	// A cache of the pull-down list before the change for the redirect process.
+	// The cache of the pull-down list before the change for the redirect process.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

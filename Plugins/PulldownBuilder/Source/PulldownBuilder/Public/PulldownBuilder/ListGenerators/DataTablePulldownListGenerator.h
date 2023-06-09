@@ -63,11 +63,11 @@ protected:
 	void PostSourceDataTableModify();
 	
 protected:
-	// A data table asset from which the list displayed in the pull-down menu is based.
+	// The data table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TSoftObjectPtr<UDataTable> SourceDataTable;
 
-	// A cache of row list before change.
+	// The cache of row list before change.
 	UPROPERTY(Transient)
 	TArray<FName> PreChangeRowNames;
 };

@@ -40,13 +40,13 @@ namespace PulldownBuilder
 		TSharedRef<SWidget> GenerateStructPicker();
 
 	private:
-		// A property handle of FPulldownStructType::SelectedStruct.
+		// The property handle of FPulldownStructType::SelectedStruct.
 		TSharedPtr<IPropertyHandle> SelectedStructHandle;
 
-		// A combo button widget to launch the struct picker when you click on a property.
+		// The combo button widget to launch the struct picker when you click on a property.
 		TSharedPtr<SComboButton> StructPickerAnchor;
 
-		// A cache of type names for properties that utilize this details panel.
+		// The cache of type names for properties that utilize this details panel.
 		static FString CachedPropertyTypeName;
 	};
 }

@@ -54,6 +54,6 @@ protected:
 	void RefreshStructDataPinType();
 	
 protected:
-	// A cache of text for the title of this node.
+	// The cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
 };

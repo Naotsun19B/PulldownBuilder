@@ -48,7 +48,7 @@ namespace PulldownBuilder
 		static void HandleOnCommandRun(const FName& CommandName, const FText& CommandLabel);
 		
 	private:
-		// A handle to the event that is called when the command executes.
+		// The handle to the event that is called when the command executes.
 		static FDelegateHandle CommandRunHandle;
 	};
 }

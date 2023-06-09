@@ -22,7 +22,7 @@ namespace PulldownBuilder
 		// End of FGraphPanelPinFactory interface.
 
 	private:
-		// An instance of this factory class.
+		// The instance of this factory class.
 		static TSharedPtr<FGraphPanelPinFactory> Instance;
 	};
 }

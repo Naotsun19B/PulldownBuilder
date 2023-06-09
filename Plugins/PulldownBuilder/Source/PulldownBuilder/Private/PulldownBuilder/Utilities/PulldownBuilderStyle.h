@@ -27,7 +27,7 @@ namespace PulldownBuilder
 		static const ISlateStyle& Get();
 
 	private:
-		// An instance of this style class.
+		// The instance of this style class.
 		static TUniquePtr<FPulldownBuilderStyle> Instance;
 	};
 }

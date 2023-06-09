@@ -68,19 +68,19 @@ namespace PulldownBuilder
 		bool FilterRow(TSharedPtr<FPulldownRow> InListItem) const;
 	
 	private:
-		// A list view widget for internal use.
+		// The list view widget for internal use.
 		TSharedPtr<SListView<TSharedPtr<FPulldownRow>>> ListView;
 
-		// A pointer to the underlying data to use when building ListItems.
+		// The pointer to the underlying data to use when building ListItems.
 		const TArray<TSharedPtr<FPulldownRow>>* ListItemsSource = nullptr;
 	
-		// A list of items to display in the list.
+		// The list of items to display in the list.
 		TArray<TSharedPtr<FPulldownRow>> ListItems;
 	
-		// A string by which to filter language codes.
+		// The string by which to filter language codes.
 		FString FilterString;
 	
-		// An event that is called when a new item is selected.
+		// The event that is called when a new item is selected.
 		FOnSelectionChanged OnSelectionChanged;
 	};
 }

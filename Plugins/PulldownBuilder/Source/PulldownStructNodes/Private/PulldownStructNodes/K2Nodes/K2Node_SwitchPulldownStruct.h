@@ -91,20 +91,20 @@ private:
 	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;
 	
 protected:
-	// A pull-down struct to switch on this node.
+	// The pull-down struct to switch on this node.
 	UPROPERTY()
 	UScriptStruct* PulldownStruct;
 
-	// A list of the current entries in the struct.
+	// The list of the current entries in the struct.
 	UPROPERTY()
 	TArray<FName> SelectedValues;
 
-	// A cache of text for the title of this node.
+	// The cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
 
-	// A cache of text for the tooltip of this node.
+	// The cache of text for the tooltip of this node.
 	FNodeTextCache CachedNodeTooltip;
 	
-	// A cache of text for the category of this node.
+	// The cache of text for the category of this node.
 	FNodeTextCache CachedNodeCategory;
 };

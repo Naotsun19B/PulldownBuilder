@@ -75,12 +75,12 @@ protected:
 	void HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent);
 	
 protected:	
-	// A struct type that displays a pull-down menu.
+	// The struct type that displays a pull-down menu.
 	// It must be a struct that inherits from FPulldownStructBase.
 	UPROPERTY(EditDefaultsOnly, Category = "Pulldown")
 	FPulldownStructType PulldownStructType;
 
-	// A class that generates a list to display in the pull-down menu.
+	// The class that generates a list to display in the pull-down menu.
 	// It can be freely expanded according to the application.
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Pulldown")
 	UPulldownListGeneratorBase* PulldownListGenerator;
@@ -89,7 +89,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Transient, Category = "Pulldown")
 	FPreviewPulldownStruct Preview;
 
-	// A cache to restore when the PulldownListGenerator cannot be changed.
+	// The cache to restore when the PulldownListGenerator cannot be changed.
 	UPROPERTY(Transient)
 	UPulldownListGeneratorBase* PreChangePulldownListGenerator;
 };

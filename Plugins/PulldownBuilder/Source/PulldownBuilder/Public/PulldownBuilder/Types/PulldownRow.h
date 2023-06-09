@@ -14,11 +14,11 @@ struct FPulldownRow
 	GENERATED_BODY()
 
 public:
-	// A text displayed in a pull-down menu row.
+	// The text displayed in a pull-down menu row.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText DisplayText;
 
-	// A tooltip text that appears when you hover over a row in a pull-down menu.
+	// The tooltip text that appears when you hover over a row in a pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText TooltipText;
 
@@ -53,7 +53,7 @@ public:
 	{
 	}
 
-	// Overload oprators.
+	// Overload operators.
 	FORCEINLINE bool operator ==(const FPulldownRow& Other) const
 	{
 		return (
@@ -66,11 +66,11 @@ public:
 	{
 		return !(*this == Other);
 	}
-	// End of overload oprators.
-	
-	// Define a GetTypeHash function so that it can be used as a map key.
-	friend FORCEINLINE uint32 GetTypeHash(const FPulldownRow& PulldownRow)
-	{
-		return GetTypeHash(PulldownRow.DisplayText.ToString());
-	}
+	// End of overload operators.
 };
+
+// Define a GetTypeHash function so that it can be used as a map key.
+FORCEINLINE uint32 GetTypeHash(const FPulldownRow& PulldownRow)
+{
+	return GetTypeHash(PulldownRow.DisplayText.ToString());
+}

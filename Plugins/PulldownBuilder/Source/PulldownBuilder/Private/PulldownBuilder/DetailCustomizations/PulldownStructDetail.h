@@ -87,16 +87,16 @@ namespace PulldownBuilder
 		virtual bool CanBrowseSourceAssetAction() const;
 
 	protected:
-		// A property handle of the struct that inherits the FPulldownStructBase that is the target of this detail customization.
+		// The property handle of the struct that inherits the FPulldownStructBase that is the target of this detail customization.
 		TSharedPtr<IPropertyHandle> StructPropertyHandle;
 	
-		// A list of values that can be set in FPulldownStructBase::SelectedValue.
+		// The list of values that can be set in FPulldownStructBase::SelectedValue.
 		TArray<TSharedPtr<FPulldownRow>> SelectableValues;
 
-		// A property handle of FPulldownStructBase::SelectedValue.
+		// The property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
-		// A widget that displays a pull-down menu based on the SelectableValues.
+		// The widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
 	};
 }

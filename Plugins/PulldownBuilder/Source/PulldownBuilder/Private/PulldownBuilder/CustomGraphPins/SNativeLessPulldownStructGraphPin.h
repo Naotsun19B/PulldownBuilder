@@ -40,10 +40,10 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> GetPulldownSourceSelection() const;
 		
 	private:
-		// A list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
+		// The list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
 		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
 
-		// A widget that displays a pull-down menu based on the PulldownContentsNames.
+		// The widget that displays a pull-down menu based on the PulldownContentsNames.
 		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
 	};
 }

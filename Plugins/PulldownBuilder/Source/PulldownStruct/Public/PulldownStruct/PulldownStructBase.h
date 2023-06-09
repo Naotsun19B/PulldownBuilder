@@ -19,7 +19,7 @@ struct FPulldownStructBase
 	GENERATED_BODY()
 
 public:
-	// A variable to store the item selected in the pull-down menu.
+	// The variable to store the item selected in the pull-down menu.
 	// Stores the value used at runtime.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FName SelectedValue;

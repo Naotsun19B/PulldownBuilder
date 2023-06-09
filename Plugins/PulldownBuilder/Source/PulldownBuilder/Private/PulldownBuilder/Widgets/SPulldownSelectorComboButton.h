@@ -69,19 +69,19 @@ namespace PulldownBuilder
 		void HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 	
 	private:
-		// A pull-down selector widget to display in the contents of the combo box.
+		// The pull-down selector widget to display in the contents of the combo box.
 		TSharedPtr<SPulldownSelector> PulldownSelector;
 		
-		// A pointer to the underlying data to use when building ListItems.
+		// The pointer to the underlying data to use when building ListItems.
 		const TArray<TSharedPtr<FPulldownRow>>* ListItemsSource = nullptr;
 	
-		// A source data for the currently selected PulldownRow.
+		// The source data for the currently selected PulldownRow.
 		TSharedPtr<FPulldownRow> SelectedPulldownRow;
 
-		// An event to get selected item.
+		// The event to get selected item.
 		FGetSelection GetSelection;
 		
-		// An event that is called when the value of the PulldownSelector changes.
+		// The event that is called when the value of the PulldownSelector changes.
 		SPulldownSelector::FOnSelectionChanged OnSelectionChanged;
 	};
 }

@@ -16,7 +16,7 @@ class UPulldownBuilderAppearanceSettings : public UObject
 	GENERATED_BODY()
 	
 public:
-	// A size of the PulldownSelector widget.
+	// The size of the PulldownSelector widget.
 	UPROPERTY(EditAnywhere, Config, Category = "Selector")
 	FVector2D PanelSize;
 
@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Details")
 	bool bShouldInlineDisplayWhenSingleProperty;
 
-	// A severity of the notification.
+	// The severity of the notification.
 	UPROPERTY(EditAnywhere, Config, Category = "Notification")
 	EPulldownBuilderNotificationSeverity NotificationSeverity;
 	

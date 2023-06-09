@@ -39,7 +39,7 @@ public:
 	// End of UK2Node_SwitchPulldownStruct interface.
 
 protected:
-	// A PulldownContents asset from which this switch node's pins originate.
+	// The PulldownContents asset from which this switch node's pins originate.
 	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	TSoftObjectPtr<UPulldownContents> PulldownContents;
 };

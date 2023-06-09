@@ -59,10 +59,10 @@ namespace PulldownBuilder
 		void SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue);
 		
 	protected:
-		// A list of values that can be set in FPulldownStructBase::SelectedValue.
+		// The list of values that can be set in FPulldownStructBase::SelectedValue.
 		TArray<TSharedPtr<FPulldownRow>> SelectableValues;
 
-		// A widget that displays a pull-down menu based on the SelectableValues.
+		// The widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
 	};
 }

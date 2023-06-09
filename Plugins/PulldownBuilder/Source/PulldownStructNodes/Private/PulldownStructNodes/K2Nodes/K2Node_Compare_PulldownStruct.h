@@ -62,7 +62,7 @@ private:
 	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;
 	
 protected:
-	// A pull-down struct to compare on this node.
+	// The pull-down struct to compare on this node.
 	UPROPERTY()
 	UScriptStruct* PulldownStruct;
 
@@ -70,12 +70,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
 	bool bStrictComparison;
 
-	// A cache of text for the title of this node.
+	// The cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
 
-	// A cache of text for the tooltip of this node.
+	// The cache of text for the tooltip of this node.
 	FNodeTextCache CachedNodeTooltip;
 	
-	// A cache of text for the category of this node.
+	// The cache of text for the category of this node.
 	FNodeTextCache CachedNodeCategory;
 };
