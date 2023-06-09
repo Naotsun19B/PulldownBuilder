@@ -519,7 +519,7 @@ bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents
 	for (int32 Index = 0; Index < NumOfPulldownRows; Index++)
 	{
 		const TSharedPtr<FPulldownRow> PulldownRow = PulldownRows[Index];
-		if (PulldownRow.IsValid())
+		if (!PulldownRow.IsValid())
 		{
 			return true;
 		}
