@@ -186,7 +186,7 @@ The items that can be set from the editor preferences are as follows.
 
 | **Section** | **Item**                                   | **Description**                                                                                                 |
 |-------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| Appearance  | Panel Size                                 | Specify the panel size of the pull-down menu.                                                                   |
+| Appearance  | Panel Size                                 | Specifies the panel size of the pull-down menu.                                                                 |
 |             | Is Select when Double Click                | If this flag is true, you will need to double-click to select an item in the pull-down menu.                    |
 |             | Should Inline Display When Single Property | If this flag is true, automatically inline a single property pull-down structure.                               |
 |             | Notification Severity                      | Specifies the severity to focus the message log of notifications issued by this plugin.                         |
@@ -206,6 +206,11 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2023/06/09) v2.2  
+  Fixed a bug that the details customization of the pull-down structure was not registered  
+  Fixed a bug that caused nodes placed in level blueprints to update unnecessarily when the editor was launched  
+  Added redefinition countermeasures to version-separated macros  
 
 - (2023/05/16) v2.1  
   Fixed a bug that crashes when exiting the editor    
