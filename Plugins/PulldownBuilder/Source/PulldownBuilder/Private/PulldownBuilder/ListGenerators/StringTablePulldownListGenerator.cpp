@@ -51,7 +51,12 @@ TArray<TSharedPtr<FPulldownRow>> UStringTablePulldownListGenerator::GetPulldownR
 				{
 					if (FName(*InKey) != NAME_None)
 					{
-						PulldownRows.Add(MakeShared<FPulldownRow>(InKey, InSourceString));
+						PulldownRows.Add(
+							MakeShared<FPulldownRow>(
+								InKey,
+								FText::FromString(InSourceString)
+							)
+						);
 					}
 					
 					return true;

@@ -81,7 +81,10 @@ namespace PulldownBuilder
 			if (IsValid(PulldownContents))
 			{
 				PulldownContentsNames.Add(
-					MakeShared<FPulldownRow>(PulldownContents->GetName(), PulldownContents->GetTooltip())
+					MakeShared<FPulldownRow>(
+						PulldownContents->GetName(),
+						FText::FromString(PulldownContents->GetTooltip())
+					)
 				);
 			}
 		}
@@ -110,7 +113,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
 			[&](const TSharedPtr<FPulldownRow>& Item)
 			{
-				return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
+				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
 			});
 
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
@@ -121,11 +124,11 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 		if (SelectedItem.IsValid() && CurrentPulldownSource.IsValid())
 		{
-			if (SelectedItem->DisplayText.ToString() != CurrentPulldownSource->ToString())
+			if (SelectedItem->SelectedValue != CurrentPulldownSource->ToString())
 			{
 				SetPropertyValue(
 					GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
-					*SelectedItem->DisplayText.ToString()
+					*SelectedItem->SelectedValue
 				);
 
 				// Since the base asset of the pull-down menu has changed, set SelectedValue to None.

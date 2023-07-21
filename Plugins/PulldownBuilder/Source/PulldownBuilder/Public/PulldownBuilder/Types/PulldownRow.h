@@ -14,6 +14,10 @@ struct FPulldownRow
 	GENERATED_BODY()
 
 public:
+	// The variable to store the item selected in the pull-down menu.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
+	FString SelectedValue;
+	
 	// The text displayed in a pull-down menu row.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText DisplayText;
@@ -24,42 +28,25 @@ public:
 
 public:
 	// Constructor.
-	FPulldownRow() : DisplayText(FText::FromName(NAME_None)) {}
-	FPulldownRow(const FText& InDisplayText, const FText& InTooltipText)
-		: DisplayText(InDisplayText)
+	FPulldownRow()
+		: SelectedValue(FName(NAME_None).ToString())
+	{
+	}
+	explicit FPulldownRow(
+		const FString& InSelectedValue,
+		const FText& InTooltipText = FText::GetEmpty(),
+		const FText& InDisplayText = FText::GetEmpty()
+	)
+		: SelectedValue(InSelectedValue)
+		, DisplayText(InDisplayText)
 		, TooltipText(InTooltipText)
-	{
-	}
-	explicit FPulldownRow(const FText& InDisplayText)
-		: DisplayText(InDisplayText)
-	{
-	}
-	FPulldownRow(const FString& InDisplayString, const FString& InTooltipString)
-		: DisplayText(FText::FromString(InDisplayString))
-		, TooltipText(FText::FromString(InTooltipString))
-	{
-	}
-	explicit FPulldownRow(const FString& InDisplayString)
-		: DisplayText(FText::FromString(InDisplayString))
-	{
-	}
-	FPulldownRow(const FName& InDisplayName, const FName& InTooltipName)
-		: DisplayText(FText::FromName(InDisplayName))
-		, TooltipText(FText::FromName(InTooltipName))
-	{
-	}
-	explicit FPulldownRow(const FName& InDisplayName)
-		: DisplayText(FText::FromName(InDisplayName))
 	{
 	}
 
 	// Overload operators.
 	FORCEINLINE bool operator ==(const FPulldownRow& Other) const
 	{
-		return (
-			DisplayText.EqualTo(Other.DisplayText) &&
-			TooltipText.EqualTo(Other.TooltipText)
-		);
+		return SelectedValue.Equals(Other.SelectedValue);
 	}
 
 	FORCEINLINE bool operator !=(const FPulldownRow& Other) const
@@ -67,10 +54,16 @@ public:
 		return !(*this == Other);
 	}
 	// End of overload operators.
+
+	// Returns the text displayed in a pull-down menu row.
+	FText GetDisplayText() const
+	{
+		return (DisplayText.IsEmpty() ? FText::FromString(SelectedValue) : DisplayText);
+	}
 };
 
 // Define a GetTypeHash function so that it can be used as a map key.
 FORCEINLINE uint32 GetTypeHash(const FPulldownRow& PulldownRow)
 {
-	return GetTypeHash(PulldownRow.DisplayText.ToString());
+	return GetTypeHash(PulldownRow.SelectedValue);
 }

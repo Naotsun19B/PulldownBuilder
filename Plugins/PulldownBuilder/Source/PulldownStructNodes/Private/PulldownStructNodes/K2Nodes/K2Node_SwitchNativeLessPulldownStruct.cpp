@@ -109,6 +109,7 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 	}
 
 	SelectedValues.Reset(PulldownRows.Num());
+	DisplayTexts.Reset(PulldownRows.Num());
 
 	for (const auto& PulldownRow : PulldownRows)
 	{
@@ -117,7 +118,8 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 			continue;
 		}
 
-		SelectedValues.Add(*PulldownRow->DisplayText.ToString());
+		SelectedValues.Add(*PulldownRow->SelectedValue);
+		DisplayTexts.Add(PulldownRow->GetDisplayText());
 	}
 }
 

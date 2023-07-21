@@ -107,7 +107,10 @@ namespace PulldownBuilder
 			if (IsValid(PulldownContents))
 			{
 				PulldownContentsNames.Add(
-					MakeShared<FPulldownRow>(PulldownContents->GetName(), PulldownContents->GetTooltip())
+					MakeShared<FPulldownRow>(
+						PulldownContents->GetName(),
+						FText::FromString(PulldownContents->GetTooltip())
+					)
 				);
 			}
 		}
@@ -213,7 +216,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
 			[&](const TSharedPtr<FPulldownRow>& Item)
 			{
-				return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
+				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
 			});
 
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
@@ -241,7 +244,7 @@ namespace PulldownBuilder
 			return;
 		}
 
-		const FName NewPulldownSource = *SelectedItem->DisplayText.ToString();
+		const FName NewPulldownSource = *SelectedItem->SelectedValue;
 		FName OldPulldownSource;
 		PulldownSourceHandle->GetValue(OldPulldownSource);
 		if (NewPulldownSource != OldPulldownSource)

@@ -121,7 +121,7 @@ namespace PulldownBuilder
 		check(InItem.IsValid());
 
 		const TSharedRef<STextBlock> Row = SNew(STextBlock)
-			.Text(InItem->DisplayText)
+			.Text(InItem->GetDisplayText())
 			.HighlightText(FText::FromString(FilterString))
 			.ColorAndOpacity(FSlateColor::UseForeground());
 
@@ -172,7 +172,7 @@ namespace PulldownBuilder
 	{
 		check(InListItem.IsValid());
 
-		const FString DisplayString = InListItem->DisplayText.ToString();
+		const FString DisplayString = InListItem->GetDisplayText().ToString();
 		const FString TooltipString = InListItem->TooltipText.ToString();
 		return (
 			DisplayString.Contains(FilterString) ||

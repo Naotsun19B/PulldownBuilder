@@ -329,7 +329,7 @@ void UK2Node_SwitchPulldownStruct::CreateCasePins()
 	{
 		AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
 	}
-
+	
 	for (int32 Index = 0; Index < SelectedValues.Num(); Index++)
 	{
 		UEdGraphPin* NewPin = CreatePin(
@@ -342,7 +342,10 @@ void UK2Node_SwitchPulldownStruct::CreateCasePins()
 			continue;
 		}
 
-		NewPin->PinFriendlyName = FText::FromName(SelectedValues[Index]);
+		if (DisplayTexts.IsValidIndex(Index))
+		{
+			NewPin->PinFriendlyName = DisplayTexts[Index];
+		}
 		
 		if (bShouldUseAdvancedView && (Index > 2))
 		{
@@ -404,6 +407,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 	);
 
 	SelectedValues.Reset(PulldownRows.Num());
+	DisplayTexts.Reset(PulldownRows.Num());
 
 	for (const auto& PulldownRow : PulldownRows)
 	{
@@ -412,7 +416,8 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 			continue;
 		}
 
-		SelectedValues.Add(*PulldownRow->DisplayText.ToString());
+		SelectedValues.Add(*PulldownRow->SelectedValue);
+		DisplayTexts.Add(PulldownRow->GetDisplayText());
 	}
 }
 
@@ -524,7 +529,7 @@ bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents
 			return true;
 		}
 
-		const FString DisplayString = PulldownRow->DisplayText.ToString();
+		const FString DisplayString = PulldownRow->SelectedValue;
 		const FString SelectedValueString = SelectedValues[Index].ToString();
 		if (!DisplayString.Equals(SelectedValueString))
 		{

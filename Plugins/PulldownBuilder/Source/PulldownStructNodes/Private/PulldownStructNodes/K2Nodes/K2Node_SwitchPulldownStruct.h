@@ -99,6 +99,9 @@ protected:
 	UPROPERTY()
 	TArray<FName> SelectedValues;
 
+	// The list of display texts that override the SelectedValues string on the pull-down menu.
+	TArray<FText> DisplayTexts;
+
 	// The cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;
 

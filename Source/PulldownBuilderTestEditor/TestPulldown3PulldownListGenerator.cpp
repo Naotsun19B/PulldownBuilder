@@ -34,7 +34,12 @@ TArray<TSharedPtr<FPulldownRow>> UTestPulldown3PulldownListGenerator::GetPulldow
 				}
 
 				const FSoftObjectPath Path(Asset);
-				PulldownRows.Add(MakeShared<FPulldownRow>(Path.GetAssetName(), Path.ToString()));
+				PulldownRows.Add(
+					MakeShared<FPulldownRow>(
+						Path.GetAssetName(),
+						FText::FromString(Path.ToString())
+					)
+				);
 			}
 		}
 	}

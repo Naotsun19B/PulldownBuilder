@@ -54,11 +54,18 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 				FString TooltipString;
 				if (FindTooltip(RowStruct, RowData, TooltipString))
 				{
-					PulldownRows.Add(MakeShared<FPulldownRow>(RowName, *TooltipString));
+					PulldownRows.Add(
+						MakeShared<FPulldownRow>(
+							RowName.ToString(),
+							FText::FromString(TooltipString)
+						)
+					);
 				}
 				else
 				{
-					PulldownRows.Add(MakeShared<FPulldownRow>(RowName));
+					PulldownRows.Add(
+						MakeShared<FPulldownRow>(RowName.ToString())
+					);
 				}
 			}
 		}

@@ -68,7 +68,12 @@ TArray<TSharedPtr<FPulldownRow>> UNameArrayPulldownListGenerator::GetPulldownRow
 		{
 			if (SourceName.Key != NAME_None)
 			{
-				PulldownRows.Add(MakeShared<FPulldownRow>(SourceName.Key, SourceName.Value));
+				PulldownRows.Add(
+					MakeShared<FPulldownRow>(
+						SourceName.Key.ToString(),
+						FText::FromName(SourceName.Value)
+					)
+				);
 			}
 		}
 	}

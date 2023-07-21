@@ -105,7 +105,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 			PulldownRows.Add(
 				MakeShared<FPulldownRow>(
 					ActionName.ToString(),
-					FString::Join(InputTexts, LINE_TERMINATOR)
+					FText::FromString(FString::Join(InputTexts, LINE_TERMINATOR))
 				)
 			);
 		}
@@ -141,7 +141,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 			PulldownRows.Add(
 				MakeShared<FPulldownRow>(
 					AxisName.ToString(),
-					FString::Join(InputTexts, LINE_TERMINATOR)
+					FText::FromString(FString::Join(InputTexts, LINE_TERMINATOR))
 				)
 			);
 		}
@@ -164,7 +164,9 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 				*SpeechMapping.GetKeyName().ToString()
 			);
 
-			PulldownRows.Add(MakeShared<FPulldownRow>(DisplayText, TooltipText));
+			PulldownRows.Add(
+				MakeShared<FPulldownRow>(DisplayText, FText::FromString(TooltipText))
+			);
 		}
 	}
 	
@@ -184,7 +186,7 @@ void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 			continue;
 		}
 
-		PreChangeRowNames.Add(*PulldownRow->DisplayText.ToString());
+		PreChangeRowNames.Add(*PulldownRow->SelectedValue);
 	}
 }
 
@@ -203,7 +205,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 				continue;
 			}
 
-			PostChangeRowNames.Add(*PulldownRow->DisplayText.ToString());
+			PostChangeRowNames.Add(*PulldownRow->SelectedValue);
 		}
 	}
 

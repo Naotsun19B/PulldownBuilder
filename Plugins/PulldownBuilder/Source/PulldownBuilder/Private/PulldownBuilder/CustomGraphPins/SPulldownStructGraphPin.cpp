@@ -98,7 +98,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
 			[&](const TSharedPtr<FPulldownRow>& Item)
 			{
-				return (Item.IsValid() && Item->DisplayText.ToString() == InName.ToString());
+				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
 			});
 
 		return (FoundItem != nullptr ? *FoundItem : nullptr);
@@ -116,11 +116,11 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		if (SelectedItem.IsValid() && CurrentSelectedValue.IsValid())
 		{
-			if (SelectedItem->DisplayText.ToString() != CurrentSelectedValue->ToString())
+			if (SelectedItem->SelectedValue != CurrentSelectedValue->ToString())
 			{
 				SetPropertyValue(
 					GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
-					*SelectedItem->DisplayText.ToString()
+					*SelectedItem->SelectedValue
 				);
 			}
 		}

@@ -74,7 +74,7 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
 		if (SelectedItem.IsValid())
 		{
-			return SelectedItem->DisplayText;
+			return SelectedItem->GetDisplayText();
 		}
 		
 		return LOCTEXT("InvalidDisplayText", "Invalid Data");
