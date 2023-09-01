@@ -7,7 +7,10 @@ public class PulldownStruct : ModuleRules
 {
 	public PulldownStruct(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+#if UE_5_2_OR_LATER
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+#endif
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
@@ -21,14 +24,6 @@ public class PulldownStruct : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-			}
-		);
-		
-		// To use version macros.
-		PublicIncludePaths.AddRange(
-			new string[]
-			{
-				Path.Combine(EngineDirectory, "Source", "Runtime", "Launch", "Resources"),
 			}
 		);
 		

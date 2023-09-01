@@ -7,6 +7,9 @@ public class PulldownBuilderTestEditor : ModuleRules
 	public PulldownBuilderTestEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+#if UE_5_2_OR_LATER
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+#endif
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
