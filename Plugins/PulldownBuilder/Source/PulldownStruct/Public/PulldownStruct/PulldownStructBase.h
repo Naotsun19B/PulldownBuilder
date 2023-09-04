@@ -73,3 +73,10 @@ FORCEINLINE_DEBUGGABLE FString LexToString(const TPulldownStruct& PulldownStruct
 {
 	return PulldownStruct.ToString();
 }
+
+// Initializes the struct that inherits from FPulldownStructBase from the SelectedValue string.
+template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
+FORCEINLINE_DEBUGGABLE void LexFromString(TPulldownStruct& PulldownStruct, const TCHAR* Buffer)
+{
+	PulldownStruct.SelectedValue = FName(Buffer);
+}
