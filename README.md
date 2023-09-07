@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.24 ~ 5.2  
+Target version : UE4.24 ~ 5.3  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -207,10 +207,16 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2023/09/07) v2.3  
+  Added support for UE5.3  
+  Added the ability to set the values used at runtime and the data displayed in the pull-down menu on the editor separately  
+  Added `LexFromString` function for pulldown structure
+
 - (2023/06/09) v2.2  
   Fixed a bug that the details customization of the pull-down structure was not registered  
   Fixed a bug that caused nodes placed in level blueprints to update unnecessarily when the editor was launched  
   Added redefinition countermeasures to version-separated macros  
+  Added `LexToString` function for pulldown structure
 
 - (2023/05/16) v2.1  
   Fixed a bug that crashes when exiting the editor    
