@@ -123,4 +123,16 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 	}
 }
 
+TSoftObjectPtr<UPulldownContents> UK2Node_SwitchNativeLessPulldownStruct::GetPulldownContents() const
+{
+	return PulldownContents;
+}
+
+void UK2Node_SwitchNativeLessPulldownStruct::SetPulldownContents(const TSoftObjectPtr<UPulldownContents>& NewPulldownContents)
+{
+	PulldownContents = NewPulldownContents;
+
+	ReconstructNode();
+}
+
 #undef LOCTEXT_NAMESPACE

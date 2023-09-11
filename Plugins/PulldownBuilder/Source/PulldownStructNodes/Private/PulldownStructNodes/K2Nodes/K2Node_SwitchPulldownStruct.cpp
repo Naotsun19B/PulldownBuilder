@@ -374,6 +374,18 @@ FName UK2Node_SwitchPulldownStruct::GetPinNameGivenIndex(int32 Index) const
 	return NAME_None;
 }
 
+UScriptStruct* UK2Node_SwitchPulldownStruct::GetPulldownStruct() const
+{
+	return PulldownStruct;
+}
+
+void UK2Node_SwitchPulldownStruct::SetPulldownStruct(UScriptStruct* NewPulldownStruct)
+{
+	PulldownStruct = NewPulldownStruct;
+
+	ReconstructNode();
+}
+
 void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 {
 	const UEdGraphPin* SelectionPin = GetSelectionPin();

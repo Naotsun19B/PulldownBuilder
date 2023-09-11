@@ -235,9 +235,26 @@ bool UK2Node_Compare_PulldownStruct::ShouldShowNodeProperties() const
 	return PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(PulldownStruct);
 }
 
+UScriptStruct* UK2Node_Compare_PulldownStruct::GetPulldownStruct() const
+{
+	return PulldownStruct;
+}
+
+void UK2Node_Compare_PulldownStruct::SetPulldownStruct(UScriptStruct* NewPulldownStruct)
+{
+	PulldownStruct = NewPulldownStruct;
+
+	ReconstructNode();
+}
+
 bool UK2Node_Compare_PulldownStruct::ShouldStrictComparison() const
 {
 	return (ShouldShowNodeProperties() && bStrictComparison);
+}
+
+void UK2Node_Compare_PulldownStruct::SetShouldStrictComparison(const bool bNewState)
+{
+	bStrictComparison = bNewState;
 }
 
 UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const

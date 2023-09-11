@@ -60,6 +60,12 @@ public:
 	virtual FName GetPinNameGivenIndex(int32 Index) const override;
 	// End of UK2Node_Switch interface.
 
+	// Returns the pull-down struct to switch on this node.
+	UScriptStruct* GetPulldownStruct() const;
+
+	// Sets the pull-down struct to switch on this node.
+	void SetPulldownStruct(UScriptStruct* NewPulldownStruct);
+	
 protected:
 	// Collects the selected values to choose from before creating the case pin.
 	virtual void FillSelectedValues();

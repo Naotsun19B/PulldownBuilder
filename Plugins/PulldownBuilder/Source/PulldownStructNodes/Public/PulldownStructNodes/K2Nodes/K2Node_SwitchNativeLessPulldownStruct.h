@@ -38,6 +38,12 @@ public:
 	virtual void FillSelectedValues() override;
 	// End of UK2Node_SwitchPulldownStruct interface.
 
+	// Returns the PulldownContents asset from which this switch node's pins originate.
+	TSoftObjectPtr<UPulldownContents> GetPulldownContents() const;
+
+	// Sets the PulldownContents asset from which this switch node's pins originate.
+	void SetPulldownContents(const TSoftObjectPtr<UPulldownContents>& NewPulldownContents);
+	
 protected:
 	// The PulldownContents asset from which this switch node's pins originate.
 	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")

@@ -44,8 +44,17 @@ public:
 	virtual bool ShouldShowNodeProperties() const override;
 	// End of UK2Node interface.
 
+	// Returns the pull-down struct to compare on this node.
+	UScriptStruct* GetPulldownStruct() const;
+
+	// Sets the pull-down struct to compare on this node.
+	void SetPulldownStruct(UScriptStruct* NewPulldownStruct);
+	
 	// Returns whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
 	bool ShouldStrictComparison() const;
+	
+	// Sets whether to compare FNativeLessPulldownStruct::PulldownSource when comparing FNativeLessPulldownStruct.
+	void SetShouldStrictComparison(const bool bNewState);
 	
 protected:
 	// Returns the name of the comparison method used in the node title, etc.
