@@ -1,10 +1,12 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_SwitchNativeLessPulldownStruct.h"
+#if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#endif
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -31,24 +33,29 @@ void UK2Node_SwitchNativeLessPulldownStruct::PostEditChangeProperty(FPropertyCha
 		return;
 	}
 
+#if WITH_EDITOR
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UK2Node_SwitchNativeLessPulldownStruct, PulldownContents))
 	{
 		ReconstructNode();
 	}
+#endif
 }
 
 void UK2Node_SwitchNativeLessPulldownStruct::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
-	
+
+#if WITH_EDITOR
 	if (Ar.IsSaving() && Ar.IsLoading())
 	{
 		Ar << PulldownContents;
 	}
+#endif
 }
 
 FText UK2Node_SwitchNativeLessPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
+#if WITH_EDITOR
 	const FText& OriginalNodeTitle = Super::GetNodeTitle(TitleType);
 	if (PulldownContents.IsNull())
 	{
@@ -60,6 +67,9 @@ FText UK2Node_SwitchNativeLessPulldownStruct::GetNodeTitle(ENodeTitleType::Type 
 		OriginalNodeTitle,
 		FText::FromString(PulldownContents.GetAssetName())
 	);
+#else
+	return FText::GetEmpty();
+#endif
 }
 
 void UK2Node_SwitchNativeLessPulldownStruct::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
@@ -80,6 +90,7 @@ bool UK2Node_SwitchNativeLessPulldownStruct::ShouldShowNodeProperties() const
 
 void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 {
+#if WITH_EDITOR
 	if (!PulldownContents.IsValid())
 	{
 		return;
@@ -90,7 +101,7 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 	{
 		return;
 	}
-
+	
 	FStructContainer StructContainer;
 	if (!PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(SelectionPin, StructContainer))
 	{
@@ -121,8 +132,10 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 		SelectedValues.Add(*PulldownRow->SelectedValue);
 		DisplayTexts.Add(PulldownRow->GetDisplayText());
 	}
+#endif
 }
 
+#if WITH_EDITOR
 TSoftObjectPtr<UPulldownContents> UK2Node_SwitchNativeLessPulldownStruct::GetPulldownContents() const
 {
 	return PulldownContents;
@@ -134,5 +147,6 @@ void UK2Node_SwitchNativeLessPulldownStruct::SetPulldownContents(const TSoftObje
 
 	ReconstructNode();
 }
+#endif
 
 #undef LOCTEXT_NAMESPACE

@@ -2,7 +2,9 @@
 
 #include "PulldownStructNodes/K2Nodes/K2Node_ConvertPulldownStructToString.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
+#if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#endif
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -174,10 +176,12 @@ void UK2Node_ConvertPulldownStructToString::SetPulldownStruct(UScriptStruct* New
 
 UBlueprintNodeSpawner* UK2Node_ConvertPulldownStructToString::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
 {
+#if WITH_EDITOR
 	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct, false))
 	{
 		return nullptr;
 	}
+#endif
 				
 	UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
 	if (!IsValid(NodeSpawner))

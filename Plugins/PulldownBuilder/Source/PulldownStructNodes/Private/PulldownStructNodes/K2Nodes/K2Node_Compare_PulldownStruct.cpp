@@ -2,7 +2,9 @@
 
 #include "PulldownStructNodes/K2Nodes/K2Node_Compare_PulldownStruct.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
+#if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#endif
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -232,7 +234,11 @@ void UK2Node_Compare_PulldownStruct::PreloadRequiredAssets()
 
 bool UK2Node_Compare_PulldownStruct::ShouldShowNodeProperties() const
 {
+#if WITH_EDITOR
 	return PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(PulldownStruct);
+#else
+	return false;
+#endif
 }
 
 UScriptStruct* UK2Node_Compare_PulldownStruct::GetPulldownStruct() const
@@ -259,10 +265,12 @@ void UK2Node_Compare_PulldownStruct::SetShouldStrictComparison(const bool bNewSt
 
 UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
 {
+#if WITH_EDITOR
 	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct, false))
 	{
 		return nullptr;
 	}
+#endif
 				
 	UBlueprintFieldNodeSpawner* NodeSpawner = UBlueprintFieldNodeSpawner::Create(GetClass(), Struct);
 	if (!IsValid(NodeSpawner))

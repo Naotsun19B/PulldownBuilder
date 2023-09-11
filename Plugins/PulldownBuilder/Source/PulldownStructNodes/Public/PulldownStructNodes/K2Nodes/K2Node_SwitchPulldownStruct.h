@@ -7,7 +7,9 @@
 #include "EdGraph/EdGraphNodeUtils.h"
 #include "K2Node_SwitchPulldownStruct.generated.h"
 
+#if WITH_EDITOR
 class UPulldownContents;
+#endif
 class UBlueprintNodeSpawner;
 
 /**
@@ -69,7 +71,8 @@ public:
 protected:
 	// Collects the selected values to choose from before creating the case pin.
 	virtual void FillSelectedValues();
-	
+
+#if WITH_EDITOR
 	// Called when PulldownContents has been loaded.
 	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
 
@@ -91,6 +94,7 @@ protected:
 
 	// Returns whether the passed UPulldownContents is related to itself and node is required reconstruct.
 	bool NeedToReconstructNode(const UPulldownContents* PulldownContents) const;
+#endif
 	
 private:
 	// Called when creating an instance of this node for each pull-down structs.

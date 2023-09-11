@@ -2,10 +2,12 @@
 
 #include "PulldownStructNodes/K2Nodes/K2Node_SwitchPulldownStruct.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
+#if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#endif
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintFieldNodeSpawner.h"
@@ -27,20 +29,24 @@ void UK2Node_SwitchPulldownStruct::PostLoad()
 {
 	Super::PostLoad();
 
+#if WITH_EDITOR
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
+#endif
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
+#if WITH_EDITOR
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.RemoveAll(this);
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.RemoveAll(this);
+#endif
 	
 	Super::BeginDestroy();
 }
@@ -179,6 +185,7 @@ UK2Node::ERedirectType UK2Node_SwitchPulldownStruct::DoPinsMatchForReconstructio
 ) const
 {
 	ERedirectType ReturnValue = Super::DoPinsMatchForReconstruction(NewPin, NewPinIndex, OldPin, OldPinIndex);
+#if WITH_EDITOR
 	if (ReturnValue == ERedirectType_None && IsValid(PulldownStruct) && OldPinIndex > 2 && NewPinIndex > 2)
 	{
 		auto FindSelectedValue = [](const UEdGraphPin* Pin, const int32 PinIndex) -> TSharedPtr<FPulldownRow>
@@ -213,6 +220,7 @@ UK2Node::ERedirectType UK2Node_SwitchPulldownStruct::DoPinsMatchForReconstructio
 			}
 		}
 	}
+#endif
 	
 	return ReturnValue;
 }
@@ -388,6 +396,7 @@ void UK2Node_SwitchPulldownStruct::SetPulldownStruct(UScriptStruct* NewPulldownS
 
 void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 {
+#if WITH_EDITOR
 	const UEdGraphPin* SelectionPin = GetSelectionPin();
 	if (SelectionPin == nullptr)
 	{
@@ -399,7 +408,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 	{
 		return;
 	}
-
+	
 	// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
 	if (!PulldownBuilder::FPulldownBuilderUtils::IsRegisteredPulldownStruct(Struct))
 	{
@@ -417,7 +426,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer
 	);
-
+	
 	SelectedValues.Reset(PulldownRows.Num());
 	DisplayTexts.Reset(PulldownRows.Num());
 
@@ -431,8 +440,10 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 		SelectedValues.Add(*PulldownRow->SelectedValue);
 		DisplayTexts.Add(PulldownRow->GetDisplayText());
 	}
+#endif
 }
 
+#if WITH_EDITOR
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
 {
 	if (!NeedToReconstructNode(LoadedPulldownContents))
@@ -551,6 +562,7 @@ bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents
 
 	return false;
 }
+#endif
 
 UBlueprintNodeSpawner* UK2Node_SwitchPulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
 {

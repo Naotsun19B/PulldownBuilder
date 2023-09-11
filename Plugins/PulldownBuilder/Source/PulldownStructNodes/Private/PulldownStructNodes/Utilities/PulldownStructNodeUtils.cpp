@@ -1,7 +1,9 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
+#if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#endif
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "EdGraphSchema_K2.h"
@@ -79,7 +81,11 @@ namespace PulldownBuilder
 		
 		// Need specific type information for struct pin.
 		auto* PulldownStruct = Cast<UScriptStruct>(PulldownStructPin->PinType.PinSubCategoryObject);
+#if WITH_EDITOR
 		if (!ensure(FPulldownBuilderUtils::IsPulldownStruct(PulldownStruct, false)))
+#else
+		if (!IsValid(PulldownStruct))
+#endif
 		{
 			return false;
 		}
