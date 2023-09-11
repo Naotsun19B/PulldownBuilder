@@ -10,7 +10,7 @@
 class UBlueprintNodeSpawner;
 
 /**
- * A compare node that compares the values in A and returns the result.
+ * A compare node that compares the FPulldownStructBase::SelectedValue in the pull-down structs and returns the result.
  */
 UCLASS(Abstract)
 class PULLDOWNSTRUCTNODES_API UK2Node_Compare_PulldownStruct : public UK2Node
