@@ -1,4 +1,4 @@
-G# PulldownBuilder 
+# PulldownBuilder 
 
 ![Plugin](https://user-images.githubusercontent.com/51815450/173223798-f60374a1-1d14-4ac2-93c1-bdbab9fe5278.PNG)
 
