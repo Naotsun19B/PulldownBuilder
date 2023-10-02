@@ -10,15 +10,75 @@
 #else
 #include "IAssetRegistry.h"
 #endif
+#include "Engine/AssetManager.h"
+#include "Framework/Notifications/NotificationManager.h"
+
+#define LOCTEXT_NAMESPACE "PulldownContentsLoader"
 
 namespace PulldownBuilder
 {
-#if UE_4_26_OR_LATER
-	namespace PulldownContentsLoaderUtils
+	namespace PulldownContentsLoader
 	{
-		
+		struct FAsyncLoadProgressNotificationHelper
+		{
+		public:
+			void StartAsyncLoading(const FAssetData& AssetData)
+			{
+				PulldownContentsToLoad.Add(AssetData);
+				UpdateProgressNotification();
+				
+				UAssetManager::GetStreamableManager().RequestAsyncLoad(
+					AssetData.ToSoftObjectPath(),
+					FStreamableDelegate::CreateRaw(this, &FAsyncLoadProgressNotificationHelper::EndAsyncLoading, AssetData),
+					FStreamableManager::AsyncLoadHighPriority
+				);
+			}
+
+		private:
+			void EndAsyncLoading(const FAssetData AssetData)
+			{
+				PulldownContentsToLoad.Remove(AssetData);
+				UpdateProgressNotification();
+
+				if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
+				{
+					FPulldownContentsLoader::OnPulldownContentsLoaded.Broadcast(PulldownContents);	
+				}
+			}
+			
+			void UpdateProgressNotification()
+			{
+				const int32 TotalWorkToDo = PulldownContentsToLoad.Num();
+				const FText DisplayText = FText::Format(
+					LOCTEXT("ProgressNotificationLabel", "Loading Pulldown Contents ({0})"),
+					TotalWorkToDo
+				);
+				auto& SlateNotificationManager = FSlateNotificationManager::Get();
+				if (!NotificationHandle.IsValid())
+				{
+					NotificationHandle = SlateNotificationManager.StartProgressNotification(
+						DisplayText,
+						TotalWorkToDo
+					);
+				}
+				else
+				{
+					SlateNotificationManager.UpdateProgressNotification(
+						NotificationHandle,
+						1,
+						TotalWorkToDo,
+						DisplayText
+					);
+				}
+			};
+
+		private:
+			FProgressNotificationHandle NotificationHandle;
+			TArray<FAssetData> PulldownContentsToLoad;
+		};
+
+		static FAsyncLoadProgressNotificationHelper AsyncLoadProgressNotificationHelper;
 	}
-#endif
 	
 	FPulldownContentsLoader::FOnPulldownContentsLoaded FPulldownContentsLoader::OnPulldownContentsLoaded;
 	FPulldownContentsLoader::FOnPulldownRowAdded FPulldownContentsLoader::OnPulldownRowAdded;
@@ -59,21 +119,14 @@ namespace PulldownBuilder
 
 	void FPulldownContentsLoader::HandleOnAssetAdded(const FAssetData& AssetData)
 	{
-		const UClass* Class = AssetData.GetClass();
-		if (!IsValid(Class))
+		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
+		check(IsValid(PulldownContentsClass));
+		if (AssetData.AssetClassPath != PulldownContentsClass->GetClassPathName())
 		{
 			return;
 		}
-
-		if (!Class->IsChildOf<UPulldownContents>())
-		{
-			return;
-		}
-
-		if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
-		{
-			OnPulldownContentsLoaded.Broadcast(PulldownContents);
-		}
+		
+		PulldownContentsLoader::AsyncLoadProgressNotificationHelper.StartAsyncLoading(AssetData);
 	}
 
 	void FPulldownContentsLoader::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
@@ -137,3 +190,5 @@ namespace PulldownBuilder
 	FDelegateHandle FPulldownContentsLoader::OnPulldownRowRenamedHandle;
 	FDelegateHandle FPulldownContentsLoader::OnPulldownContentsSourceChangedHandle;
 }
+
+#undef LOCTEXT_NAMESPACE
