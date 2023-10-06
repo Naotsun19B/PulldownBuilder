@@ -202,7 +202,44 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 		if (!SelectedItem.IsValid())
 		{
-			SelectedValueHandle->SetValue(NAME_None);
+			// There are parts of the MovieScene module code that don't check for nullptr.
+			// This causes a crash when changing properties in the sequencer editor, so until this is fixed,
+			// for MovieSceneSignedObject (ex: sections or tracks), auto-reset to None at the next frame.
+			auto IsMovieSceneClass = [](const UClass* TestClass) -> bool
+			{
+				const UClass* Class = TestClass;
+				while (IsValid(Class))
+				{
+					if (Class->GetName() == TEXT("MovieSceneSignedObject"))
+					{
+						return true;
+					}
+
+					Class = Class->GetSuperClass();
+				}
+
+				return false;
+			};
+			
+			const UClass* OuterBaseClass = SelectedValueHandle->GetOuterBaseClass();
+			if (IsMovieSceneClass(OuterBaseClass))
+			{
+				check(IsValid(GEditor));
+				TWeakPtr<IPropertyHandle> WeakSelectedValueHandle = SelectedValueHandle;
+				GEditor->GetTimerManager()->SetTimerForNextTick(
+					[WeakSelectedValueHandle]()
+					{
+						if (WeakSelectedValueHandle.IsValid())
+						{
+							WeakSelectedValueHandle.Pin()->SetValue(NAME_None);
+						}
+					}
+				);
+			}
+			else
+			{
+				SelectedValueHandle->SetValue(NAME_None);
+			}
 			SelectedItem = FindSelectableValueByName(NAME_None);
 		}
 
