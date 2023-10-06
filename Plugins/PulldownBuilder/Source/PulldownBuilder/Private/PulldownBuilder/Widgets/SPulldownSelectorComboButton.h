@@ -33,6 +33,18 @@ namespace PulldownBuilder
 		// Called when getting the selected item.
 		SLATE_EVENT(FGetSelection, GetSelection)
 
+		// Sets the vertical size of this widget.
+		// If not set, the one selected in the editor settings will be used.
+		SLATE_ATTRIBUTE(float, HeightOverride)
+
+		// Sets the horizontal size of this widget.
+		// If not set, the one selected in the editor settings will be used.
+		SLATE_ATTRIBUTE(float, WidthOverride)
+
+		// Whether you need to double-click to select an item.
+		// If not set, the one selected in the editor settings will be used.
+		SLATE_ATTRIBUTE(bool, bIsSelectWhenDoubleClick)
+		
 		// Called when a new item is selected.
 		SLATE_EVENT(SPulldownSelector::FOnSelectionChanged, OnSelectionChanged)
 
@@ -80,6 +92,15 @@ namespace PulldownBuilder
 
 		// The event to get selected item.
 		FGetSelection GetSelection;
+
+		// Sets the vertical size of this widget.
+		TAttribute<float> HeightOverride;
+
+		// Sets the horizontal size of this widget.
+		TAttribute<float> WidthOverride;
+
+		// Whether you need to double-click to select an item.
+		TAttribute<bool> IsSelectWhenDoubleClick;
 		
 		// The event that is called when the value of the PulldownSelector changes.
 		SPulldownSelector::FOnSelectionChanged OnSelectionChanged;

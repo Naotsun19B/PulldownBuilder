@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 
 #define LOCTEXT_NAMESPACE "PulldownSelectorComboButton"
 
@@ -11,6 +12,9 @@ namespace PulldownBuilder
 	{
 		ListItemsSource = InArgs._ListItemsSource;
 		GetSelection = InArgs._GetSelection;
+		HeightOverride = InArgs._HeightOverride;
+		WidthOverride = InArgs._WidthOverride;
+		IsSelectWhenDoubleClick = InArgs._bIsSelectWhenDoubleClick;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
 
 		check(GetSelection.IsBound());
@@ -62,10 +66,36 @@ namespace PulldownBuilder
 
 	TSharedRef<SWidget> SPulldownSelectorComboButton::HandleOnGetMenuContent()
 	{
+		const auto& Settings = UPulldownBuilderAppearanceSettings::Get();
+		FVector2D PanelSize = FVector2D::ZeroVector;
+		if (HeightOverride.IsSet() || HeightOverride.IsBound())
+		{
+			PanelSize.Y = HeightOverride.Get();
+		}
+		if (WidthOverride.IsSet() || WidthOverride.IsBound())
+		{
+			PanelSize.X = WidthOverride.Get();
+		}
+		if (PanelSize.Y <= 0.f)
+		{
+			PanelSize.Y =  Settings.PanelSize.Y;
+		}
+		if (PanelSize.X <= 0.f)
+		{
+			PanelSize.X =  Settings.PanelSize.X;
+		}
+		
 		return
 			SAssignNew(PulldownSelector, SPulldownSelector)
 			.ListItemsSource(ListItemsSource)
 			.InitialSelection(SelectedPulldownRow)
+			.HeightOverride(PanelSize.Y)
+			.WidthOverride(PanelSize.X)
+			.bIsSelectWhenDoubleClick(
+				(IsSelectWhenDoubleClick.IsSet() || IsSelectWhenDoubleClick.IsBound()) ?
+				IsSelectWhenDoubleClick.Get() :
+				Settings.bIsSelectWhenDoubleClick
+			)
 			.OnSelectionChanged(this, &SPulldownSelectorComboButton::HandleOnSelectionChanged);
 	}
 

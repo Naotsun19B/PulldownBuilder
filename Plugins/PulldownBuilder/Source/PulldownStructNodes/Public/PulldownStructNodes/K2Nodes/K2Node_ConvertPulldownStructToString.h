@@ -6,6 +6,8 @@
 #include "K2Node.h"
 #include "K2Node_ConvertPulldownStructToString.generated.h"
 
+class UBlueprintNodeSpawner;
+
 /**
  * A node that converts FPulldownStructBase::SelectedValue in the pull-down structs to FString.
  */

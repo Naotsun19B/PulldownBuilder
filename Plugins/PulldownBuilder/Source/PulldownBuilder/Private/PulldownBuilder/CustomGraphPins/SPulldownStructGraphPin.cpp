@@ -4,6 +4,7 @@
 #include "PulldownBuilder/CustomGraphPins/GraphPinContextMenuExtender.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
@@ -88,6 +89,8 @@ namespace PulldownBuilder
 				SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
 				.ListItemsSource(&SelectableValues)
 				.GetSelection(this, &SPulldownStructGraphPin::GetSelection)
+				.HeightOverride(this, &SPulldownStructGraphPin::GetIndividualPanelHeight)
+				.WidthOverride(this, &SPulldownStructGraphPin::GetIndividualPanelWidth)
 				.OnSelectionChanged(this, &SPulldownStructGraphPin::OnSelectedValueChanged)
 				.OnComboBoxOpened(this, &SPulldownStructGraphPin::RebuildPulldown)
 			];
@@ -109,6 +112,47 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
 		return FindSelectableValueByName(NameToFind);
+	}
+
+	UPulldownContents* SPulldownStructGraphPin::GetRelatedPulldownContents() const
+	{
+		check(GraphPinObj != nullptr);
+		
+		FStructContainer StructContainer;
+		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructContainer.GetScriptStruct());
+		}
+
+		return nullptr;
+	}
+
+	float SPulldownStructGraphPin::GetIndividualPanelHeight() const
+	{
+		if (const UPulldownContents* PulldownContents = GetRelatedPulldownContents())
+		{
+			const TOptional<FVector2D>& IndividualPanelSize = PulldownContents->GetIndividualPanelSize();
+			if (IndividualPanelSize.IsSet())
+			{
+				return IndividualPanelSize.GetValue().Y;
+			}
+		}
+
+		return 0.f;
+	}
+
+	float SPulldownStructGraphPin::GetIndividualPanelWidth() const
+	{
+		if (const UPulldownContents* PulldownContents = GetRelatedPulldownContents())
+		{
+			const TOptional<FVector2D>& IndividualPanelSize = PulldownContents->GetIndividualPanelSize();
+			if (IndividualPanelSize.IsSet())
+			{
+				return IndividualPanelSize.GetValue().X;
+			}
+		}
+
+		return 0.f;
 	}
 
 	void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

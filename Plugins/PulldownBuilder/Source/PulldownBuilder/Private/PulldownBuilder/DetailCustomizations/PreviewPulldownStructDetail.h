@@ -23,6 +23,7 @@ namespace PulldownBuilder
 	private:
 		// FPulldownStructDetail interface.
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		virtual UPulldownContents* GetRelatedPulldownContents() const override;
 		// End of FPulldownStructDetail interface.
 
 	private:

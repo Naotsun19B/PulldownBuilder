@@ -33,6 +33,8 @@ namespace PulldownBuilder
 					SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
 					.ListItemsSource(&PulldownContentsNames)
 					.GetSelection(this, &SNativeLessPulldownStructGraphPin::GetPulldownSourceSelection)
+					.HeightOverride(this, &SNativeLessPulldownStructGraphPin::GetIndividualPanelHeight)
+					.WidthOverride(this, &SNativeLessPulldownStructGraphPin::GetIndividualPanelWidth)
 					.OnSelectionChanged(this, &SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged)
 					.OnComboBoxOpened(this, &SNativeLessPulldownStructGraphPin::RebuildPulldown)
 				]

@@ -29,6 +29,9 @@ public:
 	static const FName SourceAssetTag;
 	
 public:
+	// Constructor.
+	UPulldownContents();
+	
 	// UObject interface.
 	virtual bool IsEditorOnly() const override;
 	virtual void PostLoad() override;
@@ -57,6 +60,9 @@ public:
 	
 	// Returns the text of the tooltip to display with NativeLessPulldownStruct.
 	virtual FString GetTooltip() const;
+
+	// Returns the selector panel size that is set separately from the value in the appearance settings in editor preferences.
+	virtual TOptional<FVector2D> GetIndividualPanelSize() const;
 	
 protected:
 	// Registers the struct set for this asset in detail customization.
@@ -88,6 +94,14 @@ protected:
 	// Shows a preview of the pull-down menu built from this PulldownContents.
 	UPROPERTY(EditDefaultsOnly, Transient, Category = "Pulldown")
 	FPreviewPulldownStruct Preview;
+
+	// Whether to override the selector panel size in the appearance settings in editor rreferences.
+	UPROPERTY(EditAnywhere, Category = "Selector", meta = (InlineEditConditionToggle))
+	bool bOverridePanelSize;
+	
+	// The selector panel size that is set separately from the value in the appearance settings in editor preferences.
+	UPROPERTY(EditAnywhere, Category = "Selector", meta = (EditCondition = "bOverridePanelSize"))
+	FVector2D PanelSizeOverride;
 
 	// The cache to restore when the PulldownListGenerator cannot be changed.
 	UPROPERTY(Transient)

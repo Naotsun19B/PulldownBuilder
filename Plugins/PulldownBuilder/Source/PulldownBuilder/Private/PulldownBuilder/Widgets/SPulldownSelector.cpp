@@ -1,7 +1,6 @@
 ﻿// Copyright 2021-2023 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/SToolTip.h"
@@ -13,13 +12,11 @@ namespace PulldownBuilder
 		ListItemsSource = InArgs._ListItemsSource;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
 		
-		const auto& Settings = UPulldownBuilderAppearanceSettings::Get();
-		
 		ChildSlot
 		[
 			SNew(SBox)
-			.HeightOverride(Settings.PanelSize.Y)
-			.WidthOverride(Settings.PanelSize.X)
+			.HeightOverride(InArgs._HeightOverride)
+			.WidthOverride(InArgs._WidthOverride)
 			[
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
@@ -37,8 +34,8 @@ namespace PulldownBuilder
 					.SelectionMode(ESelectionMode::Single)
 					.ListItemsSource(&ListItems)
 					.OnGenerateRow(this, &SPulldownSelector::HandleOnGenerateRow)
-					.OnMouseButtonClick(this, &SPulldownSelector::OnRowItemClicked)
-					.OnMouseButtonDoubleClick(this, &SPulldownSelector::OnRowItemClicked)
+					.OnMouseButtonClick(this, &SPulldownSelector::HandleOnMouseButtonClick, InArgs._bIsSelectWhenDoubleClick)
+					.OnMouseButtonDoubleClick(this, &SPulldownSelector::HandleOnMouseButtonDoubleClick, InArgs._bIsSelectWhenDoubleClick)
 				]
 			]
 		];
@@ -144,17 +141,17 @@ namespace PulldownBuilder
 		];
 	}
 
-	void SPulldownSelector::HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem)
+	void SPulldownSelector::HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem, const bool bIsSelectWhenDoubleClick)
 	{
-		if (!UPulldownBuilderAppearanceSettings::Get().bIsSelectWhenDoubleClick)
+		if (!bIsSelectWhenDoubleClick)
 		{
 			OnRowItemClicked(SelectedItem);
 		}
 	}
 
-	void SPulldownSelector::HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem)
+	void SPulldownSelector::HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem, const bool bIsSelectWhenDoubleClick)
 	{
-		if (UPulldownBuilderAppearanceSettings::Get().bIsSelectWhenDoubleClick)
+		if (bIsSelectWhenDoubleClick)
 		{
 			OnRowItemClicked(SelectedItem);
 		}

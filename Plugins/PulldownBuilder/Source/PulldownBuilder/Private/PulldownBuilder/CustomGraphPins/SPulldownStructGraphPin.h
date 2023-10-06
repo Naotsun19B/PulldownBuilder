@@ -7,6 +7,7 @@
 
 struct FPulldownRow;
 struct FStructContainer;
+class UPulldownContents;
 
 namespace PulldownBuilder
 {
@@ -49,6 +50,13 @@ namespace PulldownBuilder
 
 		// Returns the selected item.
 		TSharedPtr<FPulldownRow> GetSelection() const;
+
+		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
+		UPulldownContents* GetRelatedPulldownContents() const;
+
+		// Returns the individual panel size set in PulldownContents.
+		float GetIndividualPanelHeight() const;
+		float GetIndividualPanelWidth() const;
 		
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);

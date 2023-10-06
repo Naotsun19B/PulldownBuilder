@@ -31,6 +31,15 @@ namespace PulldownBuilder
 		// Sets the item that should be selected first.
 		SLATE_ARGUMENT(TSharedPtr<FPulldownRow>, InitialSelection)
 
+		// Sets the vertical size of this widget.
+		SLATE_ARGUMENT(float, HeightOverride)
+
+		// Sets the horizontal size of this widget.
+		SLATE_ARGUMENT(float, WidthOverride)
+
+		// Whether you need to double-click to select an item.
+		SLATE_ARGUMENT(bool, bIsSelectWhenDoubleClick)
+		
 		// Called when a new item is selected.
 		SLATE_EVENT(FOnSelectionChanged, OnSelectionChanged)
 	
@@ -60,8 +69,8 @@ namespace PulldownBuilder
 		TSharedRef<ITableRow> HandleOnGenerateRow(TSharedPtr<FPulldownRow> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 
 		// Called when an item in the list is clicked.
-		void HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem);
-		void HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem);
+		void HandleOnMouseButtonClick(TSharedPtr<FPulldownRow> SelectedItem, const bool bIsSelectWhenDoubleClick);
+		void HandleOnMouseButtonDoubleClick(TSharedPtr<FPulldownRow> SelectedItem, const bool bIsSelectWhenDoubleClick);
 		void OnRowItemClicked(TSharedPtr<FPulldownRow> SelectedItem);
 
 		// Returns whether the items in the list match the filter string.

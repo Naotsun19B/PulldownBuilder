@@ -268,6 +268,8 @@ namespace PulldownBuilder
 				SAssignNew(SelectedValueWidget, SPulldownSelectorComboButton)
 				.ListItemsSource(&SelectableValues)
 				.GetSelection(this, &FPulldownStructDetail::GetSelection)
+				.HeightOverride(this, &FPulldownStructDetail::GetIndividualPanelHeight)
+				.WidthOverride(this, &FPulldownStructDetail::GetIndividualPanelWidth)
 				.OnSelectionChanged(this, &FPulldownStructDetail::OnSelectedValueChanged)
 				.OnComboBoxOpened(this, &FPulldownStructDetail::RebuildPulldown)
 			];
@@ -293,6 +295,50 @@ namespace PulldownBuilder
 		}
 
 		return FindSelectableValueByName(SelectedValue);
+	}
+
+	UPulldownContents* FPulldownStructDetail::GetRelatedPulldownContents() const
+	{
+		check(StructPropertyHandle.IsValid());
+		
+#if UE_4_25_OR_LATER
+		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct);
+		}
+
+		return nullptr;
+	}
+
+	float FPulldownStructDetail::GetIndividualPanelHeight() const
+	{
+		if (const UPulldownContents* PulldownContents = GetRelatedPulldownContents())
+		{
+			const TOptional<FVector2D>& IndividualPanelSize = PulldownContents->GetIndividualPanelSize();
+			if (IndividualPanelSize.IsSet())
+			{
+				return IndividualPanelSize.GetValue().Y;
+			}
+		}
+
+		return 0.f;
+	}
+
+	float FPulldownStructDetail::GetIndividualPanelWidth() const
+	{
+		if (const UPulldownContents* PulldownContents = GetRelatedPulldownContents())
+		{
+			const TOptional<FVector2D>& IndividualPanelSize = PulldownContents->GetIndividualPanelSize();
+			if (IndividualPanelSize.IsSet())
+			{
+				return IndividualPanelSize.GetValue().X;
+			}
+		}
+
+		return 0.f;
 	}
 
 	void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
@@ -391,18 +437,9 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::OnBrowseSourceAssetAction()
 	{
-		check(StructPropertyHandle.IsValid());
-		
-#if UE_4_25_OR_LATER
-		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
-#else
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#endif
+		if (UPulldownContents* PulldownContents = GetRelatedPulldownContents())
 		{
-			if (UPulldownContents* PulldownContents = FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct))
-			{
-				FPulldownBuilderUtils::OpenPulldownContents(PulldownContents);
-			}
+			FPulldownBuilderUtils::OpenPulldownContents(PulldownContents);
 		}
 	}
 
@@ -420,18 +457,7 @@ namespace PulldownBuilder
 
 	bool FPulldownStructDetail::CanBrowseSourceAssetAction() const
 	{
-		check(StructPropertyHandle.IsValid());
-
-#if UE_4_25_OR_LATER
-		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
-#else
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#endif
-		{
-			return IsValid(FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct));
-		}
-
-		return false;
+		return IsValid(GetRelatedPulldownContents());
 	}
 }
 

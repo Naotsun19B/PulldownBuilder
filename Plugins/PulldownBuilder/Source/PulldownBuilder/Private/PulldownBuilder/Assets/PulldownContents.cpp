@@ -5,6 +5,7 @@
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "Editor.h"
@@ -19,6 +20,14 @@
 const FName UPulldownContents::RegisteredStructTypeTag = TEXT("RegisteredStructType");
 const FName UPulldownContents::GeneratorClassTag = TEXT("GeneratorClass");
 const FName UPulldownContents::SourceAssetTag = TEXT("SourceAsset");
+
+UPulldownContents::UPulldownContents()
+	: PulldownListGenerator(nullptr)
+	, bOverridePanelSize(false)
+	, PanelSizeOverride(UPulldownBuilderAppearanceSettings::DefaultPanelSize)
+	, PreChangePulldownListGenerator(nullptr)
+{
+}
 
 bool UPulldownContents::IsEditorOnly() const
 {
@@ -206,6 +215,16 @@ FString UPulldownContents::GetTooltip() const
 	}
 
 	return Tooltip;
+}
+
+TOptional<FVector2D> UPulldownContents::GetIndividualPanelSize() const
+{
+	if (bOverridePanelSize)
+	{
+		return PanelSizeOverride;
+	}
+
+	return {};
 }
 
 void UPulldownContents::RegisterDetailCustomization()

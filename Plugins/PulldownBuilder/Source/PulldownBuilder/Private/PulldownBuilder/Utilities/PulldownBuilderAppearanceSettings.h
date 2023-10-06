@@ -14,6 +14,10 @@ UCLASS(Config = Editor, GlobalUserConfig)
 class UPulldownBuilderAppearanceSettings : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	// Define a default value for the size of the PulldownSelector widget so that it can be used externally.
+	static FVector2D DefaultPanelSize;
 	
 public:
 	// The size of the PulldownSelector widget.

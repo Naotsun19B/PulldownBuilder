@@ -184,6 +184,8 @@ namespace PulldownBuilder
 					SAssignNew(PulldownSourceWidget, SPulldownSelectorComboButton)
 					.ListItemsSource(&PulldownContentsNames)
 					.GetSelection(this, &FNativeLessPulldownStructDetail::GetPulldownSourceSelection)
+					.HeightOverride(this, &FNativeLessPulldownStructDetail::GetIndividualPanelHeight)
+					.WidthOverride(this, &FNativeLessPulldownStructDetail::GetIndividualPanelWidth)
 					.OnSelectionChanged(this, &FNativeLessPulldownStructDetail::OnPulldownSourceChanged)
 					.OnComboBoxOpened(this, &FNativeLessPulldownStructDetail::RebuildPulldown)
 				]

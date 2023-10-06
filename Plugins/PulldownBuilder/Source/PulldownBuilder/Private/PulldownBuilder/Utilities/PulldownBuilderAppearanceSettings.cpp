@@ -20,8 +20,10 @@ namespace PulldownBuilder
 	}
 }
 
+FVector2D UPulldownBuilderAppearanceSettings::DefaultPanelSize = FVector2D(220.f, 300.f);
+
 UPulldownBuilderAppearanceSettings::UPulldownBuilderAppearanceSettings()
-	: PanelSize(220.f, 300.f)
+	: PanelSize(DefaultPanelSize)
 	, bIsSelectWhenDoubleClick(false)
 	, bShouldInlineDisplayWhenSingleProperty(true)
 	, NotificationSeverity(EPulldownBuilderNotificationSeverity::Warning)
