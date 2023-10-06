@@ -24,8 +24,10 @@ namespace PulldownBuilder
 		public:
 			void StartAsyncLoading(const FAssetData& AssetData)
 			{
+#if UE_5_00_OR_LATER
 				PulldownContentsToLoad.Add(AssetData);
 				UpdateProgressNotification();
+#endif
 				
 				UAssetManager::GetStreamableManager().RequestAsyncLoad(
 					AssetData.ToSoftObjectPath(),
@@ -37,15 +39,18 @@ namespace PulldownBuilder
 		private:
 			void EndAsyncLoading(const FAssetData AssetData)
 			{
+#if UE_5_00_OR_LATER
 				PulldownContentsToLoad.Remove(AssetData);
 				UpdateProgressNotification();
+#endif
 
 				if (const auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
 				{
 					FPulldownContentsLoader::OnPulldownContentsLoaded.Broadcast(PulldownContents);	
 				}
 			}
-			
+
+#if UE_5_00_OR_LATER
 			void UpdateProgressNotification()
 			{
 				const int32 TotalWorkToDo = PulldownContentsToLoad.Num();
@@ -71,10 +76,11 @@ namespace PulldownBuilder
 					);
 				}
 			};
-
+			
 		private:
 			FProgressNotificationHandle NotificationHandle;
 			TArray<FAssetData> PulldownContentsToLoad;
+#endif
 		};
 
 		static FAsyncLoadProgressNotificationHelper AsyncLoadProgressNotificationHelper;
@@ -121,7 +127,11 @@ namespace PulldownBuilder
 	{
 		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
 		check(IsValid(PulldownContentsClass));
+#if UE_5_01_OR_LATER
 		if (AssetData.AssetClassPath != PulldownContentsClass->GetClassPathName())
+#else
+		if (AssetData.AssetClass == PulldownContentsClass->GetFName())
+#endif
 		{
 			return;
 		}

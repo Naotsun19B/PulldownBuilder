@@ -20,6 +20,7 @@
 #else
 #include "EditorStyleSet.h"
 #endif
+#include "Editor.h"
 
 #define LOCTEXT_NAMESPACE "PulldownStructDetail"
 
@@ -221,7 +222,23 @@ namespace PulldownBuilder
 				return false;
 			};
 			
-			const UClass* OuterBaseClass = SelectedValueHandle->GetOuterBaseClass();
+			auto GetOuterBaseClass = [&]() -> const UClass*
+			{
+#if UE_5_00_OR_LATER
+				return SelectedValueHandle->GetOuterBaseClass();
+#else
+				TArray<UObject*> OuterObjects;
+				SelectedValueHandle->GetOuterObjects(OuterObjects);
+				if (OuterObjects.IsValidIndex(0))
+				{
+					return OuterObjects[0]->GetClass();
+				}
+
+				return nullptr;
+#endif
+			};
+			
+			const UClass* OuterBaseClass = GetOuterBaseClass();
 			if (IsMovieSceneClass(OuterBaseClass))
 			{
 				check(IsValid(GEditor));

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
+#include "EdGraph/EdGraphNodeUtils.h"
 #include "K2Node_ConvertPulldownStructToString.generated.h"
 
 class UBlueprintNodeSpawner;
