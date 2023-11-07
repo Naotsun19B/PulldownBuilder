@@ -278,7 +278,7 @@ namespace PulldownBuilder
 		FString NewDefaultValue = TEXT("(");
 		for (const auto& PropertyPair : PropertiesMap)
 		{
-			NewDefaultValue += FString::Printf(TEXT("%s=%s,"), *PropertyPair.Key, *PropertyPair.Value);
+			NewDefaultValue += FString::Printf(TEXT("%s=\"%s\","), *PropertyPair.Key, *PropertyPair.Value);
 		}
 		NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
 		
