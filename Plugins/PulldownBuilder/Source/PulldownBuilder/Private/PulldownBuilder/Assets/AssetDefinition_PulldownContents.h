@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetDefinitionDefault.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#if UE_5_02_OR_LATER
+#include "AssetDefinitionDefault.h"
+#endif
 
 #if UE_5_02_OR_LATER
 // UAssetDefinitionDefault does not define a constructor that receives an object initializer,
