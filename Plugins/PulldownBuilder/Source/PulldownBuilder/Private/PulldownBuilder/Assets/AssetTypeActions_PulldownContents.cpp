@@ -1,13 +1,16 @@
 ﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
+#if !UE_5_02_OR_LATER
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "AssetToolsModule.h"
+#endif
 
-#define LOCTEXT_NAMESPACE "PulldownBuilder"
+#define LOCTEXT_NAMESPACE "AssetTypeActions_PulldownContents"
 
 namespace PulldownBuilder
 {
+#if !UE_5_02_OR_LATER
 	TSharedPtr<FAssetTypeActions_PulldownContents> FAssetTypeActions_PulldownContents::Instance = nullptr;
 
 	void FAssetTypeActions_PulldownContents::Register()
@@ -49,6 +52,7 @@ namespace PulldownBuilder
 	{
 		return false;
 	}
+#endif
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+#if !UE_5_02_OR_LATER
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
+#endif
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
 #include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
@@ -28,8 +31,10 @@ namespace PulldownBuilder
 
 	void FPulldownBuilderModule::StartupModule()
 	{
+#if !UE_5_02_OR_LATER
 		// Register asset type actions.
 		FAssetTypeActions_PulldownContents::Register();
+#endif
 
 		// Register the icons of this plugin.
 		FPulldownBuilderStyle::Register();
@@ -81,8 +86,10 @@ namespace PulldownBuilder
 		// Unregister the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();
 		
+#if !UE_5_02_OR_LATER
 		// Unregister asset type actions.
 		FAssetTypeActions_PulldownContents::Unregister();
+#endif
 	}
 }
 	

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 namespace PulldownBuilder
 {
+#if !UE_5_02_OR_LATER
 	/**
-	 * A class that defines the operations that can be performed on an PulldownContents and
-	 * information about the PulldownContents.
+	 * A class that defines the operations that can be performed on an PulldownContents and information about the PulldownContents.
 	 */
 	class PULLDOWNBUILDER_API FAssetTypeActions_PulldownContents : public FAssetTypeActions_Base
 	{
@@ -30,4 +31,5 @@ namespace PulldownBuilder
 		// The instance of this style class.
 		static TSharedPtr<FAssetTypeActions_PulldownContents> Instance;
 	};
+#endif
 }

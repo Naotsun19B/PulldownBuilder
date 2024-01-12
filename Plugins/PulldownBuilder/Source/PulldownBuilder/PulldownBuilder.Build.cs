@@ -32,6 +32,9 @@ public class PulldownBuilder : ModuleRules
 				"Projects",
 				"ToolMenus",
 				"AssetTools",
+#if UE_5_2_OR_LATER
+				"AssetDefinition",
+#endif
 				"GraphEditor",
 				"StructViewer",
 				"AssetRegistry",
