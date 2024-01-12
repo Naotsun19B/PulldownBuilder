@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Naotsun. All Rights Reserved.
+// Copyright 2022 Naotsun. All Rights Reserved.
 
 #pragma once
 

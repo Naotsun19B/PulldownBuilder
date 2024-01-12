@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/CustomGraphPins/SPulldownStructGraphPin.h"
 #include "PulldownBuilder/CustomGraphPins/GraphPinContextMenuExtender.h"

@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"

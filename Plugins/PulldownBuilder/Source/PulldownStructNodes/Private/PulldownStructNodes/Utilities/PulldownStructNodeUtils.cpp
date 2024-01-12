@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #if WITH_EDITOR

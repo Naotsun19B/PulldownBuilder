@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
 #if !UE_5_02_OR_LATER

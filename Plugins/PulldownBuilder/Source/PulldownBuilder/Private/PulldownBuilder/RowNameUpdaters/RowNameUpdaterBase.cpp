@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"

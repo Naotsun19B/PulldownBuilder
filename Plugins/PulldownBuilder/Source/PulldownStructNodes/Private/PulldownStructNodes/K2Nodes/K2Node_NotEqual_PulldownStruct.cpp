@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_NotEqual_PulldownStruct.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"

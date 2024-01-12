@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2024 Naotsun. All Rights Reserved.
+// Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/StringTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
