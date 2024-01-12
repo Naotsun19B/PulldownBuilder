@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetTypeActions_Base.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#if !UE_5_02_OR_LATER
+#include "AssetTypeActions_Base.h"
+#endif
 
 namespace PulldownBuilder
 {
