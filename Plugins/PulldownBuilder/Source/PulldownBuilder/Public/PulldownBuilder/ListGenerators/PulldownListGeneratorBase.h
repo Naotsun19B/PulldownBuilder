@@ -14,7 +14,7 @@
  * 
  * UCLASS(meta = (FilterPulldownStructTypes = "<StructName>, <StructName>..."))
  */
-UCLASS(Abstract, Blueprintable, EditInlineNew)
+UCLASS(Abstract, Blueprintable, EditInlineNew, CollapseCategories)
 class PULLDOWNBUILDER_API UPulldownListGeneratorBase : public UObject
 {
 	GENERATED_BODY()
