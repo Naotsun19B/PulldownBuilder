@@ -32,31 +32,31 @@ namespace PulldownBuilder
 	void FPulldownBuilderModule::StartupModule()
 	{
 #if !UE_5_02_OR_LATER
-		// Register asset type actions.
+		// Registers asset type actions.
 		FAssetTypeActions_PulldownContents::Register();
 #endif
 
-		// Register the icons of this plugin.
+		// Registers the icons of this plugin.
 		FPulldownBuilderStyle::Register();
 
-		// Register message log.
+		// Registers message log.
 		FPulldownBuilderMessageLog::Register();
-
-		// Register pulldown contents loader.
+		
+		// Registers pulldown contents loader.
 		FPulldownContentsLoader::Register();
 		
-		// Register settings.
+		// Registers settings.
 		UPulldownBuilderAppearanceSettings::Register();
 		UPulldownBuilderRedirectSettings::Register();
 		
-		// Register custom graph pin.
+		// Registers custom graph pin.
 		FPulldownStructGraphPinFactory::Register();
 		FNativeLessPulldownStructGraphPinFactory::Register();
 
-		// Register a graph pin context menu extension.
+		// Registers a graph pin context menu extension.
 		FGraphPinContextMenuExtender::Register();
 		
-		// Register detail customizations.
+		// Registers detail customizations.
 		FPulldownStructTypeDetail::Register();
 		FPreviewPulldownStructDetail::Register();
 		FNativeLessPulldownStructDetail::Register();
@@ -64,30 +64,30 @@ namespace PulldownBuilder
 
 	void FPulldownBuilderModule::ShutdownModule()
 	{
-		// Unregister detail customizations.
+		// Unregisters detail customizations.
 		FNativeLessPulldownStructDetail::Unregister();
 		FPreviewPulldownStructDetail::Unregister();
 		FPulldownStructTypeDetail::Unregister();
 		
-		// Unregister custom graph pin.
+		// Unregisters custom graph pin.
 		FNativeLessPulldownStructGraphPinFactory::Unregister();
 		FPulldownStructGraphPinFactory::Unregister();
 
-		// Unregister settings.
+		// Unregisters settings.
 		UPulldownBuilderRedirectSettings::Unregister();
 		UPulldownBuilderAppearanceSettings::Unregister();
 		
-		// Unregister pulldown contents loader.
+		// Unregisters pulldown contents loader.
 		FPulldownContentsLoader::Unregister();
 		
-		// Unregister message log.
+		// Unregisters message log.
 		FPulldownBuilderMessageLog::Unregister();
 		
-		// Unregister the icons of this plugin.
+		// Unregisters the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();
 		
 #if !UE_5_02_OR_LATER
-		// Unregister asset type actions.
+		// Unregisters asset type actions.
 		FAssetTypeActions_PulldownContents::Unregister();
 #endif
 	}

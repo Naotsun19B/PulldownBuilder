@@ -26,6 +26,12 @@
 
 namespace PulldownBuilder
 {
+	namespace PulldownStructDetailDefine
+	{
+		static const FName SearchableObjectPropertyName = TEXT("SearchableObject");
+		static const FName MovieSceneSignedObjectClassName = TEXT("MovieSceneSignedObject");
+	}
+	
 	void FPulldownStructDetail::Register(const FPulldownStructType& StructType)
 	{
 		if (!StructType.IsValid())
@@ -65,11 +71,16 @@ namespace PulldownBuilder
 		StructPropertyHandle = InStructPropertyHandle;
 		check(StructPropertyHandle.IsValid());
 
-		// Scan the properties of the struct for the property handle of FPulldownStructBase::SelectedValue.
+		// Scans the properties of the struct for the property handle of FPulldownStructBase::SelectedValue.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)
 		{
+			if (SelectedValueHandle.IsValid() && SearchableObjectHandle.IsValid())
+			{
+				break;
+			}
+			
 			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
 			if (ChildPropertyHandle.IsValid())
 			{
@@ -82,21 +93,24 @@ namespace PulldownBuilder
 					if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
 					{
 						SelectedValueHandle = ChildPropertyHandle;
-						break;
+					}
+					else if (ChildProperty->GetFName() == PulldownStructDetailDefine::SearchableObjectPropertyName)
+					{
+						SearchableObjectHandle = ChildPropertyHandle;
 					}
 				}
 			}
 		}
 
-		// Do not register structures other than FPulldownStructBase in this detail customization.
-		check(SelectedValueHandle.IsValid());
+		// Do not registers structures other than FPulldownStructBase in this detail customization.
+		check(SelectedValueHandle.IsValid() && SearchableObjectHandle.IsValid());
 	
 		HeaderRow.NameContent()
 		[
 			StructPropertyHandle->CreatePropertyNameWidget()
 		];
 
-		// If the property is only FPulldownStructBase::SelectedValue, display it inline.
+		// If the property is only FPulldownStructBase::SelectedValue, displays it inline.
 		if (NumChildProperties == 1 && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			HeaderRow.ValueContent()
@@ -117,7 +131,7 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
-		// Add child properties other than FPulldownStructBase::SelectedValue to the StructBuilder.
+		// Adds child properties other than FPulldownStructBase::SelectedValue to the StructBuilder.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)
@@ -142,7 +156,7 @@ namespace PulldownBuilder
 			}
 		}
 
-		// If there are multiple properties, do not display inline.
+		// If there are multiple properties, do not displays inline.
 		if (NumChildProperties > 1 || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
@@ -174,21 +188,21 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
-		// Find PulldownContents in the property struct and
-		// build a list of strings to display in the pull-down menu.
+		// Finds PulldownContents in the property struct and build a list of strings to display in the pull-down menu.
 		void* StructValueData = nullptr;
 		const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
 		if (Result == FPropertyAccess::Success)
 		{	
 			SelectableValues = GenerateSelectableValues();
 		}
-		// Empty the list if data acquisition fails or if multiple selections are made.
+		// Empties the list if data acquisition fails or if multiple selections are made.
 		else
 		{
 			OnMultipleSelected();
 			return;
 		}
 
+		UpdateSearchableObject();
 		RefreshPulldownWidget();
 	}
 
@@ -196,7 +210,7 @@ namespace PulldownBuilder
 	{
 		check(SelectedValueHandle.IsValid());
 	
-		// Check if the currently set string is included in the constructed list.
+		// Checks if the currently set string is included in the constructed list.
 		FName CurrentSelectedValue;
 		SelectedValueHandle->GetValue(CurrentSelectedValue);
 
@@ -211,7 +225,7 @@ namespace PulldownBuilder
 				const UClass* Class = TestClass;
 				while (IsValid(Class))
 				{
-					if (Class->GetName() == TEXT("MovieSceneSignedObject"))
+					if (Class->GetName() == PulldownStructDetailDefine::MovieSceneSignedObjectClassName)
 					{
 						return true;
 					}
@@ -309,7 +323,26 @@ namespace PulldownBuilder
 #endif
 	{
 		check(InProperty != nullptr);
-		return (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
+		return (
+			(InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)) ||
+			(InProperty != SearchableObjectHandle->GetProperty())
+		);
+	}
+
+	UPulldownContents* FPulldownStructDetail::GetRelatedPulldownContents() const
+	{
+		check(StructPropertyHandle.IsValid());
+		
+#if UE_4_25_OR_LATER
+		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+#else
+		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
+#endif
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct);
+		}
+
+		return nullptr;
 	}
 
 	TSharedRef<SWidget> FPulldownStructDetail::GenerateSelectableValuesWidget()
@@ -351,22 +384,6 @@ namespace PulldownBuilder
 		return FindSelectableValueByName(SelectedValue);
 	}
 
-	UPulldownContents* FPulldownStructDetail::GetRelatedPulldownContents() const
-	{
-		check(StructPropertyHandle.IsValid());
-		
-#if UE_4_25_OR_LATER
-		if (const auto* StructProperty = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
-#else
-		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
-#endif
-		{
-			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct);
-		}
-
-		return nullptr;
-	}
-
 	float FPulldownStructDetail::GetIndividualPanelHeight() const
 	{
 		if (const UPulldownContents* PulldownContents = GetRelatedPulldownContents())
@@ -397,17 +414,45 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 	{
-		if (!SelectedItem.IsValid() || !SelectedValueHandle.IsValid())
+		check(SelectedValueHandle.IsValid());
+		
+		if (!SelectedItem.IsValid())
 		{
 			return;
 		}
-
+		
 		const FName NewSelectedValue = *SelectedItem->SelectedValue;
 		FName OldSelectedValue;
 		SelectedValueHandle->GetValue(OldSelectedValue);
 		if (NewSelectedValue != OldSelectedValue)
 		{
 			SelectedValueHandle->SetValue(NewSelectedValue);
+		}
+	}
+
+	void FPulldownStructDetail::UpdateSearchableObject()
+	{
+		check(SearchableObjectHandle.IsValid());
+
+		UObject* SearchableObject;
+		if (SearchableObjectHandle->GetValue(SearchableObject) != FPropertyAccess::Success)
+		{
+			SearchableObject = nullptr;
+		}
+
+		UObject* NewSearchableObject = nullptr;
+		if (UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
+		{
+			UE_LOG(LogPulldownBuilder, Warning, TEXT("SearchableObject (%s) != RelatedPulldownContents (%s)"), *GetNameSafe(SearchableObject), *GetNameSafe(RelatedPulldownContents));
+			if (!IsValid(SearchableObject) || (SearchableObject != RelatedPulldownContents))
+			{
+				NewSearchableObject = RelatedPulldownContents;
+			}
+		}
+		if (IsValid(NewSearchableObject))
+		{
+			UE_LOG(LogPulldownBuilder, Warning, TEXT("SetValue : NewSearchableObject = %s"), *GetNameSafe(NewSearchableObject));
+			SearchableObjectHandle->SetValue(NewSearchableObject);
 		}
 	}
 

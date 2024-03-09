@@ -36,6 +36,7 @@ namespace PulldownBuilder
 #else
 		virtual bool IsCustomizationTarget(UProperty* InProperty) const override;
 #endif
+		virtual UPulldownContents* GetRelatedPulldownContents() const override;
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
 		virtual void OnBrowseSourceAssetAction() override;
 		virtual bool CanBrowseSourceAssetAction() const override;

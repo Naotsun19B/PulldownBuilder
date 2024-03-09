@@ -165,6 +165,15 @@ namespace PulldownBuilder
 		);
 	}
 
+	UPulldownContents* FNativeLessPulldownStructDetail::GetRelatedPulldownContents() const
+	{
+		check(PulldownSourceHandle.IsValid());
+
+		FName PulldownSource;
+		PulldownSourceHandle->GetValue(PulldownSource);
+		return FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource);
+	}
+
 	void FNativeLessPulldownStructDetail::AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder)
 	{
 		StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)))
@@ -255,7 +264,8 @@ namespace PulldownBuilder
 
 			// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
 			SelectedValueHandle->SetValue(FName(NAME_None));
-		
+
+			UpdateSearchableObject();
 			FPulldownStructDetail::RefreshPulldownWidget();
 		}
 	}

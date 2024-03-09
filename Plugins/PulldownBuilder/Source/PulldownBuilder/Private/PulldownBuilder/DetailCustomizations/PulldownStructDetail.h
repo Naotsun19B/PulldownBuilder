@@ -41,7 +41,7 @@ namespace PulldownBuilder
 
 		// Generates a list of strings to display in the pull-down menu.
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
-	
+		
 		// Called when multiple properties are selected.
 		virtual void OnMultipleSelected();
 
@@ -56,6 +56,9 @@ namespace PulldownBuilder
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 		virtual void AddCustomRowAfterSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 
+		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
+		virtual UPulldownContents* GetRelatedPulldownContents() const;
+		
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
@@ -66,16 +69,16 @@ namespace PulldownBuilder
 		// Returns the selected item.
 		TSharedPtr<FPulldownRow> GetSelection() const;
 
-		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
-		virtual UPulldownContents* GetRelatedPulldownContents() const;
-
 		// Returns the individual panel size set in PulldownContents.
 		float GetIndividualPanelHeight() const;
 		float GetIndividualPanelWidth() const;
 		
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
-	
+
+		// Update the value of a pull-down struct's searchable object.
+		void UpdateSearchableObject();
+		
 		// Creates a FUIAction that works with the pull-down struct's context menu.
 		FUIAction CreateSelectedValueCopyAction();
 		FUIAction CreateSelectedValuePasteAction();
@@ -103,6 +106,9 @@ namespace PulldownBuilder
 
 		// The property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;
+
+		// The property handle of FPulldownStructBase::SearchableObject.
+		TSharedPtr<IPropertyHandle> SearchableObjectHandle;
 
 		// The widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
