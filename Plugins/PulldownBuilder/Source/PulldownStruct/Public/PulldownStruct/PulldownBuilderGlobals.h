@@ -58,6 +58,21 @@ namespace PulldownBuilder
 #endif
 
 /**
+ * Macros that determines whether the class that defines operations on assets is UAssetDefinition or IAssetTypeActions.
+ */
+#ifndef ENABLE_ASSET_DEFINITION
+#ifndef ENABLE_ASSET_TYPE_ACTIONS
+#if (UE_5_02_OR_LATER && !PLATFORM_MAC)
+#define ENABLE_ASSET_DEFINITION 1
+#define ENABLE_ASSET_TYPE_ACTIONS 0
+#else
+#define ENABLE_ASSET_DEFINITION 0
+#define ENABLE_ASSET_TYPE_ACTIONS 1
+#endif
+#endif
+#endif
+
+/**
  * Categories used for log output with this module.
  */
 PULLDOWNSTRUCT_API DECLARE_LOG_CATEGORY_EXTERN(LogPulldownBuilder, Log, All);

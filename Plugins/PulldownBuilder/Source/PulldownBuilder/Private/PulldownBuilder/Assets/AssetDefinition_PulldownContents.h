@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
-#if UE_5_02_OR_LATER
+#if ENABLE_ASSET_DEFINITION
 #include "AssetDefinitionDefault.h"
 #endif
 
-#if UE_5_02_OR_LATER
+#if ENABLE_ASSET_DEFINITION
 // UAssetDefinitionDefault does not define a constructor that receives an object initializer,
 // so change it so that the object initializer is not passed locally to the superclass.
 #undef RELAY_CONSTRUCTOR
@@ -17,7 +17,7 @@
 
 namespace PulldownBuilder
 {
-#if UE_5_02_OR_LATER
+#if ENABLE_ASSET_DEFINITION
 	/**
 	 * A class that defines the operations that can be performed on an PulldownContents and information about the PulldownContents.
 	 */

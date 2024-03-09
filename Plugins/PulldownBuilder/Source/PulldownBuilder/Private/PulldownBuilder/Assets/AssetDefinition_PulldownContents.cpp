@@ -1,13 +1,15 @@
 // Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/AssetDefinition_PulldownContents.h"
+#if ENABLE_ASSET_DEFINITION
 #include "PulldownBuilder/Assets/PulldownContents.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "AssetDefinition_PulldownContents"
 
 namespace PulldownBuilder
 {
-#if UE_5_02_OR_LATER
+#if ENABLE_ASSET_DEFINITION
 	FText UAssetDefinition_PulldownContents::GetAssetDisplayName() const
 	{
 		return LOCTEXT("AssetName", "Pulldown Contents");

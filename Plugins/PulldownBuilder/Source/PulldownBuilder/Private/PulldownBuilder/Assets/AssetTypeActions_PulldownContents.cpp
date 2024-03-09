@@ -1,7 +1,7 @@
 // Copyright 2021-2024 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
-#if !UE_5_02_OR_LATER
+#if ENABLE_ASSET_TYPE_ACTIONS
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "AssetToolsModule.h"
 #endif
@@ -10,7 +10,7 @@
 
 namespace PulldownBuilder
 {
-#if !UE_5_02_OR_LATER
+#if ENABLE_ASSET_TYPE_ACTIONS
 	TSharedPtr<FAssetTypeActions_PulldownContents> FAssetTypeActions_PulldownContents::Instance = nullptr;
 
 	void FAssetTypeActions_PulldownContents::Register()

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
-#if !UE_5_02_OR_LATER
+#if ENABLE_ASSET_TYPE_ACTIONS
 #include "AssetTypeActions_Base.h"
 #endif
 
 namespace PulldownBuilder
 {
-#if !UE_5_02_OR_LATER
+#if ENABLE_ASSET_TYPE_ACTIONS
 	/**
 	 * A class that defines the operations that can be performed on an PulldownContents and information about the PulldownContents.
 	 */
