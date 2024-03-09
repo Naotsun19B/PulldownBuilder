@@ -56,6 +56,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UObject* SearchableObject = nullptr;
 #endif
+
+public:
+#if WITH_EDITORONLY_DATA
+	// Define the property name because SearchableObject is private and GET_MEMBER_NAME_CHECKED cannot be used.
+	PULLDOWNSTRUCT_API static const FName SearchableObjectPropertyName;
+#endif
 };
 
 // A meta-struct that checks if it is a struct that inherits FPulldownStructBase.

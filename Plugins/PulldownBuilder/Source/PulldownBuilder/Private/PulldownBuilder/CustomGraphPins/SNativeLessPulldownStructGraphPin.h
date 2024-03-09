@@ -28,6 +28,7 @@ namespace PulldownBuilder
 		// SPulldownStructGraphPin interface.
 		virtual void RefreshPulldownWidget() override;
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		virtual UPulldownContents* GetRelatedPulldownContents() const override;
 		// End of SPulldownStructGraphPin interface.
 		
 		// Finds for the same name as the specified name from the PulldownContentsNames.

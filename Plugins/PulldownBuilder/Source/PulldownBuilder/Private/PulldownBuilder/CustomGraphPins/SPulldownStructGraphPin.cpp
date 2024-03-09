@@ -36,6 +36,7 @@ namespace PulldownBuilder
 		// build a list of strings to display in the pull-down menu.
 		SelectableValues = GenerateSelectableValues();
 
+		UpdateSearchableObject();
 		RefreshPulldownWidget();
 	}
 
@@ -78,6 +79,19 @@ namespace PulldownBuilder
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
 	}
 
+	UPulldownContents* SPulldownStructGraphPin::GetRelatedPulldownContents() const
+	{
+		check(GraphPinObj != nullptr);
+		
+		FStructContainer StructContainer;
+		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructContainer.GetScriptStruct());
+		}
+
+		return nullptr;
+	}
+
 	TSharedRef<SWidget> SPulldownStructGraphPin::GenerateSelectableValuesWidget()
 	{
 		return
@@ -112,19 +126,6 @@ namespace PulldownBuilder
 		const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
 		return FindSelectableValueByName(NameToFind);
-	}
-
-	UPulldownContents* SPulldownStructGraphPin::GetRelatedPulldownContents() const
-	{
-		check(GraphPinObj != nullptr);
-		
-		FStructContainer StructContainer;
-		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
-		{
-			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructContainer.GetScriptStruct());
-		}
-
-		return nullptr;
 	}
 
 	float SPulldownStructGraphPin::GetIndividualPanelHeight() const
@@ -167,6 +168,25 @@ namespace PulldownBuilder
 					*SelectedItem->SelectedValue
 				);
 			}
+		}
+	}
+
+	void SPulldownStructGraphPin::UpdateSearchableObject()
+	{
+		FName NewSearchableObject = NAME_None;
+		if (const UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
+		{
+			const FAssetData RelatedPulldownContentsAssetData(RelatedPulldownContents);
+			NewSearchableObject = *RelatedPulldownContentsAssetData.GetExportTextName();
+		}
+
+		const TSharedPtr<FName>& SearchableObject = GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName);
+		if (!SearchableObject.IsValid() || (*SearchableObject != NewSearchableObject))
+		{
+			SetPropertyValue(
+				FPulldownStructBase::SearchableObjectPropertyName,
+				NewSearchableObject
+			);
 		}
 	}
 

@@ -42,6 +42,9 @@ namespace PulldownBuilder
 		// Generates a list of strings to display in the pull-down menu.
 		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
 
+		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
+		virtual UPulldownContents* GetRelatedPulldownContents() const;
+		
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();
 	
@@ -51,9 +54,6 @@ namespace PulldownBuilder
 		// Returns the selected item.
 		TSharedPtr<FPulldownRow> GetSelection() const;
 
-		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
-		UPulldownContents* GetRelatedPulldownContents() const;
-
 		// Returns the individual panel size set in PulldownContents.
 		float GetIndividualPanelHeight() const;
 		float GetIndividualPanelWidth() const;
@@ -61,6 +61,9 @@ namespace PulldownBuilder
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 
+		// Updates the value of a pull-down struct's searchable object.
+		void UpdateSearchableObject();
+		
 		// Gets or sets the value of a variable with the specified name.
 		// If specify a property name that does not exist and get it, nullptr is returned.
 		TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;

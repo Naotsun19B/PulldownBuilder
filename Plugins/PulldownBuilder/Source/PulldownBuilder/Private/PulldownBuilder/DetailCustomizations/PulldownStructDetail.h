@@ -76,7 +76,7 @@ namespace PulldownBuilder
 		// Called when the value of the SelectedValueWidget changes.
 		void OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);
 
-		// Update the value of a pull-down struct's searchable object.
+		// Updates the value of a pull-down struct's searchable object.
 		void UpdateSearchableObject();
 		
 		// Creates a FUIAction that works with the pull-down struct's context menu.

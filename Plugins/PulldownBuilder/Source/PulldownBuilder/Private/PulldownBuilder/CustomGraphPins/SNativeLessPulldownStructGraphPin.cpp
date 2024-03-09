@@ -110,6 +110,17 @@ namespace PulldownBuilder
 		return FPulldownBuilderUtils::GetEmptyPulldownRows();
 	}
 
+	UPulldownContents* SNativeLessPulldownStructGraphPin::GetRelatedPulldownContents() const
+	{
+		const TSharedPtr<FName>& SearchableObject = GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName);
+		if (!SearchableObject.IsValid())
+		{
+			return nullptr;
+		}
+		
+		return FPulldownBuilderUtils::FindPulldownContentsByName(*SearchableObject);
+	}
+
 	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameByName(const FName& InName) const
 	{
 		const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(

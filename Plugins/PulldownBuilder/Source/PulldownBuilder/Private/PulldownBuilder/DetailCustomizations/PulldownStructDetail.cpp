@@ -28,7 +28,7 @@ namespace PulldownBuilder
 {
 	namespace PulldownStructDetailDefine
 	{
-		static const FName SearchableObjectPropertyName = TEXT("SearchableObject");
+		static constexpr int32 NumOfStandardPulldownStructProperties = 2;
 		static const FName MovieSceneSignedObjectClassName = TEXT("MovieSceneSignedObject");
 	}
 	
@@ -94,7 +94,7 @@ namespace PulldownBuilder
 					{
 						SelectedValueHandle = ChildPropertyHandle;
 					}
-					else if (ChildProperty->GetFName() == PulldownStructDetailDefine::SearchableObjectPropertyName)
+					else if (ChildProperty->GetFName() == FPulldownStructBase::SearchableObjectPropertyName)
 					{
 						SearchableObjectHandle = ChildPropertyHandle;
 					}
@@ -111,7 +111,7 @@ namespace PulldownBuilder
 		];
 
 		// If the property is only FPulldownStructBase::SelectedValue, displays it inline.
-		if (NumChildProperties == 1 && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		if (NumChildProperties == PulldownStructDetailDefine::NumOfStandardPulldownStructProperties && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			HeaderRow.ValueContent()
 				.MinDesiredWidth(500)
@@ -157,7 +157,7 @@ namespace PulldownBuilder
 		}
 
 		// If there are multiple properties, do not displays inline.
-		if (NumChildProperties > 1 || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		if (NumChildProperties > PulldownStructDetailDefine::NumOfStandardPulldownStructProperties || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
 			
@@ -325,7 +325,7 @@ namespace PulldownBuilder
 		check(InProperty != nullptr);
 		return (
 			(InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)) ||
-			(InProperty != SearchableObjectHandle->GetProperty())
+			(InProperty->GetFName() == FPulldownStructBase::SearchableObjectPropertyName)
 		);
 	}
 
@@ -443,7 +443,6 @@ namespace PulldownBuilder
 		UObject* NewSearchableObject = nullptr;
 		if (UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
 		{
-			UE_LOG(LogPulldownBuilder, Warning, TEXT("SearchableObject (%s) != RelatedPulldownContents (%s)"), *GetNameSafe(SearchableObject), *GetNameSafe(RelatedPulldownContents));
 			if (!IsValid(SearchableObject) || (SearchableObject != RelatedPulldownContents))
 			{
 				NewSearchableObject = RelatedPulldownContents;
@@ -451,7 +450,6 @@ namespace PulldownBuilder
 		}
 		if (IsValid(NewSearchableObject))
 		{
-			UE_LOG(LogPulldownBuilder, Warning, TEXT("SetValue : NewSearchableObject = %s"), *GetNameSafe(NewSearchableObject));
 			SearchableObjectHandle->SetValue(NewSearchableObject);
 		}
 	}
