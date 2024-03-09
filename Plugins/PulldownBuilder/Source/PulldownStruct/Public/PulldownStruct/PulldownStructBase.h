@@ -36,6 +36,26 @@ public:
 	
 	// Returns whether no valid value is selected.
     bool IsNone() const { return SelectedValue.IsNone(); }
+
+protected:
+	// Provides a point where plugin users can extend it, because normal PostSerialize is used by SETUP_PULLDOWN_STRUCT and cannot be used.
+	virtual void PostSerialize_Implementation(const FArchive& Ar) {}
+	
+#if WITH_EDITOR
+	// Prepares a wrapper function that calls FArchive::MarkSearchableName, because SearchableObject is private.
+	void MarkSearchableName(const FArchive& Ar)
+	{
+		Ar.MarkSearchableName(SearchableObject, SelectedValue);
+	}
+#endif
+	
+private:
+#if WITH_EDITORONLY_DATA
+	// The reference that allows you to view the asset that is the source of the Selected Value from the reference viewer in the editor environment.
+	// Access only through reflection so that unnecessary variables are not visible to plugin users.
+	UPROPERTY(VisibleAnywhere)
+	UObject* SearchableObject = nullptr;
+#endif
 };
 
 // A meta-struct that checks if it is a struct that inherits FPulldownStructBase.

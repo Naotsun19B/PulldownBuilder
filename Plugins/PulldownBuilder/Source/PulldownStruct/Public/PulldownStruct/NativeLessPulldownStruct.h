@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PulldownStructBase.h"
+#include "PulldownStruct/PulldownStructBase.h"
+#include "PulldownStruct/PulldownStructMacros.h"
 #include "NativeLessPulldownStruct.generated.h"
 
 /**
@@ -14,6 +15,7 @@ USTRUCT(BlueprintType)
 struct FNativeLessPulldownStruct : public FPulldownStructBase
 {
 	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
 
 public:
 	// The name of the PulldownContents asset from which the pull-down menu is based.
@@ -29,3 +31,4 @@ public:
 	{
 	}
 };
+SETUP_PULLDOWN_STRUCT_OPS(FNativeLessPulldownStruct)

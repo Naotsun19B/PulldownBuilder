@@ -127,18 +127,22 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	Super::GetAssetRegistryTags(OutTags);
 
 	// Added the name of the struct registered in this asset to AssetRegistryTags.
-	OutTags.Add(FAssetRegistryTag(
-		RegisteredStructTypeTag,
-		FName(*PulldownStructType).ToString(),
-		FAssetRegistryTag::TT_Alphabetical
-	));
+	OutTags.Add(
+		FAssetRegistryTag(
+			RegisteredStructTypeTag,
+			FName(*PulldownStructType).ToString(),
+			FAssetRegistryTag::TT_Alphabetical
+		)
+	);
 
 	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
-	OutTags.Add(FAssetRegistryTag(
-		GeneratorClassTag,
-		GetPulldownListGeneratorClassName(),
-		FAssetRegistryTag::TT_Alphabetical
-	));
+	OutTags.Add(
+		FAssetRegistryTag(
+			GeneratorClassTag,
+			GetPulldownListGeneratorClassName(),
+			FAssetRegistryTag::TT_Alphabetical
+		)
+	);
 
 	// Added the name of the underlying asset of the PulldownListGenerator to AssetRegistryTags.
 	FString SourceAssetName = LexToString(NAME_None);
