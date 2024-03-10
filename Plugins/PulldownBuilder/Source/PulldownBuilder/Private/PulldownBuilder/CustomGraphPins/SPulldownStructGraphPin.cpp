@@ -32,7 +32,7 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::RebuildPulldown()
 	{
-		// Find Pulldown Contents in the property struct and
+		// Finds Pulldown Contents in the property struct and
 		// build a list of strings to display in the pull-down menu.
 		SelectableValues = GenerateSelectableValues();
 
@@ -42,7 +42,7 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::RefreshPulldownWidget()
 	{	
-		// Check if the currently set string is included in the constructed list.
+		// Checks if the currently set string is included in the constructed list.
 		const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		TSharedPtr<FPulldownRow> SelectedItem = nullptr;
 		if (CurrentSelectedValue.IsValid())
@@ -81,12 +81,22 @@ namespace PulldownBuilder
 
 	UPulldownContents* SPulldownStructGraphPin::GetRelatedPulldownContents() const
 	{
+		if (const UScriptStruct* RelatedPulldownStructType = GetRelatedPulldownStructType())
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(RelatedPulldownStructType);
+		}
+
+		return nullptr;
+	}
+
+	const UScriptStruct* SPulldownStructGraphPin::GetRelatedPulldownStructType() const
+	{
 		check(GraphPinObj != nullptr);
 		
 		FStructContainer StructContainer;
 		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
 		{
-			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructContainer.GetScriptStruct());
+			return StructContainer.GetScriptStruct();
 		}
 
 		return nullptr;
@@ -173,6 +183,17 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::UpdateSearchableObject()
 	{
+		const UScriptStruct* RelatedPulldownStructType = GetRelatedPulldownStructType();
+		if (!IsValid(RelatedPulldownStructType))
+		{
+			return;
+		}
+
+		if (!FPulldownBuilderUtils::HasPulldownStructPostSerialize(RelatedPulldownStructType))
+		{
+			return;
+		}
+		
 		FName NewSearchableObject = NAME_None;
 		if (const UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
 		{
@@ -211,7 +232,7 @@ namespace PulldownBuilder
 		);
 		if (NewDefaultValue.IsValid())
 		{
-			// Set the created value for the pin.
+			// Sets the created value for the pin.
 			const UEdGraphSchema* Schema = GraphPinObj->GetSchema();
 			check(IsValid(Schema));
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);

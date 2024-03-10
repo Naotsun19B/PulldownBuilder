@@ -58,6 +58,9 @@ namespace PulldownBuilder
 
 		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
 		virtual UPulldownContents* GetRelatedPulldownContents() const;
+
+		// Returns type information of the pull-down struct currently being edited.
+		const UScriptStruct* GetRelatedPulldownStructType() const;
 		
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();

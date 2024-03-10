@@ -331,6 +331,16 @@ namespace PulldownBuilder
 
 	UPulldownContents* FPulldownStructDetail::GetRelatedPulldownContents() const
 	{
+		if (const UScriptStruct* RelatedPulldownStructType = GetRelatedPulldownStructType() )
+		{
+			return FPulldownBuilderUtils::FindPulldownContentsByStruct(RelatedPulldownStructType);
+		}
+
+		return nullptr;
+	}
+
+	const UScriptStruct* FPulldownStructDetail::GetRelatedPulldownStructType() const
+	{
 		check(StructPropertyHandle.IsValid());
 		
 #if UE_4_25_OR_LATER
@@ -339,7 +349,7 @@ namespace PulldownBuilder
 		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
-			return FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct);
+			return StructProperty->Struct;
 		}
 
 		return nullptr;
@@ -434,6 +444,17 @@ namespace PulldownBuilder
 	{
 		check(SearchableObjectHandle.IsValid());
 
+		const UScriptStruct* RelatedPulldownStructType = GetRelatedPulldownStructType();
+		if (!IsValid(RelatedPulldownStructType))
+		{
+			return;
+		}
+
+		if (!FPulldownBuilderUtils::HasPulldownStructPostSerialize(RelatedPulldownStructType))
+		{
+			return;
+		}
+		
 		UObject* SearchableObject;
 		if (SearchableObjectHandle->GetValue(SearchableObject) != FPropertyAccess::Success)
 		{

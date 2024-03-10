@@ -62,6 +62,9 @@ namespace PulldownBuilder
 		// Returns whether the specified struct is already registered.
 		static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);
 
+		// Returns whether the specified structure implements PostSerialize.
+		static bool HasPulldownStructPostSerialize(const UScriptStruct* InStruct);
+		
 		// Generates a string that represents the default value of the struct.
 		static FString GenerateStructDefaultValueString(const UScriptStruct* InStruct);
 

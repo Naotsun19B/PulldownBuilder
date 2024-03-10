@@ -199,6 +199,18 @@ namespace PulldownBuilder
 		return bIsRegistered;
 	}
 
+	bool FPulldownBuilderUtils::HasPulldownStructPostSerialize(const UScriptStruct* InStruct)
+	{
+		check(IsValid(InStruct));
+		
+		if (const UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
+		{
+			return CppStructOps->HasPostSerialize();
+		}
+
+		return false;
+	}
+
 	FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* InStruct)
 	{
 		check(IsValid(InStruct));
