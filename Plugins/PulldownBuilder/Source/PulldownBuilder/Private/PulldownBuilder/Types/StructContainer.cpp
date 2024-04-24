@@ -64,7 +64,14 @@ void FStructContainer::GetPreloadDependencies(TArray<UObject*>& Dependencies)
 {
 	if (::IsValid(ScriptStruct))
 	{
-		Dependencies.Add(const_cast<UScriptStruct*>(ScriptStruct));
+		Dependencies.Add(
+			const_cast<UScriptStruct*>(
+				ScriptStruct
+#if UE_5_03_OR_LATER
+				.Get()
+#endif
+			)
+		);
 	}
 }
 

@@ -225,7 +225,7 @@ namespace PulldownBuilder
 				const UClass* Class = TestClass;
 				while (IsValid(Class))
 				{
-					if (Class->GetName() == PulldownStructDetailDefine::MovieSceneSignedObjectClassName)
+					if (Class->GetFName() == PulldownStructDetailDefine::MovieSceneSignedObjectClassName)
 					{
 						return true;
 					}

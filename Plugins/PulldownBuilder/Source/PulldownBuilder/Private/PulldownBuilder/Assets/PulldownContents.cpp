@@ -7,9 +7,11 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
-#include "PulldownBuilder/Types/StructContainer.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
+#if UE_5_04_OR_LATER
+#include "UObject/AssetRegistryTagsContext.h"
+#endif
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownContents)
@@ -122,27 +124,40 @@ void UPulldownContents::PostDuplicate(bool bDuplicateForPIE)
 	PulldownStructType = FPulldownStructType();
 }
 
+#if UE_5_04_OR_LATER
+void UPulldownContents::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const
+#else
 void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const
+#endif
 {
-	Super::GetAssetRegistryTags(OutTags);
-
-	// Added the name of the struct registered in this asset to AssetRegistryTags.
-	OutTags.Add(
-		FAssetRegistryTag(
-			RegisteredStructTypeTag,
-			FName(*PulldownStructType).ToString(),
-			FAssetRegistryTag::TT_Alphabetical
-		)
+	Super::GetAssetRegistryTags(
+#if UE_5_04_OR_LATER
+		Context
+#else
+		OutTags
+#endif
 	);
+
+	auto AddTag = [&](
+		const FName& Name,
+		const FString& Value,
+		const FAssetRegistryTag::ETagType& Type = FAssetRegistryTag::TT_Alphabetical,
+		const uint32 DisplayFlags = FAssetRegistryTag::TD_None
+	)
+	{
+		const FAssetRegistryTag Tag(Name, Value, Type, DisplayFlags);
+#if UE_5_04_OR_LATER
+		Context.AddTag(Tag);
+#else
+		OutTags.Add(Tag);
+#endif	
+	};
+	
+	// Added the name of the struct registered in this asset to AssetRegistryTags.
+	AddTag(RegisteredStructTypeTag, (*PulldownStructType).ToString());
 
 	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
-	OutTags.Add(
-		FAssetRegistryTag(
-			GeneratorClassTag,
-			GetPulldownListGeneratorClassName(),
-			FAssetRegistryTag::TT_Alphabetical
-		)
-	);
+	AddTag(GeneratorClassTag, GetPulldownListGeneratorClassName());
 
 	// Added the name of the underlying asset of the PulldownListGenerator to AssetRegistryTags.
 	FString SourceAssetName = LexToString(NAME_None);
@@ -153,13 +168,7 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 			SourceAssetName = PulldownListGenerator->GetSourceAssetName();
 		}
 	}
-	OutTags.Add(
-		FAssetRegistryTag(
-			SourceAssetTag,
-			SourceAssetName,
-			FAssetRegistryTag::TT_Alphabetical
-		)
-	);
+	AddTag(SourceAssetTag, SourceAssetName);
 }
 
 const FPulldownStructType& UPulldownContents::GetPulldownStructType() const

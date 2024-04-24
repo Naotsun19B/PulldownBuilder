@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "UObject/Object.h"
 #include "UObject/PackageReload.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
@@ -43,7 +43,11 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void BeginDestroy() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;
+#if UE_5_04_OR_LATER
+	virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
+#else
 	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+#endif
 	// End of UObject interface.
 
 	// Gets information about the target struct.

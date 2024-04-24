@@ -122,7 +122,11 @@ protected:
 
 protected:
 	// The type of struct stored in this container.
+#if UE_5_03_OR_LATER
+	TObjectPtr<const UScriptStruct> ScriptStruct;
+#else
 	const UScriptStruct* ScriptStruct;
+#endif
 
 	// The raw data of the struct stored in this container.
 	const uint8* StructMemory;

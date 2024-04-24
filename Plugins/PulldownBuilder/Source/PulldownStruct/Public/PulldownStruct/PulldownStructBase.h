@@ -53,7 +53,7 @@ private:
 #if WITH_EDITORONLY_DATA
 	// The reference that allows you to view the asset that is the source of the Selected Value from the reference viewer in the editor environment.
 	// Access only through reflection so that unnecessary variables are not visible to plugin users.
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Pulldown")
 	UObject* SearchableObject = nullptr;
 #endif
 
