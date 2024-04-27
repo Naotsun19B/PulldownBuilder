@@ -28,7 +28,7 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.24 ~ 5.3  
+対象バージョン : UE4.24 ~ 5.4  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -71,6 +71,7 @@ USTRUCT(BlueprintType)
 struct FTestPulldown : public FPulldownStructBase
 {
 	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -84,11 +85,14 @@ USTRUCT(BlueprintType)
 struct FTestPulldown2 : public FPulldownStructBase
 {
 	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
 };
 ```
 次に、ランタイムモジュール([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct))に含まれる[`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStruct/PulldownStructBase.h)を継承した構造体を定義します。  
 プルダウンメニューで選択する文字列の他に変数を定義することができます。  
 ここで定義した構造体がプルダウンメニューが表示される構造体になります。  
+バージョン2.4で追加された'SETUP_PULLDOWN_STRUCT'を使用することで、リファレンスビューアでどのアセットでどのプルダウン構造体がどの値を使用しているかが確認できるようになります。  
+なお、旧バージョンで作成されたアセットはセーブしなおすことでリファレンスビューアの内容も更新されます。  
 
 ![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
 
@@ -207,6 +211,16 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 
 ## 履歴
 
+- (2024/04/24) v2.4  
+  UE5.4に対応しました  
+  プルダウン構造体を`SelectedValue`に設定されている値の文字列に変換するノードを追加しました  
+  パッケージ化中にK2Nodeでエラーが発生するバグを修正しました  
+  エディタ起動時にプルダウンコンテンツアセットを非同期でロードするように変更しました  
+  プルダウンコンテンツアセットから個別にプルダウンメニューの縦横のサイズを指定できるようにしました  
+  シーケンサのキーのプロパティでプルダウン構造体を使用した際にクラッシュする不具合を修正しました  
+  プルダウン構造体のピンのデフォルト値に特殊文字が入っていると正常に値が保存できない不具合を修正しました  
+  リファレンスビューアでどのアセットでどのプルダウン構造体がどの値を使用しているかが確認できる機能を追加しました  
+
 - (2023/09/07) v2.3  
   UE5.3に対応しました  
   ランタイムで使用される値とエディタ上のプルダウンメニューに表示されるデータを別々に設定できるようにしました  
@@ -235,10 +249,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
   グラフピンまたは詳細パネルのコンテキストメニューから変数のプルダウン構造体の元となるPulldownContentsアセットを開けるようになりました  
 
 - (2022/11/08) v1.8  
+  UE5.1に対応しました  
   エディタ言語が英語以外の場合にノードを検索するとクラッシュする問題を修正しました  
-  エディタ起動時にピンの値が無効なデータになる不具合を修正  
-  プルダウンメニューの検索欄が正常に動作しない不具合を修正  
-  UE5.1に対応しました
+  エディタ起動時にピンの値が無効なデータになる不具合を修正しました  
+  プルダウンメニューの検索欄が正常に動作しない不具合を修正しました
 
 - (2022/07/07) v1.7  
   `PulldownListGenerator`の`GetPulldownRows`の引数に編集中の変数を持つオブジェクトと編集中の変数を渡すようにしました  
@@ -252,7 +266,7 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
   Strict Includesでビルドした際に発生するエラーを解消しました
 
 - (2021/10/17) v1.4   
-  UE5に対応しました  
+  UE5.0に対応しました  
 
 - (2021/07/29) v1.3   
   プルダウンメニューウィジェットを大幅に改善し、各項目にツールチップを表示できるようにしました  

@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.24 ~ 5.3  
+Target version : UE4.24 ~ 5.4  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -71,6 +71,7 @@ USTRUCT(BlueprintType)
 struct FTestPulldown : public FPulldownStructBase
 {
 	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -84,11 +85,14 @@ USTRUCT(BlueprintType)
 struct FTestPulldown2 : public FPulldownStructBase
 {
 	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
 };
 ```
 Next, define a structure that inherits from [`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStruct/PulldownStructBase.h) included in the runtime module([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct)).
 You can define variables in addition to the string selected in the pull-down menu.  
 The structure defined here is the structure for which the pull-down menu is displayed.  
+By using 'SETUP_PULLDOWN_STRUCT' added in version 2.4, you can now see which asset uses which pulldown structure and which value in the reference viewer.  
+Please note that by resaving assets created with the previous version, the contents of the reference viewer will be updated.  
 
 ![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
 
@@ -207,6 +211,16 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2024/04/24) v2.4  
+  Added support for UE5.4  
+  Added a node that converts the pulldown structure to a string with the value set in `Selected Value`  
+  Fixed a bug that caused an error on K 2 Node during packaging  
+  Changed the pulldown content asset to be loaded asynchronously when the editor starts  
+  It is now possible to specify the vertical and horizontal sizes of the pull-down menu individually in the pull-down content asset  
+  Fixed a bug that caused a crash when using a pulldown structure in the sequencer key property  
+  Fixed a bug where the value could not be saved correctly if the default value of the pulldown structure pin contained special characters  
+  Added a feature that allows you to check which asset uses which pulldown structure and which value in the reference viewer  
+
 - (2023/09/07) v2.3  
   Added support for UE5.3  
   Added the ability to set the values used at runtime and the data displayed in the pull-down menu on the editor separately  
@@ -252,7 +266,7 @@ The items that can be set from the editor preferences are as follows.
   Fixed errors when building with strict includes
 
 - (2021/10/17) v1.4   
-  Added support for UE5  
+  Added support for UE5.0  
 
 - (2021/07/29) v1.3   
   The pull-down menu widget has been significantly improved so that tooltips can be displayed for each item  
