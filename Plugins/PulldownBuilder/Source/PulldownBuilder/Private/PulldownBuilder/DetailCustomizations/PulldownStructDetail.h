@@ -64,6 +64,15 @@ namespace PulldownBuilder
 		
 		// Generates a widget that displays a pull-down menu.
 		TSharedRef<SWidget> GenerateSelectableValuesWidget();
+
+		// Safely changes the value of a property handle.
+		// NOTE: There are parts of the MovieScene module code that don't check for nullptr.
+		//       This causes a crash when changing properties in the sequencer editor, so until this is fixed,
+		//       for MovieSceneSignedObject (ex: sections or tracks), set to new value at the next frame.
+		static void SetPropertyValueSafe(
+			const TSharedRef<IPropertyHandle>& TargetPropertyHandle,
+			const TFunction<void(const TSharedRef<IPropertyHandle>& PropertyHandle)>& Predicate
+		);
 	
 		// Finds for the same name as the specified name from the SelectableValues.
 		// If not found, returns nullptr.

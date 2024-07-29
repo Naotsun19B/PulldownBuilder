@@ -217,60 +217,13 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 		if (!SelectedItem.IsValid())
 		{
-			// There are parts of the MovieScene module code that don't check for nullptr.
-			// This causes a crash when changing properties in the sequencer editor, so until this is fixed,
-			// for MovieSceneSignedObject (ex: sections or tracks), auto-reset to None at the next frame.
-			auto IsMovieSceneClass = [](const UClass* TestClass) -> bool
-			{
-				const UClass* Class = TestClass;
-				while (IsValid(Class))
+			SetPropertyValueSafe(
+				SelectedValueHandle.ToSharedRef(),
+				[](const TSharedRef<IPropertyHandle>& PropertyHandle)
 				{
-					if (Class->GetFName() == PulldownStructDetailDefine::MovieSceneSignedObjectClassName)
-					{
-						return true;
-					}
-
-					Class = Class->GetSuperClass();
+					PropertyHandle->SetValue(NAME_None);
 				}
-
-				return false;
-			};
-			
-			auto GetOuterBaseClass = [&]() -> const UClass*
-			{
-#if UE_5_00_OR_LATER
-				return SelectedValueHandle->GetOuterBaseClass();
-#else
-				TArray<UObject*> OuterObjects;
-				SelectedValueHandle->GetOuterObjects(OuterObjects);
-				if (OuterObjects.IsValidIndex(0))
-				{
-					return OuterObjects[0]->GetClass();
-				}
-
-				return nullptr;
-#endif
-			};
-			
-			const UClass* OuterBaseClass = GetOuterBaseClass();
-			if (IsMovieSceneClass(OuterBaseClass))
-			{
-				check(IsValid(GEditor));
-				TWeakPtr<IPropertyHandle> WeakSelectedValueHandle = SelectedValueHandle;
-				GEditor->GetTimerManager()->SetTimerForNextTick(
-					[WeakSelectedValueHandle]()
-					{
-						if (WeakSelectedValueHandle.IsValid())
-						{
-							WeakSelectedValueHandle.Pin()->SetValue(NAME_None);
-						}
-					}
-				);
-			}
-			else
-			{
-				SelectedValueHandle->SetValue(NAME_None);
-			}
+			);
 			SelectedItem = FindSelectableValueByName(NAME_None);
 		}
 
@@ -372,6 +325,64 @@ namespace PulldownBuilder
 			];
 	}
 
+	void FPulldownStructDetail::SetPropertyValueSafe(
+		const TSharedRef<IPropertyHandle>& TargetPropertyHandle,
+		const TFunction<void(const TSharedRef<IPropertyHandle>& PropertyHandle)>& Predicate
+	)
+	{
+		auto IsMovieSceneClass = [](const UClass* TestClass) -> bool
+		{
+			const UClass* Class = TestClass;
+			while (IsValid(Class))
+			{
+				if (Class->GetFName() == PulldownStructDetailDefine::MovieSceneSignedObjectClassName)
+				{
+					return true;
+				}
+
+				Class = Class->GetSuperClass();
+			}
+
+			return false;
+		};
+			
+		auto GetOuterBaseClass = [](const TSharedRef<IPropertyHandle>& PropertyHandle) -> const UClass*
+		{
+#if UE_5_00_OR_LATER
+			return PropertyHandle->GetOuterBaseClass();
+#else
+			TArray<UObject*> OuterObjects;
+			PropertyHandle->GetOuterObjects(OuterObjects);
+			if (OuterObjects.IsValidIndex(0))
+			{
+				return OuterObjects[0]->GetClass();
+			}
+
+			return nullptr;
+#endif
+		};
+			
+		const UClass* OuterBaseClass = GetOuterBaseClass(TargetPropertyHandle);
+		if (IsMovieSceneClass(OuterBaseClass))
+		{
+			check(IsValid(GEditor));
+			TWeakPtr<IPropertyHandle> WeakPropertyHandle = TargetPropertyHandle;
+			GEditor->GetTimerManager()->SetTimerForNextTick(
+				[WeakPropertyHandle, Predicate]()
+				{
+					if (WeakPropertyHandle.IsValid())
+					{
+						Predicate(WeakPropertyHandle.Pin().ToSharedRef());
+					}
+				}
+			);
+		}
+		else
+		{
+			Predicate(TargetPropertyHandle);
+		}
+	}
+
 	TSharedPtr<FPulldownRow> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
 	{
 		const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
@@ -471,7 +482,17 @@ namespace PulldownBuilder
 		}
 		if (IsValid(NewSearchableObject))
 		{
-			SearchableObjectHandle->SetValue(NewSearchableObject);
+			TWeakObjectPtr WeakNewSearchableObject = NewSearchableObject;
+			SetPropertyValueSafe(
+				SearchableObjectHandle.ToSharedRef(),
+				[WeakNewSearchableObject](const TSharedRef<IPropertyHandle>& PropertyHandle)
+				{
+					if (WeakNewSearchableObject.IsValid())
+					{
+						PropertyHandle->SetValue(WeakNewSearchableObject.Get());
+					}
+				}
+			);
 		}
 	}
 
