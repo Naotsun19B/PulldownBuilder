@@ -10,7 +10,7 @@
  */
 #if WITH_EDITOR
 #define PULLDOWN_STRUCT_POST_SERIALIZE \
-	if (Ar.IsSaving()) \
+	if (Ar.IsSaving() && !Ar.IsCooking()) \
 	{ \
 		MarkSearchableName(Ar); \
 	}
