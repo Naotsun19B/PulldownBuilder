@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.24 ~ 5.4  
+Target version : UE4.24 ~ 5.5  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -91,7 +91,7 @@ struct FTestPulldown2 : public FPulldownStructBase
 Next, define a structure that inherits from [`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStruct/PulldownStructBase.h) included in the runtime module([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct)).
 You can define variables in addition to the string selected in the pull-down menu.  
 The structure defined here is the structure for which the pull-down menu is displayed.  
-By using 'SETUP_PULLDOWN_STRUCT' added in version 2.4, you can now see which asset uses which pulldown structure and which value in the reference viewer.  
+By using `SETUP_PULLDOWN_STRUCT` added in version 2.4, you can now see which asset uses which pulldown structure and which value in the reference viewer.  
 Please note that by resaving assets created with the previous version, the contents of the reference viewer will be updated.  
 
 ![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
@@ -210,6 +210,10 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2024/12/26) v2.5  
+  Added support for UE5.5  
+  Fixed a bug that caused a crash in the sequence editor when `SETUP_PULLDOWN_STRUCT` was used  
 
 - (2024/04/24) v2.4  
   Added support for UE5.4  

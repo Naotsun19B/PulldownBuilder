@@ -28,7 +28,7 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.24 ~ 5.4  
+対象バージョン : UE4.24 ~ 5.5  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -91,7 +91,7 @@ struct FTestPulldown2 : public FPulldownStructBase
 次に、ランタイムモジュール([`PulldownStruct`](https://github.com/Naotsun19B/PulldownBuilder/tree/master/Plugins/PulldownBuilder/Source/PulldownStruct))に含まれる[`FPulldownStructBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownStruct/Public/PulldownStruct/PulldownStructBase.h)を継承した構造体を定義します。  
 プルダウンメニューで選択する文字列の他に変数を定義することができます。  
 ここで定義した構造体がプルダウンメニューが表示される構造体になります。  
-バージョン2.4で追加された'SETUP_PULLDOWN_STRUCT'を使用することで、リファレンスビューアでどのアセットでどのプルダウン構造体がどの値を使用しているかが確認できるようになります。  
+バージョン2.4で追加された`SETUP_PULLDOWN_STRUCT`を使用することで、リファレンスビューアでどのアセットでどのプルダウン構造体がどの値を使用しているかが確認できるようになります。  
 なお、旧バージョンで作成されたアセットはセーブしなおすことでリファレンスビューアの内容も更新されます。  
 
 ![CreatePulldownContents](https://user-images.githubusercontent.com/51815450/173223842-a5356544-b7ee-4979-9864-36986ee358ec.PNG)
@@ -210,6 +210,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2024/12/26) v2.5  
+  UE5.5に対応しました  
+  `SETUP_PULLDOWN_STRUCT`を使用されたときにシーケンス エディターでクラッシュを引き起こすバグを修正しました  
 
 - (2024/04/24) v2.4  
   UE5.4に対応しました  
