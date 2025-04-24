@@ -55,9 +55,6 @@ namespace PulldownBuilder
 			const TArray<UObject*>& OuterObjects,
 			const FStructContainer& StructInstance
 		);
-
-		// Generates "None" only display strings.
-		static FPulldownRows GetEmptyPulldownRows();
 	
 		// Returns whether the specified struct is already registered.
 		static bool IsRegisteredPulldownStruct(const UScriptStruct* InStruct);
@@ -65,9 +62,6 @@ namespace PulldownBuilder
 		// Returns whether the specified structure implements PostSerialize.
 		static bool HasPulldownStructPostSerialize(const UScriptStruct* InStruct);
 		
-		// Generates a string that represents the default value of the struct.
-		static FString GenerateStructDefaultValueString(const UScriptStruct* InStruct);
-
 		// Gets the value of the string state struct as a map of variable names and values.
 		static TMap<FString, FString> StructStringToPropertyMap(const FString& StructString);
 	
@@ -75,7 +69,7 @@ namespace PulldownBuilder
 		// If specify a property name that does not exist and get it, nullptr is returned.
 		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
 		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
-
+		
 		// Generates the raw data of the struct from the string of the default value of the pin.
 		static bool GetStructRawDataFromDefaultValueString(
 			const UScriptStruct* StructType,
@@ -88,7 +82,17 @@ namespace PulldownBuilder
 
 		// Creates an FStructContainer from the data of the property pointed to by this pin.
 		static bool GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer);
+		
+		// Generates a string that represents the default value of the struct.
+		static FString GenerateStructDefaultValueString(const UScriptStruct* StructType);
 
+		// Returns the default value specified in PulldownContents associated with the struct.
+		// If no default value is set, the initial value string of the structure is returned.
+		static FString GetStructDefaultValueString(const UScriptStruct* StructType, const UEdGraphPin* Pin);
+
+		// Returns the default value specified in PulldownContents associated with the struct.
+		static TSharedPtr<FPulldownRow> GetDefaultRowFromPin(const UEdGraphPin* Pin);
+		
 		// Returns an asset registry from the asset registry module.
 		static IAssetRegistry* GetAssetRegistry();
 		

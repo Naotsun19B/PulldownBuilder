@@ -58,7 +58,7 @@ namespace PulldownBuilder
 			}
 		}
 
-		return FPulldownBuilderUtils::GetEmptyPulldownRows();
+		return FPulldownRows::Empty;
 	}
 
 	UPulldownContents* FPreviewPulldownStructDetail::GetRelatedPulldownContents() const

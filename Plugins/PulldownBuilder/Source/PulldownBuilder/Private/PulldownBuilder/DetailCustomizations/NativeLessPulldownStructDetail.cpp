@@ -120,7 +120,7 @@ namespace PulldownBuilder
 			}
 		}
 
-		return FPulldownBuilderUtils::GetEmptyPulldownRows();
+		return FPulldownRows::Empty;
 	}
 
 	void FNativeLessPulldownStructDetail::OnMultipleSelected()
@@ -229,6 +229,7 @@ namespace PulldownBuilder
 			SelectedValueHandle->SetValue(FName(NAME_None));
 
 			UpdateSearchableObject();
+			ApplyDefaultValue();
 			FPulldownStructDetail::RefreshPulldownWidget();
 		}
 	}

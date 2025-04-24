@@ -3,6 +3,8 @@
 #include "PulldownBuilder/Types/PulldownRows.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
+const FPulldownRows FPulldownRows::Empty = FPulldownRows();
+
 FPulldownRows::FPulldownRows()
 	: DefaultRowIndex(INDEX_NONE)
 {
@@ -74,7 +76,7 @@ bool FPulldownRows::IsValidIndex(const int32 Index) const
 
 bool FPulldownRows::IsEmpty() const
 {
-	return (Rows.Num() == 1);
+	return (Rows == Empty.Rows);
 }
 
 bool FPulldownRows::HasDefaultRow() const

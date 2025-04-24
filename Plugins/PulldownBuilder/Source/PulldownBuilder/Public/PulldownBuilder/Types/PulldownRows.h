@@ -11,6 +11,10 @@
 struct PULLDOWNBUILDER_API FPulldownRows
 {
 public:
+	// An empty instance containing only None.
+	static const FPulldownRows Empty;
+	
+public:
 	// Constructor.
 	FPulldownRows();
 	explicit FPulldownRows(const TArray<FPulldownRow>& BlueprintValue);

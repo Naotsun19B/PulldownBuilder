@@ -84,6 +84,9 @@ namespace PulldownBuilder
 		// Updates the value of a pull-down struct's searchable object.
 		void UpdateSearchableObject();
 
+		// Applies default values to the pull-down structure being edited.
+		void ApplyDefaultValue(const bool bForceApply = false);
+
 		// Returns whether the currently edited pull-down struct has been changed at least once.
 		bool IsEdited() const;
 		

@@ -175,13 +175,6 @@ namespace PulldownBuilder
 		return PulldownRows;
 	}
 
-	FPulldownRows FPulldownBuilderUtils::GetEmptyPulldownRows()
-	{
-		FPulldownRows EmptySelectableValues;
-		EmptySelectableValues.Add(MakeShared<FPulldownRow>());
-		return EmptySelectableValues;
-	}
-
 	bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InStruct)
 	{
 		bool bIsRegistered = false;
@@ -209,29 +202,6 @@ namespace PulldownBuilder
 		}
 
 		return false;
-	}
-
-	FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* InStruct)
-	{
-		check(IsValid(InStruct));
-		
-		FString DefaultValueString = TEXT("(");	
-#if UE_4_25_OR_LATER
-		for (FProperty* Property : TFieldRange<FProperty>(InStruct))
-#else
-		for (UProperty* Property : TFieldRange<UProperty>(InStruct))
-#endif
-		{
-			if (Property == nullptr)
-			{
-				continue;
-			}
-
-			DefaultValueString += FString::Printf(TEXT("%s=,"), *Property->GetName());
-		}
-		DefaultValueString[DefaultValueString.Len() - 1] = TEXT(')');
-
-		return DefaultValueString;
 	}
 
 	TMap<FString, FString> FPulldownBuilderUtils::StructStringToPropertyMap(const FString& StructString)
@@ -360,7 +330,7 @@ namespace PulldownBuilder
 		{
 			return false;
 		}
-
+		
 		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), StructType, RawData))
 		{
 			return false;
@@ -386,7 +356,7 @@ namespace PulldownBuilder
 
 		return nullptr;
 	}
-
+	
 	bool FPulldownBuilderUtils::GenerateStructContainerFromPin(const UEdGraphPin* Pin, FStructContainer& StructContainer)
 	{
 		check(Pin != nullptr);
@@ -420,6 +390,69 @@ namespace PulldownBuilder
 		FMemory::Free(RawData);
 
 		return bWasSuccessful;
+	}
+
+	FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* StructType)
+	{
+		check(IsValid(StructType));
+		
+		FString DefaultValueString = TEXT("(");	
+#if UE_4_25_OR_LATER
+		for (FProperty* Property : TFieldRange<FProperty>(StructType))
+#else
+		for (UProperty* Property : TFieldRange<UProperty>(StructType))
+#endif
+		{
+			if (Property == nullptr)
+			{
+				continue;
+			}
+
+			DefaultValueString += FString::Printf(TEXT("%s=,"), *Property->GetName());
+		}
+		DefaultValueString[DefaultValueString.Len() - 1] = TEXT(')');
+
+		return DefaultValueString;
+	}
+
+	FString FPulldownBuilderUtils::GetStructDefaultValueString(const UScriptStruct* StructType, const UEdGraphPin* Pin)
+	{
+		FString DefaultValue = GenerateStructDefaultValueString(StructType);
+						
+		const TSharedPtr<FPulldownRow> DefaultRow = GetDefaultRowFromPin(Pin);
+		if (!DefaultRow.IsValid())
+		{
+			return DefaultValue;
+		}
+
+		const TSharedPtr<FString> ModifiedDefaultValue = MemberValueToStructString(
+			DefaultValue,
+			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
+			*DefaultRow->SelectedValue
+		);
+		if (!ModifiedDefaultValue.IsValid())
+		{
+			return *DefaultValue;
+		}
+						
+		return *ModifiedDefaultValue;
+	}
+
+	TSharedPtr<FPulldownRow> FPulldownBuilderUtils::GetDefaultRowFromPin(const UEdGraphPin* Pin)
+	{
+		FStructContainer StructContainer;
+		if (!GenerateStructContainerFromPin(Pin, StructContainer))
+		{
+			return nullptr;
+		}
+
+		const FPulldownRows PulldownRows = GetPulldownRowsFromStruct(
+			StructContainer.GetScriptStruct(),
+			TArray<UObject*>{ GetOuterAssetFromPin(Pin) },
+			StructContainer
+		);
+
+		return PulldownRows.GetDefaultRow();
 	}
 
 	IAssetRegistry* FPulldownBuilderUtils::GetAssetRegistry()

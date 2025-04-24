@@ -168,10 +168,35 @@ namespace PulldownBuilder
 
 		// Finds PulldownContents in the property struct and build a list of strings to display in the pull-down menu.
 		void* StructValueData = nullptr;
-		const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(StructValueData);
-		if (Result == FPropertyAccess::Success)
-		{	
+		if (StructPropertyHandle->GetValueData(StructValueData) == FPropertyAccess::Success)
+		{
+			const bool bInitialRebuild = SelectableValues.IsEmpty();
 			SelectableValues = GenerateSelectableValues();
+
+			// If a value other than the default value is set during the initial rebuild, mark it as edited.
+			if (bInitialRebuild)
+			{
+				bool bNeedToMarkEdited = false;
+				const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+				if (DefaultRow.IsValid())
+				{
+					FName CurrentSelectedValue;
+					const FPropertyAccess::Result Result = SelectedValueHandle->GetValue(CurrentSelectedValue);
+					if ((Result == FPropertyAccess::Success) && (CurrentSelectedValue != *DefaultRow->SelectedValue))
+					{
+						bNeedToMarkEdited = true;
+					}
+				}
+				else
+				{
+					bNeedToMarkEdited = true;
+				}
+				if (bNeedToMarkEdited)
+				{
+					check(IsEditedHandle.IsValid());
+					IsEditedHandle->SetValue(true);
+				}
+			}
 		}
 		// Empties the list if data acquisition fails or if multiple selections are made.
 		else
@@ -181,6 +206,7 @@ namespace PulldownBuilder
 		}
 
 		UpdateSearchableObject();
+		ApplyDefaultValue();
 		RefreshPulldownWidget();
 	}
 
@@ -191,12 +217,6 @@ namespace PulldownBuilder
 		// Checks if the currently set string is included in the constructed list.
 		FName CurrentSelectedValue;
 		SelectedValueHandle->GetValue(CurrentSelectedValue);
-
-		// Picks the default value if it has never been edited and is explicitly defined.
-		if (IsEdited())
-		{
-			// #TODO: Set default values.
-		}
 
 		TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 		if (!SelectedItem.IsValid())
@@ -245,7 +265,7 @@ namespace PulldownBuilder
 			);
 		}
 
-		return FPulldownBuilderUtils::GetEmptyPulldownRows();
+		return FPulldownRows::Empty;
 	}
 
 	void FPulldownStructDetail::OnMultipleSelected()
@@ -417,7 +437,13 @@ namespace PulldownBuilder
 		SelectedValueHandle->GetValue(OldSelectedValue);
 		if (NewSelectedValue != OldSelectedValue)
 		{
-			SelectedValueHandle->SetValue(NewSelectedValue);
+			SetPropertyValueSafe(
+				SelectedValueHandle.ToSharedRef(),
+				[NewSelectedValue](const TSharedRef<IPropertyHandle>& PropertyHandle)
+				{
+					PropertyHandle->SetValue(NewSelectedValue);
+				}
+			);
 			IsEditedHandle->SetValue(true);
 		}
 	}
@@ -465,6 +491,24 @@ namespace PulldownBuilder
 				}
 			);
 		}
+	}
+
+	void FPulldownStructDetail::ApplyDefaultValue(const bool bForceApply /* = false */)
+	{
+		if (!bForceApply && IsEdited())
+		{
+			return;
+		}
+		
+		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+		const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : FName(NAME_None));
+		SetPropertyValueSafe(
+			SelectedValueHandle.ToSharedRef(),
+			[DefaultValue](const TSharedRef<IPropertyHandle>& PropertyHandle)
+			{
+				PropertyHandle->SetValue(DefaultValue);
+			}
+		);
 	}
 
 	bool FPulldownStructDetail::IsEdited() const
@@ -561,11 +605,14 @@ namespace PulldownBuilder
 		{
 			SelectedValueWidget->SetSelectedItem(SelectedItem);
 		}
+
+		RefreshPulldownWidget();
 	}
 	
 	void FPulldownStructDetail::OnResetToDefaultAction(TSharedPtr<IPropertyHandle> PropertyHandle)
 	{
-		// #TODO: Set default values.
+		ApplyDefaultValue(true);
+		RefreshPulldownWidget();
 	}
 	
 	void FPulldownStructDetail::OnBrowseSourceAssetAction()
@@ -590,7 +637,13 @@ namespace PulldownBuilder
 
 	bool FPulldownStructDetail::CanResetToDefaultAction(TSharedPtr<IPropertyHandle> PropertyHandle) const
 	{
-		return IsEdited();
+		if (SelectableValues.HasDefaultRow())
+		{
+			return IsEdited();
+		}
+
+		const TSharedPtr<FPulldownRow> SelectedRow = GetSelection();
+		return (SelectedRow.IsValid() && (FName(SelectedRow->SelectedValue) != NAME_None));
 	}
 
 	bool FPulldownStructDetail::CanBrowseSourceAssetAction() const

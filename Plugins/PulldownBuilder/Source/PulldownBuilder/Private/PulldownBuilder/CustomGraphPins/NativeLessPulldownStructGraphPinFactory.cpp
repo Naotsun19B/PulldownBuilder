@@ -33,9 +33,7 @@ namespace PulldownBuilder
 					// Since the DefaultValue of the pin when it is created is empty, the default struct string is generated and set.
 					if (InPin->DefaultValue.IsEmpty())
 					{
-						FString DefaultValue = FPulldownBuilderUtils::GenerateStructDefaultValueString(Struct);
-						// #TODO: Use the default values defined by the user if they have one.
-						InPin->DefaultValue = DefaultValue;
+						InPin->DefaultValue = FPulldownBuilderUtils::GetStructDefaultValueString(Struct, InPin);
 					}
 			
 					return SNew(SNativeLessPulldownStructGraphPin, InPin);

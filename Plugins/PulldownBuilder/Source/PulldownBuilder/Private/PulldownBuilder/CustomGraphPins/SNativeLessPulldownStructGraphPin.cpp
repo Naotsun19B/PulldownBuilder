@@ -107,7 +107,7 @@ namespace PulldownBuilder
 			}
 		}
 
-		return FPulldownBuilderUtils::GetEmptyPulldownRows();
+		return FPulldownRows::Empty;
 	}
 
 	UPulldownContents* SNativeLessPulldownStructGraphPin::GetRelatedPulldownContents() const
