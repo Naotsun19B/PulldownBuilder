@@ -6,11 +6,11 @@
 #include "UObject/Object.h"
 #include "UObject/PackageReload.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "PulldownBuilder/Types/PulldownRows.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownBuilder/Types/PreviewPulldownStruct.h"
 #include "PulldownContents.generated.h"
 
-struct FPulldownRow;
 struct FStructContainer;
 class UPulldownListGeneratorBase;
 
@@ -54,7 +54,7 @@ public:
 	const FPulldownStructType& GetPulldownStructType() const;
 	
 	// Returns the data list to display in the pull-down menu.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+	virtual FPulldownRows GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const;

@@ -108,13 +108,13 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 		return;
 	}
 
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownContents->GetPulldownRows(
+	const FPulldownRows& PulldownRows = PulldownContents->GetPulldownRows(
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer
 	);
 	
 	// If the timing is too early and the PulldownContents have not been loaded, the serialized value will be used as is.
-	if (PulldownRows.Num() == 0)
+	if (PulldownRows.IsEmpty())
 	{
 		return;
 	}

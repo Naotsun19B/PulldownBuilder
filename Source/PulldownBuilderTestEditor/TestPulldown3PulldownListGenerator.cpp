@@ -4,12 +4,12 @@
 #include "PulldownBuilderTest/TestPulldown.h"
 #include "UObject/UObjectIterator.h"
 
-TArray<TSharedPtr<FPulldownRow>> UTestPulldown3PulldownListGenerator::GetPulldownRows(
+FPulldownRows UTestPulldown3PulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
+	FPulldownRows PulldownRows;
 
 	if (auto* TestPulldown3 = StructInstance.Get<FTestPulldown3>())
 	{
@@ -34,15 +34,22 @@ TArray<TSharedPtr<FPulldownRow>> UTestPulldown3PulldownListGenerator::GetPulldow
 				}
 
 				const FSoftObjectPath Path(Asset);
-				PulldownRows.Add(
-					MakeShared<FPulldownRow>(
-						Path.GetAssetName(),
-						FText::FromString(Path.ToString())
-					)
-				);
+				FPulldownRow PulldownRow(Path.GetAssetName(), FText::FromString(Path.ToString()));
+				
+				if (!PulldownRows.HasDefaultRow())
+				{
+					PulldownRow.bIsDefaultValue = true;
+				}
+				
+				PulldownRows.Add(PulldownRow);
 			}
 		}
 	}
 	
 	return PulldownRows;
+}
+
+bool UTestPulldown3PulldownListGenerator::IsEnableCustomDefaultValue() const
+{
+	return true;
 }

@@ -49,34 +49,39 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 		{
 			PreChangeRowNames.Empty();
 		}
+
+		VerifyDefaultValue();
 	}
 }
 
-TArray<TSharedPtr<FPulldownRow>> UNameArrayPulldownListGenerator::GetPulldownRows(
+FPulldownRows UNameArrayPulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
+	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the name array in consideration of expansion on the Blueprint side.
-	if (PulldownRows.Num() == 0)
+	if (PulldownRows.IsEmpty())
 	{
 		for (const auto& SourceName : SourceNameArray)
 		{
 			if (SourceName.Key != NAME_None)
 			{
-				PulldownRows.Add(
-					MakeShared<FPulldownRow>(
-						SourceName.Key.ToString(),
-						FText::FromName(SourceName.Value)
-					)
-				);
+				PulldownRows.Add(FPulldownRow(SourceName.Key.ToString(), FText::FromName(SourceName.Value)));
 			}
 		}
 	}
 
+	ApplyDefaultValue(PulldownRows);
 	return PulldownRows;
+}
+
+TArray<FName> UNameArrayPulldownListGenerator::GetDefaultValueOptions() const
+{
+	TArray<FName> DefaultValueOptions;
+	SourceNameArray.GenerateKeyArray(DefaultValueOptions);
+	return DefaultValueOptions;
 }

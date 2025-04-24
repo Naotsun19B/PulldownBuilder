@@ -218,7 +218,7 @@ namespace PulldownBuilder
 		}
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> FPulldownStructDetail::GenerateSelectableValues()
+	FPulldownRows FPulldownStructDetail::GenerateSelectableValues()
 	{
 		check(StructPropertyHandle.IsValid());
 	
@@ -356,13 +356,12 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
 	{
-		const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
-			[&](const TSharedPtr<FPulldownRow>& Item)
+		return SelectableValues.FindByPredicate(
+			[&](const TSharedPtr<FPulldownRow>& Row)
 			{
-				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
-			});
-
-		return (FoundItem != nullptr ? *FoundItem : nullptr);
+				return (Row.IsValid() && Row->SelectedValue.Equals(InName.ToString()));
+			}
+		);
 	}
 
 	TSharedPtr<FPulldownRow> FPulldownStructDetail::GetSelection() const

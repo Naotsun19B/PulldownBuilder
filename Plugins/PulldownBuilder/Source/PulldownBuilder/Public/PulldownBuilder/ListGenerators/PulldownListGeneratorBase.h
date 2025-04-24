@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRows.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownListGeneratorBase.generated.h"
 
@@ -24,9 +24,21 @@ public:
 	static const FName FilterPulldownStructTypesName;
 	
 public:
+	// Constructor.
+	UPulldownListGeneratorBase();
+
+	// UObject interface.
+	virtual void PostInitProperties() override;
+#if UE_4_25_OR_LATER
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#else
+	virtual bool CanEditChange(const UProperty* InProperty) const override;
+#endif
+	// End of UObject interface.
+	
 	// Returns a list of data to display in the pull-down menu.
 	// By default, it returns the value of "GetPulldownRowsFromBlueprint".
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+	virtual FPulldownRows GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const;
@@ -72,4 +84,35 @@ protected:
 
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Filter Pulldown Struct Types", Tooltip = "Returns the types of structures that can use this pull-down list generator."))
 	TArray<FName> GetFilterPulldownStructTypesFromBlueprint() const;
+
+	// Whether to determine the default value when generating FPulldownRows without going through DefaultValue.
+	virtual bool IsEnableCustomDefaultValue() const;
+
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Is Enable Custom Default Value", Tooltip = "Returns a list of values that can be selected for DefaultValue."))
+	bool IsEnableCustomDefaultValueFromBlueprint() const;
+	
+	// Returns a list of values that can be selected for DefaultValue.
+	UFUNCTION()
+	virtual TArray<FName> GetDefaultValueOptions() const;
+
+	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Default Value Options", Tooltip = "Returns a list of values that can be selected for DefaultValue."))
+	TArray<FName> GetDefaultValueOptionsFromBlueprint() const;
+
+	// Checks if the default value is enabled and disables if not.
+	virtual void VerifyDefaultValue();
+
+	// Applies the default value to FPulldownRows.
+	void ApplyDefaultValue(FPulldownRows& PulldownRows) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Apply Default Value", ToolTip = "Applies the default value to pulldown row array."))
+	void ApplyDefaultValueForBlueprint(TArray<FPulldownRow>& PulldownRows);
+	
+protected:
+	// Whether to explicitly set the default value. 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown | Default Value")
+	bool bEnableDefaultValue;
+	
+	// The row name to use as the default value.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown | Default Value", meta = (GetOptions = "GetDefaultValueOptions"))
+	FName DefaultValue;
 };

@@ -21,6 +21,7 @@
 #define LOCTEXT_NAMESPACE "K2Node_SwitchPulldownStruct"
 
 UK2Node_SwitchPulldownStruct::UK2Node_SwitchPulldownStruct()
+	: PulldownStruct(nullptr)
 {
 	bHasDefaultPin = false;
 }
@@ -193,7 +194,7 @@ UK2Node::ERedirectType UK2Node_SwitchPulldownStruct::DoPinsMatchForReconstructio
 			FStructContainer StructContainer;
 			if (PulldownBuilder::FPulldownBuilderUtils::GenerateStructContainerFromPin(Pin, StructContainer))
 			{
-				const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+				const FPulldownRows& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 					StructContainer.GetScriptStruct(),
 					TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(Pin) },
 					StructContainer
@@ -421,7 +422,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
     	return;
     }
 
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+	const FPulldownRows& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 		StructContainer.GetScriptStruct(),
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer
@@ -532,7 +533,7 @@ bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents
 		return false;
 	}
 
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+	const FPulldownRows& PulldownRows = PulldownBuilder::FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 		StructContainer.GetScriptStruct(),
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer

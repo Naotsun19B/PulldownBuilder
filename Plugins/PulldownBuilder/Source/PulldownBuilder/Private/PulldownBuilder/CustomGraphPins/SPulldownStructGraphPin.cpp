@@ -62,7 +62,7 @@ namespace PulldownBuilder
 		}
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> SPulldownStructGraphPin::GenerateSelectableValues()
+	FPulldownRows SPulldownStructGraphPin::GenerateSelectableValues()
 	{
 		check(GraphPinObj != nullptr);
 		
@@ -122,13 +122,12 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> SPulldownStructGraphPin::FindSelectableValueByName(const FName& InName) const
 	{
-		const TSharedPtr<FPulldownRow>* FoundItem = SelectableValues.FindByPredicate(
-			[&](const TSharedPtr<FPulldownRow>& Item)
+		return SelectableValues.FindByPredicate(
+			[&](const TSharedPtr<FPulldownRow>& Row)
 			{
-				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
-			});
-
-		return (FoundItem != nullptr ? *FoundItem : nullptr);
+				return (Row.IsValid() && Row->SelectedValue.Equals(InName.ToString()));
+			}
+		);
 	}
 
 	TSharedPtr<FPulldownRow> SPulldownStructGraphPin::GetSelection() const

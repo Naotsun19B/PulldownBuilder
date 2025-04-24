@@ -34,7 +34,7 @@ namespace PulldownBuilder
 		return MakeShared<FPreviewPulldownStructDetail>();
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> FPreviewPulldownStructDetail::GenerateSelectableValues()
+	FPulldownRows FPreviewPulldownStructDetail::GenerateSelectableValues()
 	{
 		if (auto* PulldownContents = GetRelatedPulldownContents())
 		{

@@ -29,7 +29,7 @@ namespace PulldownBuilder
 	private:
 		// FPulldownStructDetail interface.
 		virtual void RefreshPulldownWidget() override;
-		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		virtual FPulldownRows GenerateSelectableValues() override;
 		virtual void OnMultipleSelected() override;
 		virtual UPulldownContents* GetRelatedPulldownContents() const override;
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) override;
@@ -56,7 +56,7 @@ namespace PulldownBuilder
 	
 	private:
 		// The list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
-		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
+		FPulldownRows PulldownContentsNames;
 	
 		// The property handle of FNativeLessPulldownStruct::PulldownContentsName.
 		TSharedPtr<IPropertyHandle> PulldownSourceHandle;

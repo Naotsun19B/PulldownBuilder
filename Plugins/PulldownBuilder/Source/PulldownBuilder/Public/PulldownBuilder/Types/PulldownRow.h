@@ -26,10 +26,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText TooltipText;
 
+	// Whether this value is the default value for the configured pull-down struct.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
+	bool bIsDefaultValue;
+
 public:
 	// Constructor.
 	FPulldownRow()
 		: SelectedValue(FName(NAME_None).ToString())
+		, bIsDefaultValue(false)
 	{
 	}
 	explicit FPulldownRow(
@@ -40,6 +45,7 @@ public:
 		: SelectedValue(InSelectedValue)
 		, DisplayText(InDisplayText)
 		, TooltipText(InTooltipText)
+		, bIsDefaultValue(false)
 	{
 	}
 

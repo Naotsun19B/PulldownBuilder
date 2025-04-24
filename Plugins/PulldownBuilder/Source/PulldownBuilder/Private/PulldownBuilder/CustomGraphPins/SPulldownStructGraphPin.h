@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "SGraphPin.h"
+#include "PulldownBuilder/Types/PulldownRows.h"
 
-struct FPulldownRow;
 struct FStructContainer;
 class UPulldownContents;
 
@@ -40,7 +40,7 @@ namespace PulldownBuilder
 		virtual void RefreshPulldownWidget();
 
 		// Generates a list of strings to display in the pull-down menu.
-		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
+		virtual FPulldownRows GenerateSelectableValues();
 
 		// Returns the PulldownContents asset associated with the currently edited pull-down struct.
 		virtual UPulldownContents* GetRelatedPulldownContents() const;
@@ -74,7 +74,7 @@ namespace PulldownBuilder
 		
 	protected:
 		// The list of values that can be set in FPulldownStructBase::SelectedValue.
-		TArray<TSharedPtr<FPulldownRow>> SelectableValues;
+		FPulldownRows SelectableValues;
 
 		// The widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;

@@ -27,7 +27,7 @@ namespace PulldownBuilder
 	private:
 		// SPulldownStructGraphPin interface.
 		virtual void RefreshPulldownWidget() override;
-		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues() override;
+		virtual FPulldownRows GenerateSelectableValues() override;
 		virtual UPulldownContents* GetRelatedPulldownContents() const override;
 		// End of SPulldownStructGraphPin interface.
 		
@@ -42,7 +42,7 @@ namespace PulldownBuilder
 		
 	private:
 		// The list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
-		TArray<TSharedPtr<FPulldownRow>> PulldownContentsNames;
+		FPulldownRows PulldownContentsNames;
 
 		// The widget that displays a pull-down menu based on the PulldownContentsNames.
 		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;

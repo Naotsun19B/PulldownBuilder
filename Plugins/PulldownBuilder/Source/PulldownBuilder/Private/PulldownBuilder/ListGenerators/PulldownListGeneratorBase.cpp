@@ -12,19 +12,48 @@
 
 const FName UPulldownListGeneratorBase::FilterPulldownStructTypesName = TEXT("FilterPulldownStructTypes");
 
-TArray<TSharedPtr<FPulldownRow>> UPulldownListGeneratorBase::GetPulldownRows(
+UPulldownListGeneratorBase::UPulldownListGeneratorBase()
+	: bEnableDefaultValue(false)
+{
+}
+
+void UPulldownListGeneratorBase::PostInitProperties()
+{
+	UObject::PostInitProperties();
+
+	VerifyDefaultValue();
+}
+
+#if UE_4_25_OR_LATER
+bool UPulldownListGeneratorBase::CanEditChange(const FProperty* InProperty) const
+#else
+bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) const
+#endif
+
+{
+	bool bCanEditChange = true;
+	if (InProperty != nullptr)
+	{
+		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownListGeneratorBase, bEnableDefaultValue))
+		{
+			bCanEditChange = !IsEnableCustomDefaultValue();
+		}
+		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownListGeneratorBase, DefaultValue))
+		{
+			bCanEditChange = (!IsEnableCustomDefaultValue() && bEnableDefaultValue);
+		}
+	}
+	
+	return (UObject::CanEditChange(InProperty) && bCanEditChange);
+}
+
+FPulldownRows UPulldownListGeneratorBase::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
-	TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects, StructInstance);
-	for (const auto& PulldownRowFromBlueprint : PulldownRowsFromBlueprint)
-	{
-		PulldownRows.Add(MakeShared<FPulldownRow>(PulldownRowFromBlueprint));
-	}
-
-	return PulldownRows;
+	const TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects, StructInstance);
+	return FPulldownRows(PulldownRowsFromBlueprint);
 }
 
 bool UPulldownListGeneratorBase::HasSourceAsset() const
@@ -170,4 +199,58 @@ bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& P
 	}
 
 	return bModified;
+}
+
+bool UPulldownListGeneratorBase::IsEnableCustomDefaultValue() const
+{
+	return IsEnableCustomDefaultValueFromBlueprint();
+}
+
+TArray<FName> UPulldownListGeneratorBase::GetDefaultValueOptions() const
+{
+	return GetDefaultValueOptionsFromBlueprint();
+}
+
+void UPulldownListGeneratorBase::VerifyDefaultValue()
+{
+	const TArray<FName> DefaultValueOptions = GetDefaultValueOptions();
+	if (DefaultValueOptions.Contains(DefaultValue))
+	{
+		return;
+	}
+
+	bEnableDefaultValue = false;
+	DefaultValue = FName();
+}
+
+void UPulldownListGeneratorBase::ApplyDefaultValue(FPulldownRows& PulldownRows) const
+{
+	if (IsEnableCustomDefaultValue() || !bEnableDefaultValue)
+	{
+		return;
+	}
+
+	PulldownRows.SetDefaultRow(
+		[&](const TSharedRef<FPulldownRow>& Row) -> bool
+		{
+			return (Row->SelectedValue.Equals(DefaultValue.ToString()));
+		}
+	);
+}
+
+void UPulldownListGeneratorBase::ApplyDefaultValueForBlueprint(TArray<FPulldownRow>& PulldownRows)
+{
+	if (IsEnableCustomDefaultValue() || !bEnableDefaultValue)
+	{
+		return;
+	}
+	
+	for (auto& PulldownRow : PulldownRows)
+	{
+		if (PulldownRow.SelectedValue.Equals(DefaultValue.ToString()))
+		{
+			PulldownRow.bIsDefaultValue = true;
+			break;
+		}
+	}
 }

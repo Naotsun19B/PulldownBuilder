@@ -26,7 +26,7 @@ public:
 	// End of UObject interface.
 	
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+	virtual FPulldownRows GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
@@ -38,6 +38,10 @@ protected:
 	void PreSourceNameArrayModify();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called after a source name array has been changed."))
 	void PostSourceNameArrayModify();
+
+	// UPulldownListGeneratorBase interface.
+	virtual TArray<FName> GetDefaultValueOptions() const override;
+	// End of UPulldownListGeneratorBase interface.
 	
 protected:
 	// The map of name and tooltip text pair that is the basis of the list that appears in the pull-down menu.

@@ -16,9 +16,10 @@ class UTestPulldown3PulldownListGenerator : public UPulldownListGeneratorBase
 
 public:
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<TSharedPtr<FPulldownRow>> GetPulldownRows(
+	virtual FPulldownRows GetPulldownRows(
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
+	virtual bool IsEnableCustomDefaultValue() const override;
 	// End of UPulldownListGeneratorBase interface.
 };

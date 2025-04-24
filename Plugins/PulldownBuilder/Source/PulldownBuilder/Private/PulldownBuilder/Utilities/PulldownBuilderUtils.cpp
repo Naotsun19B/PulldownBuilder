@@ -160,13 +160,13 @@ namespace PulldownBuilder
 		return false;
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetPulldownRowsFromStruct(
+	FPulldownRows FPulldownBuilderUtils::GetPulldownRowsFromStruct(
 		const UScriptStruct* InStruct,
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	)
 	{
-		TArray<TSharedPtr<FPulldownRow>> PulldownRows;
+		FPulldownRows PulldownRows;
 		if (const UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
 		{
 			PulldownRows = FoundItem->GetPulldownRows(OuterObjects, StructInstance);
@@ -175,9 +175,9 @@ namespace PulldownBuilder
 		return PulldownRows;
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> FPulldownBuilderUtils::GetEmptyPulldownRows()
+	FPulldownRows FPulldownBuilderUtils::GetEmptyPulldownRows()
 	{
-		TArray<TSharedPtr<FPulldownRow>> EmptySelectableValues;
+		FPulldownRows EmptySelectableValues;
 		EmptySelectableValues.Add(MakeShared<FPulldownRow>());
 		return EmptySelectableValues;
 	}

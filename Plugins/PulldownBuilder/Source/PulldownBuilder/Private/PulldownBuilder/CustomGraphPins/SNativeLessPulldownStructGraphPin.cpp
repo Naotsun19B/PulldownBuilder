@@ -70,7 +70,7 @@ namespace PulldownBuilder
 		SPulldownStructGraphPin::RefreshPulldownWidget();
 	}
 
-	TArray<TSharedPtr<FPulldownRow>> SNativeLessPulldownStructGraphPin::GenerateSelectableValues()
+	FPulldownRows SNativeLessPulldownStructGraphPin::GenerateSelectableValues()
 	{
 		check(GraphPinObj != nullptr);
 		
@@ -123,13 +123,12 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameByName(const FName& InName) const
 	{
-		const TSharedPtr<FPulldownRow>* FoundItem = PulldownContentsNames.FindByPredicate(
-			[&](const TSharedPtr<FPulldownRow>& Item)
+		return PulldownContentsNames.FindByPredicate(
+			[&](const TSharedPtr<FPulldownRow>& Row)
 			{
-				return (Item.IsValid() && Item->SelectedValue == InName.ToString());
-			});
-
-		return (FoundItem != nullptr ? *FoundItem : nullptr);
+				return (Row.IsValid() && Row->SelectedValue.Equals(InName.ToString()));
+			}
+		);
 	}
 
 	void SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

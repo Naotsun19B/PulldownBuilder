@@ -22,21 +22,22 @@ void UDataTablePulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UDataTablePulldownListGenerator, SourceDataTable))
 	{
+		VerifyDefaultValue();
 		NotifyPulldownContentsSourceChanged();
 	}
 }
 
-TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRows(
+FPulldownRows UDataTablePulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
+	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
 	// If the return value of the super GetPulldownRows is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the data table in consideration of expansion on the Blueprint side.
-	if (PulldownRows.Num() == 0)
+	if (PulldownRows.IsEmpty())
 	{
 		if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
 		{
@@ -51,19 +52,20 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 					continue;
 				}
 
-				const TSharedPtr<FPulldownRow> NewPulldownRow = MakeShared<FPulldownRow>(RowName.ToString());
-
+				FPulldownRow NewPulldownRow(RowName.ToString());
+				
 				FString TooltipString;
 				if (FindTooltip(RowStruct, RowData, TooltipString))
 				{
-					NewPulldownRow->TooltipText = FText::FromString(TooltipString);
+					NewPulldownRow.TooltipText = FText::FromString(TooltipString);
 				}
 				
 				PulldownRows.Add(NewPulldownRow);
 			}
 		}
 	}
-
+	
+	ApplyDefaultValue(PulldownRows);
 	return PulldownRows;
 }
 
@@ -101,7 +103,7 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	{
 		return;
 	}
-
+	
 	const TArray<FName> PostChangeRowNames = Changed->GetRowNames();
 	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
 	{
@@ -109,6 +111,8 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	}
 	
 	PostSourceDataTableModify();
+
+	VerifyDefaultValue();
 }
 
 bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const
@@ -178,4 +182,19 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 	}
 
 	return false;
+}
+
+TArray<FName> UDataTablePulldownListGenerator::GetDefaultValueOptions() const
+{
+	if (!SourceDataTable.IsValid())
+	{
+		return {};
+	}
+
+	const TMap<FName, uint8*>& RowMap = SourceDataTable->GetRowMap();
+	
+	TArray<FName> RowNames;
+	RowMap.GenerateKeyArray(RowNames);
+
+	return RowNames;
 }

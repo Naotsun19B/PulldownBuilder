@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "IPropertyTypeCustomization.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "PulldownBuilder/Types/PulldownRows.h"
 
 struct FPulldownStructType;
-struct FPulldownRow;
 struct FUIAction;
 class SWidget;
 class UPulldownContents;
@@ -40,7 +40,7 @@ namespace PulldownBuilder
 		virtual void RefreshPulldownWidget();
 
 		// Generates a list of strings to display in the pull-down menu.
-		virtual TArray<TSharedPtr<FPulldownRow>> GenerateSelectableValues();
+		virtual FPulldownRows GenerateSelectableValues();
 		
 		// Called when multiple properties are selected.
 		virtual void OnMultipleSelected();
@@ -114,7 +114,7 @@ namespace PulldownBuilder
 		TSharedPtr<IPropertyHandle> StructPropertyHandle;
 	
 		// The list of values that can be set in FPulldownStructBase::SelectedValue.
-		TArray<TSharedPtr<FPulldownRow>> SelectableValues;
+		FPulldownRows SelectableValues;
 
 		// The property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;

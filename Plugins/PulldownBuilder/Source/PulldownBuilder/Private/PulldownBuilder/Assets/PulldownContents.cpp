@@ -176,20 +176,17 @@ const FPulldownStructType& UPulldownContents::GetPulldownStructType() const
 	return PulldownStructType;
 }
 
-TArray<TSharedPtr<FPulldownRow>> UPulldownContents::GetPulldownRows(
+FPulldownRows UPulldownContents::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
+	FPulldownRows PulldownRows;
 	
 	if (IsValid(PulldownListGenerator))
 	{
 		PulldownRows = PulldownListGenerator->GetPulldownRows(OuterObjects, StructInstance);
 	}
-
-	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.
-	PulldownRows.Insert(MakeShared<FPulldownRow>(), 0);
 
 	return PulldownRows;
 }

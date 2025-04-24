@@ -25,6 +25,24 @@ void UInputMappingsPulldownListGenerator::PostInitProperties()
 	CachePreChangeDisplayTexts();
 }
 
+void UInputMappingsPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.MemberProperty == nullptr)
+	{
+		return;
+	}
+
+	if ((PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UInputMappingsPulldownListGenerator, bIncludeActionMappings)) ||
+		(PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UInputMappingsPulldownListGenerator, bIncludeAxisMappings)) ||
+		(PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UInputMappingsPulldownListGenerator, bIncludeSpeechMappings)))
+	{
+		VerifyDefaultValue();
+		NotifyPulldownContentsSourceChanged();
+	}
+}
+
 void UInputMappingsPulldownListGenerator::BeginDestroy()
 {
 	FEditorDelegates::OnActionAxisMappingsChanged.RemoveAll(this);
@@ -32,25 +50,26 @@ void UInputMappingsPulldownListGenerator::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRows(
+FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
 {
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
+	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
 	// If the return value of the parent GetDisplayStrings is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the input settings in consideration of expansion on the Blueprint side.
-	if (PulldownRows.Num() == 0)
+	if (PulldownRows.IsEmpty())
 	{
 		PulldownRows = GetPulldownRowsFromInputSettings();
 	}
 
+	ApplyDefaultValue(PulldownRows);
 	return PulldownRows;
 }
 
-TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSettings() const
+FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSettings() const
 {
 	const auto* InputSettings = UInputSettings::GetInputSettings();
 	if (!IsValid(InputSettings))
@@ -58,7 +77,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 		return {};
 	}
 	
-	TArray<TSharedPtr<FPulldownRow>> PulldownRows;
+	FPulldownRows PulldownRows;
 	
 	if (bIncludeActionMappings)
 	{
@@ -103,7 +122,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 			}
 
 			PulldownRows.Add(
-				MakeShared<FPulldownRow>(
+				FPulldownRow(
 					ActionName.ToString(),
 					FText::FromString(FString::Join(InputTexts, LINE_TERMINATOR))
 				)
@@ -139,7 +158,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 			}
 
 			PulldownRows.Add(
-				MakeShared<FPulldownRow>(
+				FPulldownRow(
 					AxisName.ToString(),
 					FText::FromString(FString::Join(InputTexts, LINE_TERMINATOR))
 				)
@@ -164,9 +183,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 				*SpeechMapping.GetKeyName().ToString()
 			);
 
-			PulldownRows.Add(
-				MakeShared<FPulldownRow>(DisplayText, FText::FromString(TooltipText))
-			);
+			PulldownRows.Add(FPulldownRow(DisplayText, FText::FromString(TooltipText)));
 		}
 	}
 	
@@ -175,7 +192,7 @@ TArray<TSharedPtr<FPulldownRow>> UInputMappingsPulldownListGenerator::GetPulldow
 
 void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 {
-	const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRowsFromInputSettings();
+	const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
 	
 	PreChangeRowNames.Reset(PulldownRows.Num());
 	
@@ -196,7 +213,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 	
 	TArray<FName> PostChangeRowNames;
 	{
-		const TArray<TSharedPtr<FPulldownRow>>& PulldownRows = GetPulldownRowsFromInputSettings();
+		const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
 		PostChangeRowNames.Reserve(PulldownRows.Num());
 		for (const auto& PulldownRow : PulldownRows)
 		{
@@ -213,4 +230,21 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 	{
 		CachePreChangeDisplayTexts();
 	}
+
+	VerifyDefaultValue();
+}
+
+TArray<FName> UInputMappingsPulldownListGenerator::GetDefaultValueOptions() const
+{
+	const FPulldownRows PulldownRows = GetPulldownRowsFromInputSettings();
+	
+	TArray<FName> MappingNames;
+	MappingNames.Reserve(PulldownRows.Num());
+	for (const auto& PulldownRow : PulldownRows)
+	{
+		check(PulldownRow.IsValid());
+		MappingNames.Add(*PulldownRow->SelectedValue);
+	}
+
+	return MappingNames;
 }
