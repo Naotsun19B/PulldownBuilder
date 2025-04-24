@@ -22,14 +22,10 @@ namespace PulldownBuilder
 	public:
 		SLATE_BEGIN_ARGS(SPulldownSelector)
 			: _ListItemsSource(nullptr)
-			, _InitialSelection(nullptr)
 		{}
 
 		// A source data that is the basis of the items displayed in the pull-down menu.
 		SLATE_ARGUMENT(const TArray<TSharedPtr<FPulldownRow>>*, ListItemsSource)
-	
-		// Sets the item that should be selected first.
-		SLATE_ARGUMENT(TSharedPtr<FPulldownRow>, InitialSelection)
 
 		// Sets the vertical size of this widget.
 		SLATE_ARGUMENT(float, HeightOverride)
@@ -53,7 +49,7 @@ namespace PulldownBuilder
 	
 		// Getters and setters for the selected item.
 		TSharedPtr<FPulldownRow> GetSelectedItem() const;
-		void SetSelectedItem(TSharedPtr<FPulldownRow> NewItem);
+		void SetSelectedItem(const TSharedPtr<FPulldownRow>& NewItem);
 	
 		// Rebuilds the list.
 		void RefreshList();

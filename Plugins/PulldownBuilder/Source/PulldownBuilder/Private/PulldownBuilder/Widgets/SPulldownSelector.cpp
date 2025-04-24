@@ -74,9 +74,9 @@ namespace PulldownBuilder
 		return nullptr;
 	}
 
-	void SPulldownSelector::SetSelectedItem(TSharedPtr<FPulldownRow> NewItem)
+	void SPulldownSelector::SetSelectedItem(const TSharedPtr<FPulldownRow>& NewItem)
 	{
-		if (ListView.IsValid())
+		if (ListView.IsValid() && NewItem.IsValid())
 		{
 			ListView->SetSelection(NewItem);
 		}

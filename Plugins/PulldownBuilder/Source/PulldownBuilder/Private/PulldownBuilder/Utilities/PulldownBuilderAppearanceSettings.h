@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "UObject/Object.h"
 #include "PulldownBuilder/Types/PulldownBuilderNotificationSeverity.h"
 #include "PulldownBuilderAppearanceSettings.generated.h"
 

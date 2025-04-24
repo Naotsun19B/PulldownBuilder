@@ -42,32 +42,10 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 	{
+		// Sets the handles for properties that need to be customized.
+		CustomizationProperties.Add(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), &PulldownSourceHandle);
+		
 		FPulldownStructDetail::CustomizeHeader(InStructPropertyHandle, HeaderRow, StructCustomizationUtils);
-
-		// Scan the properties of the struct for the property handle of FNativeLessPulldownStruct::PulldownContentsName.
-		uint32 NumChildProperties;
-		StructPropertyHandle->GetNumChildren(NumChildProperties);
-		for (uint32 Index = 0; Index < NumChildProperties; Index++)
-		{
-			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
-			if (ChildPropertyHandle.IsValid())
-			{
-#if UE_4_25_OR_LATER
-				if (const FProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#else
-				if (const UProperty* ChildProperty = ChildPropertyHandle->GetProperty())
-#endif
-				{
-					if (ChildProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource))
-					{
-						PulldownSourceHandle = ChildPropertyHandle;
-					}
-				}
-			}
-		}
-
-		// Do not register structures other than FNativeLessPulldownStruct in this detail customization.
-		check(PulldownSourceHandle.IsValid());
 	}
 
 	void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
@@ -149,20 +127,6 @@ namespace PulldownBuilder
 	{
 		PulldownContentsNames.Reset();
 		FPulldownStructDetail::OnMultipleSelected();
-	}
-
-#if UE_4_25_OR_LATER
-	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(FProperty* InProperty) const
-#else
-	bool FNativeLessPulldownStructDetail::IsCustomizationTarget(UProperty* InProperty) const
-#endif
-	{
-		check(InProperty != nullptr);
-		
-		return (
-			FPulldownStructDetail::IsCustomizationTarget(InProperty) ||
-			InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
-		);
 	}
 
 	UPulldownContents* FNativeLessPulldownStructDetail::GetRelatedPulldownContents() const

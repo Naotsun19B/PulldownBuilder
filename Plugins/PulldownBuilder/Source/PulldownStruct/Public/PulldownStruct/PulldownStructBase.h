@@ -13,54 +13,57 @@
  * "BlueprintInternalUseOnly" in the USTRUCT of the child struct.
  */
 USTRUCT(BlueprintInternalUseOnly)
-struct FPulldownStructBase
+struct PULLDOWNSTRUCT_API FPulldownStructBase
 {
 	GENERATED_BODY()
+
+public:
+	// Constructor.
+	FPulldownStructBase();
+	explicit FPulldownStructBase(const FName& InSelectedValue);
+	virtual ~FPulldownStructBase() = default;
+
+	// Conversion functions.
+	const FName& operator* () const;
+	FString ToString() const;
+	FText ToText() const;
+	
+	// Returns whether no valid value is selected.
+    bool IsNone() const;
+
+protected:
+	// Provides a point where plugin users can extend it, because normal PostSerialize is used by SETUP_PULLDOWN_STRUCT and cannot be used.
+	virtual void PostSerialize_Implementation(const FArchive& Ar);
+	
+#if WITH_EDITOR
+	// Prepares a wrapper function that calls FArchive::MarkSearchableName, because SearchableObject is private.
+	void MarkSearchableName(const FArchive& Ar);
+#endif
 
 public:
 	// The variable to store the item selected in the pull-down menu.
 	// Stores the value used at runtime.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FName SelectedValue;
-
-public:
-	// Constructor.
-	FPulldownStructBase() : SelectedValue(NAME_None) {}
-	explicit FPulldownStructBase(const FName& InSelectedValue) : SelectedValue(InSelectedValue) {}
-	virtual ~FPulldownStructBase() = default;
-
-	// Conversion functions.
-	const FName& operator* () const { return SelectedValue; }
-	FString ToString() const { return SelectedValue.ToString(); }
-	FText ToText() const { return FText::FromName(SelectedValue); }
-	
-	// Returns whether no valid value is selected.
-    bool IsNone() const { return SelectedValue.IsNone(); }
-
-protected:
-	// Provides a point where plugin users can extend it, because normal PostSerialize is used by SETUP_PULLDOWN_STRUCT and cannot be used.
-	virtual void PostSerialize_Implementation(const FArchive& Ar) {}
-	
-#if WITH_EDITOR
-	// Prepares a wrapper function that calls FArchive::MarkSearchableName, because SearchableObject is private.
-	void MarkSearchableName(const FArchive& Ar)
-	{
-		Ar.MarkSearchableName(SearchableObject, SelectedValue);
-	}
-#endif
 	
 private:
 #if WITH_EDITORONLY_DATA
 	// The reference that allows you to view the asset that is the source of the Selected Value from the reference viewer in the editor environment.
 	// Access only through reflection so that unnecessary variables are not visible to plugin users.
-	UPROPERTY(VisibleAnywhere, Category = "Pulldown")
-	UObject* SearchableObject = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Pulldown")
+	UObject* SearchableObject;
+
+	// Whether it has been edited at least once.
+	// True if the user edits even once, even if SelectedValue is None.
+	UPROPERTY(EditAnywhere, Category = "Pulldown")
+	bool bIsEdited;
 #endif
 
 public:
 #if WITH_EDITORONLY_DATA
-	// Define the property name because SearchableObject is private and GET_MEMBER_NAME_CHECKED cannot be used.
-	PULLDOWNSTRUCT_API static const FName SearchableObjectPropertyName;
+	// Define the property name because can not use GET_MEMBER_NAME_CHECKED outside for private members.
+	static const FName SearchableObjectPropertyName;
+	static const FName IsEditedPropertyName;
 #endif
 };
 
@@ -106,3 +109,46 @@ FORCEINLINE_DEBUGGABLE void LexFromString(TPulldownStruct& PulldownStruct, const
 {
 	PulldownStruct.SelectedValue = FName(Buffer);
 }
+
+/**
+ * In the editor, the object associated with the SelectedValue is the asset that is pulled down so that the asset can be opened from the reference viewer.
+ * The purpose is to open the asset from the reference viewer, so it doesn't do anything at runtime.
+ */
+#if WITH_EDITOR
+#define PULLDOWN_STRUCT_POST_SERIALIZE \
+	if (Ar.IsSaving() && !Ar.IsCooking()) \
+	{ \
+		MarkSearchableName(Ar); \
+	}
+#else
+#define PULLDOWN_STRUCT_POST_SERIALIZE
+#endif
+
+/**
+ * A macro defined to use basic functionality in the pull-down struct.
+ * Make it possible to use the FPulldownStructBase constructor and check the SelectedValue in the reference viewer.
+ */
+#define SETUP_PULLDOWN_STRUCT() SETUP_PULLDOWN_STRUCT_WITH_SUPER_STRUCT(FPulldownStructBase)
+#define SETUP_PULLDOWN_STRUCT_WITH_SUPER_STRUCT(SuperStructName) \
+	public: \
+		using SuperStructName::SuperStructName; \
+		void PostSerialize(const FArchive& Ar) \
+		{ \
+			PostSerialize_Implementation(Ar); \
+			PULLDOWN_STRUCT_POST_SERIALIZE \
+		}
+
+/**
+ * A macro that allows you to check the SelectedValue in the reference viewer.
+ * If there are other custom aspects, define a flag after the structure name.
+ */
+#define SETUP_PULLDOWN_STRUCT_OPS(StructName, ...) \
+	template<> \
+	struct TStructOpsTypeTraits<StructName> : public TStructOpsTypeTraitsBase2<StructName> \
+	{ \
+		enum \
+		{ \
+			WithPostSerialize = true, \
+			__VA_ARGS__ \
+		}; \
+	};

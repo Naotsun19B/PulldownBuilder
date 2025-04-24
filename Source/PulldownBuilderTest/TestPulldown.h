@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownStructBase.h"
-#include "PulldownStruct/PulldownStructMacros.h"
 #include "Templates/SubclassOf.h"
 #include "TestPulldown.generated.h"
 

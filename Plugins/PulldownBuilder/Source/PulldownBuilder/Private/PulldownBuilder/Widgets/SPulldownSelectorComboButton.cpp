@@ -88,7 +88,6 @@ namespace PulldownBuilder
 		return
 			SAssignNew(PulldownSelector, SPulldownSelector)
 			.ListItemsSource(ListItemsSource)
-			.InitialSelection(SelectedPulldownRow)
 			.HeightOverride(PanelSize.Y)
 			.WidthOverride(PanelSize.X)
 			.bIsSelectWhenDoubleClick(

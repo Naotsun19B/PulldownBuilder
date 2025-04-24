@@ -33,7 +33,7 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 {
 	TArray<TSharedPtr<FPulldownRow>> PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
 
-	// If the return value of the parent GetDisplayStrings is empty,
+	// If the return value of the super GetPulldownRows is empty,
 	// the list to be displayed in the pull-down menu is generated from
 	// the data table in consideration of expansion on the Blueprint side.
 	if (PulldownRows.Num() == 0)
@@ -51,22 +51,15 @@ TArray<TSharedPtr<FPulldownRow>> UDataTablePulldownListGenerator::GetPulldownRow
 					continue;
 				}
 
+				const TSharedPtr<FPulldownRow> NewPulldownRow = MakeShared<FPulldownRow>(RowName.ToString());
+
 				FString TooltipString;
 				if (FindTooltip(RowStruct, RowData, TooltipString))
 				{
-					PulldownRows.Add(
-						MakeShared<FPulldownRow>(
-							RowName.ToString(),
-							FText::FromString(TooltipString)
-						)
-					);
+					NewPulldownRow->TooltipText = FText::FromString(TooltipString);
 				}
-				else
-				{
-					PulldownRows.Add(
-						MakeShared<FPulldownRow>(RowName.ToString())
-					);
-				}
+				
+				PulldownRows.Add(NewPulldownRow);
 			}
 		}
 	}

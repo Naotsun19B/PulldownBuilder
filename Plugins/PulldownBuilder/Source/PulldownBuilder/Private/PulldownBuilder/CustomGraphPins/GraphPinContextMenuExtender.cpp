@@ -169,7 +169,7 @@ namespace PulldownBuilder
 			LOCTEXT("SectionName", "Pulldown Struct")
 		);
 		
-		const TWeakObjectPtr<const UGraphNodeContextMenuContext> WeakContext(Context);
+		const TWeakObjectPtr<const UGraphNodeContextMenuContext> WeakContext = Context;
 		
 		MenuSection.AddMenuEntry(
 			TEXT("CopyPinValue"),

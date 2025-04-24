@@ -45,13 +45,6 @@ namespace PulldownBuilder
 		// Called when multiple properties are selected.
 		virtual void OnMultipleSelected();
 
-		// Returns whether the specified property is the property to be customized.
-#if UE_4_25_OR_LATER
-		virtual bool IsCustomizationTarget(FProperty* InProperty) const;
-#else
-		virtual bool IsCustomizationTarget(UProperty* InProperty) const;
-#endif
-
 		// Sets custom properties before and after FPulldownStructBase::SelectedValue.
 		virtual void AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
 		virtual void AddCustomRowAfterSelectedValue(IDetailChildrenBuilder& StructBuilder) {}
@@ -90,11 +83,16 @@ namespace PulldownBuilder
 
 		// Updates the value of a pull-down struct's searchable object.
 		void UpdateSearchableObject();
+
+		// Returns whether the currently edited pull-down struct has been changed at least once.
+		bool IsEdited() const;
 		
 		// Creates a FUIAction that works with the pull-down struct's context menu.
 		FUIAction CreateSelectedValueCopyAction();
 		FUIAction CreateSelectedValuePasteAction();
-		FUIAction CreateBrowseSourceAssetAction();
+
+		// Adds an action to return the value of the pull-down struct being edited to the default value to the specified detail widget row.
+		void AddCustomResetToDefaultAction(FDetailWidgetRow& DetailWidgetRow);
 
 		// Adds an action to browse source asset to the specified detail widget row.
 		void AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow);
@@ -102,11 +100,13 @@ namespace PulldownBuilder
 		// Called when a function is invoked from the pull-down struct's context menu.
 		virtual void OnSelectedValueCopyAction();
 		virtual void OnSelectedValuePasteAction();
+		virtual void OnResetToDefaultAction(TSharedPtr<IPropertyHandle> PropertyHandle);
 		virtual void OnBrowseSourceAssetAction();
 
 		// Returns whether the function can be called from the pull-down struct's context menu.
 		virtual bool CanSelectedValueCopyAction() const;
 		virtual bool CanSelectedValuePasteAction() const;
+		virtual bool CanResetToDefaultAction(TSharedPtr<IPropertyHandle> PropertyHandle) const;
 		virtual bool CanBrowseSourceAssetAction() const;
 
 	protected:
@@ -122,7 +122,42 @@ namespace PulldownBuilder
 		// The property handle of FPulldownStructBase::SearchableObject.
 		TSharedPtr<IPropertyHandle> SearchableObjectHandle;
 
+		// The property handle of FPulldownStructBase::bIsEdited.
+		TSharedPtr<IPropertyHandle> IsEditedHandle;
+
 		// The widget that displays a pull-down menu based on the SelectableValues.
 		TSharedPtr<SPulldownSelectorComboButton> SelectedValueWidget;
+
+		// A structure that represents the properties contained in a pull-down structure that need to be customized.
+		struct FCustomizationProperties
+		{
+		public:
+			// Constructor.
+			FCustomizationProperties() = default;
+
+			// Add the handle and name of the property that you need to customize.
+			void Add(const FName& PropertyName, TSharedPtr<IPropertyHandle>* PropertyHandle);
+
+			// Initializes the handles of property that need to be customized from the specified structure property handle.
+			void Initialize(const TSharedRef<IPropertyHandle>& StructPropertyHandle);
+
+			// Returns whether all property handles that need to be customized have been initialized.
+			bool IsInitialized() const;
+			
+			// Returns whether the specified property is included in the properties that need to be customized.
+#if UE_4_25_OR_LATER
+			bool Contains(FProperty* InProperty) const;
+#else
+			bool Contains(UProperty* InProperty) const;
+#endif
+
+			// Returns the number of properties that need to be customized.
+			uint32 Num() const;
+
+		private:
+			// A map of the name and handle pointer for the property that needs to be customized.
+			TMap<FName, TSharedPtr<IPropertyHandle>*> PropertyNamesToHandles;
+		};
+		FCustomizationProperties CustomizationProperties;
 	};
 }

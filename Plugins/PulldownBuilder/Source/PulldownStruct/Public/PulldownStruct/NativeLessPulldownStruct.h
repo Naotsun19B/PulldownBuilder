@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownStructBase.h"
-#include "PulldownStruct/PulldownStructMacros.h"
 #include "NativeLessPulldownStruct.generated.h"
 
 /**
@@ -12,7 +11,7 @@
  * Toggle the pull-down menu by specifying PulldownContents.
  */
 USTRUCT(BlueprintType)
-struct FNativeLessPulldownStruct : public FPulldownStructBase
+struct PULLDOWNSTRUCT_API FNativeLessPulldownStruct : public FPulldownStructBase
 {
 	GENERATED_BODY()
 	SETUP_PULLDOWN_STRUCT()
@@ -24,11 +23,28 @@ public:
 
 public:
 	// Constructor.
-	FNativeLessPulldownStruct() : FPulldownStructBase(NAME_None), PulldownSource(NAME_None) {}
-	FNativeLessPulldownStruct(const FName& InPulldownSource, const FName& InSelectedValue)
-		: FPulldownStructBase(InPulldownSource)
-		, PulldownSource(InSelectedValue)
-	{
-	}
+	FNativeLessPulldownStruct();
+	FNativeLessPulldownStruct(const FName& InPulldownSource, const FName& InSelectedValue);
 };
 SETUP_PULLDOWN_STRUCT_OPS(FNativeLessPulldownStruct)
+
+// Specializes some of the function templates, such as operators defined in FPulldownStructBase.
+template<>
+FORCEINLINE_DEBUGGABLE bool operator==(const FNativeLessPulldownStruct& Lhs, const FNativeLessPulldownStruct& Rhs)
+{
+	return (
+		Lhs.SelectedValue.IsEqual(Rhs.SelectedValue, ENameCase::CaseSensitive) &&
+		Lhs.PulldownSource.IsEqual(Rhs.PulldownSource, ENameCase::CaseSensitive)
+	);
+}
+
+template<>
+FORCEINLINE_DEBUGGABLE uint32 GetTypeHash(const FNativeLessPulldownStruct& PulldownStruct)
+{
+	uint32 Hash = 0;
+	
+	Hash = HashCombine(Hash, GetTypeHash(PulldownStruct.SelectedValue));
+	Hash = HashCombine(Hash, GetTypeHash(PulldownStruct.PulldownSource));
+	
+	return Hash;
+}
