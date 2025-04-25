@@ -32,7 +32,11 @@ bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) cons
 
 {
 	bool bCanEditChange = true;
+#if UE_4_25_OR_LATER
 	if (InProperty != nullptr)
+#else
+	if (IsValid(InProperty))
+#endif
 	{
 		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownListGeneratorBase, bEnableDefaultValue))
 		{

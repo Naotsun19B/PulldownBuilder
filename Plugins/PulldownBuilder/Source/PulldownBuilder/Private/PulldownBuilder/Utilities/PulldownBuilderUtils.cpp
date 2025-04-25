@@ -196,7 +196,7 @@ namespace PulldownBuilder
 	{
 		check(IsValid(InStruct));
 		
-		if (const UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
+		if (UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
 		{
 			return CppStructOps->HasPostSerialize();
 		}
@@ -403,7 +403,11 @@ namespace PulldownBuilder
 		for (UProperty* Property : TFieldRange<UProperty>(StructType))
 #endif
 		{
+#if UE_4_25_OR_LATER
 			if (Property == nullptr)
+#else
+			if (!IsValid(Property))
+#endif
 			{
 				continue;
 			}

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/PulldownRows.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownListGeneratorBase.generated.h"

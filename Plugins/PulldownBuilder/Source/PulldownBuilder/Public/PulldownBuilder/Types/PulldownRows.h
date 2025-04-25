@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 
 /**
  * A struct of the data that appears in the list in the pull-down menu.
@@ -64,27 +65,33 @@ public:
 	 * STL-like iterators to enable range-based for loop support.
 	 */
 	using FRangedForIteratorType				= TArray<TSharedPtr<FPulldownRow>>::RangedForIteratorType;
-	using FRangedForConstIteratorType		= TArray<TSharedPtr<FPulldownRow>>::RangedForConstIteratorType;
-	using FRangedForReverseIteratorType		= TArray<TSharedPtr<FPulldownRow>>::RangedForReverseIteratorType;
+	using FRangedForConstIteratorType			= TArray<TSharedPtr<FPulldownRow>>::RangedForConstIteratorType;
+#if UE_5_03_OR_LATER
+	using FRangedForReverseIteratorType			= TArray<TSharedPtr<FPulldownRow>>::RangedForReverseIteratorType;
 	using FRangedForConstReverseIteratorType	= TArray<TSharedPtr<FPulldownRow>>::RangedForConstReverseIteratorType;
+#endif
 #if TARRAY_RANGED_FOR_CHECKS
 	FORCEINLINE FRangedForIteratorType             begin ()       { return FRangedForIteratorType            (Num(), Rows.GetData()); }
 	FORCEINLINE FRangedForConstIteratorType        begin () const { return FRangedForConstIteratorType       (Num(), Rows.GetData()); }
 	FORCEINLINE FRangedForIteratorType             end   ()       { return FRangedForIteratorType            (Num(), Rows.GetData() + Num()); }
 	FORCEINLINE FRangedForConstIteratorType        end   () const { return FRangedForConstIteratorType       (Num(), Rows.GetData() + Num()); }
+#if UE_5_03_OR_LATER
 	FORCEINLINE FRangedForReverseIteratorType      rbegin()       { return FRangedForReverseIteratorType     (Num(), Rows.GetData() + Num()); }
 	FORCEINLINE FRangedForConstReverseIteratorType rbegin() const { return FRangedForConstReverseIteratorType(Num(), Rows.GetData() + Num()); }
 	FORCEINLINE FRangedForReverseIteratorType      rend  ()       { return FRangedForReverseIteratorType     (Num(), Rows.GetData()); }
 	FORCEINLINE FRangedForConstReverseIteratorType rend  () const { return FRangedForConstReverseIteratorType(Num(), Rows.GetData()); }
+#endif
 #else
 	FORCEINLINE FRangedForIteratorType             begin ()       { return                                    Rows.GetData(); }
 	FORCEINLINE FRangedForConstIteratorType        begin () const { return                                    Rows.GetData(); }
 	FORCEINLINE FRangedForIteratorType             end   ()       { return                                    Rows.GetData() + Num(); }
 	FORCEINLINE FRangedForConstIteratorType        end   () const { return                                    Rows.GetData() + Num(); }
+#if UE_5_03_OR_LATER
 	FORCEINLINE FRangedForReverseIteratorType      rbegin()       { return FRangedForReverseIteratorType     (Rows.GetData() + Num()); }
 	FORCEINLINE FRangedForConstReverseIteratorType rbegin() const { return FRangedForConstReverseIteratorType(Rows.GetData() + Num()); }
 	FORCEINLINE FRangedForReverseIteratorType      rend  ()       { return FRangedForReverseIteratorType     (Rows.GetData()); }
 	FORCEINLINE FRangedForConstReverseIteratorType rend  () const { return FRangedForConstReverseIteratorType(Rows.GetData()); }
+#endif
 #endif
 	
 private:

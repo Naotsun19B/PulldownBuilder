@@ -140,7 +140,8 @@ namespace PulldownBuilder
 
 	void FNativeLessPulldownStructDetail::AddCustomRowBeforeSelectedValue(IDetailChildrenBuilder& StructBuilder)
 	{
-		StructBuilder.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)))
+		StructBuilder
+			.AddCustomRow(FText::FromName(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)))
 			.CopyAction(CreatePulldownSourceCopyAction())
 			.PasteAction(CreatePulldownSourcePasteAction())
 			.NameContent()

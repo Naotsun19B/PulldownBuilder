@@ -76,7 +76,7 @@ bool FPulldownRows::IsValidIndex(const int32 Index) const
 
 bool FPulldownRows::IsEmpty() const
 {
-	return (Rows == Empty.Rows);
+	return (Num() == Empty.Num());
 }
 
 bool FPulldownRows::HasDefaultRow() const

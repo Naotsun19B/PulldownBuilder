@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IPropertyTypeCustomization.h"
+#include "PropertyHandle.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Types/PulldownRows.h"
 
@@ -33,6 +34,9 @@ namespace PulldownBuilder
 		// End of IPropertyTypeCustomization interface.
 
 	protected:
+		// Initializes pull-down menus and widgets when the details panel is constructed.
+		virtual void InitializePulldown();
+		
 		// Rebuilds the list of strings to display in the pull-down menu.
 		virtual void RebuildPulldown();
 
@@ -62,7 +66,18 @@ namespace PulldownBuilder
 		// NOTE: There are parts of the MovieScene module code that don't check for nullptr.
 		//       This causes a crash when changing properties in the sequencer editor, so until this is fixed,
 		//       for MovieSceneSignedObject (ex: sections or tracks), set to new value at the next frame.
-		static void SetPropertyValueSafe(
+		template<typename TPropertyValue>
+		static void SetPropertyValueSafe(const TSharedRef<IPropertyHandle>& TargetPropertyHandle, const TPropertyValue& NewValue)
+		{
+			SetPropertyValueSafeImpl(
+				TargetPropertyHandle,
+				[NewValue](const TSharedRef<IPropertyHandle>& PropertyHandle)
+				{
+					PropertyHandle->SetValue(NewValue);
+				}
+			);
+		}
+		static void SetPropertyValueSafeImpl(
 			const TSharedRef<IPropertyHandle>& TargetPropertyHandle,
 			const TFunction<void(const TSharedRef<IPropertyHandle>& PropertyHandle)>& Predicate
 		);
@@ -89,16 +104,13 @@ namespace PulldownBuilder
 
 		// Returns whether the currently edited pull-down struct has been changed at least once.
 		bool IsEdited() const;
+
+		// Initializes the details panel widget.
+		virtual void ConstructDetailWidgetRow(FDetailWidgetRow& DetailWidgetRow);
 		
 		// Creates a FUIAction that works with the pull-down struct's context menu.
 		FUIAction CreateSelectedValueCopyAction();
 		FUIAction CreateSelectedValuePasteAction();
-
-		// Adds an action to return the value of the pull-down struct being edited to the default value to the specified detail widget row.
-		void AddCustomResetToDefaultAction(FDetailWidgetRow& DetailWidgetRow);
-
-		// Adds an action to browse source asset to the specified detail widget row.
-		void AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow);
 		
 		// Called when a function is invoked from the pull-down struct's context menu.
 		virtual void OnSelectedValueCopyAction();

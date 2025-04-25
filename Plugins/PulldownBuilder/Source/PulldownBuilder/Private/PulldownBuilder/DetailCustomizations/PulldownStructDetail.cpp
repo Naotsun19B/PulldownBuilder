@@ -11,8 +11,8 @@
 #include "PulldownStruct/PulldownStructBase.h"
 #include "DetailWidgetRow.h"
 #include "PropertyEditorModule.h"
-#include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
+#include "IDetailPropertyRow.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Modules/ModuleManager.h"
 #if UE_5_01_OR_LATER
@@ -79,28 +79,20 @@ namespace PulldownBuilder
 		CustomizationProperties.Initialize(StructPropertyHandle.ToSharedRef());
 		check(CustomizationProperties.IsInitialized());
 	
-		HeaderRow.NameContent()
-		[
-			StructPropertyHandle->CreatePropertyNameWidget()
-		];
+		HeaderRow
+			.NameContent()
+			[
+				StructPropertyHandle->CreatePropertyNameWidget()
+			];
 
 		// If the property is only FPulldownStructBase::SelectedValue, displays it inline.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		if (NumChildProperties == CustomizationProperties.Num() && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
-			HeaderRow.ValueContent()
-				.MinDesiredWidth(500)
-				[
-					GenerateSelectableValuesWidget()
-				];
-
-			HeaderRow.CopyAction(CreateSelectedValueCopyAction());
-			HeaderRow.PasteAction(CreateSelectedValuePasteAction());
-			AddCustomResetToDefaultAction(HeaderRow);
-			AddBrowseSourceAssetAction(HeaderRow);
+			ConstructDetailWidgetRow(HeaderRow);
 			
-			RebuildPulldown();
+			InitializePulldown();
 		}
 	}
 
@@ -108,7 +100,7 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid() && SelectedValueHandle.IsValid());
 
-		// Adds child properties other than FPulldownStructBase::SelectedValue to the StructBuilder.
+		// Adds child properties other than properties that need to be customized to the StructBuilder.
 		uint32 NumChildProperties;
 		StructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)
@@ -137,29 +129,58 @@ namespace PulldownBuilder
 		if (NumChildProperties > CustomizationProperties.Num() || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
-			
-			FDetailWidgetRow& DetailWidgetRow = StructBuilder.AddCustomRow(
-				FText::FromName(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
-			)
-				.CopyAction(CreateSelectedValueCopyAction())
-				.PasteAction(CreateSelectedValuePasteAction())
-				.NameContent()
-				[
-					SelectedValueHandle->CreatePropertyNameWidget()
-				]
-				.ValueContent()
-				.MinDesiredWidth(500)
-				[
-					GenerateSelectableValuesWidget()
-				];
 
-			AddCustomResetToDefaultAction(DetailWidgetRow);
-			AddBrowseSourceAssetAction(DetailWidgetRow);
+			IDetailPropertyRow& PropertyRow = StructBuilder.AddProperty(SelectedValueHandle.ToSharedRef());
+#if !UE_5_01_OR_LATER
+			PropertyRow.OverrideResetToDefault(
+				FResetToDefaultOverride::Create(
+					FIsResetToDefaultVisible::CreateRaw(this, &FPulldownStructDetail::CanResetToDefaultAction),
+					FResetToDefaultHandler::CreateRaw(this, &FPulldownStructDetail::OnResetToDefaultAction)
+				)
+			);
+#endif
+			FDetailWidgetRow& WidgetRow = PropertyRow.CustomWidget();
+			WidgetRow.NameContent()
+			[
+				SelectedValueHandle->CreatePropertyNameWidget()
+			];
+			
+			ConstructDetailWidgetRow(WidgetRow);
 			
 			AddCustomRowAfterSelectedValue(StructBuilder);
 
-			RebuildPulldown();
+			InitializePulldown();
 		}
+	}
+
+	void FPulldownStructDetail::InitializePulldown()
+	{
+		check(IsEditedHandle.IsValid());
+		
+		SelectableValues = GenerateSelectableValues();
+
+		// If a default value is set and the selected value is either None or other than the default value, marks it as edited.
+		bool bNeedToMarkEdited = true;
+		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+		if (DefaultRow.IsValid())
+		{
+			FName CurrentSelectedValue;
+			if (SelectedValueHandle->GetValue(CurrentSelectedValue) == FPropertyAccess::Success)
+			{
+				if ((CurrentSelectedValue == NAME_None) || (CurrentSelectedValue == *DefaultRow->SelectedValue))
+				{
+					bNeedToMarkEdited = false;
+				}
+			}
+		}
+		if (bNeedToMarkEdited)
+		{
+			SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
+		}
+		
+		UpdateSearchableObject();
+		ApplyDefaultValue();
+		RefreshPulldownWidget();
 	}
 
 	void FPulldownStructDetail::RebuildPulldown()
@@ -170,33 +191,7 @@ namespace PulldownBuilder
 		void* StructValueData = nullptr;
 		if (StructPropertyHandle->GetValueData(StructValueData) == FPropertyAccess::Success)
 		{
-			const bool bInitialRebuild = SelectableValues.IsEmpty();
 			SelectableValues = GenerateSelectableValues();
-
-			// If a value other than the default value is set during the initial rebuild, mark it as edited.
-			if (bInitialRebuild)
-			{
-				bool bNeedToMarkEdited = false;
-				const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
-				if (DefaultRow.IsValid())
-				{
-					FName CurrentSelectedValue;
-					const FPropertyAccess::Result Result = SelectedValueHandle->GetValue(CurrentSelectedValue);
-					if ((Result == FPropertyAccess::Success) && (CurrentSelectedValue != *DefaultRow->SelectedValue))
-					{
-						bNeedToMarkEdited = true;
-					}
-				}
-				else
-				{
-					bNeedToMarkEdited = true;
-				}
-				if (bNeedToMarkEdited)
-				{
-					check(IsEditedHandle.IsValid());
-					IsEditedHandle->SetValue(true);
-				}
-			}
 		}
 		// Empties the list if data acquisition fails or if multiple selections are made.
 		else
@@ -221,13 +216,7 @@ namespace PulldownBuilder
 		TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 		if (!SelectedItem.IsValid())
 		{
-			SetPropertyValueSafe(
-				SelectedValueHandle.ToSharedRef(),
-				[](const TSharedRef<IPropertyHandle>& PropertyHandle)
-				{
-					PropertyHandle->SetValue(NAME_None);
-				}
-			);
+			SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), NAME_None);
 			SelectedItem = FindSelectableValueByName(NAME_None);
 		}
 
@@ -316,7 +305,7 @@ namespace PulldownBuilder
 			];
 	}
 
-	void FPulldownStructDetail::SetPropertyValueSafe(
+	void FPulldownStructDetail::SetPropertyValueSafeImpl(
 		const TSharedRef<IPropertyHandle>& TargetPropertyHandle,
 		const TFunction<void(const TSharedRef<IPropertyHandle>& PropertyHandle)>& Predicate
 	)
@@ -437,14 +426,8 @@ namespace PulldownBuilder
 		SelectedValueHandle->GetValue(OldSelectedValue);
 		if (NewSelectedValue != OldSelectedValue)
 		{
-			SetPropertyValueSafe(
-				SelectedValueHandle.ToSharedRef(),
-				[NewSelectedValue](const TSharedRef<IPropertyHandle>& PropertyHandle)
-				{
-					PropertyHandle->SetValue(NewSelectedValue);
-				}
-			);
-			IsEditedHandle->SetValue(true);
+			SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), NewSelectedValue);
+			SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
 		}
 	}
 
@@ -469,8 +452,8 @@ namespace PulldownBuilder
 			SearchableObject = nullptr;
 		}
 
-		UObject* NewSearchableObject = nullptr;
-		if (UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
+		const UObject* NewSearchableObject = nullptr;
+		if (const UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
 		{
 			if (!IsValid(SearchableObject) || (SearchableObject != RelatedPulldownContents))
 			{
@@ -479,8 +462,8 @@ namespace PulldownBuilder
 		}
 		if (IsValid(NewSearchableObject))
 		{
-			TWeakObjectPtr WeakNewSearchableObject = NewSearchableObject;
-			SetPropertyValueSafe(
+			FWeakObjectPtr WeakNewSearchableObject = NewSearchableObject;
+			SetPropertyValueSafeImpl(
 				SearchableObjectHandle.ToSharedRef(),
 				[WeakNewSearchableObject](const TSharedRef<IPropertyHandle>& PropertyHandle)
 				{
@@ -502,13 +485,8 @@ namespace PulldownBuilder
 		
 		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
 		const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : FName(NAME_None));
-		SetPropertyValueSafe(
-			SelectedValueHandle.ToSharedRef(),
-			[DefaultValue](const TSharedRef<IPropertyHandle>& PropertyHandle)
-			{
-				PropertyHandle->SetValue(DefaultValue);
-			}
-		);
+		SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), DefaultValue);
+		SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), false);
 	}
 
 	bool FPulldownStructDetail::IsEdited() const
@@ -522,6 +500,45 @@ namespace PulldownBuilder
 		}
 
 		return false;
+	}
+
+	void FPulldownStructDetail::ConstructDetailWidgetRow(FDetailWidgetRow& DetailWidgetRow)
+	{
+		DetailWidgetRow
+			.PropertyHandleList(TArray<TSharedPtr<IPropertyHandle>>{ SelectedValueHandle })
+			.CopyAction(CreateSelectedValueCopyAction())
+			.PasteAction(CreateSelectedValuePasteAction())
+			.ValueContent()
+			.MinDesiredWidth(500)
+			[
+				GenerateSelectableValuesWidget()
+			]
+			.AddCustomContextMenuAction(
+				FUIAction
+				(
+					FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnBrowseSourceAssetAction),
+					FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanBrowseSourceAssetAction)
+				),
+				LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
+				LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
+				FSlateIcon(
+#if UE_5_01_OR_LATER
+					FAppStyle::GetAppStyleSetName(),
+#else
+					FEditorStyle::GetStyleSetName(),
+#endif
+					TEXT("SystemWideCommands.FindInContentBrowser")
+				)
+			);
+		
+#if UE_5_01_OR_LATER
+		DetailWidgetRow.OverrideResetToDefault(
+			FResetToDefaultOverride::Create(
+				FIsResetToDefaultVisible::CreateRaw(this, &FPulldownStructDetail::CanResetToDefaultAction),
+				FResetToDefaultHandler::CreateRaw(this, &FPulldownStructDetail::OnResetToDefaultAction)
+			)
+		);
+#endif
 	}
 
 	FUIAction FPulldownStructDetail::CreateSelectedValueCopyAction()
@@ -539,37 +556,6 @@ namespace PulldownBuilder
 		(
 			FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnSelectedValuePasteAction),
 			FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanSelectedValuePasteAction)
-		);
-	}
-	
-	void FPulldownStructDetail::AddCustomResetToDefaultAction(FDetailWidgetRow& DetailWidgetRow)
-	{
-		DetailWidgetRow.OverrideResetToDefault(
-			FResetToDefaultOverride::Create(
-				FIsResetToDefaultVisible::CreateRaw(this, &FPulldownStructDetail::CanResetToDefaultAction),
-				FResetToDefaultHandler::CreateRaw(this, &FPulldownStructDetail::OnResetToDefaultAction)
-			)
-		);
-	}
-
-	void FPulldownStructDetail::AddBrowseSourceAssetAction(FDetailWidgetRow& DetailWidgetRow)
-	{
-		DetailWidgetRow.AddCustomContextMenuAction(
-			FUIAction
-			(
-				FExecuteAction::CreateSP(this, &FPulldownStructDetail::OnBrowseSourceAssetAction),
-				FCanExecuteAction::CreateSP(this, &FPulldownStructDetail::CanBrowseSourceAssetAction)
-			),
-			LOCTEXT("OpenSourceAssetLabel", "Open Source Asset"),
-			LOCTEXT("OpenSourceAssetTooltip", "Open the underlying pulldown contents asset for the pin's pulldown struct."),
-			FSlateIcon(
-#if UE_5_01_OR_LATER
-				FAppStyle::GetAppStyleSetName(),
-#else
-				FEditorStyle::GetStyleSetName(),
-#endif
-				TEXT("SystemWideCommands.FindInContentBrowser")
-			)
 		);
 	}
 

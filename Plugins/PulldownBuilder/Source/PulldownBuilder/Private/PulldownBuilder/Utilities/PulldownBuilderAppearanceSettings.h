@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "PulldownBuilder/Types/PulldownBuilderNotificationSeverity.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilderAppearanceSettings.generated.h"
 
 /**
@@ -35,7 +36,7 @@ public:
 	// The severity of the notification.
 	UPROPERTY(EditAnywhere, Config, Category = "Notification")
 	EPulldownBuilderNotificationSeverity NotificationSeverity;
-	
+
 public:
 	// Constructor.
 	UPulldownBuilderAppearanceSettings();
@@ -43,6 +44,15 @@ public:
 	// Registers-Unregisters in the editor setting item.
 	static void Register();
 	static void Unregister();
+	
+	// UObject interface.
+	virtual void PostInitProperties() override;
+#if UE_4_25_OR_LATER
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#else
+	virtual bool CanEditChange(const UProperty* InProperty) const override;
+#endif
+	// End of UObject interface.
 
 	// Returns reference of this settings.
 	static const UPulldownBuilderAppearanceSettings& Get();
