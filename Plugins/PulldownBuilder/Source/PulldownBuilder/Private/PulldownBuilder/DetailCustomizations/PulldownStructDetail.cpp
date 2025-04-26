@@ -637,17 +637,17 @@ namespace PulldownBuilder
 		return IsValid(GetRelatedPulldownContents());
 	}
 
-	void FPulldownStructDetail::FCustomizationProperties::Add(const FName& PropertyName, TSharedPtr<IPropertyHandle>* PropertyHandle)
+	void FPulldownStructDetail::FCustomizationProperties::Add(const FName& InPropertyName, TSharedPtr<IPropertyHandle>* InPropertyHandle)
 	{
-		check(PropertyHandle != nullptr);
+		check(InPropertyHandle != nullptr);
 
-		PropertyNamesToHandles.Emplace(PropertyName, PropertyHandle);
+		PropertyNamesToHandles.Emplace(InPropertyName, InPropertyHandle);
 	}
 
-	void FPulldownStructDetail::FCustomizationProperties::Initialize(const TSharedRef<IPropertyHandle>& StructPropertyHandle)
+	void FPulldownStructDetail::FCustomizationProperties::Initialize(const TSharedRef<IPropertyHandle>& InStructPropertyHandle)
 	{
 		uint32 NumChildProperties;
-		StructPropertyHandle->GetNumChildren(NumChildProperties);
+		InStructPropertyHandle->GetNumChildren(NumChildProperties);
 		for (uint32 Index = 0; Index < NumChildProperties; Index++)
 		{
 			if (IsInitialized())
@@ -655,7 +655,7 @@ namespace PulldownBuilder
 				break;
 			}
 			
-			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = StructPropertyHandle->GetChildHandle(Index);
+			const TSharedPtr<IPropertyHandle> ChildPropertyHandle = InStructPropertyHandle->GetChildHandle(Index);
 			if (!ChildPropertyHandle.IsValid())
 			{
 				continue;

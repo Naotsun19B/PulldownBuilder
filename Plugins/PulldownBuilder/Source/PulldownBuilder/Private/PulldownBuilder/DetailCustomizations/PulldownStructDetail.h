@@ -151,10 +151,10 @@ namespace PulldownBuilder
 			FCustomizationProperties() = default;
 
 			// Add the handle and name of the property that you need to customize.
-			void Add(const FName& PropertyName, TSharedPtr<IPropertyHandle>* PropertyHandle);
+			void Add(const FName& InPropertyName, TSharedPtr<IPropertyHandle>* InPropertyHandle);
 
 			// Initializes the handles of property that need to be customized from the specified structure property handle.
-			void Initialize(const TSharedRef<IPropertyHandle>& StructPropertyHandle);
+			void Initialize(const TSharedRef<IPropertyHandle>& InStructPropertyHandle);
 
 			// Returns whether all property handles that need to be customized have been initialized.
 			bool IsInitialized() const;
