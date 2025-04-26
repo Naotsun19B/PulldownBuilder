@@ -245,13 +245,13 @@ namespace PulldownBuilder
 			return;
 		}
 
-		const TSharedPtr<FName> PinValue = FPulldownBuilderUtils::StructStringToMemberValue(
+		const TSharedPtr<FString> PinValue = FPulldownBuilderUtils::StructStringToMemberValue(
 			Pin->GetDefaultAsString(),
 			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)
 		);
 		if (PinValue.IsValid())
 		{
-			FPlatformApplicationMisc::ClipboardCopy(*PinValue->ToString());
+			FPlatformApplicationMisc::ClipboardCopy(**PinValue);
 		}
 	}
 

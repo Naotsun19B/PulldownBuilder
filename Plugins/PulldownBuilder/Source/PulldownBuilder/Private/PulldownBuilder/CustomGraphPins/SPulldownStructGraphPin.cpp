@@ -25,9 +25,35 @@ namespace PulldownBuilder
 
 	TSharedRef<SWidget> SPulldownStructGraphPin::GetDefaultValueWidget()
 	{
-		RebuildPulldown();
+		InitializePulldown();
 
 		return GenerateSelectableValuesWidget();
+	}
+
+	void SPulldownStructGraphPin::InitializePulldown()
+	{
+		// If a default value is set and the selected value is either None or other than the default value, marks it as edited.
+		bool bNeedToMarkEdited = true;
+		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+		if (DefaultRow.IsValid())
+		{
+			FName CurrentSelectedValue;
+			if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), CurrentSelectedValue))
+			{
+				if ((CurrentSelectedValue == NAME_None) || (CurrentSelectedValue == *DefaultRow->SelectedValue))
+				{
+					bNeedToMarkEdited = false;
+				}
+			}
+		}
+		if (bNeedToMarkEdited)
+		{
+			SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, true);
+		}
+		
+		UpdateSearchableObject();
+		ApplyDefaultValue();
+		RefreshPulldownWidget();
 	}
 
 	void SPulldownStructGraphPin::RebuildPulldown()
@@ -43,12 +69,14 @@ namespace PulldownBuilder
 	void SPulldownStructGraphPin::RefreshPulldownWidget()
 	{	
 		// Checks if the currently set string is included in the constructed list.
-		const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
 		TSharedPtr<FPulldownRow> SelectedItem = nullptr;
-		if (CurrentSelectedValue.IsValid())
+		
+		FName CurrentSelectedValue;
+		if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), CurrentSelectedValue))
 		{
-			SelectedItem = FindSelectableValueByName(*CurrentSelectedValue);
+			SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
 		}
+		
 		if (!SelectedItem.IsValid())
 		{
 			SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), NAME_None);
@@ -132,9 +160,13 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> SPulldownStructGraphPin::GetSelection() const
 	{
-		const TSharedPtr<FName> SelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
-		const FName& NameToFind = (SelectedValue.IsValid() ? *SelectedValue : NAME_None);
-		return FindSelectableValueByName(NameToFind);
+		FName SelectedValue;
+		if (!GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), SelectedValue))
+		{
+			return nullptr;
+		}
+		
+		return FindSelectableValueByName(SelectedValue);
 	}
 
 	float SPulldownStructGraphPin::GetIndividualPanelHeight() const
@@ -167,17 +199,24 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::OnSelectedValueChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 	{
-		const TSharedPtr<FName> CurrentSelectedValue = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue));
-		if (SelectedItem.IsValid() && CurrentSelectedValue.IsValid())
+		if (!SelectedItem.IsValid())
 		{
-			if (SelectedItem->SelectedValue != CurrentSelectedValue->ToString())
-			{
-				SetPropertyValue(
-					GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
-					*SelectedItem->SelectedValue
-				);
-			}
+			return;
 		}
+
+		FName CurrentSelectedValue;
+		if (!GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), CurrentSelectedValue))
+		{
+			return;
+		}
+
+		if (*SelectedItem->SelectedValue == CurrentSelectedValue)
+		{
+			return;
+		}
+
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), SelectedItem->SelectedValue);
+		SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, true);
 	}
 
 	void SPulldownStructGraphPin::UpdateSearchableObject()
@@ -192,6 +231,12 @@ namespace PulldownBuilder
 		{
 			return;
 		}
+
+		FName SearchableObject;
+		if (!GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName, SearchableObject))
+		{
+			return;
+		}
 		
 		FName NewSearchableObject = NAME_None;
 		if (const UPulldownContents* RelatedPulldownContents = GetRelatedPulldownContents())
@@ -199,28 +244,59 @@ namespace PulldownBuilder
 			const FAssetData RelatedPulldownContentsAssetData(RelatedPulldownContents);
 			NewSearchableObject = *RelatedPulldownContentsAssetData.GetExportTextName();
 		}
-
-		const TSharedPtr<FName>& SearchableObject = GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName);
-		if (!SearchableObject.IsValid() || (*SearchableObject != NewSearchableObject))
+		if (SearchableObject != NewSearchableObject)
 		{
-			SetPropertyValue(
-				FPulldownStructBase::SearchableObjectPropertyName,
-				NewSearchableObject
-			);
+			SetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName, NewSearchableObject);
 		}
 	}
 
-	TSharedPtr<FName> SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName) const
+	void SPulldownStructGraphPin::ApplyDefaultValue(const bool bForceApply)
 	{
-		check(GraphPinObj != nullptr);
-	
-		return FPulldownBuilderUtils::StructStringToMemberValue(
-			GraphPinObj->GetDefaultAsString(),
-			PropertyName
-		);
+		if (!bForceApply && IsEdited())
+		{
+			return;
+		}
+		
+		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+		const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : FName(NAME_None));
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), DefaultValue);
+		SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, false);
 	}
 
-	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue)
+	bool SPulldownStructGraphPin::IsEdited() const
+	{
+		bool IsEdited;
+		return (GetPropertyValue(FPulldownStructBase::IsEditedPropertyName, IsEdited) && IsEdited);
+	}
+
+	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, const TFunction<void(const FString& PropertyValue)>& Predicate) const
+	{
+		const TSharedPtr<FString> MemberValue = FPulldownBuilderUtils::StructStringToMemberValue(GraphPinObj->GetDefaultAsString(), PropertyName);
+		if (!MemberValue.IsValid())
+		{
+			return false;
+		}
+
+		Predicate(*MemberValue);
+		return true;
+	}
+
+	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, FString& StringPropertyValue) const
+	{
+		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { StringPropertyValue = PropertyValue; });
+	}
+
+	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, FName& NamePropertyValue) const
+	{
+		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { NamePropertyValue = *PropertyValue; });
+	}
+
+	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, bool& bBoolPropertyValue) const
+	{
+		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { bBoolPropertyValue = PropertyValue.ToBool(); });
+	}
+
+	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FString& NewPropertyValue)
 	{
 		check(GraphPinObj != nullptr);
 
@@ -236,5 +312,15 @@ namespace PulldownBuilder
 			check(IsValid(Schema));
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 		}
+	}
+
+	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewNamePropertyValue)
+	{
+		SetPropertyValue(PropertyName, NewNamePropertyValue.ToString());
+	}
+
+	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const bool bNewBoolPropertyValue)
+	{
+		SetPropertyValue(PropertyName, FName(bNewBoolPropertyValue ? TEXT("True") : TEXT("False")));
 	}
 }

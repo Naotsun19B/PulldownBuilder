@@ -33,6 +33,9 @@ namespace PulldownBuilder
 		// End of SGraphPin interface.
 
 	protected:
+		// Initializes pull-down menus and widgets when the details panel is constructed.
+		virtual void InitializePulldown();
+		
 		// Rebuilds the list of strings to display in the pull-down menu.
 		virtual void RebuildPulldown();
 
@@ -66,11 +69,22 @@ namespace PulldownBuilder
 
 		// Updates the value of a pull-down struct's searchable object.
 		void UpdateSearchableObject();
+
+		// Applies default values to the pull-down structure being edited.
+		void ApplyDefaultValue(const bool bForceApply = false);
+
+		// Returns whether the currently edited pull-down struct has been changed at least once.
+		bool IsEdited() const;
 		
 		// Gets or sets the value of a variable with the specified name.
 		// If specify a property name that does not exist and get it, nullptr is returned.
-		TSharedPtr<FName> GetPropertyValue(const FName& PropertyName) const;
-		void SetPropertyValue(const FName& PropertyName, const FName& NewPropertyValue);
+		bool GetPropertyValue(const FName& PropertyName, const TFunction<void(const FString& PropertyValue)>& Predicate) const;
+		bool GetPropertyValue(const FName& PropertyName, FString& StringPropertyValue) const;
+		bool GetPropertyValue(const FName& PropertyName, FName& NamePropertyValue) const;
+		bool GetPropertyValue(const FName& PropertyName, bool& bBoolPropertyValue) const;
+		void SetPropertyValue(const FName& PropertyName, const FString& NewPropertyValue);
+		void SetPropertyValue(const FName& PropertyName, const FName& NewNamePropertyValue);
+		void SetPropertyValue(const FName& PropertyName, const bool bNewBoolPropertyValue);
 		
 	protected:
 		// The list of values that can be set in FPulldownStructBase::SelectedValue.

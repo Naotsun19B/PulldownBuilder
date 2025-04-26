@@ -229,21 +229,22 @@ namespace PulldownBuilder
 		return PropertiesMap;
 	}
 
-	TSharedPtr<FName> FPulldownBuilderUtils::StructStringToMemberValue(const FString& StructString, const FName& PropertyName) 
+	TSharedPtr<FString> FPulldownBuilderUtils::StructStringToMemberValue(
+		const FString& StructString, const FName& PropertyName) 
 	{
 		const TMap<FString, FString>& PropertiesMap = StructStringToPropertyMap(StructString);
 		if (PropertiesMap.Contains(PropertyName.ToString()))
 		{
-			return MakeShared<FName>(*PropertiesMap[PropertyName.ToString()]);
+			return MakeShared<FString>(*PropertiesMap[PropertyName.ToString()]);
 		}
 		
 		return nullptr;
 	}
 
-	TSharedPtr<FString> FPulldownBuilderUtils::MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue)
+	TSharedPtr<FString> FPulldownBuilderUtils::MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FString& NewPropertyValue)
 	{
 		// If the value does not change, do nothing.
-		const TSharedPtr<FName> OldPropertyValue = StructStringToMemberValue(StructString, PropertyName);
+		const TSharedPtr<FString> OldPropertyValue = StructStringToMemberValue(StructString, PropertyName);
 		if (!OldPropertyValue.IsValid() || NewPropertyValue == *OldPropertyValue)
 		{
 			return nullptr;
@@ -253,7 +254,7 @@ namespace PulldownBuilder
 		TMap<FString, FString> PropertiesMap = StructStringToPropertyMap(StructString);
 		if (PropertiesMap.Contains(PropertyName.ToString()))
 		{
-			PropertiesMap[PropertyName.ToString()] = NewPropertyValue.ToString();
+			PropertiesMap[PropertyName.ToString()] = NewPropertyValue;
 		}
 
 		// Create a struct string from the property map.

@@ -67,8 +67,8 @@ namespace PulldownBuilder
 	
 		// Gets or sets the value of a variable with the specified name.
 		// If specify a property name that does not exist and get it, nullptr is returned.
-		static TSharedPtr<FName> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
-		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FName& NewPropertyValue);
+		static TSharedPtr<FString> StructStringToMemberValue(const FString& StructString, const FName& PropertyName);
+		static TSharedPtr<FString> MemberValueToStructString(const FString& StructString, const FName& PropertyName, const FString& NewPropertyValue);
 		
 		// Generates the raw data of the struct from the string of the default value of the pin.
 		static bool GetStructRawDataFromDefaultValueString(

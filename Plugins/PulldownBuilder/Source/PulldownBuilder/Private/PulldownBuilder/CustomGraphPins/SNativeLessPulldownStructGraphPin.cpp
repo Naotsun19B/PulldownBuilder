@@ -17,7 +17,7 @@ namespace PulldownBuilder
 
 	TSharedRef<SWidget> SNativeLessPulldownStructGraphPin::GetDefaultValueWidget()
 	{
-		RebuildPulldown();
+		InitializePulldown();
 		
 		return
 			SNew(SHorizontalBox)
@@ -49,12 +49,14 @@ namespace PulldownBuilder
 	void SNativeLessPulldownStructGraphPin::RefreshPulldownWidget()
 	{
 		// Check if the currently set string is included in the constructed list.
-		const TSharedPtr<FName>& CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
 		TSharedPtr<FPulldownRow> SelectedItem = nullptr;
-		if (CurrentPulldownSource.IsValid())
+
+		FName CurrentPulldownSource;
+		if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), CurrentPulldownSource))
 		{
-			SelectedItem = FindPulldownContentsNameByName(*CurrentPulldownSource);
+			SelectedItem = FindPulldownContentsNameByName(CurrentPulldownSource);
 		}
+		
 		if (!SelectedItem.IsValid())
 		{
 			SetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), NAME_None);
@@ -91,10 +93,10 @@ namespace PulldownBuilder
 			}
 		}
 
-		const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
-		if (PulldownSource.IsValid())
+		FName PulldownSource;
+		if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), PulldownSource))
 		{
-			if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(*PulldownSource))
+			if (const UPulldownContents* SourceAsset = FPulldownBuilderUtils::FindPulldownContentsByName(PulldownSource))
 			{
 				FStructContainer StructContainer;
 				if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
@@ -112,13 +114,13 @@ namespace PulldownBuilder
 
 	UPulldownContents* SNativeLessPulldownStructGraphPin::GetRelatedPulldownContents() const
 	{
-		const TSharedPtr<FName>& SearchableObject = GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName);
-		if (!SearchableObject.IsValid())
+		FName SearchableObject;
+		if (!GetPropertyValue(FPulldownStructBase::SearchableObjectPropertyName, SearchableObject))
 		{
 			return nullptr;
 		}
 		
-		return FPulldownBuilderUtils::FindPulldownContentsByName(*SearchableObject);
+		return FPulldownBuilderUtils::FindPulldownContentsByName(SearchableObject);
 	}
 
 	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::FindPulldownContentsNameByName(const FName& InName) const
@@ -133,30 +135,42 @@ namespace PulldownBuilder
 
 	void SNativeLessPulldownStructGraphPin::OnPulldownSourceChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)
 	{
-		const TSharedPtr<FName> CurrentPulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
-		if (SelectedItem.IsValid() && CurrentPulldownSource.IsValid())
+		if (!SelectedItem.IsValid())
 		{
-			if (SelectedItem->SelectedValue != CurrentPulldownSource->ToString())
-			{
-				SetPropertyValue(
-					GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
-					*SelectedItem->SelectedValue
-				);
-
-				// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
-				SetPropertyValue(
-					GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
-					NAME_None
-				);
-				SPulldownStructGraphPin::RefreshPulldownWidget();
-			}	
+			return;
 		}
+
+		FName CurrentPulldownSource;
+		if (!GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), CurrentPulldownSource))
+		{
+			return;
+		}
+
+		if (*SelectedItem->SelectedValue == CurrentPulldownSource)
+		{
+			return;
+		}
+		
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), SelectedItem->SelectedValue);
+
+		// Since the base asset of the pull-down menu has changed, sets SelectedValue to None.
+		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), NAME_None);
+
+		// Since the base asset of the pull-down menu has changed, marks not edited and applies default value.
+		SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, false);
+		ApplyDefaultValue();
+		
+		SPulldownStructGraphPin::RefreshPulldownWidget();
 	}
 
 	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::GetPulldownSourceSelection() const
 	{
-		const TSharedPtr<FName> PulldownSource = GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource));
-		const FName& NameToFind = (PulldownSource.IsValid() ? *PulldownSource : NAME_None);
-		return FindPulldownContentsNameByName(NameToFind);
+		FName PulldownSource;
+		if (!GetPropertyValue(GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource), PulldownSource))
+		{
+			return nullptr;
+		}
+		
+		return FindPulldownContentsNameByName(PulldownSource);
 	}
 }
