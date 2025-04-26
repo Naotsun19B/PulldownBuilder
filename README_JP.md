@@ -28,7 +28,7 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.24 ~ 5.5  
+対象バージョン : UE4.27 ~ 5.5  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -150,7 +150,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 
 独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
-引数に編集中の変数を持つオブジェクトと編集中の変数が渡されるため、それを元に生成するリストの内容を変更することができます。  
+引数に編集中の変数を持つオブジェクトと編集中の変数が渡されるため、それを元に生成するリストの内容を変更できます。  
 
 ![BP_TestPulldown4PulldownListGenerator-GetPulldownRowsFromBlueprint](https://user-images.githubusercontent.com/51815450/177553308-a277f778-67d1-41aa-8495-2cba434ed423.png)
 
@@ -200,6 +200,7 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 ## 備考  
 
 ・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。
+・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。  
 
 ## ライセンス
 
@@ -211,9 +212,14 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 
 ## 履歴
 
+- (2025/04/26) v2.6  
+  UE4.26以前のサポートを打ち切りました  
+  `PulldownListGenerator`でプルダウン構造体のデフォルト値を設定できるようにしました  
+  詳細パネルやグラフピンでデフォルト値にリセットを実行した際にユーザーが設定したデフォルト値が適用されるようにしました  
+
 - (2024/12/26) v2.5  
   UE5.5に対応しました  
-  `SETUP_PULLDOWN_STRUCT`を使用されたときにシーケンス エディターでクラッシュを引き起こすバグを修正しました  
+  `SETUP_PULLDOWN_STRUCT`を使用されたときにシーケンスエディターでクラッシュを引き起こすバグを修正しました  
 
 - (2024/04/24) v2.4  
   UE5.4に対応しました  

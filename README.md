@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.24 ~ 5.5  
+Target version : UE4.27 ~ 5.5  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -199,7 +199,8 @@ The items that can be set from the editor preferences are as follows.
 
 ## Note  
 
-・The PulldownContents asset is an editor-only asset and will not be cooked into the package.
+・The PulldownContents asset is an editor-only asset and will not be cooked into the package.  
+・In UE4.27 and earlier, the reset to default value function cannot be implemented when inline displaying, so `Should Inline Display When Single Property` will be disabled.
 
 ## License
 
@@ -210,6 +211,11 @@ The items that can be set from the editor preferences are as follows.
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2025/04/26) v2.6  
+  Support before UE4.26 has been discontinued  
+  Added a function that allows you to set default values for pull-down structures in `PulldownListGenerator`  
+  Changed to apply the default value set by the user when reset to default value is performed on the details panel or graph pin  
 
 - (2024/12/26) v2.5  
   Added support for UE5.5  

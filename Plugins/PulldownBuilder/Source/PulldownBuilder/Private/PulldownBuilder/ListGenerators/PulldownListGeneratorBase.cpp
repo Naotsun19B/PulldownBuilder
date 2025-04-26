@@ -41,7 +41,7 @@ bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) cons
 		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownListGeneratorBase, bEnableDefaultValue))
 		{
 			const TArray<FName>& DefaultValueOptions = GetDefaultValueOptions();
-			bCanEditChange = (!IsEnableCustomDefaultValue() && !DefaultValueOptions.IsEmpty());
+			bCanEditChange = (!IsEnableCustomDefaultValue() && (DefaultValueOptions.Num() > 0));
 		}
 		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownListGeneratorBase, DefaultValue))
 		{
