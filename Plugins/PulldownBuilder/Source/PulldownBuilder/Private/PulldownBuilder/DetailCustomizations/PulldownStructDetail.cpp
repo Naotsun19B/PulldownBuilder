@@ -161,30 +161,46 @@ namespace PulldownBuilder
 		
 		UpdateSearchableObject();
 
-		// If a default value is set and the selected value is either None or other than the default value, marks it as edited.
-		if (!IsEdited())
+		// The default value is applied only if the default value is sets and the default value is None.
+		// Otherwise, it marks whether the edited or not according to the default value.
+		const FName CurrentSelectedValue = [&]() -> FName
 		{
-			bool bNeedToMarkEdited = true;
-			FName CurrentSelectedValue;
-			if (SelectedValueHandle->GetValue(CurrentSelectedValue) == FPropertyAccess::Success)
+			FName SelectedValue;
+			if (SelectedValueHandle->GetValue(SelectedValue) != FPropertyAccess::Success)
 			{
-				const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
-				const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : NAME_None);
-				if (CurrentSelectedValue == DefaultValue)
+				SelectedValue = NAME_None;
+			}
+			return SelectedValue;
+		}();
+		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+		if (DefaultRow.IsValid())
+		{
+			if (IsEdited() && (CurrentSelectedValue == *DefaultRow->SelectedValue))
+			{
+				SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), false);
+			}
+			else
+			{
+				if (CurrentSelectedValue == NAME_None)
 				{
-					bNeedToMarkEdited = false;
+					ApplyDefaultValue();
+				}
+				else if (CurrentSelectedValue != *DefaultRow->SelectedValue)
+				{
+					SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
 				}
 			}
-			if (bNeedToMarkEdited)
+		}
+		else
+		{
+			if (IsEdited() && (CurrentSelectedValue == NAME_None))
+			{
+				SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), false);
+			}
+			else if (!IsEdited() && (CurrentSelectedValue != NAME_None))
 			{
 				SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
 			}
-		}
-		
-		// If the value has not been edited during the initialization, the default value is applied.
-		if (!IsEdited())
-		{
-			ApplyDefaultValue();
 		}
 		
 		RefreshPulldownWidget();
