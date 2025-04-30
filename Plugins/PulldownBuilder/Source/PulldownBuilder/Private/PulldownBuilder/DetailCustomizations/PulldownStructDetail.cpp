@@ -158,28 +158,35 @@ namespace PulldownBuilder
 		check(IsEditedHandle.IsValid());
 		
 		SelectableValues = GenerateSelectableValues();
+		
+		UpdateSearchableObject();
 
 		// If a default value is set and the selected value is either None or other than the default value, marks it as edited.
-		bool bNeedToMarkEdited = true;
-		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
-		if (DefaultRow.IsValid())
+		if (!IsEdited())
 		{
+			bool bNeedToMarkEdited = true;
 			FName CurrentSelectedValue;
 			if (SelectedValueHandle->GetValue(CurrentSelectedValue) == FPropertyAccess::Success)
 			{
-				if ((CurrentSelectedValue == NAME_None) || (CurrentSelectedValue == *DefaultRow->SelectedValue))
+				const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+				const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : NAME_None);
+				if (CurrentSelectedValue == DefaultValue)
 				{
 					bNeedToMarkEdited = false;
 				}
 			}
-		}
-		if (bNeedToMarkEdited)
-		{
-			SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
+			if (bNeedToMarkEdited)
+			{
+				SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
+			}
 		}
 		
-		UpdateSearchableObject();
-		ApplyDefaultValue();
+		// If the value has not been edited during the initialization, the default value is applied.
+		if (!IsEdited())
+		{
+			ApplyDefaultValue();
+		}
+		
 		RefreshPulldownWidget();
 	}
 
@@ -201,7 +208,6 @@ namespace PulldownBuilder
 		}
 
 		UpdateSearchableObject();
-		ApplyDefaultValue();
 		RefreshPulldownWidget();
 	}
 
@@ -476,13 +482,8 @@ namespace PulldownBuilder
 		}
 	}
 
-	void FPulldownStructDetail::ApplyDefaultValue(const bool bForceApply /* = false */)
+	void FPulldownStructDetail::ApplyDefaultValue()
 	{
-		if (!bForceApply && IsEdited())
-		{
-			return;
-		}
-		
 		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
 		const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : FName(NAME_None));
 		SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), DefaultValue);
@@ -597,7 +598,7 @@ namespace PulldownBuilder
 	
 	void FPulldownStructDetail::OnResetToDefaultAction(TSharedPtr<IPropertyHandle> PropertyHandle)
 	{
-		ApplyDefaultValue(true);
+		ApplyDefaultValue();
 		RefreshPulldownWidget();
 	}
 	

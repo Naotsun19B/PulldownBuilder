@@ -33,7 +33,7 @@ namespace PulldownBuilder
 		// End of SGraphPin interface.
 
 	protected:
-		// Initializes pull-down menus and widgets when the details panel is constructed.
+		// Initializes pull-down menu and widget when the details panel is constructed.
 		virtual void InitializePulldown();
 		
 		// Rebuilds the list of strings to display in the pull-down menu.

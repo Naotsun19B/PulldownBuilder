@@ -34,7 +34,7 @@ namespace PulldownBuilder
 		// End of IPropertyTypeCustomization interface.
 
 	protected:
-		// Initializes pull-down menus and widgets when the details panel is constructed.
+		// Initializes pull-down menu and widget when the details panel is constructed.
 		virtual void InitializePulldown();
 		
 		// Rebuilds the list of strings to display in the pull-down menu.
@@ -100,7 +100,7 @@ namespace PulldownBuilder
 		void UpdateSearchableObject();
 
 		// Applies default values to the pull-down structure being edited.
-		void ApplyDefaultValue(const bool bForceApply = false);
+		void ApplyDefaultValue();
 
 		// Returns whether the currently edited pull-down struct has been changed at least once.
 		bool IsEdited() const;

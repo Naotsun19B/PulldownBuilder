@@ -32,27 +32,34 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::InitializePulldown()
 	{
+		UpdateSearchableObject();
+
 		// If a default value is set and the selected value is either None or other than the default value, marks it as edited.
-		bool bNeedToMarkEdited = true;
-		const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
-		if (DefaultRow.IsValid())
+		if (!IsEdited())
 		{
+			bool bNeedToMarkEdited = true;
 			FName CurrentSelectedValue;
 			if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), CurrentSelectedValue))
 			{
-				if ((CurrentSelectedValue == NAME_None) || (CurrentSelectedValue == *DefaultRow->SelectedValue))
+				const TSharedPtr<FPulldownRow> DefaultRow = SelectableValues.GetDefaultRow();
+				const FName DefaultValue = (DefaultRow.IsValid() ? FName(*DefaultRow->SelectedValue) : NAME_None);
+				if (CurrentSelectedValue == DefaultValue)
 				{
 					bNeedToMarkEdited = false;
 				}
 			}
-		}
-		if (bNeedToMarkEdited)
-		{
-			SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, true);
+			if (bNeedToMarkEdited)
+			{
+				SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, true);
+			}
 		}
 		
-		UpdateSearchableObject();
-		ApplyDefaultValue();
+		// If the value has not been edited during the initialization, the default value is applied.
+		if (!IsEdited())
+		{
+			ApplyDefaultValue();
+		}
+		
 		RefreshPulldownWidget();
 	}
 
