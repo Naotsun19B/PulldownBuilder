@@ -420,24 +420,22 @@ namespace PulldownBuilder
 		return DefaultValueString;
 	}
 
-	FString FPulldownBuilderUtils::GetStructDefaultValueString(const UScriptStruct* StructType, const UEdGraphPin* Pin)
+	FString FPulldownBuilderUtils::GetStructDefaultValueString(const FString& DefaultValueString, const UEdGraphPin* Pin)
 	{
-		FString DefaultValue = GenerateStructDefaultValueString(StructType);
-						
 		const TSharedPtr<FPulldownRow> DefaultRow = GetDefaultRowFromPin(Pin);
 		if (!DefaultRow.IsValid())
 		{
-			return DefaultValue;
+			return DefaultValueString;
 		}
 
 		const TSharedPtr<FString> ModifiedDefaultValue = MemberValueToStructString(
-			DefaultValue,
+			DefaultValueString,
 			GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
 			*DefaultRow->SelectedValue
 		);
 		if (!ModifiedDefaultValue.IsValid())
 		{
-			return *DefaultValue;
+			return *DefaultValueString;
 		}
 						
 		return *ModifiedDefaultValue;

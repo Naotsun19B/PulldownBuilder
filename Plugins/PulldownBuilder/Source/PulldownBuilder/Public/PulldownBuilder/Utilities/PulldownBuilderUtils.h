@@ -88,7 +88,7 @@ namespace PulldownBuilder
 
 		// Returns the default value specified in PulldownContents associated with the struct.
 		// If no default value is set, the initial value string of the structure is returned.
-		static FString GetStructDefaultValueString(const UScriptStruct* StructType, const UEdGraphPin* Pin);
+		static FString GetStructDefaultValueString(const FString& DefaultValueString, const UEdGraphPin* Pin);
 
 		// Returns the default value specified in PulldownContents associated with the struct.
 		static TSharedPtr<FPulldownRow> GetDefaultRowFromPin(const UEdGraphPin* Pin);

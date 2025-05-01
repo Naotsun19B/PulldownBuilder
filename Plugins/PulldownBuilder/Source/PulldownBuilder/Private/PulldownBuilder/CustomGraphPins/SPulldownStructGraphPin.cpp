@@ -32,6 +32,9 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::InitializePulldown()
 	{
+		// Finds Pulldown Contents in the property struct and builds a list of strings to display in the pull-down menu.
+		SelectableValues = GenerateSelectableValues();
+		
 		UpdateSearchableObject();
 
 		// The default value is applied only if the default value is sets and the default value is None.
@@ -81,8 +84,6 @@ namespace PulldownBuilder
 
 	void SPulldownStructGraphPin::RebuildPulldown()
 	{
-		// Finds Pulldown Contents in the property struct and
-		// build a list of strings to display in the pull-down menu.
 		SelectableValues = GenerateSelectableValues();
 
 		UpdateSearchableObject();
