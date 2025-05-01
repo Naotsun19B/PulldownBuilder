@@ -43,6 +43,9 @@ namespace PulldownBuilder
 		// Refreshes the widget in the pull-down menu.
 		virtual void RefreshPulldownWidget();
 
+		// Returns whether the pull-down struct being edited should be displayed inline.
+		virtual bool ShouldInlineDisplay() const;
+
 		// Generates a list of strings to display in the pull-down menu.
 		virtual FPulldownRows GenerateSelectableValues();
 		

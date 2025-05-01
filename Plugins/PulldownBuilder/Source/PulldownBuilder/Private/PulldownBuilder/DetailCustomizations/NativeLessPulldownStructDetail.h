@@ -28,6 +28,7 @@ namespace PulldownBuilder
 
 	private:
 		// FPulldownStructDetail interface.
+		virtual bool ShouldInlineDisplay() const override;
 		virtual void RefreshPulldownWidget() override;
 		virtual FPulldownRows GenerateSelectableValues() override;
 		virtual void OnMultipleSelected() override;

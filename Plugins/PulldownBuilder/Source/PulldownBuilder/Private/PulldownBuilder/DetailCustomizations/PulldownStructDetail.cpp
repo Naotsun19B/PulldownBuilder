@@ -84,11 +84,8 @@ namespace PulldownBuilder
 			[
 				StructPropertyHandle->CreatePropertyNameWidget()
 			];
-
-		// If the property is only FPulldownStructBase::SelectedValue, displays it inline.
-		uint32 NumChildProperties;
-		StructPropertyHandle->GetNumChildren(NumChildProperties);
-		if (NumChildProperties == CustomizationProperties.Num() && UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		
+		if (ShouldInlineDisplay())
 		{
 			ConstructDetailWidgetRow(HeaderRow);
 			
@@ -126,7 +123,7 @@ namespace PulldownBuilder
 		}
 
 		// If there are multiple properties, do not display inline.
-		if (NumChildProperties > CustomizationProperties.Num() || !UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		if (!ShouldInlineDisplay())
 		{
 			AddCustomRowBeforeSelectedValue(StructBuilder);
 
@@ -247,6 +244,20 @@ namespace PulldownBuilder
 			SelectedValueWidget->RefreshList();
 			SelectedValueWidget->SetSelectedItem(SelectedItem);
 		}
+	}
+
+	bool FPulldownStructDetail::ShouldInlineDisplay() const
+	{
+		check(StructPropertyHandle.IsValid());
+
+		if (!UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		{
+			return false;
+		}
+		
+		uint32 NumChildProperties;
+		StructPropertyHandle->GetNumChildren(NumChildProperties);
+		return (NumChildProperties == CustomizationProperties.Num());
 	}
 
 	FPulldownRows FPulldownStructDetail::GenerateSelectableValues()

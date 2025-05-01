@@ -48,6 +48,12 @@ namespace PulldownBuilder
 		FPulldownStructDetail::CustomizeHeader(InStructPropertyHandle, HeaderRow, StructCustomizationUtils);
 	}
 
+	bool FNativeLessPulldownStructDetail::ShouldInlineDisplay() const
+	{
+		// FNativeLessPulldownStruct does not display inline because it has two base properties.
+		return false;
+	}
+
 	void FNativeLessPulldownStructDetail::RefreshPulldownWidget()
 	{
 		check(PulldownSourceHandle.IsValid());
@@ -228,10 +234,7 @@ namespace PulldownBuilder
 
 			// Since the base asset of the pull-down menu has changed, set SelectedValue to None.
 			SelectedValueHandle->SetValue(FName(NAME_None));
-
-			UpdateSearchableObject();
-			ApplyDefaultValue();
-			FPulldownStructDetail::RefreshPulldownWidget();
+			InitializePulldown();
 		}
 	}
 
