@@ -155,12 +155,7 @@ namespace PulldownBuilder
 
 		// Since the base asset of the pull-down menu has changed, sets SelectedValue to None.
 		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), NAME_None);
-
-		// Since the base asset of the pull-down menu has changed, marks not edited and applies default value.
-		SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, false);
-		ApplyDefaultValue();
-		
-		SPulldownStructGraphPin::RefreshPulldownWidget();
+		InitializePulldown();
 	}
 
 	TSharedPtr<FPulldownRow> SNativeLessPulldownStructGraphPin::GetPulldownSourceSelection() const

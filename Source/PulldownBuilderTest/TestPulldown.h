@@ -16,9 +16,6 @@ struct FTestPulldown : public FPulldownStructBase
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 TestInt = 0;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FString TestString;
 };
 SETUP_PULLDOWN_STRUCT_OPS(FTestPulldown)
 
