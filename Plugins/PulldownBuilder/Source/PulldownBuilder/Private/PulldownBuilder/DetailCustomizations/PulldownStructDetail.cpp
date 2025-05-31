@@ -226,24 +226,14 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::RefreshPulldownWidget()
 	{
-		check(SelectedValueHandle.IsValid());
-	
-		// Checks if the currently set string is included in the constructed list.
-		FName CurrentSelectedValue;
-		SelectedValueHandle->GetValue(CurrentSelectedValue);
-
-		TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(CurrentSelectedValue);
-		if (!SelectedItem.IsValid())
+		if (!SelectedValueWidget.IsValid())
 		{
-			SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), NAME_None);
-			SelectedItem = FindSelectableValueByName(NAME_None);
+			return;
 		}
 
-		if (SelectedValueWidget.IsValid())
-		{
-			SelectedValueWidget->RefreshList();
-			SelectedValueWidget->SetSelectedItem(SelectedItem);
-		}
+		const TSharedPtr<FPulldownRow> SelectedItem = GetSelection();
+		SelectedValueWidget->SetSelectedItem(SelectedItem);
+		SelectedValueWidget->RefreshList();
 	}
 
 	bool FPulldownStructDetail::ShouldInlineDisplay() const
@@ -408,12 +398,10 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> FPulldownStructDetail::GetSelection() const
 	{
-		FName SelectedValue = NAME_None;
-		if (SelectedValueHandle.IsValid())
-		{
-			SelectedValueHandle->GetValue(SelectedValue);
-		}
-
+		check(SelectedValueHandle.IsValid());
+		
+		FName SelectedValue;
+		SelectedValueHandle->GetValue(SelectedValue);
 		return FindSelectableValueByName(SelectedValue);
 	}
 
@@ -589,11 +577,8 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::OnSelectedValueCopyAction()
 	{
-		if (!SelectedValueHandle.IsValid())
-		{
-			return;
-		}
-
+		check(SelectedValueHandle.IsValid());
+		
 		FName SelectedValue;
 		SelectedValueHandle->GetValue(SelectedValue);
 
@@ -602,24 +587,20 @@ namespace PulldownBuilder
 
 	void FPulldownStructDetail::OnSelectedValuePasteAction()
 	{
-		if (!SelectedValueWidget.IsValid())
-		{
-			return;
-		}
-	
-		FName PastedText;
+		FName PastedSelectedValue;
 		{
 			FString ClipboardString;
 			FPlatformApplicationMisc::ClipboardPaste(ClipboardString);
-			PastedText = *ClipboardString;
+			if (ClipboardString.IsEmpty())
+			{
+				return;
+			}
+			
+			PastedSelectedValue = *ClipboardString;
 		}
 
-		const TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(PastedText);
-		if (SelectedItem.IsValid())
-		{
-			SelectedValueWidget->SetSelectedItem(SelectedItem);
-		}
-
+		const TSharedPtr<FPulldownRow> SelectedItem = FindSelectableValueByName(PastedSelectedValue);
+		OnSelectedValueChanged(SelectedItem, ESelectInfo::Direct);
 		RefreshPulldownWidget();
 	}
 	
