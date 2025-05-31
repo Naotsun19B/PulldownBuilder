@@ -11,6 +11,10 @@ namespace PulldownBuilder
 	{
 		// The name of this plugin.
 		static const FName PluginName = TEXT("PulldownBuilder");
+
+		// The delimiter between the asset name of the world to which the actor belongs and the actor's identifier,
+		// used in SelectedValue in the pull-down struct constructed from the UActorNamePulldownListGenerator.
+		static const FString WorldAndActorDelimiter = TEXT("::");
 	}
 }
 
