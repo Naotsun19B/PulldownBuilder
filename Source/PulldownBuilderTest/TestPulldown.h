@@ -53,3 +53,11 @@ public:
 	FName RowName;
 };
 SETUP_PULLDOWN_STRUCT_OPS(FTestPulldown4)
+
+USTRUCT(BlueprintType)
+struct FActorName : public FPulldownStructBase
+{
+	GENERATED_BODY()
+	SETUP_PULLDOWN_STRUCT()
+};
+SETUP_PULLDOWN_STRUCT_OPS(FActorName)

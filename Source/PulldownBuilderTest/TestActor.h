@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PulldownStruct/Utilities/ActorIdentifierNameRegistry.h"
 #include "TestPulldown.h"
 #include "TestActor.generated.h"
 
@@ -13,13 +14,22 @@ class PULLDOWNBUILDERTEST_API ATestActor : public AActor
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InTest"))
-	void TestFunction(const FTestPulldown2& InTest)
-	{
-		Test = InTest;
-	}
-
+	UFUNCTION(BlueprintCallable)
+	void TestFunction(FTestPulldown2 InTest);
+	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTestPulldown2 Test;
+};
+
+UCLASS(NotBlueprintable)
+class UTestActorIdentifierNameRegistry : public UActorIdentifierNameRegistry
+{
+	GENERATED_BODY()
+
+public:
+	// UActorIdentifierNameRegistry interface.
+	virtual bool SupportsActorClass_Implementation(const UClass* ActorClass) const override;
+	virtual FString GetActorIdentifierName_Implementation(const AActor* Actor) const override;
+	// End of UActorIdentifierNameRegistry interface.
 };
