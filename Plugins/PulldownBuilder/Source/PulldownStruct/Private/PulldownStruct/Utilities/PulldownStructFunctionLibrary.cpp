@@ -129,10 +129,10 @@ DEFINE_FUNCTION(UPulldownStructFunctionLibrary::execFindActorByPulldownStruct)
 	P_GET_OBJECT(const UObject, WorldContextObject);
 	P_GET_STRUCT_REF(FPulldownStructBase, PulldownStruct);
 	const UScriptStruct* PulldownStructType = nullptr;
-#if BEFORE_UE_4_24
-	if (const auto* LhsProperty = Cast<UStructProperty>(Stack.MostRecentProperty))
-#else
+#if UE_4_25_OR_LATER
 	if (const auto* LhsProperty = CastField<FStructProperty>(Stack.MostRecentProperty))
+#else
+	if (const auto* LhsProperty = Cast<UStructProperty>(Stack.MostRecentProperty))
 #endif
 	{
 		PulldownStructType = LhsProperty->Struct;

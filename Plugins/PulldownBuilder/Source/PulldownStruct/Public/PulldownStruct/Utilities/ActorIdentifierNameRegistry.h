@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
 #include "ActorIdentifierNameRegistry.generated.h"
 
 /**
@@ -18,7 +19,7 @@ class PULLDOWNSTRUCT_API UActorIdentifierNameRegistry : public UObject
 public:
 	// Returns whether the specified actor's class is supported by this registry.
 	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name Registry")
-	bool SupportsActorClass(const TSubclassOf<AActor>& ActorClass) const;
+	bool SupportsActorClass(const UClass* ActorClass) const;
 	
 	// Returns a unique name from the actor.
 	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name Registry")

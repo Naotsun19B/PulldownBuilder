@@ -2,7 +2,7 @@
 
 #include "PulldownStruct/Utilities/ActorIdentifierNameRegistry.h"
 
-bool UActorIdentifierNameRegistry::SupportsActorClass_Implementation(const TSubclassOf<AActor>& ActorClass) const
+bool UActorIdentifierNameRegistry::SupportsActorClass_Implementation(const UClass* ActorClass) const
 {
 	unimplemented();
 	return false;
