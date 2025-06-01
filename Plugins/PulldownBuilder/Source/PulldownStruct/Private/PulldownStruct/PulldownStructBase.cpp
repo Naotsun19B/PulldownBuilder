@@ -52,6 +52,7 @@ void FPulldownStructBase::MarkSearchableName(const FArchive& Ar)
 #endif
 
 #if WITH_EDITORONLY_DATA
+const FName FPulldownStructBase::CachedDisplayTextPropertyName	= GET_MEMBER_NAME_CHECKED(FPulldownStructBase, CachedDisplayText);
 const FName FPulldownStructBase::SearchableObjectPropertyName	= GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SearchableObject);
 const FName FPulldownStructBase::IsEditedPropertyName			= GET_MEMBER_NAME_CHECKED(FPulldownStructBase, bIsEdited);
 #endif

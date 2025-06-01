@@ -61,6 +61,9 @@ void UK2Node_SwitchPulldownStruct::Serialize(FArchive& Ar)
 	if (Ar.IsSaving() && Ar.IsLoading())
 	{
 		Ar << SelectedValues;
+#if WITH_EDITOR
+		Ar << DisplayTexts;
+#endif
 	}
 }
 
@@ -104,6 +107,12 @@ FText UK2Node_SwitchPulldownStruct::GetTooltipText() const
 	}
 
 	return LOCTEXT("Tooltip", "Branch processing for each value that can be set for FPulldownStructBase::SelectedValue.");
+}
+
+void UK2Node_SwitchPulldownStruct::ReconstructNode()
+{
+	SelectedValues.Reset();
+	Super::ReconstructNode();
 }
 
 FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const
@@ -351,10 +360,12 @@ void UK2Node_SwitchPulldownStruct::CreateCasePins()
 			continue;
 		}
 
+#if WITH_EDITOR
 		if (DisplayTexts.IsValidIndex(Index))
 		{
 			NewPin->PinFriendlyName = DisplayTexts[Index];
 		}
+#endif
 		
 		if (bShouldUseAdvancedView && (Index > 2))
 		{
@@ -398,6 +409,11 @@ void UK2Node_SwitchPulldownStruct::SetPulldownStruct(UScriptStruct* NewPulldownS
 void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 {
 #if WITH_EDITOR
+	if (SelectedValues.Num() > 0)
+	{
+		return;
+	}
+	
 	const UEdGraphPin* SelectionPin = GetSelectionPin();
 	if (SelectionPin == nullptr)
 	{
@@ -427,8 +443,7 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 		TArray<UObject*>{ PulldownBuilder::FPulldownBuilderUtils::GetOuterAssetFromPin(SelectionPin) },
 		StructContainer
 	);
-	
-	SelectedValues.Reset(PulldownRows.Num());
+
 	DisplayTexts.Reset(PulldownRows.Num());
 
 	for (const auto& PulldownRow : PulldownRows)

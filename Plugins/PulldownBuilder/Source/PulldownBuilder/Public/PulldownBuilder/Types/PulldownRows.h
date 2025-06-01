@@ -14,6 +14,13 @@ struct PULLDOWNBUILDER_API FPulldownRows
 public:
 	// An empty instance containing only None.
 	static const FPulldownRows Empty;
+
+	// Defines the indexes of rows with special meaning.
+	enum ESpecialMeaningIndex
+	{
+		NoneIndex,
+		NonExistentValueIndex,
+	};
 	
 public:
 	// Constructor.
@@ -58,6 +65,9 @@ public:
 	// Sets the default pull-down row for the pull-down list that this struct constitutes.
 	// Marks row that match the predicate as default values.
 	void SetDefaultRow(const TFunction<bool(const TSharedRef<FPulldownRow>& Row)>& Predicate);
+
+	// Inserts the value that not exist among the values displayed in the list in the pull-down menu.
+	void SetNonExistentValue(const FName& SelectedValue, const FText& DisplayText);
 
 private:
 	// Internal implementation of SetDefaultRow.

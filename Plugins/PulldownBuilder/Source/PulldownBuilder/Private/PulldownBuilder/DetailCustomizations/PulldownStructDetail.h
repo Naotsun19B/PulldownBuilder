@@ -137,6 +137,9 @@ namespace PulldownBuilder
 		// The property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;
 
+		// The property handle of FPulldownStructBase::CachedDisplayText.
+		TSharedPtr<IPropertyHandle> CachedDisplayTextHandle;
+
 		// The property handle of FPulldownStructBase::SearchableObject.
 		TSharedPtr<IPropertyHandle> SearchableObjectHandle;
 

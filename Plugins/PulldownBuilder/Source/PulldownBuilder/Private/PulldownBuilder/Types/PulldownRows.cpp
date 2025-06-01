@@ -14,7 +14,7 @@ FPulldownRows::FPulldownRows(const int32 NumOfReserves /*= INDEX_NONE */)
 	}
 	
 	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.
-	Rows.Insert(MakeShared<FPulldownRow>(), 0);
+	Rows.Insert(MakeShared<FPulldownRow>(), NoneIndex);
 }
 
 FPulldownRows::FPulldownRows(const TArray<FPulldownRow>& BlueprintValue)
@@ -113,6 +113,25 @@ void FPulldownRows::SetDefaultRow(const TFunction<bool(const TSharedRef<FPulldow
 			break;
 		}
 	}
+}
+
+void FPulldownRows::SetNonExistentValue(const FName& SelectedValue, const FText& DisplayText)
+{
+	auto ContainsPredicate = [&](const TSharedPtr<FPulldownRow>& Row) -> bool
+	{
+		return (Row.IsValid() && (Row->SelectedValue == SelectedValue));
+	};
+	if (Rows.ContainsByPredicate(ContainsPredicate))
+	{
+		return;
+	}
+	
+	const TSharedPtr<FPulldownRow> NonExistentValue = MakeShared<FPulldownRow>();
+	check(NonExistentValue.IsValid());
+	NonExistentValue->SelectedValue = SelectedValue.ToString();
+	NonExistentValue->DisplayText = DisplayText;
+	NonExistentValue->bIsNonExistentValue = true;
+	Rows.Insert(NonExistentValue, NonExistentValueIndex);
 }
 
 void FPulldownRows::SetDefaultRowInternal(const int32 NewDefaultRowIndex)

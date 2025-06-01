@@ -24,6 +24,7 @@ UK2Node_SwitchNativeLessPulldownStruct::UK2Node_SwitchNativeLessPulldownStruct()
 	PulldownStruct = FNativeLessPulldownStruct::StaticStruct();
 }
 
+#if WITH_EDITOR
 void UK2Node_SwitchNativeLessPulldownStruct::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -32,19 +33,19 @@ void UK2Node_SwitchNativeLessPulldownStruct::PostEditChangeProperty(FPropertyCha
 	{
 		return;
 	}
-
-#if WITH_EDITOR
+	
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UK2Node_SwitchNativeLessPulldownStruct, PulldownContents))
 	{
+		SelectedValues.Reset();
 		ReconstructNode();
 	}
-#endif
 }
+#endif
 
 void UK2Node_SwitchNativeLessPulldownStruct::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
-
+	
 #if WITH_EDITOR
 	if (Ar.IsSaving() && Ar.IsLoading())
 	{
@@ -91,6 +92,11 @@ bool UK2Node_SwitchNativeLessPulldownStruct::ShouldShowNodeProperties() const
 void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 {
 #if WITH_EDITOR
+	if (SelectedValues.Num() > 0)
+	{
+		return;
+	}
+	
 	if (!PulldownContents.IsValid())
 	{
 		return;
@@ -118,8 +124,7 @@ void UK2Node_SwitchNativeLessPulldownStruct::FillSelectedValues()
 	{
 		return;
 	}
-
-	SelectedValues.Reset(PulldownRows.Num());
+	
 	DisplayTexts.Reset(PulldownRows.Num());
 
 	for (const auto& PulldownRow : PulldownRows)
@@ -145,6 +150,7 @@ void UK2Node_SwitchNativeLessPulldownStruct::SetPulldownContents(const TSoftObje
 {
 	PulldownContents = NewPulldownContents;
 
+	SelectedValues.Reset();
 	ReconstructNode();
 }
 #endif

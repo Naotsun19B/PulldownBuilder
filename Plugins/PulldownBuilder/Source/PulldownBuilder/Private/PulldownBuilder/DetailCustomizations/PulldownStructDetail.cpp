@@ -72,6 +72,7 @@ namespace PulldownBuilder
 
 		// Sets the handles for properties that need to be customized.
 		CustomizationProperties.Add(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), &SelectedValueHandle);
+		CustomizationProperties.Add(FPulldownStructBase::CachedDisplayTextPropertyName, &CachedDisplayTextHandle);
 		CustomizationProperties.Add(FPulldownStructBase::SearchableObjectPropertyName, &SearchableObjectHandle);
 		CustomizationProperties.Add(FPulldownStructBase::IsEditedPropertyName, &IsEditedHandle);
 		
@@ -260,21 +261,35 @@ namespace PulldownBuilder
 		if (const auto* StructProperty = Cast<UStructProperty>(StructPropertyHandle->GetProperty()))
 #endif
 		{
-			TArray<UObject*> OuterObjects;
-			StructPropertyHandle->GetOuterObjects(OuterObjects);
-
-			void* RawData;
-			const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(RawData);
-			if (Result != FPropertyAccess::Success)
+			if (const UPulldownContents* PulldownContents = FPulldownBuilderUtils::FindPulldownContentsByStruct(StructProperty->Struct))
 			{
-				RawData = nullptr;
+				TArray<UObject*> OuterObjects;
+				StructPropertyHandle->GetOuterObjects(OuterObjects);
+
+				void* RawData;
+				const FPropertyAccess::Result Result = StructPropertyHandle->GetValueData(RawData);
+				if (Result != FPropertyAccess::Success)
+				{
+					RawData = nullptr;
+				}
+				
+				FPulldownRows PulldownRows = PulldownContents->GetPulldownRows(
+					OuterObjects,
+					FStructContainer(StructProperty->Struct, static_cast<uint8*>(RawData))
+				);
+				if (PulldownContents->AllowNonExistentValue())
+				{
+					FName SelectedValue;
+					FText DisplayName;
+					if ((SelectedValueHandle->GetValue(SelectedValue) == FPropertyAccess::Success) &&
+						(CachedDisplayTextHandle->GetValue(DisplayName) == FPropertyAccess::Success))
+					{
+						PulldownRows.SetNonExistentValue(SelectedValue, DisplayName);
+					}
+				}
+
+				return PulldownRows;
 			}
-			
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(
-				StructProperty->Struct,
-				OuterObjects,
-				FStructContainer(StructProperty->Struct, static_cast<uint8*>(RawData))
-			);
 		}
 
 		return FPulldownRows::Empty;
@@ -448,6 +463,7 @@ namespace PulldownBuilder
 		if (NewSelectedValue != OldSelectedValue)
 		{
 			SetPropertyValueSafe(SelectedValueHandle.ToSharedRef(), NewSelectedValue);
+			SetPropertyValueSafe(CachedDisplayTextHandle.ToSharedRef(), SelectedItem->DisplayText);
 			SetPropertyValueSafe(IsEditedHandle.ToSharedRef(), true);
 		}
 	}

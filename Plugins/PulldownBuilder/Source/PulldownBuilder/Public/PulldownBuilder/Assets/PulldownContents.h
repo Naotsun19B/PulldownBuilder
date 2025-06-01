@@ -74,6 +74,9 @@ public:
 	// Returns the text of the tooltip to display with NativeLessPulldownStruct.
 	virtual FString GetTooltip() const;
 
+	// Returns whether to retain the value you are currently selected value if it no longer exists.
+	virtual bool AllowNonExistentValue() const;
+
 	// Returns the selector panel size that is set separately from the value in the appearance settings in editor preferences.
 	virtual TOptional<FVector2D> GetIndividualPanelSize() const;
 
@@ -111,7 +114,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Transient, Category = "Pulldown")
 	FPreviewPulldownStruct Preview;
 
-	// Whether to override the selector panel size in the appearance settings in editor rreferences.
+	// Whether to retain the value you are currently selected value if it no longer exists.
+	UPROPERTY(EditAnywhere, Category = "Selector")
+	bool bAllowNonExistentValue;
+	
+	// Whether to override the selector panel size in the appearance settings in editor preferences.
 	UPROPERTY(EditAnywhere, Category = "Selector", meta = (InlineEditConditionToggle))
 	bool bOverridePanelSize;
 	

@@ -23,7 +23,9 @@ public:
 	UK2Node_SwitchNativeLessPulldownStruct();
 
 	// UObject interface.
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 	virtual void Serialize(FArchive& Ar) override;
 	// End of UObject interface.
 	

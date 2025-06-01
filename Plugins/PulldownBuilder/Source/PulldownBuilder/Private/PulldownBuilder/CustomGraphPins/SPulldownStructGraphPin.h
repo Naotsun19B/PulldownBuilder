@@ -81,9 +81,11 @@ namespace PulldownBuilder
 		bool GetPropertyValue(const FName& PropertyName, const TFunction<void(const FString& PropertyValue)>& Predicate) const;
 		bool GetPropertyValue(const FName& PropertyName, FString& StringPropertyValue) const;
 		bool GetPropertyValue(const FName& PropertyName, FName& NamePropertyValue) const;
+		bool GetPropertyValue(const FName& PropertyName, FText& TextPropertyValue) const;
 		bool GetPropertyValue(const FName& PropertyName, bool& bBoolPropertyValue) const;
 		void SetPropertyValue(const FName& PropertyName, const FString& NewPropertyValue);
 		void SetPropertyValue(const FName& PropertyName, const FName& NewNamePropertyValue);
+		void SetPropertyValue(const FName& PropertyName, const FText& NewTextPropertyValue);
 		void SetPropertyValue(const FName& PropertyName, const bool bNewBoolPropertyValue);
 		
 	protected:

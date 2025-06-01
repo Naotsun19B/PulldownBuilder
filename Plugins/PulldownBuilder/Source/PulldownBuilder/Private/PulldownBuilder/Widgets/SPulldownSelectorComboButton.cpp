@@ -3,6 +3,7 @@
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 
 #define LOCTEXT_NAMESPACE "PulldownSelectorComboButton"
 
@@ -31,6 +32,7 @@ namespace PulldownBuilder
 				SNew(STextBlock)
 				.Text(this, &SPulldownSelectorComboButton::GetDisplayText)
 				.ToolTipText(this, &SPulldownSelectorComboButton::GetTooltipText)
+				.ColorAndOpacity(this, &SPulldownSelectorComboButton::GetDisplayTextColor)
 			]
 		);
 	}
@@ -85,8 +87,7 @@ namespace PulldownBuilder
 			PanelSize.X =  Settings.PanelSize.X;
 		}
 		
-		return
-			SAssignNew(PulldownSelector, SPulldownSelector)
+		return SAssignNew(PulldownSelector, SPulldownSelector)
 			.ListItemsSource(ListItemsSource)
 			.HeightOverride(PanelSize.Y)
 			.WidthOverride(PanelSize.X)
@@ -106,18 +107,24 @@ namespace PulldownBuilder
 			return SelectedItem->GetDisplayText();
 		}
 		
-		return LOCTEXT("InvalidDisplayText", "Invalid Data");
+		return LOCTEXT("NonExistentValueDisplayText", "Non Existent Value");
 	}
 
 	FText SPulldownSelectorComboButton::GetTooltipText() const
 	{
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
-		if (SelectedItem.IsValid())
+		if (SelectedItem.IsValid() && !SelectedItem->IsNonExistentValue())
 		{
 			return SelectedItem->TooltipText;
 		}
 
-		return LOCTEXT("InvalidTooltipText", "Invalid Data");
+		return LOCTEXT("NonExistentValueTooltipText", "This value is not currently present in the selectable values collected by the pull-down list generator.");
+	}
+
+	FSlateColor SPulldownSelectorComboButton::GetDisplayTextColor() const
+	{
+		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
+		return FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(SelectedItem);
 	}
 
 	void SPulldownSelectorComboButton::HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

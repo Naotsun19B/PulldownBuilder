@@ -92,6 +92,9 @@ namespace PulldownBuilder
 
 		// Returns the default value specified in PulldownContents associated with the struct.
 		static TSharedPtr<FPulldownRow> GetDefaultRowFromPin(const UEdGraphPin* Pin);
+
+		// Returns the color of the text to be displayed based on the specified pull-down row.
+		static FSlateColor GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow);
 		
 		// Returns an asset registry from the asset registry module.
 		static IAssetRegistry* GetAssetRegistry();

@@ -25,6 +25,7 @@ const FName UPulldownContents::SourceAssetTag = TEXT("SourceAsset");
 
 UPulldownContents::UPulldownContents()
 	: PulldownListGenerator(nullptr)
+	, bAllowNonExistentValue(true)
 	, bOverridePanelSize(false)
 	, PanelSizeOverride(UPulldownBuilderAppearanceSettings::DefaultPanelSize)
 	, PreChangePulldownListGenerator(nullptr)
@@ -230,6 +231,11 @@ FString UPulldownContents::GetTooltip() const
 	}
 
 	return Tooltip;
+}
+
+bool UPulldownContents::AllowNonExistentValue() const
+{
+	return bAllowNonExistentValue;
 }
 
 TOptional<FVector2D> UPulldownContents::GetIndividualPanelSize() const

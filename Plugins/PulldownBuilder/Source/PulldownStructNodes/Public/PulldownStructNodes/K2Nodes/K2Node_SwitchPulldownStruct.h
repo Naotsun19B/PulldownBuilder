@@ -33,6 +33,7 @@ public:
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetTooltipText() const override;
+	virtual void ReconstructNode() override;
 	// End of UEdGraphNode interface.
 
 	// UK2Node interface.
@@ -106,11 +107,12 @@ protected:
 	UScriptStruct* PulldownStruct;
 
 	// The list of the current entries in the struct.
-	UPROPERTY()
 	TArray<FName> SelectedValues;
 
+#if WITH_EDITOR
 	// The list of display texts that override the SelectedValues string on the pull-down menu.
 	TArray<FText> DisplayTexts;
+#endif
 
 	// The cache of text for the title of this node.
 	FNodeTextCache CachedNodeTitle;

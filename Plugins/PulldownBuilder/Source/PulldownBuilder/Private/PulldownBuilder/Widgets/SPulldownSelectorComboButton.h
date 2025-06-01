@@ -76,6 +76,9 @@ namespace PulldownBuilder
 
 		// Returns the text of the tooltip that is displayed when the combo button is on-cursor.
 		FText GetTooltipText() const;
+
+		// Returns the color of text displayed on the combo button.
+		FSlateColor GetDisplayTextColor() const;
 		
 		// Called when the value of the PulldownSelector changes.
 		void HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo);

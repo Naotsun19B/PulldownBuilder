@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "PulldownRow.generated.h"
 
+struct FPulldownRow;
+
 /**
  * A struct that summarizes the data used in the pull-down menu row.
  */
 USTRUCT(BlueprintType)
-struct FPulldownRow
+struct PULLDOWNBUILDER_API FPulldownRow
 {
 	GENERATED_BODY()
 
@@ -30,24 +32,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	bool bIsDefaultValue;
 
+private:
+	// Whether a value does not exist among the values displayed in the list in the pull-down menu.
+	bool bIsNonExistentValue;
+
+	// Non-existent values can only be created from FPulldownRows::SetNonExistentValue.
+	friend struct FPulldownRows;
+
 public:
 	// Constructor.
-	FPulldownRow()
-		: SelectedValue(FName(NAME_None).ToString())
-		, bIsDefaultValue(false)
-	{
-	}
+	FPulldownRow();
 	explicit FPulldownRow(
 		const FString& InSelectedValue,
 		const FText& InTooltipText = FText::GetEmpty(),
 		const FText& InDisplayText = FText::GetEmpty()
-	)
-		: SelectedValue(InSelectedValue)
-		, DisplayText(InDisplayText)
-		, TooltipText(InTooltipText)
-		, bIsDefaultValue(false)
-	{
-	}
+	);
 
 	// Overload operators.
 	FORCEINLINE bool operator ==(const FPulldownRow& Other) const
@@ -61,11 +60,14 @@ public:
 	}
 	// End of overload operators.
 
+	// Returns whether no valid value is selected.
+	bool IsNone() const;
+
 	// Returns the text displayed in a pull-down menu row.
-	FText GetDisplayText() const
-	{
-		return (DisplayText.IsEmpty() ? FText::FromString(SelectedValue) : DisplayText);
-	}
+	FText GetDisplayText() const;
+	
+	// Returns whether a value does not exist among the values displayed in the list in the pull-down menu.
+	bool IsNonExistentValue() const;
 };
 
 // Define a GetTypeHash function so that it can be used as a map key.

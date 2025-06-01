@@ -48,6 +48,10 @@ public:
 	
 private:
 #if WITH_EDITORONLY_DATA
+	// The cache of text constructed to be displayed in the pull-down menu row.
+	UPROPERTY(EditAnywhere, Category = "Pulldown")
+	FText CachedDisplayText;
+	
 	// The reference that allows you to view the asset that is the source of the Selected Value from the reference viewer in the editor environment.
 	// Access only through reflection so that unnecessary variables are not visible to plugin users.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
@@ -62,6 +66,7 @@ private:
 public:
 #if WITH_EDITORONLY_DATA
 	// Define the property name because can not use GET_MEMBER_NAME_CHECKED outside for private members.
+	static const FName CachedDisplayTextPropertyName;
 	static const FName SearchableObjectPropertyName;
 	static const FName IsEditedPropertyName;
 #endif

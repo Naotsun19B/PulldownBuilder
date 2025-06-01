@@ -121,11 +121,25 @@ namespace PulldownBuilder
 		FStructContainer StructContainer;
 		if (FPulldownBuilderUtils::GenerateStructContainerFromPin(GraphPinObj, StructContainer))
 		{
-			return FPulldownBuilderUtils::GetPulldownRowsFromStruct(
-				StructContainer.GetScriptStruct(),
-				TArray<UObject*>{ FPulldownBuilderUtils::GetOuterAssetFromPin(GraphPinObj) },
-				StructContainer
-			);
+			if (const UPulldownContents* PulldownContents = FPulldownBuilderUtils::FindPulldownContentsByStruct(StructContainer.GetScriptStruct()))
+			{
+				FPulldownRows PulldownRows = PulldownContents->GetPulldownRows(
+					TArray<UObject*>{ FPulldownBuilderUtils::GetOuterAssetFromPin(GraphPinObj) },
+					StructContainer
+				);
+				if (PulldownContents->AllowNonExistentValue())
+				{
+					FName SelectedValue;
+					FText DisplayName;
+					if (GetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), SelectedValue) &&
+						GetPropertyValue(FPulldownStructBase::CachedDisplayTextPropertyName, DisplayName))
+					{
+						PulldownRows.SetNonExistentValue(SelectedValue, DisplayName);
+					}
+				}
+
+				return PulldownRows;
+			}
 		}
 
 		return FPulldownRows::Empty;
@@ -240,6 +254,7 @@ namespace PulldownBuilder
 		}
 
 		SetPropertyValue(GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue), SelectedItem->SelectedValue);
+		SetPropertyValue(FPulldownStructBase::CachedDisplayTextPropertyName, SelectedItem->DisplayText);
 		SetPropertyValue(FPulldownStructBase::IsEditedPropertyName, true);
 	}
 
@@ -315,6 +330,11 @@ namespace PulldownBuilder
 		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { NamePropertyValue = *PropertyValue; });
 	}
 
+	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, FText& TextPropertyValue) const
+	{
+		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { TextPropertyValue = FText::FromString(PropertyValue); });
+	}
+
 	bool SPulldownStructGraphPin::GetPropertyValue(const FName& PropertyName, bool& bBoolPropertyValue) const
 	{
 		return GetPropertyValue(PropertyName, [&](const FString& PropertyValue) { bBoolPropertyValue = PropertyValue.ToBool(); });
@@ -336,6 +356,11 @@ namespace PulldownBuilder
 			check(IsValid(Schema));
 			Schema->TrySetDefaultValue(*GraphPinObj, *NewDefaultValue);
 		}
+	}
+
+	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FText& NewTextPropertyValue)
+	{
+		SetPropertyValue(PropertyName, NewTextPropertyValue.ToString());
 	}
 
 	void SPulldownStructGraphPin::SetPropertyValue(const FName& PropertyName, const FName& NewNamePropertyValue)

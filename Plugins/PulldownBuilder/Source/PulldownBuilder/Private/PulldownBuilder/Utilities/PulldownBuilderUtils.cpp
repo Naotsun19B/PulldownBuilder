@@ -167,9 +167,9 @@ namespace PulldownBuilder
 	)
 	{
 		FPulldownRows PulldownRows;
-		if (const UPulldownContents* FoundItem = FindPulldownContentsByStruct(InStruct))
+		if (const UPulldownContents* FoundPulldownContents = FindPulldownContentsByStruct(InStruct))
 		{
-			PulldownRows = FoundItem->GetPulldownRows(OuterObjects, StructInstance);
+			PulldownRows = FoundPulldownContents->GetPulldownRows(OuterObjects, StructInstance);
 		}
 
 		return PulldownRows;
@@ -456,6 +456,21 @@ namespace PulldownBuilder
 		);
 
 		return PulldownRows.GetDefaultRow();
+	}
+
+	FSlateColor FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow)
+	{
+		if (!PulldownRow.IsValid() || PulldownRow->IsNonExistentValue())
+		{
+			return FAppStyle::GetSlateColor(TEXT("Colors.Error")).GetSpecifiedColor();
+		}
+
+		if (PulldownRow->IsNone())
+		{
+			return FAppStyle::GetSlateColor(TEXT("Colors.Warning")).GetSpecifiedColor();
+		}
+		
+		return FSlateColor::UseForeground();
 	}
 
 	IAssetRegistry* FPulldownBuilderUtils::GetAssetRegistry()

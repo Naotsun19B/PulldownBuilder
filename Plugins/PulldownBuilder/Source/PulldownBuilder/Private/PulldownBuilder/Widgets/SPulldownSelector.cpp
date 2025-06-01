@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/SToolTip.h"
 
@@ -116,11 +117,11 @@ namespace PulldownBuilder
 	TSharedRef<ITableRow> SPulldownSelector::HandleOnGenerateRow(TSharedPtr<FPulldownRow> InItem, const TSharedRef<STableViewBase>& OwnerTable)
 	{
 		check(InItem.IsValid());
-
+		
 		const TSharedRef<STextBlock> Row = SNew(STextBlock)
 			.Text(InItem->GetDisplayText())
 			.HighlightText(FText::FromString(FilterString))
-			.ColorAndOpacity(FSlateColor::UseForeground());
+			.ColorAndOpacity(FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(InItem));
 
 		if (!InItem->TooltipText.IsEmpty())
 		{
