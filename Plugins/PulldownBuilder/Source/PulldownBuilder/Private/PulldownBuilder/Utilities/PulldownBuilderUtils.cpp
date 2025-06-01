@@ -8,9 +8,6 @@
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "EdGraphSchema_K2.h"
-#include "Serialization/JsonSerializer.h"
-#include "JsonObjectConverter.h"
-#include "Dom/JsonObject.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 #if UE_4_26_OR_LATER
@@ -221,7 +218,10 @@ namespace PulldownBuilder
 		{
 			FString VariableName;
 			FString VariableValue;
-			ParsedPropertyValue.Split(TEXT("="), &VariableName, &VariableValue);
+			if (!ParsedPropertyValue.Split(TEXT("="), &VariableName, &VariableValue))
+			{
+				continue;
+			}
 
 			PropertiesMap.Add(VariableName, VariableValue);
 		}
@@ -229,8 +229,7 @@ namespace PulldownBuilder
 		return PropertiesMap;
 	}
 
-	TSharedPtr<FString> FPulldownBuilderUtils::StructStringToMemberValue(
-		const FString& StructString, const FName& PropertyName) 
+	TSharedPtr<FString> FPulldownBuilderUtils::StructStringToMemberValue(const FString& StructString, const FName& PropertyName) 
 	{
 		const TMap<FString, FString>& PropertiesMap = StructStringToPropertyMap(StructString);
 		if (PropertiesMap.Contains(PropertyName.ToString()))
@@ -266,78 +265,6 @@ namespace PulldownBuilder
 		NewDefaultValue[NewDefaultValue.Len() - 1] = TEXT(')');
 		
 		return MakeShared<FString>(NewDefaultValue);
-	}
-
-	bool FPulldownBuilderUtils::GetStructRawDataFromDefaultValueString(
-		const UScriptStruct* StructType,
-		const FString& DefaultValue,
-		uint8*& RawData
-	)
-	{
-		TSharedPtr<FJsonObject> JsonObject;
-		{
-			FString JsonString;
-			{
-				const FString TrimmedDefaultValue = DefaultValue.Mid(1, DefaultValue.Len() - 2);
-				TMap<FString, FString> PropertyNameToValue;
-				
-				TArray<FString> PropertyStrings;
-				TrimmedDefaultValue.ParseIntoArray(PropertyStrings, TEXT(","));
-				PropertyNameToValue.Reserve(PropertyStrings.Num());
-				
-				for (const auto& PropertyString : PropertyStrings)
-				{
-					FString PropertyName;
-					FString PropertyValue;
-					if (PropertyString.Split(TEXT("="), &PropertyName, &PropertyValue))
-					{
-						if (PropertyValue.Len() > 0)
-						{
-							if (PropertyValue[0] == TEXT('"'))
-							{
-								PropertyValue = PropertyValue.Mid(1, PropertyValue.Len() - 1);
-							}
-							if (PropertyValue[PropertyValue.Len() - 1] == TEXT('"'))
-							{
-								PropertyValue = PropertyValue.Mid(0, PropertyValue.Len() - 1);
-							}
-						}
-						PropertyNameToValue.Add(PropertyName, PropertyValue);
-					}
-				}
-				if (PropertyNameToValue.Num() == 0)
-				{
-					return false;
-				}
-
-				JsonString += TEXT("{");
-				for (const auto& Pair : PropertyNameToValue)
-				{
-					const FString PropertyName = Pair.Key;
-					const FString PropertyValue = Pair.Value;
-					JsonString += FString::Printf(TEXT("\"%s\" : \"%s\","), *PropertyName, *PropertyValue);
-				}
-				JsonString = JsonString.Mid(0, JsonString.Len() - 1);
-				JsonString += TEXT("}");
-			}
-
-			const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-			if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) || !JsonObject.IsValid())
-			{
-				return false;
-			}
-		}
-		if (!JsonObject.IsValid())
-		{
-			return false;
-		}
-		
-		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), StructType, RawData))
-		{
-			return false;
-		}
-
-		return (RawData != nullptr);
 	}
 
 	UObject* FPulldownBuilderUtils::GetOuterAssetFromPin(const UEdGraphPin* Pin)
@@ -376,18 +303,23 @@ namespace PulldownBuilder
 			const_cast<FString&>(DefaultValue) = GenerateStructDefaultValueString(ScriptStruct);
 		}
 		
-		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
-
-		const bool bWasSuccessful = GetStructRawDataFromDefaultValueString(
-			ScriptStruct,
-			DefaultValue,
-			RawData
-		);
-		if (bWasSuccessful)
+		const TMap<FString, FString> PropertyNameToValue = StructStringToPropertyMap(DefaultValue);
+		if (PropertyNameToValue.Num() == 0)
 		{
-			StructContainer = FStructContainer(ScriptStruct, RawData);
+			return false;
 		}
 
+		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
+		ScriptStruct->InitializeStruct(RawData);
+
+		bool bWasSuccessful = false;
+		if (ScriptStruct->ImportText(*DefaultValue, RawData, nullptr, PPF_None, GLog, GetNameSafe(ScriptStruct)) != nullptr)
+		{
+			StructContainer = FStructContainer(ScriptStruct, RawData);
+			bWasSuccessful = true;
+		}
+
+		ScriptStruct->DestroyStruct(RawData);
 		FMemory::Free(RawData);
 
 		return bWasSuccessful;

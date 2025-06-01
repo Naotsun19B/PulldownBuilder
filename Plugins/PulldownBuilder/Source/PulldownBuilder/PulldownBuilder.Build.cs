@@ -41,8 +41,6 @@ public class PulldownBuilder : ModuleRules
 				"BlueprintGraph",
 				"PropertyEditor",
 				"ApplicationCore",
-				"Json",
-				"JsonUtilities",
 
 				"PulldownStruct",
 			}
