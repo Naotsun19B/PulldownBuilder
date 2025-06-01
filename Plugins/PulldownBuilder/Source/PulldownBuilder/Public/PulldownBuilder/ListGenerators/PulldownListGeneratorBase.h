@@ -54,6 +54,10 @@ public:
 	// Returns the types of structures that can use this pull-down list generator.
 	TArray<UScriptStruct*> InvokeGetFilterPulldownStructTypes() const;
 	virtual TArray<UScriptStruct*> GetFilterPulldownStructTypes() const;
+
+	// Returns whether the switch nodes of the pull-down struct constructed from this pull-down list generator are available.
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Pulldown")
+	bool SupportsSwitchNode() const;
 	
 protected:
 	// Notifies a value added to the pull-down menu.

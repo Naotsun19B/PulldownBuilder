@@ -148,6 +148,11 @@ TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes(
 	return FilterPulldownStructTypes;
 }
 
+bool UPulldownListGeneratorBase::SupportsSwitchNode_Implementation() const
+{
+	return true;
+}
+
 void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedChangeName)
 {
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.Broadcast(

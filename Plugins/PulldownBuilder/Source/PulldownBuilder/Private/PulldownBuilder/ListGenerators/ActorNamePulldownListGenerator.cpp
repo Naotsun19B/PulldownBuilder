@@ -67,6 +67,11 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	return PulldownRows;
 }
 
+bool UActorNamePulldownListGenerator::SupportsSwitchNode_Implementation() const
+{
+	return false;
+}
+
 bool UActorNamePulldownListGenerator::IsEnableCustomDefaultValue_Implementation() const
 {
 	// The default value is not supported because the actor may not exist.

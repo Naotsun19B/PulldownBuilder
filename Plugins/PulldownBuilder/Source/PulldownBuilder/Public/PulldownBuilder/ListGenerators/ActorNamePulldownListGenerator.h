@@ -26,10 +26,14 @@ public:
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
-	virtual bool IsEnableCustomDefaultValue_Implementation() const override;
+	virtual bool SupportsSwitchNode_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
+	// UPulldownListGeneratorBase interface.
+	virtual bool IsEnableCustomDefaultValue_Implementation() const override;
+	// End of UPulldownListGeneratorBase interface.
+	
 	// Returns whether the specified actor is listed in the pull-down menu.
 	UFUNCTION(BlueprintNativeEvent, Category = "Pulldown")
 	bool FilterActor(const AActor* TestActor) const;

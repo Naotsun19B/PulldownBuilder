@@ -20,6 +20,11 @@ public:
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
+	virtual bool SupportsSwitchNode_Implementation() const override;
+	// End of UPulldownListGeneratorBase interface.
+
+protected:
+	// UPulldownListGeneratorBase interface.
 	virtual bool IsEnableCustomDefaultValue_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 };

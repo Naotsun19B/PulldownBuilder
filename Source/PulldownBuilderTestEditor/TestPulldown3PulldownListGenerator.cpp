@@ -49,6 +49,11 @@ FPulldownRows UTestPulldown3PulldownListGenerator::GetPulldownRows(
 	return PulldownRows;
 }
 
+bool UTestPulldown3PulldownListGenerator::SupportsSwitchNode_Implementation() const
+{
+	return false;
+}
+
 bool UTestPulldown3PulldownListGenerator::IsEnableCustomDefaultValue_Implementation() const
 {
 	return true;

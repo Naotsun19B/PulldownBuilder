@@ -76,6 +76,9 @@ public:
 
 	// Returns the selector panel size that is set separately from the value in the appearance settings in editor preferences.
 	virtual TOptional<FVector2D> GetIndividualPanelSize() const;
+
+	// Returns whether the switch nodes of the pull-down struct constructed from this pull-down list generator are available.
+	virtual bool SupportsSwitchNode() const;
 	
 protected:
 	// Registers the struct set for this asset in detail customization.

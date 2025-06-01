@@ -242,6 +242,16 @@ TOptional<FVector2D> UPulldownContents::GetIndividualPanelSize() const
 	return {};
 }
 
+bool UPulldownContents::SupportsSwitchNode() const
+{
+	if (!IsValid(PulldownListGenerator))
+	{
+		return false;
+	}
+
+	return PulldownListGenerator->SupportsSwitchNode();
+}
+
 void UPulldownContents::RegisterDetailCustomization()
 {
 	// The default object does not perform registration processing.
