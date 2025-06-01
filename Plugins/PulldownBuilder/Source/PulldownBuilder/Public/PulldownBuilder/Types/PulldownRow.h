@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	bool bIsDefaultValue;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
+	FLinearColor DisplayTextColor;
+
 private:
 	// Whether a value does not exist among the values displayed in the list in the pull-down menu.
 	bool bIsNonExistentValue;

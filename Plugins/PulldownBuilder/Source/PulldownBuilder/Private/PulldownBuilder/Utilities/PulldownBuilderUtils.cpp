@@ -1,12 +1,12 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "EdGraphSchema_K2.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
@@ -15,6 +15,11 @@
 #else
 #include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
+#endif
+#if UE_5_00_OR_LATER
+#include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
 #endif
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
@@ -328,27 +333,16 @@ namespace PulldownBuilder
 	FString FPulldownBuilderUtils::GenerateStructDefaultValueString(const UScriptStruct* StructType)
 	{
 		check(IsValid(StructType));
+
+		auto* RawData = static_cast<uint8*>(FMemory::Malloc(StructType->GetStructureSize()));
+		StructType->InitializeDefaultValue(RawData);
+
+		FString DefaultValueString;
+		StructType->ExportText(DefaultValueString, RawData, RawData, nullptr, PPF_SerializedAsImportText, nullptr);
+
+		StructType->DestroyStruct(RawData);
+		FMemory::Free(RawData);
 		
-		FString DefaultValueString = TEXT("(");	
-#if UE_4_25_OR_LATER
-		for (FProperty* Property : TFieldRange<FProperty>(StructType))
-#else
-		for (UProperty* Property : TFieldRange<UProperty>(StructType))
-#endif
-		{
-#if UE_4_25_OR_LATER
-			if (Property == nullptr)
-#else
-			if (!IsValid(Property))
-#endif
-			{
-				continue;
-			}
-
-			DefaultValueString += FString::Printf(TEXT("%s=,"), *Property->GetName());
-		}
-		DefaultValueString[DefaultValueString.Len() - 1] = TEXT(')');
-
 		return DefaultValueString;
 	}
 
@@ -394,15 +388,27 @@ namespace PulldownBuilder
 	{
 		if (!PulldownRow.IsValid() || PulldownRow->IsNonExistentValue())
 		{
-			return FAppStyle::GetSlateColor(TEXT("Colors.Error")).GetSpecifiedColor();
+			return
+#if UE_5_00_OR_LATER
+				FAppStyle
+#else
+				FEditorStyle
+#endif
+				::GetSlateColor(TEXT("Colors.Error")).GetSpecifiedColor();
 		}
 
 		if (PulldownRow->IsNone())
 		{
-			return FAppStyle::GetSlateColor(TEXT("Colors.Warning")).GetSpecifiedColor();
+			return
+#if UE_5_00_OR_LATER
+				FAppStyle
+#else
+				FEditorStyle
+#endif
+				::GetSlateColor(TEXT("Colors.Warning")).GetSpecifiedColor();
 		}
 		
-		return FSlateColor::UseForeground();
+		return PulldownRow->DisplayTextColor;
 	}
 
 	IAssetRegistry* FPulldownBuilderUtils::GetAssetRegistry()

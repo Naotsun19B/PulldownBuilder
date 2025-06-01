@@ -1,13 +1,17 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+#if UE_5_00_OR_LATER
+#include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "PulldownRow"
 
 FPulldownRow::FPulldownRow()
-	: SelectedValue(FName(NAME_None).ToString())
-	, bIsDefaultValue(false)
-	, bIsNonExistentValue(false)
+	: FPulldownRow(FName(NAME_None).ToString())
 {
 }
 
@@ -16,6 +20,14 @@ FPulldownRow::FPulldownRow(const FString& InSelectedValue, const FText& InToolti
 	, DisplayText(InDisplayText)
 	, TooltipText(InTooltipText)
 	, bIsDefaultValue(false)
+	, DisplayTextColor(
+#if UE_5_00_OR_LATER
+		FAppStyle::Get()
+#else
+		FEditorStyle::Get()
+#endif
+		.GetSlateColor(TEXT("Colors.Foreground")).GetSpecifiedColor()
+	)
 	, bIsNonExistentValue(false)
 {
 }
