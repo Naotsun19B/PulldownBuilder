@@ -7,7 +7,7 @@
 #include "K2Node_Equal_PulldownStruct.generated.h"
 
 /**
- * A compare node that returns whether the values in FPulldownStructBase::SelectedValue are equal.
+ * A compare node class that returns whether the values in FPulldownStructBase::SelectedValue are equal.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_Equal_PulldownStruct : public UK2Node_Compare_PulldownStruct

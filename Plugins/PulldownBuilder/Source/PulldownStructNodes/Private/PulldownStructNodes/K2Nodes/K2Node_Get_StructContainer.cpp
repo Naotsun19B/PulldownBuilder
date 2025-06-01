@@ -40,12 +40,12 @@ FText UK2Node_Get_StructContainer::GetNodeTitle(ENodeTitleType::Type TitleType) 
 		}
 	}
 	
-	return LOCTEXT("NodeTitle", "Get (Struct Container)");
+	return LOCTEXT("Title", "Get (Struct Container)");
 }
 
 FText UK2Node_Get_StructContainer::GetTooltipText() const
 {
-	return LOCTEXT("NodeTooltip", "Returns the data of the struct stored in the container.");
+	return LOCTEXT("Tooltip", "Returns the data of the struct stored in the container.");
 }
 
 FText UK2Node_Get_StructContainer::GetKeywords() const
@@ -74,10 +74,10 @@ FText UK2Node_Get_StructContainer::GetMenuCategory() const
 
 void UK2Node_Get_StructContainer::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
-	const UClass* ActionKey = GetClass();
+	UClass* ActionKey = GetClass();
 	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
 	{
-		UBlueprintNodeSpawner* NodeSpawner = UBlueprintNodeSpawner::Create(GetClass());
+		UBlueprintNodeSpawner* NodeSpawner = UBlueprintNodeSpawner::Create(ActionKey);
 		check(IsValid(NodeSpawner));
 		ActionRegistrar.AddBlueprintAction(ActionKey, NodeSpawner);
 	}

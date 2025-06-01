@@ -11,7 +11,7 @@ class UPulldownContents;
 #endif
 
 /**
- * A switch node for the value of FNativelessPulldownStructBase::SelectedValue in the pull-down structs.
+ * A switch node class for the value of FNativeLessPulldownStruct::SelectedValue in the pull-down structs.
  */
 UCLASS(HideCategories = "PinOptions")
 class PULLDOWNSTRUCTNODES_API UK2Node_SwitchNativeLessPulldownStruct : public UK2Node_SwitchPulldownStruct

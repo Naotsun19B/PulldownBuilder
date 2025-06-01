@@ -8,7 +8,7 @@
 #include "K2Node_Get_StructContainer.generated.h"
 
 /**
- * A node to get the actual value from the struct container.
+ * A node class to get the actual value from the struct container.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_Get_StructContainer : public UK2Node

@@ -13,7 +13,7 @@ class UPulldownContents;
 class UBlueprintNodeSpawner;
 
 /**
- * A switch node for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
+ * A switch node class for the value of FPulldownStructBase::SelectedValue in the pull-down structs.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_SwitchPulldownStruct : public UK2Node_Switch

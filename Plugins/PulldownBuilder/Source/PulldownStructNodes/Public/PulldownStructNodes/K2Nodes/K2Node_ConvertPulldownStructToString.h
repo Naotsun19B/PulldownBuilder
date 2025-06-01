@@ -10,7 +10,7 @@
 class UBlueprintNodeSpawner;
 
 /**
- * A node that converts FPulldownStructBase::SelectedValue in the pull-down structs to FString.
+ * A node class that converts FPulldownStructBase::SelectedValue in the pull-down structs to FString.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_ConvertPulldownStructToString : public UK2Node

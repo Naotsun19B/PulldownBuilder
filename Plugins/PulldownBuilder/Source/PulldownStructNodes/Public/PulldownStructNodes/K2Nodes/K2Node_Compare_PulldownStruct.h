@@ -10,7 +10,7 @@
 class UBlueprintNodeSpawner;
 
 /**
- * A compare node that compares the FPulldownStructBase::SelectedValue in the pull-down structs and returns the result.
+ * A compare node class that compares the FPulldownStructBase::SelectedValue in the pull-down structs and returns the result.
  */
 UCLASS(Abstract)
 class PULLDOWNSTRUCTNODES_API UK2Node_Compare_PulldownStruct : public UK2Node
@@ -21,6 +21,8 @@ public:
 	// Defines the name of the pins contained in this node.
 	static const FName LhsPinName;
 	static const FName RhsPinName;
+	static const FName CompareNodeLhsPinName;
+	static const FName CompareNodeRhsPinName;
 	
 public:
 	// Constructor.

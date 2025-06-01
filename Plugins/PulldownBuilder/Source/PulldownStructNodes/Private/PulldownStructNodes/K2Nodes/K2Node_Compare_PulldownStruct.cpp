@@ -19,11 +19,14 @@
 
 #define LOCTEXT_NAMESPACE "K2Node_Compare_PulldownStruct"
 
-const FName UK2Node_Compare_PulldownStruct::LhsPinName = TEXT("Lhs");
-const FName UK2Node_Compare_PulldownStruct::RhsPinName = TEXT("Rhs");
+const FName UK2Node_Compare_PulldownStruct::LhsPinName				= TEXT("Lhs");
+const FName UK2Node_Compare_PulldownStruct::RhsPinName				= TEXT("Rhs");
+const FName UK2Node_Compare_PulldownStruct::CompareNodeLhsPinName	= TEXT("A");
+const FName UK2Node_Compare_PulldownStruct::CompareNodeRhsPinName	= TEXT("B");
 
 UK2Node_Compare_PulldownStruct::UK2Node_Compare_PulldownStruct()
-	: bStrictComparison(true)
+	: PulldownStruct(nullptr)
+	, bStrictComparison(true)
 {
 }
 
@@ -185,8 +188,8 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 			);
 		};
 
-		LinkSourcePinToCompareNodePin(LhsPinName, TEXT("A"));
-		LinkSourcePinToCompareNodePin(RhsPinName, TEXT("B"));
+		LinkSourcePinToCompareNodePin(LhsPinName, CompareNodeLhsPinName);
+		LinkSourcePinToCompareNodePin(RhsPinName, CompareNodeRhsPinName);
 
 		UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
 		if (IsValid(PulldownSourceCompareNode))
