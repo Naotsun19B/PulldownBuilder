@@ -34,17 +34,10 @@ public:
 	);
 
 	// Returns the actor found from the pull-down struct constructed by the UActorNamePulldownListGenerator.
-	UFUNCTION(BlueprintCallable, CustomThunk, meta = (BlueprintInternalUseOnly = true, CustomStructureParam = "PulldownStruct"))
-	static AActor* FindActorByPulldownStruct(
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = true, WorldContext = "WorldContextObject", AutoCreateRefTerm = "WorldAndActorIdentifierName, ActorClass"))
+	static AActor* K2_FindActorByPulldownStruct(
 		const UObject* WorldContextObject,
-		const int32& PulldownStruct,
+		const FName& WorldAndActorIdentifierName,
 		const TSubclassOf<AActor>& ActorClass
 	);
-	static AActor* GenericFindActorByPulldownStruct(
-		const UObject* WorldContextObject,
-		const UScriptStruct* PulldownStructType,
-		const void* PulldownStructRawData,
-		const TSubclassOf<AActor>& ActorClass
-	);
-	DECLARE_FUNCTION(execFindActorByPulldownStruct);
 };

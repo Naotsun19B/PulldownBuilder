@@ -221,13 +221,13 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 			}
 			{
 				UEdGraphPin* BoolAndReturnValue = BoolAndNode->GetReturnValuePin();
-				CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *BoolAndReturnValue);
+				check(CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *BoolAndReturnValue).CanSafeConnect());
 			}
 		}
 		else
 		{
 			UEdGraphPin* CompareNodeReturnValuePin = SelectedValueCompareNode->GetReturnValuePin();
-			CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *CompareNodeReturnValuePin);
+			check(CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *CompareNodeReturnValuePin).CanSafeConnect());
 		}
 	}
 	

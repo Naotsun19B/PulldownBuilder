@@ -14,8 +14,14 @@ class PULLDOWNBUILDERTEST_API ATestActor : public AActor
 	GENERATED_BODY()
 
 public:
+	// AActor interface.
+	virtual void BeginPlay() override;
+	// End of AActor interface.
+	
 	UFUNCTION(BlueprintCallable)
 	void TestFunction(FTestPulldown2 InTest);
+
+	void LogTest();
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

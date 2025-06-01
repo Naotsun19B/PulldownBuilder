@@ -452,8 +452,7 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldow
 		return;
 	}
 	
-	// Nodes that load quickly, such as level blueprints, use serialized selected values,
-	// so they need to be rebuilt when the asset is loaded.
+	// Nodes that load quickly, such as level blueprints, use serialized selected values, so they need to be rebuilt when the asset is loaded.
 	ReconstructNode();
 }
 
@@ -568,6 +567,16 @@ bool UK2Node_SwitchPulldownStruct::NeedToReconstructNode(const UPulldownContents
 UBlueprintNodeSpawner* UK2Node_SwitchPulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const
 {
 	if (!PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct))
+	{
+		return nullptr;
+	}
+
+	const UPulldownContents* PulldownContents = PulldownBuilder::FPulldownBuilderUtils::FindPulldownContentsByStruct(Struct);
+	if (!IsValid(PulldownContents))
+	{
+		return nullptr;
+	}
+	if (!PulldownContents->SupportsSwitchNode())
 	{
 		return nullptr;
 	}

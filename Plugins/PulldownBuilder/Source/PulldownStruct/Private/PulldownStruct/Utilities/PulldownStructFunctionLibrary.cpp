@@ -5,6 +5,10 @@
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "EngineUtils.h"
 
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownStructFunctionLibrary)
+#endif
+
 FString UPulldownStructFunctionLibrary::GetActorIdentifierName(const AActor* Actor)
 {
 	for (const auto* ActorIdentifierNameRegistry : TObjectRange<UActorIdentifierNameRegistry>(RF_NoFlags))
@@ -75,80 +79,15 @@ AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 	return nullptr;
 }
 
-AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
+AActor* UPulldownStructFunctionLibrary::K2_FindActorByPulldownStruct(
 	const UObject* WorldContextObject,
-	const int32& PulldownStruct,
+	const FName& WorldAndActorIdentifierName,
 	const TSubclassOf<AActor>& ActorClass
 )
 {
-	unimplemented();
-	return nullptr;
-}
-
-AActor* UPulldownStructFunctionLibrary::GenericFindActorByPulldownStruct(
-	const UObject* WorldContextObject,
-	const UScriptStruct* PulldownStructType,
-	const void* PulldownStructRawData,
-	const TSubclassOf<AActor>& ActorClass
-)
-{
-	TOptional<FName> SelectedValue;
-#if UE_4_25_OR_LATER
-	for (const auto* NameProperty : TFieldRange<FNameProperty>(PulldownStructType))
-#else
-	for (const auto* NameProperty : TFieldRange<UNameProperty>(PulldownStructType))
-#endif
-	{
-		if (NameProperty == nullptr)
-		{
-			continue;
-		}
-
-		if (NameProperty->GetFName() != GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue))
-		{
-			continue;
-		}
-
-		if (const FName* SelectedValuePtr = NameProperty->GetPropertyValuePtr_InContainer(PulldownStructRawData))
-		{
-			SelectedValue = *SelectedValuePtr;
-			break;
-		}
-	}
-	if (!SelectedValue.IsSet())
-	{
-		return nullptr;
-	}
-
-	const FPulldownStructBase PulldownStruct(SelectedValue.GetValue());
-	return FindActorByPulldownStruct(WorldContextObject, PulldownStruct, ActorClass);
-}
-
-DEFINE_FUNCTION(UPulldownStructFunctionLibrary::execFindActorByPulldownStruct)
-{
-	P_GET_OBJECT(const UObject, WorldContextObject);
-	P_GET_STRUCT_REF(FPulldownStructBase, PulldownStruct);
-	const UScriptStruct* PulldownStructType = nullptr;
-#if UE_4_25_OR_LATER
-	if (const auto* LhsProperty = CastField<FStructProperty>(Stack.MostRecentProperty))
-#else
-	if (const auto* LhsProperty = Cast<UStructProperty>(Stack.MostRecentProperty))
-#endif
-	{
-		PulldownStructType = LhsProperty->Struct;
-	}
-	const void* PulldownStructRawData = &PulldownStructTemp;
-	P_GET_OBJECT(UClass, ActorClass);
-	
-	P_FINISH;
-	AActor* ReturnValue = nullptr;
-		
-	P_NATIVE_BEGIN;
-	if (ensure(IsValid(PulldownStructType) && (PulldownStructRawData != nullptr)))
-	{
-		ReturnValue = GenericFindActorByPulldownStruct(WorldContextObject, PulldownStructType, PulldownStructRawData, ActorClass);
-	}
-	P_NATIVE_END;
-
-	*static_cast<AActor**>(RESULT_PARAM) = ReturnValue;
+	return FindActorByPulldownStruct(
+		WorldContextObject,
+		FPulldownStructBase(WorldAndActorIdentifierName),
+		ActorClass
+	);
 }
