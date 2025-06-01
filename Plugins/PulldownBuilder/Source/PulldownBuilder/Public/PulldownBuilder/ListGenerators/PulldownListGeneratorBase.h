@@ -39,19 +39,20 @@ public:
 	
 	// Returns a list of data to display in the pull-down menu.
 	// By default, it returns the value of "GetPulldownRowsFromBlueprint".
-	virtual FPulldownRows GetPulldownRows(
-		const TArray<UObject*>& OuterObjects,
-		const FStructContainer& StructInstance
-	) const;
+	FPulldownRows InvokeGetPulldownRows(const TArray<UObject*>& OuterObjects, const FStructContainer& StructInstance) const;
+	virtual FPulldownRows GetPulldownRows(const TArray<UObject*>& OuterObjects, const FStructContainer& StructInstance) const;
 
 	// Returns whether there is an underlying asset.
 	// If this function returns true, the name of the original asset will be displayed in the PulldownContents pop-up display.
-	virtual bool HasSourceAsset() const;
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Pulldown")
+	bool HasSourceAsset() const;
 
 	// Returns the name of the underlying asset only if "HasSourceAsset" returns true.
-	virtual FString GetSourceAssetName() const;
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Pulldown")
+	FString GetSourceAssetName() const;
 
 	// Returns the types of structures that can use this pull-down list generator.
+	TArray<UScriptStruct*> InvokeGetFilterPulldownStructTypes() const;
 	virtual TArray<UScriptStruct*> GetFilterPulldownStructTypes() const;
 	
 protected:
@@ -77,27 +78,16 @@ protected:
     	const FStructContainer& StructInstance
     ) const;
 
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Has Source Asset", Tooltip = "Returns whether there is an underlying asset.\nIf this function returns true, the name of the original asset will be displayed in the PulldownContents pop-up display."))
-	bool HasSourceAssetFromBlueprint() const;
-
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Source Asset Name", Tooltip = "Returns the name of the underlying asset only if \"HasSourceAsset\" returns true."))
-	FString GetSourceAssetNameFromBlueprint() const;
-
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Filter Pulldown Struct Types", Tooltip = "Returns the types of structures that can use this pull-down list generator."))
 	TArray<FName> GetFilterPulldownStructTypesFromBlueprint() const;
 
 	// Whether to determine the default value when generating FPulldownRows without going through DefaultValue.
-	virtual bool IsEnableCustomDefaultValue() const;
-
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Is Enable Custom Default Value", Tooltip = "Returns a list of values that can be selected for DefaultValue."))
-	bool IsEnableCustomDefaultValueFromBlueprint() const;
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Pulldown", meta = (BlueprintProtected))
+	bool IsEnableCustomDefaultValue() const;
 	
 	// Returns a list of values that can be selected for DefaultValue.
-	UFUNCTION()
-	virtual TArray<FName> GetDefaultValueOptions() const;
-
-	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Default Value Options", Tooltip = "Returns a list of values that can be selected for DefaultValue."))
-	TArray<FName> GetDefaultValueOptionsFromBlueprint() const;
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Pulldown", meta = (BlueprintProtected))
+	TArray<FName> GetDefaultValueOptions() const;
 
 	// Checks if the default value is enabled and disables if not.
 	virtual void VerifyDefaultValue();

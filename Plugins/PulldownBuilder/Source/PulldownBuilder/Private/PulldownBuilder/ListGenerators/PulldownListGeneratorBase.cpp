@@ -52,35 +52,64 @@ bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) cons
 	return (UObject::CanEditChange(InProperty) && bCanEditChange);
 }
 
-FPulldownRows UPulldownListGeneratorBase::GetPulldownRows(
-	const TArray<UObject*>& OuterObjects,
-	const FStructContainer& StructInstance
-) const
+FPulldownRows UPulldownListGeneratorBase::InvokeGetPulldownRows(const TArray<UObject*>& OuterObjects, const FStructContainer& StructInstance) const
 {
 	const TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects, StructInstance);
-	return FPulldownRows(PulldownRowsFromBlueprint);
+	FPulldownRows PulldownRows(PulldownRowsFromBlueprint);
+	if (PulldownRows.IsEmpty())
+	{
+		PulldownRows = GetPulldownRows(OuterObjects, StructInstance);
+	}
+	
+	ApplyDefaultValue(PulldownRows);
+	return PulldownRows;
 }
 
-bool UPulldownListGeneratorBase::HasSourceAsset() const
+FPulldownRows UPulldownListGeneratorBase::GetPulldownRows(const TArray<UObject*>& OuterObjects, const FStructContainer& StructInstance) const
 {
-	// Blueprint functions are not available during routing post load.
-	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
-	{
-		return HasSourceAssetFromBlueprint();
-	}
+	return FPulldownRows::Empty;
+}
 
+bool UPulldownListGeneratorBase::HasSourceAsset_Implementation() const
+{
 	return false;
 }
 
-FString UPulldownListGeneratorBase::GetSourceAssetName() const
+FString UPulldownListGeneratorBase::GetSourceAssetName_Implementation() const
 {
-	const FString& SourceAssetName = GetSourceAssetNameFromBlueprint();;
-	if (SourceAssetName.IsEmpty())
+	unimplemented(); // Be sure to override it when using this function.
+	return {};
+}
+
+TArray<UScriptStruct*> UPulldownListGeneratorBase::InvokeGetFilterPulldownStructTypes() const
+{
+	TArray<UScriptStruct*> FilterPulldownStructTypes = GetFilterPulldownStructTypes();
+
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
 	{
-		unimplemented(); // Be sure to override it when using this function.
+		const TArray<FName>& FilterPulldownStructTypeNamesFromBlueprint = GetFilterPulldownStructTypesFromBlueprint();
+		for (const auto& FilterPulldownStructTypeNameFromBlueprint : FilterPulldownStructTypeNamesFromBlueprint)
+		{
+			FString FilterPulldownStructTypeName = FilterPulldownStructTypeNameFromBlueprint.ToString();
+			FilterPulldownStructTypeName.TrimStartAndEndInline();
+
+			auto* FoundStruct = FindObject<UScriptStruct>(
+#if UE_5_01_OR_LATER
+				nullptr,
+#else
+				ANY_PACKAGE,
+#endif
+				*FilterPulldownStructTypeName
+			);
+			if (IsValid(FoundStruct))
+			{
+				FilterPulldownStructTypes.Add(FoundStruct);
+			}
+		}
 	}
 	
-	return SourceAssetName;
+	return FilterPulldownStructTypes;
 }
 
 TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes() const
@@ -96,13 +125,7 @@ TArray<UScriptStruct*> UPulldownListGeneratorBase::GetFilterPulldownStructTypes(
 			MetaString.ParseIntoArray(FilterPulldownStructTypeNames, TEXT(","));
 		}
 	}
-
-	const TArray<FName>& FilterPulldownStructTypeNamesFromBlueprint = GetFilterPulldownStructTypesFromBlueprint();
-	for (const auto& FilterPulldownStructTypeNameFromBlueprint : FilterPulldownStructTypeNamesFromBlueprint)
-	{
-		FilterPulldownStructTypeNames.Add(FilterPulldownStructTypeNameFromBlueprint.ToString());
-	}
-
+	
 	FilterPulldownStructTypes.Reserve(FilterPulldownStructTypeNames.Num());
 	for (auto& FilterPulldownStructTypeName : FilterPulldownStructTypeNames)
 	{
@@ -206,14 +229,19 @@ bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& P
 	return bModified;
 }
 
-bool UPulldownListGeneratorBase::IsEnableCustomDefaultValue() const
+bool UPulldownListGeneratorBase::IsEnableCustomDefaultValue_Implementation() const
 {
-	return IsEnableCustomDefaultValueFromBlueprint();
+	return false;
 }
 
-TArray<FName> UPulldownListGeneratorBase::GetDefaultValueOptions() const
+TArray<FName> UPulldownListGeneratorBase::GetDefaultValueOptions_Implementation() const
 {
-	return GetDefaultValueOptionsFromBlueprint();
+	if (!IsEnableCustomDefaultValue() && bEnableDefaultValue)
+	{
+		unimplemented();
+	}
+	
+	return {};
 }
 
 void UPulldownListGeneratorBase::VerifyDefaultValue()

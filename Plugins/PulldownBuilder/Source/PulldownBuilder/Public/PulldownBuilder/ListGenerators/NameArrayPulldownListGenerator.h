@@ -40,12 +40,12 @@ protected:
 	void PostSourceNameArrayModify();
 
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<FName> GetDefaultValueOptions() const override;
+	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 	
 protected:
 	// The map of name and tooltip text pair that is the basis of the list that appears in the pull-down menu.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown", DisplayName = "Selected Values")
 	mutable TMap<FName, FName> SourceNameArray;
 
 	// The cache of row list before change.

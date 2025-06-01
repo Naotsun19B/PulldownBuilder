@@ -26,6 +26,7 @@ public:
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
+	virtual bool IsEnableCustomDefaultValue_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 protected:
@@ -33,6 +34,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Pulldown")
 	bool FilterActor(const AActor* TestActor) const;
 
+public:
+	// Returns the class of the actor to be listed in the pull-down menu.
+	UClass* GetActorClass() const;
+	
 protected:
 	// The class of the actor to be listed in the pull-down menu.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")

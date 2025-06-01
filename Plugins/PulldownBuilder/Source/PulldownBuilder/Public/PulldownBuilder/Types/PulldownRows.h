@@ -17,8 +17,18 @@ public:
 	
 public:
 	// Constructor.
-	FPulldownRows();
+	explicit FPulldownRows(const int32 NumOfReserves = INDEX_NONE);
 	explicit FPulldownRows(const TArray<FPulldownRow>& BlueprintValue);
+	template<typename TSourceArray, typename TEnableIf<TIsArray<TSourceArray>::Value, nullptr_t>::Type = nullptr>
+	explicit FPulldownRows(const TSourceArray& SourceArray)
+		: FPulldownRows(SourceArray.Num())
+	{
+	}
+	template<typename TSourceMap, typename TEnableIf<TIsTMap<TSourceMap>::Value, nullptr_t>::Type = nullptr>
+	explicit FPulldownRows(const TSourceMap& SourceMap)
+		: FPulldownRows(SourceMap.Num())
+	{
+	}
 
 	// Adds a new item to the end of the array, possibly reallocating the whole array to fit.
 	void Add(const FPulldownRow& NewRow);

@@ -49,7 +49,7 @@ FPulldownRows UTestPulldown3PulldownListGenerator::GetPulldownRows(
 	return PulldownRows;
 }
 
-bool UTestPulldown3PulldownListGenerator::IsEnableCustomDefaultValue() const
+bool UTestPulldown3PulldownListGenerator::IsEnableCustomDefaultValue_Implementation() const
 {
 	return true;
 }

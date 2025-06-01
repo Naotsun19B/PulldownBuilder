@@ -30,8 +30,8 @@ public:
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
-	virtual bool HasSourceAsset() const override;
-	virtual FString GetSourceAssetName() const override;
+	virtual bool HasSourceAsset_Implementation() const override;
+	virtual FString GetSourceAssetName_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 
 	// FTickableObjectBase interface.
@@ -51,7 +51,7 @@ protected:
 	void PostSourceStringTableModify();
 
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<FName> GetDefaultValueOptions() const override;
+	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 	
 protected:

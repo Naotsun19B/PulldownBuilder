@@ -59,6 +59,15 @@ public:
 		const FStructContainer& StructInstance
 	) const;
 
+	// Returns the instance that generates a list to display in the pull-down menu.
+	virtual const UPulldownListGeneratorBase* GetPulldownListGenerator() const;
+	template<class TPulldownListGenerator>
+	const TPulldownListGenerator* GetPulldownListGenerator() const
+	{
+		static_assert(TIsDerivedFrom<TPulldownListGenerator, UPulldownListGeneratorBase>::IsDerived, "This implementation wasn't tested for a filter that isn't a child of UPulldownListGeneratorBase.");
+		return Cast<TPulldownListGenerator>(GetPulldownListGenerator());
+	}
+
 	// Returns the name of the class set in the PulldownListGenerator.
 	virtual FString GetPulldownListGeneratorClassName() const;
 	

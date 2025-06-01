@@ -22,56 +22,55 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
-
-	// If the return value of the parent GetDisplayStrings is empty,
-	// the list to be displayed in the pull-down menu is generated from
-	// the name array in consideration of expansion on the Blueprint side.
-	if (PulldownRows.IsEmpty())
+	FPulldownRows PulldownRows;
+	
+	const auto* EditorWorld = []() -> const UWorld*
 	{
-		const auto* EditorWorld = []() -> const UWorld*
-		{
-			check(IsValid(GEditor));
+		check(IsValid(GEditor));
 #if UE_5_00_OR_LATER
-			auto* UnrealEditorSubsystem = GEditor->GetEditorSubsystem<UUnrealEditorSubsystem>();
-			check(IsValid(UnrealEditorSubsystem));
-			return UnrealEditorSubsystem->GetEditorWorld();
+		auto* UnrealEditorSubsystem = GEditor->GetEditorSubsystem<UUnrealEditorSubsystem>();
+		check(IsValid(UnrealEditorSubsystem));
+		return UnrealEditorSubsystem->GetEditorWorld();
 #else
-			return GEditor->GetEditorWorldContext(true).World();
+		return GEditor->GetEditorWorldContext(true).World();
 #endif
-		}();
-		for (const auto* Actor : TActorRange<AActor>(EditorWorld, ActorClass))
+	}();
+	for (const auto* Actor : TActorRange<AActor>(EditorWorld, ActorClass))
+	{
+		if (!IsValid(Actor))
 		{
-			if (!IsValid(Actor))
-			{
-				continue;
-			}
-
-			if (!FilterActor(Actor))
-			{
-				continue;
-			}
-
-			const auto* WorldToBelongTo = Actor->GetTypedOuter<UWorld>();
-			if (!IsValid(WorldToBelongTo))
-			{
-				continue;
-			}
-			
-			const FString WorldName = FSoftObjectPath(WorldToBelongTo).GetAssetName();
-			const FString ActorIdentifierName = UPulldownStructFunctionLibrary::GetActorIdentifierName(Actor);
-			
-			FPulldownRow PulldownRow;
-			PulldownRow.SelectedValue = (WorldName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
-			PulldownRow.TooltipText = FText::FromString(Actor->GetPathName());
-			PulldownRow.DisplayText = FText::FromString(Actor->GetActorLabel());
-			
-			PulldownRows.Add(PulldownRow);
+			continue;
 		}
-	}
 
-	ApplyDefaultValue(PulldownRows);
+		if (!FilterActor(Actor))
+		{
+			continue;
+		}
+
+		const auto* WorldToBelongTo = Actor->GetTypedOuter<UWorld>();
+		if (!IsValid(WorldToBelongTo))
+		{
+			continue;
+		}
+			
+		const FString WorldName = FSoftObjectPath(WorldToBelongTo).GetAssetName();
+		const FString ActorIdentifierName = UPulldownStructFunctionLibrary::GetActorIdentifierName(Actor);
+			
+		FPulldownRow PulldownRow;
+		PulldownRow.SelectedValue = (WorldName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
+		PulldownRow.TooltipText = FText::FromString(Actor->GetPathName());
+		PulldownRow.DisplayText = FText::FromString(Actor->GetActorLabel());
+			
+		PulldownRows.Add(PulldownRow);
+	}
+	
 	return PulldownRows;
+}
+
+bool UActorNamePulldownListGenerator::IsEnableCustomDefaultValue_Implementation() const
+{
+	// The default value is not supported because the actor may not exist.
+	return true;
 }
 
 bool UActorNamePulldownListGenerator::FilterActor_Implementation(const AActor* TestActor) const
@@ -103,3 +102,9 @@ bool UActorNamePulldownListGenerator::FilterActor_Implementation(const AActor* T
 	
 	return true;
 }
+
+UClass* UActorNamePulldownListGenerator::GetActorClass() const
+{
+	return ActorClass;
+}
+

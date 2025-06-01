@@ -5,9 +5,14 @@
 
 const FPulldownRows FPulldownRows::Empty = FPulldownRows();
 
-FPulldownRows::FPulldownRows()
+FPulldownRows::FPulldownRows(const int32 NumOfReserves /*= INDEX_NONE */)
 	: DefaultRowIndex(INDEX_NONE)
 {
+	if (NumOfReserves > 0)
+	{
+		Rows.Reserve(NumOfReserves + 1);
+	}
+	
 	// Be sure to put "None" at the beginning because it may not be selected or the list may be empty.
 	Rows.Insert(MakeShared<FPulldownRow>(), 0);
 }

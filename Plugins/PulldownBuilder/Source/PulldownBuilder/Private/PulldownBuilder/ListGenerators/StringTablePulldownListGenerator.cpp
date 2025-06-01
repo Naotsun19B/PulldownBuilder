@@ -37,40 +37,32 @@ FPulldownRows UStringTablePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
-
-	// If the return value of the parent GetDisplayStrings is empty,
-	// the list to be displayed in the pull-down menu is generated from
-	// the string table in consideration of expansion on the Blueprint side.
-	if (PulldownRows.IsEmpty())
+	FPulldownRows PulldownRows;
+	if (const UStringTable* StringTable = SourceStringTable.LoadSynchronous())
 	{
-		if (const UStringTable* StringTable = SourceStringTable.LoadSynchronous())
-		{
-			const FStringTableConstRef& StringTableInternal = StringTable->GetStringTable();
-			StringTableInternal->EnumerateSourceStrings(
-				[&](const FString& InKey, const FString& InSourceString) -> bool
+		const FStringTableConstRef& StringTableInternal = StringTable->GetStringTable();
+		StringTableInternal->EnumerateSourceStrings(
+			[&](const FString& InKey, const FString& InSourceString) -> bool
+			{
+				if (FName(*InKey) != NAME_None)
 				{
-					if (FName(*InKey) != NAME_None)
-					{
-						PulldownRows.Add(FPulldownRow(InKey, FText::FromString(InSourceString)));
-					}
-					
-					return true;
+					PulldownRows.Add(FPulldownRow(InKey, FText::FromString(InSourceString)));
 				}
-			);
-		}
+					
+				return true;
+			}
+		);
 	}
-
-	ApplyDefaultValue(PulldownRows);
+	
 	return PulldownRows;
 }
 
-bool UStringTablePulldownListGenerator::HasSourceAsset() const
+bool UStringTablePulldownListGenerator::HasSourceAsset_Implementation() const
 {
 	return true;
 }
 
-FString UStringTablePulldownListGenerator::GetSourceAssetName() const
+FString UStringTablePulldownListGenerator::GetSourceAssetName_Implementation() const
 {
 	return SourceStringTable.GetAssetName();
 }
@@ -134,7 +126,7 @@ void UStringTablePulldownListGenerator::CacheStringTableKeys(TArray<FName>& Stri
 	);
 }
 
-TArray<FName> UStringTablePulldownListGenerator::GetDefaultValueOptions() const
+TArray<FName> UStringTablePulldownListGenerator::GetDefaultValueOptions_Implementation() const
 {
 	TArray<FName> StringTableKeys;
 	CacheStringTableKeys(StringTableKeys);

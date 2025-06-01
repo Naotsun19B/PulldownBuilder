@@ -185,10 +185,15 @@ FPulldownRows UPulldownContents::GetPulldownRows(
 	
 	if (IsValid(PulldownListGenerator))
 	{
-		PulldownRows = PulldownListGenerator->GetPulldownRows(OuterObjects, StructInstance);
+		PulldownRows = PulldownListGenerator->InvokeGetPulldownRows(OuterObjects, StructInstance);
 	}
 
 	return PulldownRows;
+}
+
+const UPulldownListGeneratorBase* UPulldownContents::GetPulldownListGenerator() const
+{
+	return PulldownListGenerator;
 }
 
 FString UPulldownContents::GetPulldownListGeneratorClassName() const
@@ -277,7 +282,7 @@ void UPulldownContents::ModifyPulldownListGenerator()
 {
 	if (IsValid(PulldownListGenerator))
 	{
-		const TArray<UScriptStruct*> FilterPulldownStructTypes = PulldownListGenerator->GetFilterPulldownStructTypes();
+		const TArray<UScriptStruct*> FilterPulldownStructTypes = PulldownListGenerator->InvokeGetFilterPulldownStructTypes();
 		if (FilterPulldownStructTypes.Num() > 0 &&
 			IsValid(PulldownStructType.SelectedStruct) &&
 			!FilterPulldownStructTypes.Contains(PulldownStructType.SelectedStruct))

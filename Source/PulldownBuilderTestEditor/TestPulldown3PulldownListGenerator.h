@@ -20,6 +20,6 @@ public:
 		const TArray<UObject*>& OuterObjects,
 		const FStructContainer& StructInstance
 	) const override;
-	virtual bool IsEnableCustomDefaultValue() const override;
+	virtual bool IsEnableCustomDefaultValue_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 };

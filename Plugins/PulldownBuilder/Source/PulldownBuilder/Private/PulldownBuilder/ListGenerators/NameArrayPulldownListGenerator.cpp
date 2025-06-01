@@ -59,27 +59,19 @@ FPulldownRows UNameArrayPulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
-
-	// If the return value of the parent GetDisplayStrings is empty,
-	// the list to be displayed in the pull-down menu is generated from
-	// the name array in consideration of expansion on the Blueprint side.
-	if (PulldownRows.IsEmpty())
+	FPulldownRows PulldownRows(SourceNameArray);
+	for (const auto& SourceName : SourceNameArray)
 	{
-		for (const auto& SourceName : SourceNameArray)
+		if (SourceName.Key != NAME_None)
 		{
-			if (SourceName.Key != NAME_None)
-			{
-				PulldownRows.Add(FPulldownRow(SourceName.Key.ToString(), FText::FromName(SourceName.Value)));
-			}
+			PulldownRows.Add(FPulldownRow(SourceName.Key.ToString(), FText::FromName(SourceName.Value)));
 		}
 	}
-
-	ApplyDefaultValue(PulldownRows);
+	
 	return PulldownRows;
 }
 
-TArray<FName> UNameArrayPulldownListGenerator::GetDefaultValueOptions() const
+TArray<FName> UNameArrayPulldownListGenerator::GetDefaultValueOptions_Implementation() const
 {
 	TArray<FName> DefaultValueOptions;
 	SourceNameArray.GenerateKeyArray(DefaultValueOptions);

@@ -46,7 +46,7 @@ protected:
 	void OnActionAxisMappingsChanged();
 
 	// UPulldownListGeneratorBase interface.
-	virtual TArray<FName> GetDefaultValueOptions() const override;
+	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
 	
 protected:

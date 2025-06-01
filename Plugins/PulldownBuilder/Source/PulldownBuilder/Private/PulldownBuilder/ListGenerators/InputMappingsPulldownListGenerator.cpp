@@ -55,18 +55,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	FPulldownRows PulldownRows = Super::GetPulldownRows(OuterObjects, StructInstance);
-
-	// If the return value of the parent GetDisplayStrings is empty,
-	// the list to be displayed in the pull-down menu is generated from
-	// the input settings in consideration of expansion on the Blueprint side.
-	if (PulldownRows.IsEmpty())
-	{
-		PulldownRows = GetPulldownRowsFromInputSettings();
-	}
-
-	ApplyDefaultValue(PulldownRows);
-	return PulldownRows;
+	return GetPulldownRowsFromInputSettings();
 }
 
 FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSettings() const
@@ -74,7 +63,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 	const auto* InputSettings = UInputSettings::GetInputSettings();
 	if (!IsValid(InputSettings))
 	{
-		return {};
+		return FPulldownRows::Empty;
 	}
 	
 	FPulldownRows PulldownRows;
@@ -234,7 +223,7 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 	VerifyDefaultValue();
 }
 
-TArray<FName> UInputMappingsPulldownListGenerator::GetDefaultValueOptions() const
+TArray<FName> UInputMappingsPulldownListGenerator::GetDefaultValueOptions_Implementation() const
 {
 	const FPulldownRows PulldownRows = GetPulldownRowsFromInputSettings();
 	
