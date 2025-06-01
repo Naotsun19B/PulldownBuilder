@@ -72,7 +72,7 @@ FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType)
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTitleFormat", "Switch on {0}"),
+					LOCTEXT("TitleFormat", "Switch on {0}"),
 					FText::FromString(PulldownStruct->GetName())
 				),
 				this
@@ -82,7 +82,7 @@ FText UK2Node_SwitchPulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType)
 		return CachedNodeTitle;
 	}
 	
-	return LOCTEXT("NodeTitle", "Switch on Unknown Pulldown Struct");
+	return LOCTEXT("Title", "Switch on Unknown Pulldown Struct");
 }
 
 FText UK2Node_SwitchPulldownStruct::GetTooltipText() const
@@ -93,7 +93,7 @@ FText UK2Node_SwitchPulldownStruct::GetTooltipText() const
 		{
 			CachedNodeTooltip.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTooltipFormat", "Branch processing for each value that can be set for {0}."),
+					LOCTEXT("TooltipFormat", "Branch processing for each value that can be set for {0}."),
 					FText::FromString(PulldownStruct->GetName())
 				),
 				this
@@ -103,7 +103,7 @@ FText UK2Node_SwitchPulldownStruct::GetTooltipText() const
 		return CachedNodeTooltip;
 	}
 
-	return LOCTEXT("NodeTooltip", "Branch processing for each value that can be set for FPulldownStructBase::SelectedValue.");
+	return LOCTEXT("Tooltip", "Branch processing for each value that can be set for FPulldownStructBase::SelectedValue.");
 }
 
 FText UK2Node_SwitchPulldownStruct::GetMenuCategory() const

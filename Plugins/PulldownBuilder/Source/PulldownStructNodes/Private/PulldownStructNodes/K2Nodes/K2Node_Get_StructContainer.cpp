@@ -53,6 +53,16 @@ FText UK2Node_Get_StructContainer::GetKeywords() const
 	return LOCTEXT("Keywords", "Get (Struct Container)");
 }
 
+FSlateIcon UK2Node_Get_StructContainer::GetIconAndTint(FLinearColor& OutColor) const
+{
+	const UFunction* Function = FindUField<UFunction>(
+		UStructContainerFunctionLibrary::StaticClass(),
+		GET_FUNCTION_NAME_CHECKED(UStructContainerFunctionLibrary, Get_StructContainer)
+	);
+	check(IsValid(Function));
+	return UK2Node_CallFunction::GetPaletteIconForFunction(Function, OutColor);
+}
+
 void UK2Node_Get_StructContainer::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();

@@ -32,6 +32,7 @@ public:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetTooltipText() const override;
 	virtual FText GetKeywords() const override;
+	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
 

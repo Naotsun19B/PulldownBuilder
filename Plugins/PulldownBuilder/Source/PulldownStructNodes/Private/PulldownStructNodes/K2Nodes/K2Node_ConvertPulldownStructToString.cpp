@@ -19,7 +19,8 @@
 
 #define LOCTEXT_NAMESPACE "K2Node_ToString_PulldownStruct"
 
-const FName UK2Node_ConvertPulldownStructToString::PulldownStructPinName = TEXT("PulldownStruct");
+const FName UK2Node_ConvertPulldownStructToString::PulldownStructPinName	= TEXT("PulldownStruct");
+const FName UK2Node_ConvertPulldownStructToString::NameToStringInputPinName	= TEXT("InName");
 
 FText UK2Node_ConvertPulldownStructToString::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
@@ -29,7 +30,7 @@ FText UK2Node_ConvertPulldownStructToString::GetNodeTitle(ENodeTitleType::Type T
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTitleFormat", "To String ({0})"),
+					LOCTEXT("TitleFormat", "To String ({0})"),
 					PulldownStruct->GetDisplayNameText()
 				),
 				this
@@ -38,7 +39,7 @@ FText UK2Node_ConvertPulldownStructToString::GetNodeTitle(ENodeTitleType::Type T
 		else
 		{
 			CachedNodeTitle.SetCachedText(
-				LOCTEXT("NodeTitle", "To String (Unknown Pulldown Struct)"),
+				LOCTEXT("Title", "To String (Unknown Pulldown Struct)"),
 				this
 			);
 		}
@@ -53,7 +54,7 @@ FText UK2Node_ConvertPulldownStructToString::GetTooltipText() const
 	{
 		CachedNodeTitle.SetCachedText(
 			FText::Format(
-				LOCTEXT("NodeTooltipFormat", "Convert the values of SelectedValue in {0} and return as string."),
+				LOCTEXT("TooltipFormat", "Convert the values of SelectedValue in {0} and return as string."),
 				PulldownStruct->GetDisplayNameText()
 			),
 			this
@@ -61,6 +62,21 @@ FText UK2Node_ConvertPulldownStructToString::GetTooltipText() const
 	}
 	
 	return CachedNodeTooltip;
+}
+
+FText UK2Node_ConvertPulldownStructToString::GetKeywords() const
+{
+	return LOCTEXT("Keywords", "To String");
+}
+
+FSlateIcon UK2Node_ConvertPulldownStructToString::GetIconAndTint(FLinearColor& OutColor) const
+{
+	const UFunction* Function = FindUField<UFunction>(
+		UKismetStringLibrary::StaticClass(),
+		GET_FUNCTION_NAME_STRING_CHECKED(UKismetStringLibrary, Conv_NameToString)
+	);
+	check(IsValid(Function));
+	return UK2Node_CallFunction::GetPaletteIconForFunction(Function, OutColor);
 }
 
 void UK2Node_ConvertPulldownStructToString::AllocateDefaultPins()
@@ -133,7 +149,7 @@ void UK2Node_ConvertPulldownStructToString::ExpandNode(FKismetCompilerContext& C
 		NameToStringValueCompareNode->AllocateDefaultPins();
 
 		UEdGraphPin* PulldownStructPin = FindPinChecked(PulldownStructPinName, EGPD_Input);
-		UEdGraphPin* SelectedValueCompareNodePin = NameToStringValueCompareNode->FindPinChecked(TEXT("InName"), EGPD_Input);
+		UEdGraphPin* SelectedValueCompareNodePin = NameToStringValueCompareNode->FindPinChecked(NameToStringInputPinName, EGPD_Input);
 		check(
 			PulldownBuilder::FPulldownStructNodeUtils::LinkPulldownStructPinToNamePin(
 				this,

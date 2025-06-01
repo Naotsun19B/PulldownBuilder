@@ -25,6 +25,7 @@ public class PulldownStructNodes : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"UnrealEd",
+				"SlateCore",
 				"BlueprintGraph",
 				"Kismet",
 				"KismetCompiler",

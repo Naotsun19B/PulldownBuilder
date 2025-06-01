@@ -20,11 +20,14 @@ class PULLDOWNSTRUCTNODES_API UK2Node_ConvertPulldownStructToString : public UK2
 public:
 	// Defines the name of the pins contained in this node.
 	static const FName PulldownStructPinName;
+	static const FName NameToStringInputPinName;
 	
 public:
 	// UEdGraphNode interface.
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FText GetTooltipText() const override;
+	virtual FText GetKeywords() const override;
+	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual void AllocateDefaultPins() override;
 	// End of UEdGraphNode interface.
 

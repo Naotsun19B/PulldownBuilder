@@ -38,7 +38,7 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTitleFormat", "{0} ({1})"),
+					LOCTEXT("TitleFormat", "{0} ({1})"),
 					GetCompareMethodName(),
 					PulldownStruct->GetDisplayNameText()
 				),
@@ -49,7 +49,7 @@ FText UK2Node_Compare_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleTyp
 		{
 			CachedNodeTitle.SetCachedText(
 				FText::Format(
-					LOCTEXT("NodeTitle", "{0} (Unknown Pulldown Struct)"),
+					LOCTEXT("Title", "{0} (Unknown Pulldown Struct)"),
 					GetCompareMethodName()
 				),
 				this
@@ -66,7 +66,7 @@ FText UK2Node_Compare_PulldownStruct::GetTooltipText() const
 	{
 		CachedNodeTitle.SetCachedText(
 			FText::Format(
-				LOCTEXT("NodeTooltipFormat", "Compare the values of SelectedValue in {0} and return if they are {1}."),
+				LOCTEXT("TooltipFormat", "Compare the values of SelectedValue in {0} and return if they are {1}."),
 				FText::FromString(GetNameSafe(PulldownStruct)),
 				FText::FromString(FName::NameToDisplayString(GetCompareMethodName().ToString(), false).ToLower())
 			),
@@ -80,6 +80,13 @@ FText UK2Node_Compare_PulldownStruct::GetTooltipText() const
 FText UK2Node_Compare_PulldownStruct::GetKeywords() const
 {
 	return GetCompareMethodOperator();
+}
+
+FSlateIcon UK2Node_Compare_PulldownStruct::GetIconAndTint(FLinearColor& OutColor) const
+{
+	const UFunction* Function = FindUField<UFunction>(UKismetMathLibrary::StaticClass(), GetFunctionName());
+	check(IsValid(Function));
+	return UK2Node_CallFunction::GetPaletteIconForFunction(Function, OutColor);
 }
 
 void UK2Node_Compare_PulldownStruct::AllocateDefaultPins()
@@ -204,12 +211,12 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 			
 			{
 				UEdGraphPin* PulldownSourceReturnValuePin = PulldownSourceCompareNode->GetReturnValuePin();
-				UEdGraphPin* BoolAndLhsPin = BoolAndNode->FindPinChecked(TEXT("A"), EGPD_Input);
+				UEdGraphPin* BoolAndLhsPin = BoolAndNode->FindPinChecked(CompareNodeLhsPinName, EGPD_Input);
 				check(K2Schema->TryCreateConnection(PulldownSourceReturnValuePin, BoolAndLhsPin));
 			}
 			{
 				UEdGraphPin* SelectedValueReturnValuePin = SelectedValueCompareNode->GetReturnValuePin();
-				UEdGraphPin* BoolAndRhsPin = BoolAndNode->FindPinChecked(TEXT("B"), EGPD_Input);
+				UEdGraphPin* BoolAndRhsPin = BoolAndNode->FindPinChecked(CompareNodeRhsPinName, EGPD_Input);
 				check(K2Schema->TryCreateConnection(SelectedValueReturnValuePin, BoolAndRhsPin));
 			}
 			{
