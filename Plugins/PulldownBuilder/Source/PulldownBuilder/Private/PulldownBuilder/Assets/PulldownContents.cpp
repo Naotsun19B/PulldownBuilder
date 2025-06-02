@@ -155,7 +155,7 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	};
 	
 	// Added the name of the struct registered in this asset to AssetRegistryTags.
-	AddTag(RegisteredStructTypeTag, (*PulldownStructType).ToString());
+	AddTag(RegisteredStructTypeTag, GetNameSafe(PulldownStructType.SelectedStruct));
 
 	// Added the PulldownListGenerator class name set for this asset to AssetRegistryTags.
 	AddTag(GeneratorClassTag, GetPulldownListGeneratorClassName());
@@ -215,7 +215,7 @@ FString UPulldownContents::GetTooltip() const
 {
 	FString Tooltip = FString::Printf(
 		TEXT("%s : %s\n%s : %s"),
-		*RegisteredStructTypeTag.ToString(), *FName(*PulldownStructType).ToString(),
+		*RegisteredStructTypeTag.ToString(), *GetNameSafe(PulldownStructType.SelectedStruct),
 		*GeneratorClassTag.ToString(), *GetPulldownListGeneratorClassName()
 	);
 	
@@ -273,7 +273,7 @@ void UPulldownContents::RegisterDetailCustomization()
 	}
 
 	PulldownBuilder::FPulldownStructDetail::Register(PulldownStructType);
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
+	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
 }
 
 void UPulldownContents::UnregisterDetailCustomization()
@@ -291,7 +291,7 @@ void UPulldownContents::UnregisterDetailCustomization()
 	}
 
 	PulldownBuilder::FPulldownStructDetail::Unregister(PulldownStructType);
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *FName(*PulldownStructType).ToString());
+	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
 }
 
 void UPulldownContents::ModifyPulldownListGenerator()

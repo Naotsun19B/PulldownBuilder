@@ -1,37 +1,20 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
+#include "PulldownBuilder/Utilities/CustomPropertyTypeLayoutRegistry.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/StructContainer.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
-#include "PropertyEditorModule.h"
-#include "PropertyHandle.h"
-#include "Modules/ModuleManager.h"
 
 namespace PulldownBuilder
 {
 	void FPreviewPulldownStructDetail::Register()
 	{
-		CachedPropertyTypeName = GetNameSafe(FPreviewPulldownStruct::StaticStruct());
-		
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName,
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPreviewPulldownStructDetail::MakeInstance)
-		);
+		CustomPropertyTypeLayoutRegistry = MakeUnique<TCustomPropertyTypeLayoutRegistry<FPreviewPulldownStruct, FPreviewPulldownStructDetail>>();
 	}
 
 	void FPreviewPulldownStructDetail::Unregister()
 	{
-		auto& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
-		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName
-		);
-	}
-
-	TSharedRef<IPropertyTypeCustomization> FPreviewPulldownStructDetail::MakeInstance()
-	{
-		return MakeShared<FPreviewPulldownStructDetail>();
+		CustomPropertyTypeLayoutRegistry.Reset();
 	}
 
 	FPulldownRows FPreviewPulldownStructDetail::GenerateSelectableValues()
@@ -77,5 +60,5 @@ namespace PulldownBuilder
 		return nullptr;
 	}
 
-	FString FPreviewPulldownStructDetail::CachedPropertyTypeName;
+	TUniquePtr<ICustomPropertyTypeLayoutRegistry> FPreviewPulldownStructDetail::CustomPropertyTypeLayoutRegistry;
 }

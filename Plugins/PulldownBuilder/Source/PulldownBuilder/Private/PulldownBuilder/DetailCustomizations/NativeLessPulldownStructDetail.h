@@ -10,6 +10,7 @@ struct FPulldownRow;
 namespace PulldownBuilder
 {
 	class SPulldownSelectorComboButton;
+	struct ICustomPropertyTypeLayoutRegistry;
 	
 	/**
 	 * A detail customization class that applied to structures that inherit from FPulldownStructBase.
@@ -20,7 +21,6 @@ namespace PulldownBuilder
 		// Registers-Unregisters and instantiate this customization.
 		static void Register();
 		static void Unregister();
-		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 		// IPropertyTypeCustomization interface.
 		virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
@@ -65,7 +65,7 @@ namespace PulldownBuilder
 		// The widget that displays a pull-down menu based on the PulldownContentsNames.
 		TSharedPtr<SPulldownSelectorComboButton> PulldownSourceWidget;
 
-		// The cache of type names for properties that utilize this details panel.
-		static FString CachedPropertyTypeName;
+		// The instance of the registry that registers this custom detail panel in the property editor.
+		static TUniquePtr<ICustomPropertyTypeLayoutRegistry> CustomPropertyTypeLayoutRegistry;
 	};
 }

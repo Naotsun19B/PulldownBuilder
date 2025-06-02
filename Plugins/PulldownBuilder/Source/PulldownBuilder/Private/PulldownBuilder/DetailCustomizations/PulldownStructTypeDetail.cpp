@@ -1,6 +1,7 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/DetailCustomizations/PulldownStructTypeDetail.h"
+#include "PulldownBuilder/Utilities/CustomPropertyTypeLayoutRegistry.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
@@ -62,28 +63,14 @@ namespace PulldownBuilder
 
 	void FPulldownStructTypeDetail::Register()
 	{
-		CachedPropertyTypeName = GetNameSafe(FPulldownStructType::StaticStruct());
-		
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName,
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructTypeDetail::MakeInstance)
-		);
+		CustomPropertyTypeLayoutRegistry = MakeUnique<TCustomPropertyTypeLayoutRegistry<FPulldownStructType, FPulldownStructTypeDetail>>();
 	}
 
 	void FPulldownStructTypeDetail::Unregister()
 	{
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName
-		);
+		CustomPropertyTypeLayoutRegistry.Reset();
 	}
-
-	TSharedRef<IPropertyTypeCustomization> FPulldownStructTypeDetail::MakeInstance()
-	{
-		return MakeShared<FPulldownStructTypeDetail>();
-	}
-
+	
 	void FPulldownStructTypeDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 	{
 		uint32 NumChildren;
@@ -184,7 +171,7 @@ namespace PulldownBuilder
 			];
 	}
 
-	FString FPulldownStructTypeDetail::CachedPropertyTypeName;
+	TUniquePtr<ICustomPropertyTypeLayoutRegistry> FPulldownStructTypeDetail::CustomPropertyTypeLayoutRegistry;
 }
 
 #undef LOCTEXT_NAMESPACE

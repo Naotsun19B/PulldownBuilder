@@ -4,6 +4,7 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
+#include "PulldownBuilder/Utilities/CustomPropertyTypeLayoutRegistry.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownStructType.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
@@ -31,6 +32,61 @@ namespace PulldownBuilder
 		static const FName MovieSceneSignedObjectClassName = TEXT("MovieSceneSignedObject");
 	}
 	
+	/**
+	 * Special implementation is performed because FPulldownStructDetail is inherited and for registering from UScriptStruct.
+	 */
+	struct FCustomPropertyTypeLayoutRegistries
+	{
+	private:
+		struct FCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
+		{
+		public:
+			// Constructor.
+			explicit FCustomPropertyTypeLayoutRegistry(const UScriptStruct* StructType)
+				: ICustomPropertyTypeLayoutRegistry(GetNameSafe(StructType))
+			{
+			}
+
+		protected:
+			// ICustomPropertyTypeLayoutRegistry interface.
+			virtual TSharedRef<IPropertyTypeCustomization> MakeInstance() override
+			{
+				return MakeShared<FPulldownStructDetail>();
+			}
+			// End of ICustomPropertyTypeLayoutRegistry interface.
+		};
+	
+	public:
+#define PREDICATE \
+		[&](const TUniquePtr<ICustomPropertyTypeLayoutRegistry>& Registry) -> bool \
+		{ \
+			check(Registry.IsValid()); \
+			return (Registry->GetPropertyTypeName() == GetNameSafe(StructType)); \
+		}
+		
+		static void Register(const UScriptStruct* StructType)
+		{
+			check(!Registries.ContainsByPredicate(PREDICATE));
+
+			Registries.Add(MakeUnique<FCustomPropertyTypeLayoutRegistry>(StructType));
+		}
+		
+		static void Unregister(const UScriptStruct* StructType)
+		{
+			check(Registries.ContainsByPredicate(PREDICATE));
+			
+			const int32 Index = Registries.IndexOfByPredicate(PREDICATE);
+			check(Index != INDEX_NONE);
+
+			Registries.RemoveAt(Index);
+		}
+#undef PREDICATE
+		
+	private:
+		static TArray<TUniquePtr<ICustomPropertyTypeLayoutRegistry>> Registries;
+	};
+	TArray<TUniquePtr<ICustomPropertyTypeLayoutRegistry>> FCustomPropertyTypeLayoutRegistries::Registries;
+	
 	void FPulldownStructDetail::Register(const FPulldownStructType& StructType)
 	{
 		if (!StructType.IsValid())
@@ -38,12 +94,8 @@ namespace PulldownBuilder
 			UE_LOG(LogPulldownBuilder, Warning, TEXT("You have tried to register an empty struct..."));
 			return;
 		}
-	
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
-			*StructType,
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FPulldownStructDetail::MakeInstance)
-		);
+
+		FCustomPropertyTypeLayoutRegistries::Register(StructType.SelectedStruct);
 	}
 
 	void FPulldownStructDetail::Unregister(const FPulldownStructType& StructType)
@@ -54,15 +106,7 @@ namespace PulldownBuilder
 			return;
 		}
 
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
-			*StructType
-		);
-	}
-
-	TSharedRef<IPropertyTypeCustomization> FPulldownStructDetail::MakeInstance()
-	{
-		return MakeShared<FPulldownStructDetail>();
+		FCustomPropertyTypeLayoutRegistries::Unregister(StructType.SelectedStruct);
 	}
 
 	void FPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)

@@ -26,7 +26,6 @@ namespace PulldownBuilder
 		// Registers-Unregisters and instantiate this customization.
 		static void Register(const FPulldownStructType& StructType);
 		static void Unregister(const FPulldownStructType& StructType);
-		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 		// IPropertyTypeCustomization interface.
 		virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;

@@ -7,7 +7,6 @@
 
 class IAssetRegistry;
 class ISettingsModule;
-class FPropertyEditorModule;
 class UScriptStruct;
 class UEdGraphPin;
 class UPulldownContents;
@@ -91,9 +90,6 @@ namespace PulldownBuilder
 		
 		// Returns an asset registry from the asset registry module.
 		static IAssetRegistry* GetAssetRegistry();
-		
-		// Returns a reference to the property editor module.
-		static FPropertyEditorModule& GetPropertyEditorModule();
 		
 		// Returns a module that registers editor preferences etc. added by the plugin.
 		static ISettingsModule& GetSettingsModule();

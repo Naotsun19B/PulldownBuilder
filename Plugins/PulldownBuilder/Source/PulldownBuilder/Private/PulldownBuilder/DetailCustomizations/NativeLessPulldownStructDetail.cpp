@@ -1,8 +1,9 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
-#include "PulldownBuilder/Assets/PulldownContents.h"
+#include "PulldownBuilder/Utilities/CustomPropertyTypeLayoutRegistry.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
@@ -18,26 +19,12 @@ namespace PulldownBuilder
 {
 	void FNativeLessPulldownStructDetail::Register()
 	{
-		CachedPropertyTypeName = GetNameSafe(FNativeLessPulldownStruct::StaticStruct());
-			
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.RegisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName,
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FNativeLessPulldownStructDetail::MakeInstance)
-		);
+		CustomPropertyTypeLayoutRegistry = MakeUnique<TCustomPropertyTypeLayoutRegistry<FNativeLessPulldownStruct, FNativeLessPulldownStructDetail>>();
 	}
 
 	void FNativeLessPulldownStructDetail::Unregister()
 	{
-		auto& PropertyEditorModule = FPulldownBuilderUtils::GetPropertyEditorModule();
-		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(
-			*CachedPropertyTypeName
-		);
-	}
-
-	TSharedRef<IPropertyTypeCustomization> FNativeLessPulldownStructDetail::MakeInstance()
-	{
-		return MakeShared<FNativeLessPulldownStructDetail>();
+		CustomPropertyTypeLayoutRegistry.Reset();
 	}
 
 	void FNativeLessPulldownStructDetail::CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
@@ -282,5 +269,5 @@ namespace PulldownBuilder
 		}
 	}
 
-	FString FNativeLessPulldownStructDetail::CachedPropertyTypeName;
+	TUniquePtr<ICustomPropertyTypeLayoutRegistry> FNativeLessPulldownStructDetail::CustomPropertyTypeLayoutRegistry;
 }

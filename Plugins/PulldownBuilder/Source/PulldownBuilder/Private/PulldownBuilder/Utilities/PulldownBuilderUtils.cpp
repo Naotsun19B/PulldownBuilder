@@ -19,7 +19,6 @@
 #endif
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
-#include "PropertyEditorModule.h"
 
 namespace PulldownBuilder
 {
@@ -407,11 +406,6 @@ namespace PulldownBuilder
 
 		return nullptr;
 #endif
-	}
-
-	FPropertyEditorModule& FPulldownBuilderUtils::GetPropertyEditorModule()
-	{
-		return FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 	}
 
 	ISettingsModule& FPulldownBuilderUtils::GetSettingsModule()

@@ -13,6 +13,8 @@ class IPropertyHandle;
 
 namespace PulldownBuilder
 {
+	struct ICustomPropertyTypeLayoutRegistry;
+	
 	/**
 	 * A detail customization class that allows you to specify a struct that inherits from FPulldownStructBase using the struct picker.
 	 */
@@ -22,7 +24,6 @@ namespace PulldownBuilder
 		// Registers-Unregisters and instantiate this customization.
 		static void Register();
 		static void Unregister();
-		static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 		// IPropertyTypeCustomization interface.
 		virtual void CustomizeHeader(TSharedRef<IPropertyHandle> InStructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
@@ -46,7 +47,7 @@ namespace PulldownBuilder
 		// The combo button widget to launch the struct picker when you click on a property.
 		TSharedPtr<SComboButton> StructPickerAnchor;
 
-		// The cache of type names for properties that utilize this details panel.
-		static FString CachedPropertyTypeName;
+		// The instance of the registry that registers this custom detail panel in the property editor.
+		static TUniquePtr<ICustomPropertyTypeLayoutRegistry> CustomPropertyTypeLayoutRegistry;
 	};
 }

@@ -47,16 +47,6 @@ public:
 	{
 		return !(*this == Other);
 	}
-
-	FORCEINLINE FName operator *() const
-	{
-		if (::IsValid(SelectedStruct))
-		{
-			return SelectedStruct->GetFName();
-		}
-
-		return NAME_None;
-	}
 	// End of overload operators.
 	
 	// Returns whether the struct information is valid.
