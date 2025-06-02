@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2025 Naotsun. All Rights Reserved.
+// Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/ListGenerators/ActorNamePulldownListGenerator.h"
 #include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
@@ -22,8 +22,6 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	FPulldownRows PulldownRows;
-	
 	const auto* EditorWorld = []() -> const UWorld*
 	{
 		check(IsValid(GEditor));
@@ -35,6 +33,13 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 		return GEditor->GetEditorWorldContext(true).World();
 #endif
 	}();
+	if (!IsValid(EditorWorld))
+	{
+		return FPulldownRows::Empty;
+	}
+	
+	FPulldownRows PulldownRows;
+	
 	for (const auto* Actor : TActorRange<AActor>(EditorWorld, ActorClass))
 	{
 		if (!IsValid(Actor))

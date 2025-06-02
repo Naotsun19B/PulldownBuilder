@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2025 Naotsun. All Rights Reserved.
+// Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownStruct/Utilities/ActorIdentifierNameRegistry.h"
