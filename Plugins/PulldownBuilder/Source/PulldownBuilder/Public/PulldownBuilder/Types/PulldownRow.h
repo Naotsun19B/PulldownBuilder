@@ -29,7 +29,7 @@ public:
 	FText TooltipText;
 
 	// Whether this value is the default value for the configured pull-down struct.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
+	UPROPERTY(BlueprintReadWrite, Category = "Pulldown")
 	bool bIsDefaultValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
@@ -41,6 +41,9 @@ private:
 
 	// Non-existent values can only be created from FPulldownRows::SetNonExistentValue.
 	friend struct FPulldownRows;
+
+	// Defines the string for the None item used in SelectedValue.
+	static const FString NoneString;
 
 public:
 	// Constructor.

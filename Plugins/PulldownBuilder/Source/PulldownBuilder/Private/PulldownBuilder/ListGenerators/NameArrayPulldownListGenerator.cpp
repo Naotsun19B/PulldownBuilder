@@ -8,9 +8,9 @@
 #endif
 
 #if UE_4_25_OR_LATER
-void UNameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToChange)
+void UDEPRECATED_NameArrayPulldownListGenerator::PreEditChange(FProperty* PropertyAboutToChange)
 #else
-void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)
+void UDEPRECATED_NameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChange)
 #endif
 {
 	Super::PreEditChange(PropertyAboutToChange);
@@ -20,16 +20,16 @@ void UNameArrayPulldownListGenerator::PreEditChange(UProperty* PropertyAboutToCh
 		return;
 	}
 
-	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
+	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UDEPRECATED_NameArrayPulldownListGenerator, SourceNameArray))
 	{
-		PreChangeRowNames.Reset();
-		SourceNameArray.GenerateKeyArray(PreChangeRowNames);
+		PreChangeSelectedValues.Reset();
+		SourceNameArray.GenerateKeyArray(PreChangeSelectedValues);
 
 		PreSourceNameArrayModify();
 	}
 }
 
-void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void UDEPRECATED_NameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
@@ -38,23 +38,23 @@ void UNameArrayPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEve
 		return;
 	}
 
-	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UNameArrayPulldownListGenerator, SourceNameArray))
+	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UDEPRECATED_NameArrayPulldownListGenerator, SourceNameArray))
 	{
-		TArray<FName> PostChangeRowNames;
-		SourceNameArray.GenerateKeyArray(PostChangeRowNames);
+		TArray<FName> PostChangeSelectedValues;
+		SourceNameArray.GenerateKeyArray(PostChangeSelectedValues);
 
 		PostSourceNameArrayModify();
 		
-		if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
+		if (NotifyPulldownRowChanged(PreChangeSelectedValues, PostChangeSelectedValues))
 		{
-			PreChangeRowNames.Empty();
+			PreChangeSelectedValues.Empty();
 		}
 
 		VerifyDefaultValue();
 	}
 }
 
-FPulldownRows UNameArrayPulldownListGenerator::GetPulldownRows(
+FPulldownRows UDEPRECATED_NameArrayPulldownListGenerator::GetPulldownRows(
 	const TArray<UObject*>& OuterObjects,
 	const FStructContainer& StructInstance
 ) const
@@ -71,7 +71,7 @@ FPulldownRows UNameArrayPulldownListGenerator::GetPulldownRows(
 	return PulldownRows;
 }
 
-TArray<FName> UNameArrayPulldownListGenerator::GetDefaultValueOptions_Implementation() const
+TArray<FName> UDEPRECATED_NameArrayPulldownListGenerator::GetDefaultValueOptions_Implementation() const
 {
 	TArray<FName> DefaultValueOptions;
 	SourceNameArray.GenerateKeyArray(DefaultValueOptions);

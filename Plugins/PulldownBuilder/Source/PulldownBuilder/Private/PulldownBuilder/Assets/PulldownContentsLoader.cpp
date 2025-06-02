@@ -149,38 +149,38 @@ namespace PulldownBuilder
 		UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *LoadedPulldownContents->GetName());
 	}
 
-	void FPulldownContentsLoader::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName)
+	void FPulldownContentsLoader::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedSelectedValue)
 	{
 		if (!IsValid(ModifiedPulldownContents))
 		{
 			return;
 		}
 
-		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *ModifiedPulldownContents->GetName(), *AddedRowName.ToString());
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *ModifiedPulldownContents->GetName(), *AddedSelectedValue.ToString());
 	}
 
-	void FPulldownContentsLoader::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName)
+	void FPulldownContentsLoader::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedSelectedValue)
 	{
 		if (!IsValid(ModifiedPulldownContents))
 		{
 			return;
 		}
 
-		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *ModifiedPulldownContents->GetName(), *RemovedRowName.ToString());
+		UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *ModifiedPulldownContents->GetName(), *RemovedSelectedValue.ToString());
 	}
 	
 	void FPulldownContentsLoader::HandleOnPulldownRowRenamed(
 		UPulldownContents* ModifiedPulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	)
 	{
 		if (IsValid(ModifiedPulldownContents))
 		{
-			UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeName.ToString(), *PostChangeName.ToString());
+			UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *ModifiedPulldownContents->GetName(), *PreChangeSelectedValue.ToString(), *PostChangeSelectedValue.ToString());
 		}
 		
-		URowNameUpdaterBase::UpdateRowNames(ModifiedPulldownContents, PreChangeName, PostChangeName);
+		URowNameUpdaterBase::UpdateRowNames(ModifiedPulldownContents, PreChangeSelectedValue, PostChangeSelectedValue);
 	}
 
 	void FPulldownContentsLoader::HandleOnPulldownContentsSourceChanged(UPulldownContents* ModifiedPulldownContents)

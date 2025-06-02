@@ -61,19 +61,19 @@ public:
 	
 protected:
 	// Notifies a value added to the pull-down menu.
-	virtual void NotifyPulldownRowAdded(const FName& AddedChangeName);
+	virtual void NotifyPulldownRowAdded(const FName& AddedSelectedValue);
 
 	// Notifies a value removed from the pull-down menu.
-	virtual void NotifyPulldownRowRemoved(const FName& RemovedChangeName);
+	virtual void NotifyPulldownRowRemoved(const FName& RemovedSelectedValue);
 	
 	// Notifies a value contained in the pull-down menu has been renamed.
-	virtual void NotifyPulldownRowRenamed(const FName& PreChangeName, const FName& PostChangeName);
+	virtual void NotifyPulldownRowRenamed(const FName& PreChangeSelectedValue, const FName& PostChangeSelectedValue);
 
 	// Notifies the underlying data for the pull-down menu has changed.
 	virtual void NotifyPulldownContentsSourceChanged();
 	
-	// Notifies of changes to pull-down menus and returns whether or not they were actually notified.
-	bool NotifyPulldownRowChanged(const TArray<FName>& PreChangeRowNames, const TArray<FName>& PostChangeRowNames);
+	// Notifies of changes to pull-down menus and returns whether they were actually notified.
+	bool NotifyPulldownRowChanged(const TArray<FName>& PreChangeSelectedValues, const TArray<FName>& PostChangeSelectedValues);
 	
 	// Expansion points for implementation in blueprints.
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Pulldown Rows", Tooltip = "Returns a list of data to display in the pull-down menu."))

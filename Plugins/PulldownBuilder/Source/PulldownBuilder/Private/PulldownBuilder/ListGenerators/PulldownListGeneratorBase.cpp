@@ -153,28 +153,28 @@ bool UPulldownListGeneratorBase::SupportsSwitchNode_Implementation() const
 	return true;
 }
 
-void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedChangeName)
+void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedSelectedValue)
 {
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
-		AddedChangeName
+		AddedSelectedValue
 	);
 }
 
-void UPulldownListGeneratorBase::NotifyPulldownRowRemoved(const FName& RemovedChangeName)
+void UPulldownListGeneratorBase::NotifyPulldownRowRemoved(const FName& RemovedSelectedValue)
 {
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
-		RemovedChangeName
+		RemovedSelectedValue
 	);
 }
 
-void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChangeName, const FName& PostChangeName)
+void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChangeSelectedValue, const FName& PostChangeSelectedValue)
 {
 	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
-		PreChangeName,
-		PostChangeName
+		PreChangeSelectedValue,
+		PostChangeSelectedValue
 	);
 }
 
@@ -185,47 +185,47 @@ void UPulldownListGeneratorBase::NotifyPulldownContentsSourceChanged()
 	);
 }
 
-bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeRowNames, const TArray<FName>& PostChangeRowNames)
+bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeSelectedValues, const TArray<FName>& PostChangeSelectedValues)
 {
 	bool bModified = true;
 	
-	if (PreChangeRowNames.Num() < PostChangeRowNames.Num())
+	if (PreChangeSelectedValues.Num() < PostChangeSelectedValues.Num())
 	{
-		const TArray<FName> AddedRowNames = PostChangeRowNames.FilterByPredicate(
-			[&](const FName& RowName) -> bool
+		const TArray<FName> AddedSelectedValues = PostChangeSelectedValues.FilterByPredicate(
+			[&](const FName& SelectedValue) -> bool
 			{
-				return !PreChangeRowNames.Contains(RowName);
+				return !PreChangeSelectedValues.Contains(SelectedValue);
 			}
 		);
-		for (const auto& AddedRowName : AddedRowNames)
+		for (const auto& AddedSelectedValue : AddedSelectedValues)
 		{
-			NotifyPulldownRowAdded(AddedRowName);
+			NotifyPulldownRowAdded(AddedSelectedValue);
 		}
 	}
-	else if (PreChangeRowNames.Num() > PostChangeRowNames.Num())
+	else if (PreChangeSelectedValues.Num() > PostChangeSelectedValues.Num())
 	{
-		const TArray<FName> RemovedRowNames = PreChangeRowNames.FilterByPredicate(
-			[&](const FName& RowName) -> bool
+		const TArray<FName> RemovedSelectedValues = PreChangeSelectedValues.FilterByPredicate(
+			[&](const FName& SelectedValue) -> bool
 			{
-				return !PostChangeRowNames.Contains(RowName);
+				return !PostChangeSelectedValues.Contains(SelectedValue);
 			}
 		);
-		for (const auto& RemovedRowName : RemovedRowNames)
+		for (const auto& RemovedSelectedValue : RemovedSelectedValues)
 		{
-			NotifyPulldownRowRemoved(RemovedRowName);
+			NotifyPulldownRowRemoved(RemovedSelectedValue);
 		}
 	}
 	else
 	{
 		bModified = false;
 		
-		for (int32 Index = 0; Index < PostChangeRowNames.Num(); Index++)
+		for (int32 Index = 0; Index < PostChangeSelectedValues.Num(); Index++)
 		{
-			const FName PreChangeName = PreChangeRowNames[Index];
-			const FName PostChangeName = PostChangeRowNames[Index];
-			if (PreChangeName != PostChangeName)
+			const FName PreChangeSelectedValue = PreChangeSelectedValues[Index];
+			const FName PostChangeSelectedValue = PostChangeSelectedValues[Index];
+			if (PreChangeSelectedValue != PostChangeSelectedValue)
 			{
-				NotifyPulldownRowRenamed(PreChangeName, PostChangeName);
+				NotifyPulldownRowRenamed(PreChangeSelectedValue, PostChangeSelectedValue);
 				bModified = true;
 			}
 		}

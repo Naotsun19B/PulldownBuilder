@@ -1,17 +1,14 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Types/PulldownRow.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
-#if UE_5_00_OR_LATER
-#include "Styling/AppStyle.h"
-#else
-#include "EditorStyleSet.h"
-#endif
+#include "PulldownBuilder/Types/PulldownRowColors.h"
 
 #define LOCTEXT_NAMESPACE "PulldownRow"
 
+const FString FPulldownRow::NoneString = LexToString(NAME_None);
+
 FPulldownRow::FPulldownRow()
-	: FPulldownRow(FName(NAME_None).ToString())
+	: FPulldownRow(NoneString)
 {
 }
 
@@ -20,21 +17,14 @@ FPulldownRow::FPulldownRow(const FString& InSelectedValue, const FText& InToolti
 	, DisplayText(InDisplayText)
 	, TooltipText(InTooltipText)
 	, bIsDefaultValue(false)
-	, DisplayTextColor(
-#if UE_5_00_OR_LATER
-		FAppStyle::Get()
-#else
-		FEditorStyle::Get()
-#endif
-		.GetSlateColor(TEXT("Colors.Foreground")).GetSpecifiedColor()
-	)
+	, DisplayTextColor(PulldownBuilder::FPulldownRowColors::Normal.GetSpecifiedColor())
 	, bIsNonExistentValue(false)
 {
 }
 
 bool FPulldownRow::IsNone() const
 {
-	return (SelectedValue == FName(NAME_None).ToString());
+	return (SelectedValue == NoneString);
 }
 
 FText FPulldownRow::GetDisplayText() const

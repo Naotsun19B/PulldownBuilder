@@ -10,8 +10,8 @@
 
 void UDataAssetUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	EnumerateAssets<UDataAsset>([&](UDataAsset* DataAsset) -> bool
@@ -20,8 +20,8 @@ void UDataAssetUpdater::UpdateRowNamesInternal(
 			DataAsset->GetClass(),
 			DataAsset,
 			PulldownContents,
-			PreChangeName,
-			PostChangeName
+			PreChangeSelectedValue,
+			PostChangeSelectedValue
 		);
 	});
 }

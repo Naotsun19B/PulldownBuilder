@@ -10,8 +10,8 @@
 /**
  * A generator class that generates a list to be displayed in the pull-down menu from the name array.
  */
-UCLASS()
-class PULLDOWNBUILDER_API UNameArrayPulldownListGenerator : public UPulldownListGeneratorBase
+UCLASS(Deprecated)
+class PULLDOWNBUILDER_API UDEPRECATED_NameArrayPulldownListGenerator : public UPulldownListGeneratorBase
 {
 	GENERATED_BODY()
 
@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown", DisplayName = "Selected Values")
 	mutable TMap<FName, FName> SourceNameArray;
 
-	// The cache of row list before change.
+	// The cache of selected values before change.
 	UPROPERTY(Transient)
-	TArray<FName> PreChangeRowNames;
+	TArray<FName> PreChangeSelectedValues;
 };

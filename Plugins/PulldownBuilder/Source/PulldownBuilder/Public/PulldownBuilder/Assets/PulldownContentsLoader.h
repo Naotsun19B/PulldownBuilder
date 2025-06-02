@@ -21,15 +21,15 @@ namespace PulldownBuilder
 		static FOnPulldownContentsLoaded OnPulldownContentsLoaded;
 		
 		// Called when a value added to the pull-down menu.
-		DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPulldownRowAdded, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* AddedRowName */);
+		DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPulldownRowAdded, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* AddedSelectedValue */);
 		static FOnPulldownRowAdded OnPulldownRowAdded;
 
 		// Called when a value removed from the pull-down menu.
-		DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPulldownRowRemoved, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* RemovedRowName */);
+		DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPulldownRowRemoved, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* RemovedSelectedValue */);
 		static FOnPulldownRowRemoved OnPulldownRowRemoved;
 		
 		// Called when a value contained in the pull-down menu has been renamed.
-		DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPulldownRowRenamed, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* PreChangeName */, const FName& /* PostChangeName */);
+		DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPulldownRowRenamed, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* PreChangeSelectedValue */, const FName& /* PostChangeSelectedValue */);
 		static FOnPulldownRowRenamed OnPulldownRowRenamed;
 
 		// Called when the underlying data for the pull-down menu has changed.
@@ -49,16 +49,16 @@ namespace PulldownBuilder
 		static void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
 
 		// Called when a value added to the pull-down menu.
-		static void HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName);
+		static void HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedSelectedValue);
 
 		// Called when a value removed from the pull-down menu.
-		static void HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName);
+		static void HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedSelectedValue);
 		
 		// Called when a value contained in the pull-down menu has been renamed.
 		static void HandleOnPulldownRowRenamed(
 			UPulldownContents* ModifiedPulldownContents,
-			const FName& PreChangeName,
-			const FName& PostChangeName
+			const FName& PreChangeSelectedValue,
+			const FName& PostChangeSelectedValue
 		);
 
 		// Called when the underlying data for the pull-down menu has changed.

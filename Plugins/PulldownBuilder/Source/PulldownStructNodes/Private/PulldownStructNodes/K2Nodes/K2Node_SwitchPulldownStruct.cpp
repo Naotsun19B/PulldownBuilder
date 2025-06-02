@@ -471,20 +471,20 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldow
 	ReconstructNode();
 }
 
-void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName)
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedSelectedValue)
 {
 	HandleOnPulldownContentsLoaded(ModifiedPulldownContents);
 }
 
-void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName)
+void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedSelectedValue)
 {
 	HandleOnPulldownContentsLoaded(ModifiedPulldownContents);
 }
 
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed(
 	UPulldownContents* ModifiedPulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	if (!NeedToReconstructNode(ModifiedPulldownContents))
@@ -493,14 +493,14 @@ void UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed(
 	}
 
 	TArray<UEdGraphPin*> LinkedPins;
-	if (const UEdGraphPin* OldNamePin = FindPin(PreChangeName, EGPD_Output))
+	if (const UEdGraphPin* OldNamePin = FindPin(PreChangeSelectedValue, EGPD_Output))
 	{
 		LinkedPins = OldNamePin->LinkedTo;
 	}
 
 	ReconstructNode();
 
-	if (UEdGraphPin* NewNamePin = FindPin(PostChangeName, EGPD_Output))
+	if (UEdGraphPin* NewNamePin = FindPin(PostChangeSelectedValue, EGPD_Output))
 	{
 		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 		check(IsValid(K2Schema));

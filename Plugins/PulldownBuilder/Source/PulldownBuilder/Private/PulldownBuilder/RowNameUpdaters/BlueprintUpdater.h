@@ -18,8 +18,8 @@ protected:
 	// URowNameUpdaterBase interface.
 	virtual void UpdateRowNamesInternal(
 		UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	) override;
 	// End of URowNameUpdaterBase interface.
 
@@ -27,7 +27,7 @@ protected:
 	bool UpdateGraphPins(
 		const UBlueprint* Blueprint,
 		const UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 };

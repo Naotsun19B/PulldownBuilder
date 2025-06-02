@@ -18,8 +18,8 @@
 
 void URowNameUpdaterBase::UpdateRowNames(
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
@@ -33,8 +33,8 @@ void URowNameUpdaterBase::UpdateRowNames(
 		FText::Format(
 			LOCTEXT("NotifyUpdateDisplayStrings", "The source row name for \"{0}\" has changed from \"{1}\" to \"{2}\"."),
 			FText::FromString(PulldownContents->GetName()),
-			FText::FromName(PreChangeName),
-			FText::FromName(PostChangeName)
+			FText::FromName(PreChangeSelectedValue),
+			FText::FromName(PostChangeSelectedValue)
 		)
 	)->AddToken(FUObjectToken::Create(PulldownContents));
 	
@@ -50,7 +50,7 @@ void URowNameUpdaterBase::UpdateRowNames(
 		{
 			if (RowNameUpdater->ShouldUpdateProcess())
 			{
-				RowNameUpdater->UpdateRowNamesInternal(PulldownContents, PreChangeName, PostChangeName);
+				RowNameUpdater->UpdateRowNamesInternal(PulldownContents, PreChangeSelectedValue, PostChangeSelectedValue);
 			}
 		}
 	}
@@ -58,8 +58,8 @@ void URowNameUpdaterBase::UpdateRowNames(
 
 void URowNameUpdaterBase::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	unimplemented();
@@ -74,16 +74,16 @@ bool URowNameUpdaterBase::ShouldUpdateProcess() const
 bool URowNameUpdaterBase::UpdateMemberVariables(
 	UClass* Class,
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	return UpdateMemberVariables(
 		Class,
 		Class->GetDefaultObject(),
 		PulldownContents,
-		PreChangeName,
-		PostChangeName
+		PreChangeSelectedValue,
+		PostChangeSelectedValue
 	);
 }
 
@@ -91,8 +91,8 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 	const UStruct* Struct,
 	void* ContainerPtr,
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	bool bIsModified = false;
@@ -114,9 +114,9 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 		{
 			if (auto* Value = StructProperty->ContainerPtrToValuePtr<FPulldownStructBase>(ContainerPtr))
 			{
-				if (Value->SelectedValue == PreChangeName)
+				if (Value->SelectedValue == PreChangeSelectedValue)
 				{
-					Value->SelectedValue = PostChangeName;
+					Value->SelectedValue = PostChangeSelectedValue;
 					bIsModified = true;
 				}
 			}
@@ -127,9 +127,9 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 			{
 				if (Value->PulldownSource == PulldownContents->GetFName())
 				{
-					if (Value->SelectedValue == PreChangeName)
+					if (Value->SelectedValue == PreChangeSelectedValue)
 					{
-						Value->SelectedValue = PostChangeName;
+						Value->SelectedValue = PostChangeSelectedValue;
 						bIsModified = true;
 					}
 				}

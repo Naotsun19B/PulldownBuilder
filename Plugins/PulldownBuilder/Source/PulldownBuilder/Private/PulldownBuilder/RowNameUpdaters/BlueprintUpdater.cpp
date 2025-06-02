@@ -16,23 +16,23 @@
 
 void UBlueprintUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	EnumerateAssets<UBlueprint>([&](const UBlueprint* Blueprint) -> bool
 	{
 		return
-			UpdateMemberVariables(Blueprint->GeneratedClass, PulldownContents, PreChangeName, PostChangeName) ||
-			UpdateGraphPins(Blueprint, PulldownContents, PreChangeName, PostChangeName);
+			UpdateMemberVariables(Blueprint->GeneratedClass, PulldownContents, PreChangeSelectedValue, PostChangeSelectedValue) ||
+			UpdateGraphPins(Blueprint, PulldownContents, PreChangeSelectedValue, PostChangeSelectedValue);
 	});
 }
 
 bool UBlueprintUpdater::UpdateGraphPins(
 	const UBlueprint* Blueprint,
 	const UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	bool bIsModified = false;
@@ -69,46 +69,46 @@ bool UBlueprintUpdater::UpdateGraphPins(
 						if (PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct) &&
 							Struct == PulldownContents->GetPulldownStructType().SelectedStruct)
 						{
-							const TSharedPtr<FString> CurrentValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
+							const TSharedPtr<FString> CurrentSelectedValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 								Pin->DefaultValue,
 								GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)
 							);
-							if (CurrentValue.IsValid() && **CurrentValue == PreChangeName)
+							if (CurrentSelectedValue.IsValid() && **CurrentSelectedValue == PreChangeSelectedValue)
 							{
-								const TSharedPtr<FString> UpdatedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
+								const TSharedPtr<FString> UpdatedSelectedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
 									Pin->DefaultValue,
 									GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
-									PostChangeName.ToString()
+									PostChangeSelectedValue.ToString()
 								);
-								if (UpdatedValue.IsValid())
+								if (UpdatedSelectedValue.IsValid())
 								{
-									Pin->DefaultValue = *UpdatedValue;
+									Pin->DefaultValue = *UpdatedSelectedValue;
 									bIsModified = true;
 								}
 							}
 						}
 						else if (PulldownBuilder::FPulldownBuilderUtils::IsNativeLessPulldownStruct(Struct))
 						{
-							const TSharedPtr<FString> CurrentSource = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
+							const TSharedPtr<FString> CurrentPulldownSource = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 								Pin->DefaultValue,
 								GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
 							);
-							if (CurrentSource.IsValid() && **CurrentSource == PulldownContents->GetFName())
+							if (CurrentPulldownSource.IsValid() && **CurrentPulldownSource == PulldownContents->GetFName())
 							{
-								const TSharedPtr<FString> CurrentValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
+								const TSharedPtr<FString> CurrentSelectedValue = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
 									Pin->DefaultValue,
 									GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, SelectedValue)
 								);
-								if (CurrentValue.IsValid() && **CurrentValue == PreChangeName)
+								if (CurrentSelectedValue.IsValid() && **CurrentSelectedValue == PreChangeSelectedValue)
 								{
-									const TSharedPtr<FString> UpdatedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
+									const TSharedPtr<FString> UpdatedSelectedValue = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
 										Pin->DefaultValue,
 										GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, SelectedValue),
-										PostChangeName.ToString()
+										PostChangeSelectedValue.ToString()
 									);
-									if (UpdatedValue.IsValid())
+									if (UpdatedSelectedValue.IsValid())
 									{
-										Pin->DefaultValue = *UpdatedValue;
+										Pin->DefaultValue = *UpdatedSelectedValue;
 										bIsModified = true;
 									}
 								}

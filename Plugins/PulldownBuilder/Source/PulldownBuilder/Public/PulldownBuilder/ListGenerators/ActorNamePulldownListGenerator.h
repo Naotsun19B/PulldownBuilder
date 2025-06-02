@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PulldownListGeneratorBase.h"
+#include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "ActorNamePulldownListGenerator.generated.h"
 
 class AActor;

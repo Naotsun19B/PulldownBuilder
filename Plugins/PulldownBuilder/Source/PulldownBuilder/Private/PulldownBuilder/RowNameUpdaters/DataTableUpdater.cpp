@@ -10,8 +10,8 @@
 
 void UDataTableUpdater::UpdateRowNamesInternal(
 	UPulldownContents* PulldownContents,
-	const FName& PreChangeName,
-	const FName& PostChangeName
+	const FName& PreChangeSelectedValue,
+	const FName& PostChangeSelectedValue
 )
 {
 	EnumerateAssets<UDataTable>([&](UDataTable* DataTable) -> bool
@@ -40,8 +40,8 @@ void UDataTableUpdater::UpdateRowNamesInternal(
 						RowType,
 						*Row,
 						PulldownContents,
-						PreChangeName,
-						PostChangeName
+						PreChangeSelectedValue,
+						PostChangeSelectedValue
 					))
 					{
 						bIsModified = true;

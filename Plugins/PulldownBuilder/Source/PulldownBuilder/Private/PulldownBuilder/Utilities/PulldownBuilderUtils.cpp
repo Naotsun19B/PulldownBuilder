@@ -3,6 +3,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRowColors.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
@@ -15,11 +16,6 @@
 #else
 #include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
-#endif
-#if UE_5_00_OR_LATER
-#include "Styling/AppStyle.h"
-#else
-#include "EditorStyleSet.h"
 #endif
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
@@ -388,24 +384,12 @@ namespace PulldownBuilder
 	{
 		if (!PulldownRow.IsValid() || PulldownRow->IsNonExistentValue())
 		{
-			return
-#if UE_5_00_OR_LATER
-				FAppStyle
-#else
-				FEditorStyle
-#endif
-				::GetSlateColor(TEXT("Colors.Error")).GetSpecifiedColor();
+			return FPulldownRowColors::NonExistent;
 		}
 
 		if (PulldownRow->IsNone())
 		{
-			return
-#if UE_5_00_OR_LATER
-				FAppStyle
-#else
-				FEditorStyle
-#endif
-				::GetSlateColor(TEXT("Colors.Warning")).GetSpecifiedColor();
+			return FPulldownRowColors::None;
 		}
 		
 		return PulldownRow->DisplayTextColor;

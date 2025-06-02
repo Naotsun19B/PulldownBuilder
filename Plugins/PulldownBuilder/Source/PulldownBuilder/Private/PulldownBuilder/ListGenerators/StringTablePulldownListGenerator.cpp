@@ -27,7 +27,7 @@ void UStringTablePulldownListGenerator::PostEditChangeProperty(FPropertyChangedE
 	{
 		VerifyDefaultValue();
 		NotifyPulldownContentsSourceChanged();
-		PreChangeRowNames.Empty();
+		PreChangeKeys.Empty();
 		bInitialized = false;
 	}
 }
@@ -71,21 +71,21 @@ void UStringTablePulldownListGenerator::Tick(float DeltaTime)
 {
 	if (!bInitialized)
 	{
-		CacheStringTableKeys(PreChangeRowNames);
+		CacheStringTableKeys(PreChangeKeys);
 		bInitialized = true;
 	}
 	
-	TArray<FName> PostChangeRowNames;
-	CacheStringTableKeys(PostChangeRowNames);
+	TArray<FName> PostChangeKeys;
+	CacheStringTableKeys(PostChangeKeys);
 
 	PreSourceStringTableModify();
 	
-	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
+	if (NotifyPulldownRowChanged(PreChangeKeys, PostChangeKeys))
 	{
 		PostSourceStringTableModify();
 		VerifyDefaultValue();
 		
-		PreChangeRowNames = MoveTemp(PostChangeRowNames);
+		PreChangeKeys = MoveTemp(PostChangeKeys);
 	}
 }
 

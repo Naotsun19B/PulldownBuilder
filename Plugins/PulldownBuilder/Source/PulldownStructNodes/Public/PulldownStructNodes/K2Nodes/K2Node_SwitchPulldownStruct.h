@@ -78,16 +78,16 @@ protected:
 	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
 
 	// Called when a value added to the pull-down menu.
-	virtual void HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedRowName);
+	virtual void HandleOnPulldownRowAdded(UPulldownContents* ModifiedPulldownContents, const FName& AddedSelectedValue);
 
 	// Called when a value removed from the pull-down menu.
-	virtual void HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedRowName);
+	virtual void HandleOnPulldownRowRemoved(UPulldownContents* ModifiedPulldownContents, const FName& RemovedSelectedValue);
 
 	// Called when a value contained in the pull-down menu has been renamed.
 	virtual void HandleOnPulldownRowRenamed(
 		UPulldownContents* ModifiedPulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 
 	// Called when the underlying data for the pull-down menu has changed.

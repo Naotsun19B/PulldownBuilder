@@ -183,7 +183,7 @@ void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 {
 	const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
 	
-	PreChangeRowNames.Reset(PulldownRows.Num());
+	PreChangeSelectedValues.Reset(PulldownRows.Num());
 	
 	for (const auto& PulldownRow : PulldownRows)
 	{
@@ -192,7 +192,7 @@ void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 			continue;
 		}
 
-		PreChangeRowNames.Add(*PulldownRow->SelectedValue);
+		PreChangeSelectedValues.Add(*PulldownRow->SelectedValue);
 	}
 }
 
@@ -200,10 +200,10 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 {
 	OnActionAxisMappingsChanged();
 	
-	TArray<FName> PostChangeRowNames;
+	TArray<FName> PostChangeSelectedValues;
 	{
 		const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
-		PostChangeRowNames.Reserve(PulldownRows.Num());
+		PostChangeSelectedValues.Reserve(PulldownRows.Num());
 		for (const auto& PulldownRow : PulldownRows)
 		{
 			if (!PulldownRow.IsValid())
@@ -211,11 +211,11 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 				continue;
 			}
 
-			PostChangeRowNames.Add(*PulldownRow->SelectedValue);
+			PostChangeSelectedValues.Add(*PulldownRow->SelectedValue);
 		}
 	}
 
-	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
+	if (NotifyPulldownRowChanged(PreChangeSelectedValues, PostChangeSelectedValues))
 	{
 		CachePreChangeDisplayTexts();
 	}

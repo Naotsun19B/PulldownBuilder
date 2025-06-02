@@ -63,7 +63,7 @@ protected:
 	UPROPERTY(Transient)
 	bool bInitialized;
 	
-	// The cache of row list before change.
+	// The cache of string table keys before change.
 	UPROPERTY(Transient)
-	TArray<FName> PreChangeRowNames;
+	TArray<FName> PreChangeKeys;
 };

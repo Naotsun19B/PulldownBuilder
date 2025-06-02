@@ -22,8 +22,8 @@ public:
 	// Updates all pull-down struct that reference owner PulldownContents asset.
 	static void UpdateRowNames(
 		UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 
 protected:
@@ -31,8 +31,8 @@ protected:
 	// Performs processing according to the asset type in the inherited class.
 	virtual void UpdateRowNamesInternal(
 		UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 
 	// Returns whether to perform the upload process.
@@ -42,15 +42,15 @@ protected:
 	virtual bool UpdateMemberVariables(
 		UClass* Class,
 		UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 	virtual bool UpdateMemberVariables(
 		const UStruct* Struct,
 		void* ContainerPtr,
 		UPulldownContents* PulldownContents,
-		const FName& PreChangeName,
-		const FName& PostChangeName
+		const FName& PreChangeSelectedValue,
+		const FName& PostChangeSelectedValue
 	);
 
 	// Enumerates objects of the specified class.
