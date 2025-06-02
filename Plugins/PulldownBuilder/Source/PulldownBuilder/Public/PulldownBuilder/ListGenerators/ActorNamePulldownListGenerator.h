@@ -58,4 +58,14 @@ protected:
 	// The list of interfaces that the actors listed in the pull-down menu must implement.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	TArray<TSubclassOf<UInterface>> RequiredInterfaces;
+
+public:
+	// The event that already implements a similar function and when switching to this plugin,
+	// it will work even from the SelectedValue format, which is already implemented.
+	DECLARE_DELEGATE_RetVal_TwoParams(
+		FString, FOnBuildSelectedValueFromWorldNameAndActorIdentifierName,
+		const FString& /* WorldName */,
+		const FString& /* ActorIdentifierName */
+	);
+	static FOnBuildSelectedValueFromWorldNameAndActorIdentifierName OnBuildSelectedValueFromWorldNameAndActorIdentifierName;
 };

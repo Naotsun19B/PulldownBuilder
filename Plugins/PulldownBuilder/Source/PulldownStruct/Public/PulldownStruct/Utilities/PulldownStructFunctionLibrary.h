@@ -22,6 +22,16 @@ public:
 	UFUNCTION(Blueprintable, Category = "Pulldown Builder")
 	static FString GetActorIdentifierName(const AActor* Actor);
 	
+	// The event that already implements a similar function and when switching to this plugin,
+	// it will work even from the SelectedValue format, which is already implemented.
+	DECLARE_DELEGATE_RetVal_ThreeParams(
+		bool, FOnSplitSelectedValueToWorldNameAndActorIdentifierName,
+		const FString& /* SelectedValue */,
+		FString& /* WorldName */,
+		FString& /* ActorIdentifierName */
+	);
+	static FOnSplitSelectedValueToWorldNameAndActorIdentifierName OnSplitSelectedValueToWorldNameAndActorIdentifierName;
+	
 	// Defines the delegate to use when filtering an actor.
 	DECLARE_DELEGATE_RetVal_OneParam(bool, FOnFilterActor, const AActor& /* TestActor */);
 	

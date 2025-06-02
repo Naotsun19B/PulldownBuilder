@@ -62,7 +62,15 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 		const FString ActorIdentifierName = UPulldownStructFunctionLibrary::GetActorIdentifierName(Actor);
 			
 		FPulldownRow PulldownRow;
-		PulldownRow.SelectedValue = (WorldName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
+		if (OnBuildSelectedValueFromWorldNameAndActorIdentifierName.IsBound())
+		{
+			PulldownRow.SelectedValue = OnBuildSelectedValueFromWorldNameAndActorIdentifierName.Execute(WorldName, ActorIdentifierName);
+		}
+		else
+		{
+			PulldownRow.SelectedValue = (WorldName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
+		}
+		
 		PulldownRow.TooltipText = FText::FromString(Actor->GetPathName());
 		PulldownRow.DisplayText = FText::FromString(Actor->GetActorLabel());
 			
@@ -118,3 +126,4 @@ UClass* UActorNamePulldownListGenerator::GetActorClass() const
 	return ActorClass;
 }
 
+UActorNamePulldownListGenerator::FOnBuildSelectedValueFromWorldNameAndActorIdentifierName UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName;

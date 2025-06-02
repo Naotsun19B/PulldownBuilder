@@ -33,6 +33,8 @@ FString UPulldownStructFunctionLibrary::GetActorIdentifierName(const AActor* Act
 	return GetNameSafe(Actor);
 }
 
+UPulldownStructFunctionLibrary::FOnSplitSelectedValueToWorldNameAndActorIdentifierName UPulldownStructFunctionLibrary::OnSplitSelectedValueToWorldNameAndActorIdentifierName;
+
 AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 	const UObject* WorldContextObject,
 	const FPulldownStructBase& PulldownStruct,
@@ -44,7 +46,14 @@ AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 	FString ActorIdentifierName;
 	{
 		const FString SelectedValue = LexToString(PulldownStruct);
-		if (!SelectedValue.Split(PulldownBuilder::Global::WorldAndActorDelimiter, &WorldName, &ActorIdentifierName))
+		if (OnSplitSelectedValueToWorldNameAndActorIdentifierName.IsBound())
+		{
+			if (!OnSplitSelectedValueToWorldNameAndActorIdentifierName.Execute(SelectedValue, WorldName, ActorIdentifierName))
+			{
+				return nullptr;
+			}
+		}
+		else if (!SelectedValue.Split(PulldownBuilder::Global::WorldAndActorDelimiter, &WorldName, &ActorIdentifierName))
 		{
 			return nullptr;
 		}
