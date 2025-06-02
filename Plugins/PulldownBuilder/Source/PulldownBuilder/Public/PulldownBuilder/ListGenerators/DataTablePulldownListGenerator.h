@@ -13,9 +13,19 @@ using IDataTableListener = FDataTableEditorUtils::INotifyOnDataTableChanged;
 
 /**
  * A generator class that generates a list to be displayed in the pull-down menu from the row name of the data table asset.
- * To set the text to display in a tooltip, you need to define a variable of type FString or FName or FText named "PulldownTooltip" in
- * the row struct or specifies the FString or FName or FText property used in the tooltip,
- * such as TooltipProperty = "PropertyName" in the USTRUCT meta-specifier of the data table struct.
+ *
+ * To specify each of the following elements, you must either define property of a given type,
+ * or specify property of a given type using the meta specifier specified in the USTRUCT of the row struct.
+ *
+ * - TooltipText
+ *		- Types:			FString  FName  FText
+ *		- Property Name:	PulldownTooltip
+ *		- Meta Specifier:	TooltipProperty = "PropertyName"
+ *
+ * - DisplayTextColor
+ *		- Types:			FColor  FLinearColor  FSlateColor
+ *		- Property Name:	PulldownTextColor
+ *		- Meta Specifier:	TextColorProperty = "PropertyName"
  */
 UCLASS()
 class PULLDOWNBUILDER_API UDataTablePulldownListGenerator
@@ -30,6 +40,12 @@ public:
 
 	// The default name of the property that will be the data to be displayed as a tooltip in the pull-down menu.
 	static const FString DefaultPulldownTooltipName;
+
+	// The name of meta specifier for specifying properties for text color in USTRUCT.
+	static const FString TextColorPropertyMeta;
+
+	// The default name of the property that will be the data to be displayed as a text colo in the pull-down menu.
+	static const FString DefaultPulldownTextColorName;
 	
 public:
 	// UObject interface.
@@ -51,10 +67,13 @@ public:
 	// End of INotifyOnDataTableChanged interface.
 
 protected:
-	// If it is looking for a property that satisfies the tooltip data condition,
-	// it returns true and assigns the data to the TooltipString.
+	// If it is looking for a property that satisfies the tooltip data condition, it returns true and assigns the data to the TooltipText.
 	// See the class description comments for property conditions.
-	virtual bool FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const;
+	virtual bool FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FText& TooltipText) const;
+
+	// If it is looking for a property that satisfies the text color data condition, it returns true and assigns the data to the TextColor.
+	// See the class description comments for property conditions.
+	virtual bool FindTextColor(const UScriptStruct* RowStruct, uint8* RowData, FLinearColor& TextColor) const;
 
 	// Expansion points for implementation in blueprints.
 	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called before a row name or data in the underlying data table is changed."))

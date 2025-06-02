@@ -4,13 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "TestPulldown.h"
-#include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "TestDataTable.generated.h"
 
 // USTRUCT(meta = (TooltipProperty = "TestString"))
 // As mentioned above, you can use the meta specifier to change the properties displayed in the tooltip.
-USTRUCT()
+USTRUCT(meta = (TextColorProperty = "TestColor"))
 struct FNativeDataTableStruct : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -24,20 +22,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     FString PulldownTooltip;
-};
 
-USTRUCT()
-struct FTestDataTable : public FTableRowBase
-{
-	GENERATED_BODY()
-
-public:
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	// FLinearColor PulldownTextColor;
+	// You can also define a property named "PulldownTextColor" and set the text color as mentioned above.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FTestPulldown Test;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FTestPulldown2 Test1;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FNativeLessPulldownStruct NativeLess;
+	FColor TestColor;
 };

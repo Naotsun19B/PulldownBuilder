@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FString SelectedValue;
 	
-	// The text displayed in a pull-down menu row.
+	// The text displayed in a pull-down menu menu.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FText DisplayText;
 
@@ -32,6 +32,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Pulldown")
 	bool bIsDefaultValue;
 
+	// The color that is applied to the text displayed in a pull-down menu.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulldown")
 	FLinearColor DisplayTextColor;
 

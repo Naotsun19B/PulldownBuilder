@@ -10,6 +10,8 @@
 
 const FString UDataTablePulldownListGenerator::TooltipPropertyMeta			= TEXT("TooltipProperty");
 const FString UDataTablePulldownListGenerator::DefaultPulldownTooltipName	= TEXT("PulldownTooltip");
+const FString UDataTablePulldownListGenerator::TextColorPropertyMeta		= TEXT("TextColorProperty");
+const FString UDataTablePulldownListGenerator::DefaultPulldownTextColorName	= TEXT("PulldownTextColor");
 
 void UDataTablePulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -47,11 +49,19 @@ FPulldownRows UDataTablePulldownListGenerator::GetPulldownRows(
 			}
 
 			FPulldownRow NewPulldownRow(RowName.ToString());
-				
-			FString TooltipString;
-			if (FindTooltip(RowStruct, RowData, TooltipString))
 			{
-				NewPulldownRow.TooltipText = FText::FromString(TooltipString);
+				FText TooltipText;
+				if (FindTooltip(RowStruct, RowData, TooltipText))
+				{
+					NewPulldownRow.TooltipText = TooltipText;
+				}
+			}
+			{
+				FLinearColor TextColor;
+				if (FindTextColor(RowStruct, RowData, TextColor))
+				{
+					NewPulldownRow.DisplayTextColor = TextColor;
+				}
 			}
 				
 			PulldownRows.Add(NewPulldownRow);
@@ -107,7 +117,7 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	VerifyDefaultValue();
 }
 
-bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FString& TooltipString) const
+bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FText& TooltipText) const
 {
 	check(IsValid(RowStruct));
 
@@ -118,9 +128,9 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 	}
 
 #if UE_4_25_OR_LATER
-	for (FProperty* Property : TFieldRange<FProperty>(RowStruct))
+	for (auto* Property : TFieldRange<FProperty>(RowStruct))
 #else
-	for (UProperty* Property : TFieldRange<UProperty>(RowStruct))
+	for (auto* Property : TFieldRange<UProperty>(RowStruct))
 #endif
 	{
 		if (Property == nullptr)
@@ -141,7 +151,7 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FString>(RowData))
 			{
-				TooltipString = *ValuePtr;
+				TooltipText = FText::FromString(*ValuePtr);
 				return true;
 			}
 		}
@@ -154,7 +164,7 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FName>(RowData))
 			{
-				TooltipString = ValuePtr->ToString();
+				TooltipText = FText::FromName(*ValuePtr);
 				return true;
 			}
 		}
@@ -167,13 +177,70 @@ bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct
 		{
 			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FText>(RowData))
 			{
-				TooltipString = ValuePtr->ToString();
+				TooltipText = *ValuePtr;
 				return true;
 			}
 		}
 	}
 
 	return false;
+}
+
+bool UDataTablePulldownListGenerator::FindTextColor(const UScriptStruct* RowStruct, uint8* RowData, FLinearColor& TextColor) const
+{
+	check(IsValid(RowStruct));
+
+	FString TextColorPropertyName = DefaultPulldownTextColorName;
+	if (RowStruct->HasMetaData(*TextColorPropertyMeta))
+	{
+		TextColorPropertyName = RowStruct->GetMetaData(*TextColorPropertyMeta);
+	}
+
+#if UE_4_25_OR_LATER
+	for (auto* Property : TFieldRange<FStructProperty>(RowStruct))
+#else
+	for (auto* Property : TFieldRange<UStructProperty>(RowStruct))
+#endif
+	{
+		if (Property == nullptr)
+		{
+			continue;
+		}
+
+		if (Property->GetName() != TextColorPropertyName)
+		{
+			continue;	
+		}
+
+		if (Property->Struct == TBaseStructure<FColor>::Get())
+		{
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FColor>(RowData))
+			{
+				TextColor = *ValuePtr;
+				break;
+			}
+		}
+
+		if (Property->Struct == TBaseStructure<FLinearColor>::Get())
+		{
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FLinearColor>(RowData))
+			{
+				TextColor = *ValuePtr;
+				break;
+			}
+		}
+		
+		if (Property->Struct == FSlateColor::StaticStruct())
+		{
+			if (const auto* ValuePtr = Property->ContainerPtrToValuePtr<FSlateColor>(RowData))
+			{
+				TextColor = ValuePtr->GetSpecifiedColor();
+				break;
+			}
+		}
+	}
+
+	return FMath::IsNearlyEqual(TextColor.A, 1.f);
 }
 
 TArray<FName> UDataTablePulldownListGenerator::GetDefaultValueOptions_Implementation() const
