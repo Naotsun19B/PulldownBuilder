@@ -6,7 +6,7 @@
 #if !UE_5_02_OR_LATER
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
 #endif
-#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownBuilder/Assets/PulldownContentsAsyncLoader.h"
 #include "PulldownBuilder/CommandActions/PulldownBuilderCommands.h"
 #include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
@@ -14,6 +14,7 @@
 #include "PulldownBuilder/DetailCustomizations/PulldownStructTypeDetail.h"
 #include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
 #include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
+#include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
@@ -46,12 +47,15 @@ namespace PulldownBuilder
 		// Registers message log.
 		FPulldownBuilderMessageLog::Register();
 		
-		// Registers pulldown contents loader.
-		FPulldownContentsLoader::Register();
+		// Registers pulldown contents async loader.
+		FPulldownContentsAsyncLoader::Register();
 		
 		// Registers settings.
 		UPulldownBuilderAppearanceSettings::Register();
 		UPulldownBuilderRedirectSettings::Register();
+
+		// Registers row name updaters.
+		URowNameUpdaterBase::Register();
 		
 		// Registers custom graph pin.
 		FPulldownStructGraphPinFactory::Register();
@@ -77,12 +81,15 @@ namespace PulldownBuilder
 		FNativeLessPulldownStructGraphPinFactory::Unregister();
 		FPulldownStructGraphPinFactory::Unregister();
 
+		// Unregisters row name updaters.
+		URowNameUpdaterBase::Unregister();
+
 		// Unregisters settings.
 		UPulldownBuilderRedirectSettings::Unregister();
 		UPulldownBuilderAppearanceSettings::Unregister();
 		
-		// Unregisters pulldown contents loader.
-		FPulldownContentsLoader::Unregister();
+		// Unregisters pulldown contents async loader.
+		FPulldownContentsAsyncLoader::Unregister();
 		
 		// Unregisters message log.
 		FPulldownBuilderMessageLog::Unregister();

@@ -19,6 +19,10 @@ class PULLDOWNBUILDER_API URowNameUpdaterBase : public UObject
 	GENERATED_BODY()
 
 public:
+	// Registers-Unregisters row name updaters.
+	static void Register();
+	static void Unregister();
+	
 	// Updates all pull-down struct that reference owner PulldownContents asset.
 	static void UpdateRowNames(
 		UPulldownContents* PulldownContents,
@@ -80,4 +84,8 @@ protected:
 			}
 		}
 	}
+
+private:
+	// The event called when a value removed from the pull-down menu.
+	static FDelegateHandle OnPulldownRowRenamedHandle;
 };

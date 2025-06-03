@@ -2,7 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
-#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "UObject/UObjectThreadContext.h"
 
@@ -155,34 +155,42 @@ bool UPulldownListGeneratorBase::SupportsSwitchNode_Implementation() const
 
 void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.Broadcast(
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
 		AddedSelectedValue
 	);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *AddedSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownRowRemoved(const FName& RemovedSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.Broadcast(
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
 		RemovedSelectedValue
 	);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *RemovedSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChangeSelectedValue, const FName& PostChangeSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.Broadcast(
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.Broadcast(
 		GetTypedOuter<UPulldownContents>(),
 		PreChangeSelectedValue,
 		PostChangeSelectedValue
 	);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *PreChangeSelectedValue.ToString(), *PostChangeSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownContentsSourceChanged()
 {
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.Broadcast(
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.Broadcast(
 		GetTypedOuter<UPulldownContents>()
 	);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected modification of underlying data of %s."), *GetNameSafe(GetTypedOuter<UPulldownContents>()));
 }
 
 bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeSelectedValues, const TArray<FName>& PostChangeSelectedValues)

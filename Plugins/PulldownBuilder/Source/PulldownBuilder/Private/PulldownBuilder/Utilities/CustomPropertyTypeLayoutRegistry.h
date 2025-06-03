@@ -32,15 +32,12 @@ namespace PulldownBuilder
 		FString PropertyTypeName;
 	};
 
-	GENERATE_MEMBER_FUNCTION_CHECK(StaticStruct, UScriptStruct*,);
-
 	/**
 	 * A class template that registers-unregisters the custom details panel for a struct.
 	 */
 	template<typename TStructType, class TPropertyTypeCustomization>
 	struct TCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
 	{
-		// static_assert(THasMemberFunction_StaticStruct<TStructType>::Value, "TStructType must implement UScriptStruct* StaticStruct()");
 		static_assert(TIsDerivedFrom<TPropertyTypeCustomization, IPropertyTypeCustomization>::IsDerived, "This implementation wasn't tested for a filter that isn't a child of IPropertyTypeCustomization.");
 		
 	public:

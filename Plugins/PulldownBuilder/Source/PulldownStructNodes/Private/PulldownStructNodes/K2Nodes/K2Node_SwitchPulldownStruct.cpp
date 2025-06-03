@@ -4,7 +4,8 @@
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
-#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
+#include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #endif
@@ -31,22 +32,22 @@ void UK2Node_SwitchPulldownStruct::PostLoad()
 	Super::PostLoad();
 
 #if WITH_EDITOR
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
 #endif
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
 #if WITH_EDITOR
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRenamed.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowRemoved.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownRowAdded.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsLoaded.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.RemoveAll(this);
 #endif
 	
 	Super::BeginDestroy();

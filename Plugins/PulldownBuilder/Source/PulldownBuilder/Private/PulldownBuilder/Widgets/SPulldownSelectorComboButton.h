@@ -13,8 +13,7 @@ namespace PulldownBuilder
 	class SPulldownSelector;
 	
 	/**
-	 * A widget that displays the PulldownSelector when you press a button and
-	 * allows you to select an item from the pull-down menu.
+	 * A widget that displays the PulldownSelector when you press a button and allows you to select an item from the pull-down menu.
 	 */
 	class PULLDOWNBUILDER_API SPulldownSelectorComboButton : public SComboButton
 	{

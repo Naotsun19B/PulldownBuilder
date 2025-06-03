@@ -1,0 +1,14 @@
+// Copyright 2021-2025 Naotsun. All Rights Reserved.
+
+#include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
+
+namespace PulldownBuilder
+{
+	FPulldownContentsDelegates::FOnPulldownContentsLoaded FPulldownContentsDelegates::OnPulldownContentsLoaded;
+	FPulldownContentsDelegates::FOnDetailCustomizationRegistered FPulldownContentsDelegates::OnDetailCustomizationRegistered;
+	FPulldownContentsDelegates::FOnDetailCustomizationRegistered FPulldownContentsDelegates::OnDetailCustomizationUnregistered;
+	FPulldownContentsDelegates::FOnPulldownRowAdded FPulldownContentsDelegates::OnPulldownRowAdded;
+	FPulldownContentsDelegates::FOnPulldownRowRemoved FPulldownContentsDelegates::OnPulldownRowRemoved;
+	FPulldownContentsDelegates::FOnPulldownRowRenamed FPulldownContentsDelegates::OnPulldownRowRenamed;
+	FPulldownContentsDelegates::FOnPulldownContentsSourceChanged FPulldownContentsDelegates::OnPulldownContentsSourceChanged;
+}

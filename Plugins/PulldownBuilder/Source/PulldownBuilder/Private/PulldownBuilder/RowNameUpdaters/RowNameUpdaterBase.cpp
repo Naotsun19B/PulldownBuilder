@@ -1,6 +1,7 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
+#include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderRedirectSettings.h"
@@ -15,6 +16,16 @@
 #endif
 
 #define LOCTEXT_NAMESPACE "RowNameUpdaterBase"
+
+void URowNameUpdaterBase::Register()
+{
+	OnPulldownRowRenamedHandle = PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
+}
+
+void URowNameUpdaterBase::Unregister()
+{
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.Remove(OnPulldownRowRenamedHandle);
+}
 
 void URowNameUpdaterBase::UpdateRowNames(
 	UPulldownContents* PulldownContents,
@@ -139,5 +150,7 @@ bool URowNameUpdaterBase::UpdateMemberVariables(
 
 	return bIsModified;
 }
+
+FDelegateHandle URowNameUpdaterBase::OnPulldownRowRenamedHandle;
 
 #undef LOCTEXT_NAMESPACE
