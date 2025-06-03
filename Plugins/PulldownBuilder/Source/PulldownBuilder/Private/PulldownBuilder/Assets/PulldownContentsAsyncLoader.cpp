@@ -19,6 +19,23 @@
 
 namespace PulldownBuilder
 {
+	namespace AssetRegistry
+	{
+		IAssetRegistry* Get()
+		{
+#if UE_4_26_OR_LATER
+			return IAssetRegistry::Get();
+#else
+			if (const auto* AssetRegistryModule = FModuleManager::LoadModulePtr<FAssetRegistryModule>(TEXT("AssetRegistry")))
+			{
+				return &AssetRegistryModule->Get();
+			}
+
+			return nullptr;
+#endif
+		}
+	}
+	
 #if UE_5_01_OR_LATER
 	class FProgressNotification
 	{
@@ -40,20 +57,51 @@ namespace PulldownBuilder
 		Instance->ProgressNotification = MakePimpl<FProgressNotification>();
 #endif
 		
-		IAssetRegistry* AssetRegistry = FPulldownBuilderUtils::GetAssetRegistry();
-		check(AssetRegistry != nullptr);
-		
-		AssetRegistry->OnAssetAdded().AddRaw(Instance.Get(), &FPulldownContentsAsyncLoader::HandleOnAssetAdded);
+		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
+		{
+			AssetRegistry->OnAssetAdded().AddRaw(Instance.Get(), &FPulldownContentsAsyncLoader::HandleOnAssetAdded);
+		}
 	}
 
 	void FPulldownContentsAsyncLoader::Unregister()
 	{
-		if (IAssetRegistry* AssetRegistry = FPulldownBuilderUtils::GetAssetRegistry())
+		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
 		{
 			AssetRegistry->OnAssetAdded().RemoveAll(Instance.Get());
 		}
 
 		Instance.Reset();
+	}
+
+	void FPulldownContentsAsyncLoader::EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback)
+	{
+		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
+		check(IsValid(PulldownContentsClass));
+		
+		IAssetRegistry* AssetRegistry = AssetRegistry::Get();
+		if (AssetRegistry == nullptr)
+		{
+			return;
+		}
+
+		TArray<FAssetData> AssetDataList;
+#if UE_5_01_OR_LATER
+		const FTopLevelAssetPath& ClassPathName = PulldownContentsClass->GetClassPathName();
+		if (!AssetRegistry->GetAssetsByClass(ClassPathName, AssetDataList))
+#else
+		if (!AssetRegistry->GetAssetsByClass(PulldownContentsClass->GetFName(), AssetDataList))
+#endif
+		{
+			return;
+		}
+
+		for (const auto& AssetData : AssetDataList)
+		{
+			if (auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
+			{
+				Callback(*PulldownContents);
+			}
+		}
 	}
 
 	void FPulldownContentsAsyncLoader::HandleOnAssetAdded(const FAssetData& AssetData)

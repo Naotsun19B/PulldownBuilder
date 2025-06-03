@@ -28,7 +28,8 @@ namespace PulldownBuilder
 
 	FSlateColor FPulldownRowColors::GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow)
 	{
-		if (UPulldownBuilderAppearanceSettings::Get().bIsTextColoringDisabled)
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+		if (Settings.bIsTextColoringDisabled)
 		{
 			return Normal;
 		}

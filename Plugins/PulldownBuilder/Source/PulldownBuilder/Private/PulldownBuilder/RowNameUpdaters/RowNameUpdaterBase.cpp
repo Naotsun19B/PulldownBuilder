@@ -33,7 +33,7 @@ void URowNameUpdaterBase::UpdateRowNames(
 	const FName& PostChangeSelectedValue
 )
 {
-	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
+	const auto& Settings = PulldownBuilder::GetSettings<UPulldownBuilderRedirectSettings>();
 	if (!Settings.bShouldUpdateWhenSourceRowNameChanged)
 	{
 		return;
@@ -52,7 +52,7 @@ void URowNameUpdaterBase::UpdateRowNames(
 	// All upload processing of the class created by inheriting this class is performed.
 	for (const UClass* Class : TObjectRange<UClass>())
 	{
-		if (!IsValid(Class) || Class == URowNameUpdaterBase::StaticClass())
+		if (!IsValid(Class) || (Class == URowNameUpdaterBase::StaticClass()) || Class->GetFName().IsNone())
 		{
 			continue;
 		}
@@ -78,7 +78,7 @@ void URowNameUpdaterBase::UpdateRowNamesInternal(
 
 bool URowNameUpdaterBase::ShouldUpdateProcess() const
 {
-	const auto& Settings = UPulldownBuilderRedirectSettings::Get();
+	const auto& Settings = PulldownBuilder::GetSettings<UPulldownBuilderRedirectSettings>();
 	return Settings.ActiveRowNameUpdater.Contains(GetClass());
 }
 

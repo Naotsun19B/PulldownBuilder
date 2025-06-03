@@ -1,26 +1,15 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownBuilder/Assets/PulldownContentsAsyncLoader.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "EdGraphSchema_K2.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
-#if UE_4_26_OR_LATER
-#include "AssetRegistry/IAssetRegistry.h"
-#else
-#include "AssetRegistryModule.h"
-#include "IAssetRegistry.h"
-#endif
-#include "ISettingsCategory.h"
-#include "ISettingsContainer.h"
-#include "Modules/ModuleManager.h"
-#include "ISettingsModule.h"
-#include "ISettingsSection.h"
 
 namespace PulldownBuilder
 {
@@ -70,45 +59,16 @@ namespace PulldownBuilder
 		return ((bIsNativeLessPulldownStruct || bBasedOnNativeLessPulldownStruct) && bIsBlueprintType);
 	}
 
-	void FPulldownBuilderUtils::EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback)
-	{
-		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
-		check(IsValid(PulldownContentsClass));
-		
-		IAssetRegistry* AssetRegistry = GetAssetRegistry();
-		if (AssetRegistry == nullptr)
-		{
-			return;
-		}
-
-		TArray<FAssetData> AssetDataList;
-#if UE_5_01_OR_LATER
-		const FTopLevelAssetPath& ClassPathName = PulldownContentsClass->GetClassPathName();
-		if (!AssetRegistry->GetAssetsByClass(ClassPathName, AssetDataList))
-#else
-		if (!AssetRegistry->GetAssetsByClass(PulldownContentsClass->GetFName(), AssetDataList))
-#endif
-		{
-			return;
-		}
-
-		for (const auto& AssetData : AssetDataList)
-		{
-			if (auto* PulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
-			{
-				Callback(*PulldownContents);
-			}
-		}
-	}
-
 	TArray<UPulldownContents*> FPulldownBuilderUtils::GetAllPulldownContents()
 	{
 		TArray<UPulldownContents*> PulldownContentsList;
-		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
-		{
-			PulldownContentsList.Add(&PulldownContents);
-			return true;
-		});
+		FPulldownContentsAsyncLoader::EnumeratePulldownContents(
+			[&](UPulldownContents& PulldownContents) -> bool
+			{
+				PulldownContentsList.Add(&PulldownContents);
+				return true;
+			}
+		);
 		
 		return PulldownContentsList;
 	}
@@ -116,16 +76,18 @@ namespace PulldownBuilder
 	UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByStruct(const UScriptStruct* InStruct)
 	{
 		UPulldownContents* FoundItem = nullptr;
-		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
-	    {
-	        if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
-	        {
-        		FoundItem = &PulldownContents;
-	            return false;
-	        }
-			
-	        return true;
-	    });
+		FPulldownContentsAsyncLoader::EnumeratePulldownContents(
+			[&](UPulldownContents& PulldownContents) -> bool
+		    {
+		        if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
+		        {
+        			FoundItem = &PulldownContents;
+		            return false;
+		        }
+				
+		        return true;
+		    }
+	    );
 
 		return FoundItem;
 	}
@@ -133,16 +95,18 @@ namespace PulldownBuilder
 	UPulldownContents* FPulldownBuilderUtils::FindPulldownContentsByName(const FName& InName)
 	{
 		UPulldownContents* FoundItem = nullptr;
-		EnumeratePulldownContents([&](UPulldownContents& PulldownContents) -> bool
-		{
-			if (InName == PulldownContents.GetFName())
+		FPulldownContentsAsyncLoader::EnumeratePulldownContents(
+			[&](UPulldownContents& PulldownContents) -> bool
 			{
-				FoundItem = &PulldownContents;
-				return false;
+				if (InName == PulldownContents.GetFName())
+				{
+					FoundItem = &PulldownContents;
+					return false;
+				}
+				
+				return true;
 			}
-			
-			return true;
-		});
+		);
 
 		return FoundItem;
 	}
@@ -177,16 +141,18 @@ namespace PulldownBuilder
 	bool FPulldownBuilderUtils::IsRegisteredPulldownStruct(const UScriptStruct* InStruct)
 	{
 		bool bIsRegistered = false;
-		EnumeratePulldownContents([&](const UPulldownContents& PulldownContents) -> bool
-	    {
-			if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
-			{
-				bIsRegistered = true;
-				return false;
-			}
-			
-	        return true;
-	    });
+		FPulldownContentsAsyncLoader::EnumeratePulldownContents(
+			[&](const UPulldownContents& PulldownContents) -> bool
+		    {
+				if (InStruct == PulldownContents.GetPulldownStructType().SelectedStruct)
+				{
+					bIsRegistered = true;
+					return false;
+				}
+				
+		        return true;
+		    }
+	    );
 	    
 		return bIsRegistered;
 	}
@@ -195,7 +161,7 @@ namespace PulldownBuilder
 	{
 		check(IsValid(InStruct));
 		
-		if (UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
+		if (const UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
 		{
 			return CppStructOps->HasPostSerialize();
 		}
@@ -379,67 +345,5 @@ namespace PulldownBuilder
 		);
 
 		return PulldownRows.GetDefaultRow();
-	}
-
-	IAssetRegistry* FPulldownBuilderUtils::GetAssetRegistry()
-	{
-#if UE_4_26_OR_LATER
-		return IAssetRegistry::Get();
-#else
-		if (const auto* AssetRegistryModule = FModuleManager::LoadModulePtr<FAssetRegistryModule>(TEXT("AssetRegistry")))
-		{
-			return &AssetRegistryModule->Get();
-		}
-
-		return nullptr;
-#endif
-	}
-
-	ISettingsModule& FPulldownBuilderUtils::GetSettingsModule()
-	{
-		return FModuleManager::LoadModuleChecked<ISettingsModule>(TEXT("Settings"));
-	}
-
-	void FPulldownBuilderUtils::RegisterSettings(
-		const FName& ContainerName,
-		const FName& CategoryName,
-		const FName& SectionName,
-		const FText& DisplayName,
-		const FText& Description,
-		const TWeakObjectPtr<UObject>& SettingsObject
-	)
-	{
-		ISettingsModule& SettingsModule = GetSettingsModule();
-		SettingsModule.RegisterSettings(
-			ContainerName,
-			CategoryName,
-			SectionName,
-			DisplayName,
-			Description,
-			SettingsObject
-		);
-	}
-
-	void FPulldownBuilderUtils::UnregisterSettings(
-		const FName& ContainerName,
-		const FName& CategoryName,
-		const FName& SectionName
-	)
-	{
-		ISettingsModule& SettingsModule = GetSettingsModule();
-		
-		const TSharedPtr<ISettingsContainer> Container = SettingsModule.GetContainer(ContainerName);
-		check(Container.IsValid());
-		const TSharedPtr<ISettingsCategory> Category = Container->GetCategory(CategoryName);
-		check(Category.IsValid());
-		const TSharedPtr<ISettingsSection> Section = Category->GetSection(SectionName);
-		check(Section.IsValid());
-		Section->Save();
-		
-		SettingsModule.UnregisterSettings(
-			ContainerName,
-			CategoryName,
-			SectionName
-		);
 	}
 }

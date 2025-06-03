@@ -73,7 +73,7 @@ namespace PulldownBuilder
 
 	TSharedRef<SWidget> SPulldownSelectorComboButton::HandleOnGetMenuContent()
 	{
-		const auto& Settings = UPulldownBuilderAppearanceSettings::Get();
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
 		FVector2D PanelSize = FVector2D::ZeroVector;
 		if (HeightOverride.IsSet() || HeightOverride.IsBound())
 		{
@@ -109,7 +109,8 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
 		if (SelectedItem.IsValid())
 		{
-			if (UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled)
+			const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+			if (Settings.bIsDisplayTextDisabled)
 			{
 				return FText::FromString(SelectedItem->SelectedValue);
 			}

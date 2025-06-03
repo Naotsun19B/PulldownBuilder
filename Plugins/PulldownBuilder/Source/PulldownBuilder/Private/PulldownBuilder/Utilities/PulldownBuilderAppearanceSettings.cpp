@@ -1,23 +1,10 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownBuilderAppearanceSettings)
 #endif
-
-#define LOCTEXT_NAMESPACE "PulldownBuilderAppearanceSettings"
-
-namespace PulldownBuilder
-{
-	namespace AppearanceSettings
-	{
-		static const FName ContainerName	= TEXT("Editor");
-		static const FName CategoryName		= TEXT("Plugins");
-		static const FName SectionName		= TEXT("PulldownBuilderAppearanceSettings");
-	}
-}
 
 FVector2D UPulldownBuilderAppearanceSettings::DefaultPanelSize = FVector2D(220.f, 300.f);
 
@@ -26,28 +13,9 @@ UPulldownBuilderAppearanceSettings::UPulldownBuilderAppearanceSettings()
 	, bIsSelectWhenDoubleClick(false)
 	, bShouldInlineDisplayWhenSingleProperty(true)
 	, NotificationSeverity(EPulldownBuilderNotificationSeverity::Warning)
+	, bIsDisplayTextDisabled(false)
+	, bIsTextColoringDisabled(false)
 {
-}
-
-void UPulldownBuilderAppearanceSettings::Register()
-{
-	PulldownBuilder::FPulldownBuilderUtils::RegisterSettings(
-		PulldownBuilder::AppearanceSettings::ContainerName,
-		PulldownBuilder::AppearanceSettings::CategoryName,
-		PulldownBuilder::AppearanceSettings::SectionName,
-		LOCTEXT("SettingName", "Pulldown Builder - Appearance"),
-		LOCTEXT("SettingDescription", "Settings related to the appearance of editor extensions that display a list of pull-downs."),
-		GetMutableDefault<UPulldownBuilderAppearanceSettings>()
-	);
-}
-
-void UPulldownBuilderAppearanceSettings::Unregister()
-{
-	PulldownBuilder::FPulldownBuilderUtils::UnregisterSettings(
-		PulldownBuilder::AppearanceSettings::ContainerName,
-		PulldownBuilder::AppearanceSettings::CategoryName,
-		PulldownBuilder::AppearanceSettings::SectionName
-	);
 }
 
 void UPulldownBuilderAppearanceSettings::PostInitProperties()
@@ -111,11 +79,7 @@ bool UPulldownBuilderAppearanceSettings::CanEditChange(const UProperty* InProper
 	return (UObject::CanEditChange(InProperty) && bCanEditChange);
 }
 
-const UPulldownBuilderAppearanceSettings& UPulldownBuilderAppearanceSettings::Get()
+UPulldownBuilderSettings::FSettingsInfo UPulldownBuilderAppearanceSettings::GetSettingsInfo() const
 {
-	const auto* Settings = GetDefault<UPulldownBuilderAppearanceSettings>();
-	check(IsValid(Settings));
-	return *Settings;
+	return FSettingsInfo(TEXT("Appearance"));
 }
-
-#undef LOCTEXT_NAMESPACE

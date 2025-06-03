@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "Templates/SubclassOf.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
 #include "PulldownBuilderRedirectSettings.generated.h"
 
 /**
- * A editor preferences class for redirect processing when changes are made to the data that is the source of the pull-down list.
+ * An editor preferences class for redirect processing when changes are made to the data that is the source of the pull-down list.
  */
-UCLASS(Config = Editor, DefaultConfig)
-class PULLDOWNBUILDER_API UPulldownBuilderRedirectSettings : public UObject
+UCLASS(DefaultConfig)
+class PULLDOWNBUILDER_API UPulldownBuilderRedirectSettings : public UPulldownBuilderSettings
 {
 	GENERATED_BODY()
 
@@ -38,10 +38,7 @@ public:
     // Constructor.
 	UPulldownBuilderRedirectSettings();
 
-	// Registers-Unregisters in the editor setting item.
-	static void Register();
-	static void Unregister();
-
-	// Returns reference of this settings.
-	static const UPulldownBuilderRedirectSettings& Get();
+	// UPulldownBuilderSettings interface.
+	virtual FSettingsInfo GetSettingsInfo() const override;
+	// End of UPulldownBuilderSettings interface.
 };

@@ -31,9 +31,6 @@ namespace PulldownBuilder
 
 		// Returns whether the specified struct is a FNativeLessPulldownStruct or a struct that inherits from it.
 		static bool IsNativeLessPulldownStruct(const UScriptStruct* InTestStruct);
-
-		// Enumerates all PulldownContents present in the Content Browser.
-		static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback);
 	
 		// Gets all PulldownContents that exist on the Content Browser.
 		static TArray<UPulldownContents*> GetAllPulldownContents();
@@ -84,28 +81,5 @@ namespace PulldownBuilder
 
 		// Returns the default value specified in PulldownContents associated with the struct.
 		static TSharedPtr<FPulldownRow> GetDefaultRowFromPin(const UEdGraphPin* Pin);
-		
-		// Returns an asset registry from the asset registry module.
-		static IAssetRegistry* GetAssetRegistry();
-		
-		// Returns a module that registers editor preferences etc. added by the plugin.
-		static ISettingsModule& GetSettingsModule();
-
-		// Registers custom setting class in the editor preferences etc.
-		static void RegisterSettings(
-			const FName& ContainerName,
-			const FName& CategoryName,
-			const FName& SectionName,
-			const FText& DisplayName,
-			const FText& Description,
-			const TWeakObjectPtr<UObject>& SettingsObject
-		);
-
-		// Unregisters the custom setting class registered in the editor preference etc.
-		static void UnregisterSettings(
-			const FName& ContainerName,
-			const FName& CategoryName,
-			const FName& SectionName
-		);
 	};
 }

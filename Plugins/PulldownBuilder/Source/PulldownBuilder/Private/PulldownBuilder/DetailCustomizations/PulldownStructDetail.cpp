@@ -285,7 +285,8 @@ namespace PulldownBuilder
 	{
 		check(StructPropertyHandle.IsValid());
 
-		if (!UPulldownBuilderAppearanceSettings::Get().bShouldInlineDisplayWhenSingleProperty)
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+		if (!Settings.bShouldInlineDisplayWhenSingleProperty)
 		{
 			return false;
 		}

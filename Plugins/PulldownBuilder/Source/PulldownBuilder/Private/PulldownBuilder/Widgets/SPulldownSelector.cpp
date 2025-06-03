@@ -201,10 +201,11 @@ namespace PulldownBuilder
 	TSharedRef<ITableRow> SPulldownSelector::HandleOnGenerateRow(TSharedPtr<FPulldownRow> InItem, const TSharedRef<STableViewBase>& OwnerTable)
 	{
 		check(InItem.IsValid());
-		
+
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
 		const TSharedRef<STextBlock> Row = SNew(STextBlock)
 			.Text(
-				UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled ?
+				Settings.bIsDisplayTextDisabled ?
 				FText::FromString(InItem->SelectedValue) :
 				InItem->GetDisplayText()
 			)
@@ -258,8 +259,9 @@ namespace PulldownBuilder
 	{
 		check(InItem.IsValid());
 
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
 		const FString DisplayString = (
-			UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled ?
+			Settings.bIsDisplayTextDisabled ?
 			InItem->SelectedValue :
 			InItem->GetDisplayText().ToString()
 		);
@@ -272,33 +274,29 @@ namespace PulldownBuilder
 
 	void SPulldownSelector::ToggleDisableDisplayText()
 	{
-		auto* Settings = GetMutableDefault<UPulldownBuilderAppearanceSettings>();
-		check(IsValid(Settings));
-		
-		Settings->bIsDisplayTextDisabled = !Settings->bIsDisplayTextDisabled;
+		auto& Settings = GetMutableSettings<UPulldownBuilderAppearanceSettings>(PULLDOWN_BUILDER_PASS_KEY);
+		Settings.bIsDisplayTextDisabled = !Settings.bIsDisplayTextDisabled;
 
 		RefreshList();
 	}
 
 	ECheckBoxState SPulldownSelector::GetDisableDisplayTextCheckState()
 	{
-		const auto& AppearanceSettings = UPulldownBuilderAppearanceSettings::Get();
-		return (AppearanceSettings.bIsDisplayTextDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+		return (Settings.bIsDisplayTextDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	}
 
 	void SPulldownSelector::ToggleDisableTextColoring()
 	{
-		auto* Settings = GetMutableDefault<UPulldownBuilderAppearanceSettings>();
-		check(IsValid(Settings));
-		
-		Settings->bIsTextColoringDisabled = !Settings->bIsTextColoringDisabled;
+		auto& Settings = GetMutableSettings<UPulldownBuilderAppearanceSettings>(PULLDOWN_BUILDER_PASS_KEY);
+		Settings.bIsTextColoringDisabled = !Settings.bIsTextColoringDisabled;
 
 		RefreshList();
 	}
 
 	ECheckBoxState SPulldownSelector::GetDisableTextColoringCheckState()
 	{
-		const auto& AppearanceSettings = UPulldownBuilderAppearanceSettings::Get();
-		return (AppearanceSettings.bIsTextColoringDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+		return (Settings.bIsTextColoringDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	}
 }

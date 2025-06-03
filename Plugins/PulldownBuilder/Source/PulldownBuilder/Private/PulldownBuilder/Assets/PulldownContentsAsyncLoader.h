@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+class UPulldownContents;
+
 namespace PulldownBuilder
 {
 	/**
@@ -15,6 +17,9 @@ namespace PulldownBuilder
 		// Registers-Unregisters a pulldown contents async loader.
 		static void Register();
 		static void Unregister();
+
+		// Enumerates all PulldownContents present in the Content Browser.
+		static void EnumeratePulldownContents(const TFunction<bool(UPulldownContents&)>& Callback);
 
 	private:
 		// Called when an asset data has been added to the asset registry.

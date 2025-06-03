@@ -1,4 +1,4 @@
-// Copyright 2022 Naotsun. All Rights Reserved.
+// Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
@@ -47,9 +47,10 @@ namespace PulldownBuilder
 	{
 		FMessageLog MessageLog(Global::PluginName);
 		TSharedRef<FTokenizedMessage> TokenizedMessage = MessageLog.Message(InSeverity, InMessage);
-		
+
+		const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
 		TOptional<EMessageSeverity::Type> MessageSeverity;
-		switch (UPulldownBuilderAppearanceSettings::Get().NotificationSeverity)
+		switch (Settings.NotificationSeverity)
 		{
 		case EPulldownBuilderNotificationSeverity::Info:
 			MessageSeverity = EMessageSeverity::Info;

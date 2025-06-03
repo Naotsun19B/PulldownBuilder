@@ -3,20 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownBuilder/Types/PulldownBuilderNotificationSeverity.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "PulldownBuilderAppearanceSettings.generated.h"
 
+namespace PulldownBuilder
+{
+	class SPulldownSelector;
+}
+
 /**
- * A editor preferences class for the appearance of editor extensions that display a list of pull-downs.
+ * An editor preferences class for the appearance of editor extensions that display a list of pull-downs.
  */
-UCLASS(Config = Editor, GlobalUserConfig)
-class UPulldownBuilderAppearanceSettings : public UObject
+UCLASS(GlobalUserConfig)
+class UPulldownBuilderAppearanceSettings : public UPulldownBuilderSettings
 {
 	GENERATED_BODY()
 
 public:
+	// The passkey for the class that allows you to make changes to this class.
+	using FPassKey = PulldownBuilder::TPassKeys<PulldownBuilder::SPulldownSelector>;
+	
 	// Define a default value for the size of the PulldownSelector widget so that it can be used externally.
 	static FVector2D DefaultPanelSize;
 	
@@ -48,10 +56,6 @@ public:
 public:
 	// Constructor.
 	UPulldownBuilderAppearanceSettings();
-
-	// Registers-Unregisters in the editor setting item.
-	static void Register();
-	static void Unregister();
 	
 	// UObject interface.
 	virtual void PostInitProperties() override;
@@ -62,6 +66,7 @@ public:
 #endif
 	// End of UObject interface.
 
-	// Returns reference of this settings.
-	static const UPulldownBuilderAppearanceSettings& Get();
+	// UPulldownBuilderSettings interface.
+	virtual FSettingsInfo GetSettingsInfo() const override;
+	// End of UPulldownBuilderSettings interface.
 };
