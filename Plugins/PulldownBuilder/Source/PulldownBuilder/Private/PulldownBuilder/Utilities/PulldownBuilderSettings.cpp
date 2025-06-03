@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2025 Naotsun. All Rights Reserved.
+// Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"

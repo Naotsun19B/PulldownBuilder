@@ -38,7 +38,7 @@ namespace PulldownBuilder
 	struct FCustomPropertyTypeLayoutRegistries
 	{
 	private:
-		struct FCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
+		class FCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
 		{
 		public:
 			// Constructor.

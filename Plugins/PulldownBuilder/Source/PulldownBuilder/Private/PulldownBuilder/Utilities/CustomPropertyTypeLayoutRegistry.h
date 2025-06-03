@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 
 class IPropertyTypeCustomization;
+class UPulldownContents;
 
 namespace PulldownBuilder
 {
 	/**
 	 * An interface class that registers-unregisters the custom details panel for a struct.
 	 */
-	struct PULLDOWNBUILDER_API ICustomPropertyTypeLayoutRegistry
+	class PULLDOWNBUILDER_API ICustomPropertyTypeLayoutRegistry
 	{
 	public:
 		// Constructor.
@@ -36,7 +37,7 @@ namespace PulldownBuilder
 	 * A class template that registers-unregisters the custom details panel for a struct.
 	 */
 	template<typename TStructType, class TPropertyTypeCustomization>
-	struct TCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
+	class TCustomPropertyTypeLayoutRegistry : public ICustomPropertyTypeLayoutRegistry
 	{
 		static_assert(TIsDerivedFrom<TPropertyTypeCustomization, IPropertyTypeCustomization>::IsDerived, "This implementation wasn't tested for a filter that isn't a child of IPropertyTypeCustomization.");
 		
@@ -54,5 +55,25 @@ namespace PulldownBuilder
 			return MakeShared<TPropertyTypeCustomization>();
 		}
 		// End of ICustomPropertyTypeLayoutRegistry interface.
+	};
+
+	/**
+	 * A class that notifies the property editor module that the details panel customization has changed.
+	 */
+	class FCustomizationModuleChangedNotificator
+	{
+	public:
+		// Registers-Unregisters a details panel customization notificator class.
+		static void Register();
+		static void Unregister();
+
+	private:
+		// Notifies the property editor module that the details panel customization has changed.
+		static void NotifyCustomizationModuleChanged(const UPulldownContents* ModifiedPulldownContents);
+
+	private:
+		// The handles for event called when registers-unregisters the struct set for PulldownContents in detail customization.
+		static FDelegateHandle OnDetailCustomizationRegisteredHandle;
+		static FDelegateHandle OnDetailCustomizationUnregisteredHandle;
 	};
 }

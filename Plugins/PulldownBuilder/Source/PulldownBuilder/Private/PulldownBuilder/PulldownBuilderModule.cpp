@@ -15,6 +15,7 @@
 #include "PulldownBuilder/DetailCustomizations/PreviewPulldownStructDetail.h"
 #include "PulldownBuilder/DetailCustomizations/NativeLessPulldownStructDetail.h"
 #include "PulldownBuilder/RowNameUpdaters/RowNameUpdaterBase.h"
+#include "PulldownBuilder/Utilities/CustomPropertyTypeLayoutRegistry.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
@@ -48,6 +49,9 @@ namespace PulldownBuilder
 		
 		// Registers pulldown contents async loader.
 		FPulldownContentsAsyncLoader::Register();
+
+		// Registers details panel customization notificator class.
+		FCustomizationModuleChangedNotificator::Register();
 		
 		// Registers settings.
 		UPulldownBuilderSettings::Register();
@@ -81,6 +85,9 @@ namespace PulldownBuilder
 
 		// Unregisters row name updaters.
 		URowNameUpdaterBase::Unregister();
+
+		// Unregisters details panel customization notificator class.
+		FCustomizationModuleChangedNotificator::Unregister();
 		
 		// Unregisters pulldown contents async loader.
 		FPulldownContentsAsyncLoader::Unregister();

@@ -13,7 +13,7 @@ class IPropertyHandle;
 
 namespace PulldownBuilder
 {
-	struct ICustomPropertyTypeLayoutRegistry;
+	class ICustomPropertyTypeLayoutRegistry;
 	
 	/**
 	 * A detail customization class that allows you to specify a struct that inherits from FPulldownStructBase using the struct picker.

@@ -10,7 +10,7 @@ struct FPulldownRow;
 namespace PulldownBuilder
 {
 	class SPulldownSelectorComboButton;
-	struct ICustomPropertyTypeLayoutRegistry;
+	class ICustomPropertyTypeLayoutRegistry;
 	
 	/**
 	 * A detail customization class that applied to structures that inherit from FPulldownStructBase.
