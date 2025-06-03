@@ -2,5 +2,28 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "PulldownBuilderTestEditor/PulldownBuilderTestEditorSettings.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, PulldownBuilderTestEditor, "PulldownBuilderTestEditor");
+namespace PulldownBuilderTest
+{
+	class FPulldownBuilderTestEditorModule : public IModuleInterface
+	{
+	public:
+		// IModuleInterface interface.
+		virtual void StartupModule() override;
+		virtual void ShutdownModule() override;
+		// End of IModuleInterface interface.
+	};
+
+	void FPulldownBuilderTestEditorModule::StartupModule()
+	{
+		UPulldownBuilderTestEditorSettings::Register();
+	}
+
+	void FPulldownBuilderTestEditorModule::ShutdownModule()
+	{
+		UPulldownBuilderTestEditorSettings::Unregister();
+	}
+}
+
+IMPLEMENT_MODULE(PulldownBuilderTest::FPulldownBuilderTestEditorModule, PulldownBuilderTestEditor);
