@@ -7,6 +7,7 @@
 #include "PulldownBuilder/Assets/AssetTypeActions_PulldownContents.h"
 #endif
 #include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownBuilder/CommandActions/PulldownBuilderCommands.h"
 #include "PulldownBuilder/CustomGraphPins/PulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/NativeLessPulldownStructGraphPinFactory.h"
 #include "PulldownBuilder/CustomGraphPins/GraphPinContextMenuExtender.h"
@@ -38,6 +39,9 @@ namespace PulldownBuilder
 
 		// Registers the icons of this plugin.
 		FPulldownBuilderStyle::Register();
+
+		// Registers command actions.
+		FPulldownBuilderCommands::Register();
 
 		// Registers message log.
 		FPulldownBuilderMessageLog::Register();
@@ -82,6 +86,9 @@ namespace PulldownBuilder
 		
 		// Unregisters message log.
 		FPulldownBuilderMessageLog::Unregister();
+
+		// Unregisters command actions.
+		FPulldownBuilderCommands::Unregister();
 		
 		// Unregisters the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();

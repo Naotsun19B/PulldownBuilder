@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+struct FPulldownRow;
+
 namespace PulldownBuilder
 {
 	/**
@@ -24,5 +26,8 @@ namespace PulldownBuilder
 	public:
 		// Returns the slate color registered in the style set.
 		static FSlateColor FindStyleSetSlateColor(const FName& PropertyName);
+
+		// Returns the color of the text to be displayed based on the specified pull-down row.
+		static FSlateColor GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow);
 	};
 }

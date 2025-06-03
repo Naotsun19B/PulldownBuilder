@@ -37,6 +37,14 @@ public:
 	UPROPERTY(EditAnywhere, Config, Category = "Notification")
 	EPulldownBuilderNotificationSeverity NotificationSeverity;
 
+	// Whether the selected value is displayed even if it is displayed in items in the pull-down menu.
+	UPROPERTY(Config)
+	bool bIsDisplayTextDisabled;
+
+	// Whether to disable text coloring in the pull-down menu and display text for all items with the default color.
+	UPROPERTY(Config)
+	bool bIsTextColoringDisabled;
+
 public:
 	// Constructor.
 	UPulldownBuilderAppearanceSettings();

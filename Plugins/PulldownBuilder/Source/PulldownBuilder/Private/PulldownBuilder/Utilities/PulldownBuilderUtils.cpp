@@ -3,7 +3,6 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
-#include "PulldownBuilder/Types/PulldownRowColors.h"
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
@@ -17,8 +16,11 @@
 #include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
 #endif
+#include "ISettingsCategory.h"
+#include "ISettingsContainer.h"
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
+#include "ISettingsSection.h"
 
 namespace PulldownBuilder
 {
@@ -379,21 +381,6 @@ namespace PulldownBuilder
 		return PulldownRows.GetDefaultRow();
 	}
 
-	FSlateColor FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow)
-	{
-		if (!PulldownRow.IsValid() || PulldownRow->IsNonExistentValue())
-		{
-			return FPulldownRowColors::NonExistent;
-		}
-
-		if (PulldownRow->IsNone())
-		{
-			return FPulldownRowColors::None;
-		}
-		
-		return PulldownRow->DisplayTextColor;
-	}
-
 	IAssetRegistry* FPulldownBuilderUtils::GetAssetRegistry()
 	{
 #if UE_4_26_OR_LATER
@@ -440,6 +427,15 @@ namespace PulldownBuilder
 	)
 	{
 		ISettingsModule& SettingsModule = GetSettingsModule();
+		
+		const TSharedPtr<ISettingsContainer> Container = SettingsModule.GetContainer(ContainerName);
+		check(Container.IsValid());
+		const TSharedPtr<ISettingsCategory> Category = Container->GetCategory(CategoryName);
+		check(Category.IsValid());
+		const TSharedPtr<ISettingsSection> Section = Category->GetSection(SectionName);
+		check(Section.IsValid());
+		Section->Save();
+		
 		SettingsModule.UnregisterSettings(
 			ContainerName,
 			CategoryName,

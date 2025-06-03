@@ -158,9 +158,9 @@ namespace PulldownBuilder
 					.Padding(4)
 					.BorderImage(
 #if UE_5_01_OR_LATER
-					FAppStyle
+						FAppStyle
 #else
-					FEditorStyle
+						FEditorStyle
 #endif
 						::GetBrush(TEXT("ToolPanel.GroupBorder"))
 					)

@@ -41,10 +41,12 @@ namespace PulldownBuilder
 	
 		SLATE_END_ARGS()
 
+		// Constructor.
 		void Construct(const FArguments& InArgs);
 
 		// SWidget interface.
 		virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+		virtual bool SupportsKeyboardFocus() const override;
 		// End of SWidget interface.
 	
 		// Getters and setters for the selected item.
@@ -70,7 +72,19 @@ namespace PulldownBuilder
 		void OnRowItemClicked(TSharedPtr<FPulldownRow> SelectedItem);
 
 		// Returns whether the items in the list match the filter string.
-		bool FilterRow(TSharedPtr<FPulldownRow> InListItem) const;
+		bool FilterRow(TSharedPtr<FPulldownRow> InItem) const;
+
+		// Toggles whether the selected value is displayed even if it is displayed in items in the pull-down menu.
+		void ToggleDisableDisplayText();
+
+		// Returns whether the selected value is displayed even if it is displayed in items in the pull-down menu.
+		static ECheckBoxState GetDisableDisplayTextCheckState();
+
+		// Toggles whether to disable text coloring in the pull-down menu and display text for all items with the default color.
+		void ToggleDisableTextColoring();
+
+		// Returns whether to disable text coloring in the pull-down menu and display text for all items with the default color.
+		static ECheckBoxState GetDisableTextColoringCheckState();
 	
 	private:
 		// The list view widget for internal use.
@@ -81,6 +95,9 @@ namespace PulldownBuilder
 	
 		// The list of items to display in the list.
 		TArray<TSharedPtr<FPulldownRow>> ListItems;
+
+		// The list of shortcut keys used by this widget.
+		TSharedPtr<FUICommandList> CommandBindings;
 	
 		// The string by which to filter language codes.
 		FString FilterString;

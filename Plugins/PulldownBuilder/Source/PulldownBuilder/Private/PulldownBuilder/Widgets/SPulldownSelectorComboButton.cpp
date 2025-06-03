@@ -2,8 +2,8 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelectorComboButton.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Types/PulldownRowColors.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 
 #define LOCTEXT_NAMESPACE "PulldownSelectorComboButton"
 
@@ -23,7 +23,7 @@ namespace PulldownBuilder
 		
 		SComboButton::Construct(
 			SComboButton::FArguments()
-			.ContentPadding(FMargin(2, 2, 2, 1))
+			.ContentPadding(FMargin(2.f, 2.f, 2.f, 1.f))
 			.MenuPlacement(MenuPlacement_BelowAnchor)
 			.OnComboBoxOpened(InArgs._OnComboBoxOpened)
 			.OnGetMenuContent(this, &SPulldownSelectorComboButton::HandleOnGetMenuContent)
@@ -46,6 +46,11 @@ namespace PulldownBuilder
 		{
 			SelectedPulldownRow = GetSelection.Execute();
 		}
+	}
+
+	bool SPulldownSelectorComboButton::SupportsKeyboardFocus() const
+	{
+		return true;
 	}
 
 	TSharedPtr<FPulldownRow> SPulldownSelectorComboButton::GetSelectedItem() const
@@ -104,6 +109,11 @@ namespace PulldownBuilder
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
 		if (SelectedItem.IsValid())
 		{
+			if (UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled)
+			{
+				return FText::FromString(SelectedItem->SelectedValue);
+			}
+			
 			return SelectedItem->GetDisplayText();
 		}
 		
@@ -124,7 +134,7 @@ namespace PulldownBuilder
 	FSlateColor SPulldownSelectorComboButton::GetDisplayTextColor() const
 	{
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
-		return FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(SelectedItem);
+		return FPulldownRowColors::GetPulldownRowDisplayTextColor(SelectedItem);
 	}
 
 	void SPulldownSelectorComboButton::HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

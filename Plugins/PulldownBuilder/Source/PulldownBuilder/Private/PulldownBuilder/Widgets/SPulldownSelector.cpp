@@ -2,8 +2,18 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
+#include "PulldownBuilder/Types/PulldownRowColors.h"
+#include "PulldownBuilder/CommandActions/PulldownBuilderCommands.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
+#if UE_5_01_OR_LATER
+#include "Styling/AppStyle.h"
+#else
+#include "EditorStyleSet.h"
+#endif
 #include "Widgets/Input/SSearchBox.h"
+#include "Widgets/Input/SComboButton.h"
+#include "Widgets/Images/SImage.h"
 #include "Widgets/SToolTip.h"
 
 namespace PulldownBuilder
@@ -12,23 +22,84 @@ namespace PulldownBuilder
 	{
 		ListItemsSource = InArgs._ListItemsSource;
 		OnSelectionChanged = InArgs._OnSelectionChanged;
+
+		CommandBindings = MakeShared<FUICommandList>();
+		CommandBindings->MapAction(
+			FPulldownBuilderCommands::Get().DisableDisplayText,
+			FExecuteAction::CreateRaw(this, &SPulldownSelector::ToggleDisableDisplayText),
+			FCanExecuteAction(),
+			FGetActionCheckState::CreateStatic(&SPulldownSelector::GetDisableDisplayTextCheckState)
+		);
+		CommandBindings->MapAction(
+			FPulldownBuilderCommands::Get().DisableTextColoring,
+			FExecuteAction::CreateRaw(this, &SPulldownSelector::ToggleDisableTextColoring),
+			FCanExecuteAction(),
+			FGetActionCheckState::CreateStatic(&SPulldownSelector::GetDisableTextColoringCheckState)
+		);
+		
+		FMenuBuilder ViewOptions(false, CommandBindings);
+		ViewOptions.AddMenuEntry(FPulldownBuilderCommands::Get().DisableDisplayText);
+		ViewOptions.AddMenuEntry(FPulldownBuilderCommands::Get().DisableTextColoring);
+
+		static constexpr float MarginBetweenElements = 3.f;
 		
 		ChildSlot
 		[
 			SNew(SBox)
 			.HeightOverride(InArgs._HeightOverride)
 			.WidthOverride(InArgs._WidthOverride)
+			.Padding(MarginBetweenElements)
 			[
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
 				.AutoHeight()
 				[
-					SNew(SSearchBox)
-					.HintText(NSLOCTEXT("PulldownSelector", "SearchHintText", "Item Name or Tooltip Text"))
-					.OnTextChanged(this, &SPulldownSelector::HandleOnTextChanged)
-					.DelayChangeNotificationsWhileTyping(true)
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					.FillWidth(1.f)
+					[
+						SNew(SSearchBox)
+						.HintText(NSLOCTEXT("PulldownSelector", "SearchHintText", "Search"))
+						.OnTextChanged(this, &SPulldownSelector::HandleOnTextChanged)
+						.DelayChangeNotificationsWhileTyping(true)
+					]
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					[
+						SNew(SComboButton)
+						.HasDownArrow(false)
+						.ContentPadding(0.f)
+						.ForegroundColor(FSlateColor::UseForeground())
+						.ButtonStyle(
+#if UE_5_01_OR_LATER
+							FAppStyle::Get(),
+#else
+							FEditorStyle::Get(),
+#endif
+							TEXT("SimpleButton")
+						)
+						.AddMetaData<FTagMetaData>(TEXT("ViewOptions"))
+						.MenuContent()
+						[
+							ViewOptions.MakeWidget()
+						]
+						.ButtonContent()
+						[
+							SNew(SImage)
+							.Image(
+#if UE_5_01_OR_LATER
+								FAppStyle
+#else
+								FEditorStyle
+#endif
+								::GetBrush(TEXT("DetailsView.ViewOptions"))
+							)
+							.ColorAndOpacity(FSlateColor::UseForeground())
+						]
+					]
 				]
 				+ SVerticalBox::Slot()
+				.Padding(FMargin(0.f, MarginBetweenElements, 0.f, 0.f))
 				.FillHeight(1.0f)
 				[
 					SAssignNew(ListView, SListView<TSharedPtr<FPulldownRow>>)
@@ -44,6 +115,14 @@ namespace PulldownBuilder
 
 	FReply SPulldownSelector::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 	{
+		if (CommandBindings.IsValid())
+		{
+			if (CommandBindings->ProcessCommandBindings(InKeyEvent))
+			{
+				return FReply::Handled();
+			}
+		}
+		
 		if (InKeyEvent.GetKey() == EKeys::Enter &&
 			!InKeyEvent.IsAltDown() &&
 			!InKeyEvent.IsCommandDown() &&
@@ -59,6 +138,11 @@ namespace PulldownBuilder
 		}
 
 		return SCompoundWidget::OnKeyDown(MyGeometry, InKeyEvent);
+	}
+
+	bool SPulldownSelector::SupportsKeyboardFocus() const
+	{
+		return true;
 	}
 
 	TSharedPtr<FPulldownRow> SPulldownSelector::GetSelectedItem() const
@@ -119,9 +203,13 @@ namespace PulldownBuilder
 		check(InItem.IsValid());
 		
 		const TSharedRef<STextBlock> Row = SNew(STextBlock)
-			.Text(InItem->GetDisplayText())
+			.Text(
+				UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled ?
+				FText::FromString(InItem->SelectedValue) :
+				InItem->GetDisplayText()
+			)
 			.HighlightText(FText::FromString(FilterString))
-			.ColorAndOpacity(FPulldownBuilderUtils::GetPulldownRowDisplayTextColor(InItem));
+			.ColorAndOpacity(FPulldownRowColors::GetPulldownRowDisplayTextColor(InItem));
 
 		if (!InItem->TooltipText.IsEmpty())
 		{
@@ -166,15 +254,51 @@ namespace PulldownBuilder
 		}
 	}
 
-	bool SPulldownSelector::FilterRow(TSharedPtr<FPulldownRow> InListItem) const
+	bool SPulldownSelector::FilterRow(TSharedPtr<FPulldownRow> InItem) const
 	{
-		check(InListItem.IsValid());
+		check(InItem.IsValid());
 
-		const FString DisplayString = InListItem->GetDisplayText().ToString();
-		const FString TooltipString = InListItem->TooltipText.ToString();
+		const FString DisplayString = (
+			UPulldownBuilderAppearanceSettings::Get().bIsDisplayTextDisabled ?
+			InItem->SelectedValue :
+			InItem->GetDisplayText().ToString()
+		);
+		const FString TooltipString = InItem->TooltipText.ToString();
 		return (
 			DisplayString.Contains(FilterString) ||
 			TooltipString.Contains(FilterString)
 		);
+	}
+
+	void SPulldownSelector::ToggleDisableDisplayText()
+	{
+		auto* Settings = GetMutableDefault<UPulldownBuilderAppearanceSettings>();
+		check(IsValid(Settings));
+		
+		Settings->bIsDisplayTextDisabled = !Settings->bIsDisplayTextDisabled;
+
+		RefreshList();
+	}
+
+	ECheckBoxState SPulldownSelector::GetDisableDisplayTextCheckState()
+	{
+		const auto& AppearanceSettings = UPulldownBuilderAppearanceSettings::Get();
+		return (AppearanceSettings.bIsDisplayTextDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+	}
+
+	void SPulldownSelector::ToggleDisableTextColoring()
+	{
+		auto* Settings = GetMutableDefault<UPulldownBuilderAppearanceSettings>();
+		check(IsValid(Settings));
+		
+		Settings->bIsTextColoringDisabled = !Settings->bIsTextColoringDisabled;
+
+		RefreshList();
+	}
+
+	ECheckBoxState SPulldownSelector::GetDisableTextColoringCheckState()
+	{
+		const auto& AppearanceSettings = UPulldownBuilderAppearanceSettings::Get();
+		return (AppearanceSettings.bIsTextColoringDisabled ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	}
 }

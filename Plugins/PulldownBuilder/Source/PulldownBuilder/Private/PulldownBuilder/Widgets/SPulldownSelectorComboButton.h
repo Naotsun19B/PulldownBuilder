@@ -58,6 +58,7 @@ namespace PulldownBuilder
 
 		// SWidget interface.
 		virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+		virtual bool SupportsKeyboardFocus() const override;
 		// End of SWidget interface.
 		
 		// Getters and setters for the selected item.
