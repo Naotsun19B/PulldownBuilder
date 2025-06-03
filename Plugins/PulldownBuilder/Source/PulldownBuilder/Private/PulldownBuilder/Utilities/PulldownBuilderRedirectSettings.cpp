@@ -18,8 +18,8 @@ UPulldownBuilderRedirectSettings::UPulldownBuilderRedirectSettings()
 	ActiveRowNameUpdater.Add(UDataAssetUpdater::StaticClass());
 }
 
-UPulldownBuilderSettings::FSettingsInfo UPulldownBuilderRedirectSettings::GetSettingsInfo() const
+FString UPulldownBuilderRedirectSettings::GetSettingsName() const
 {
-	return FSettingsInfo(TEXT("Redirect"));
+	return TEXT("Redirect");
 }
 

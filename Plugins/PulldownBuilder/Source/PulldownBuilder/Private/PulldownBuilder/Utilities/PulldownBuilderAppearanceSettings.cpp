@@ -79,7 +79,7 @@ bool UPulldownBuilderAppearanceSettings::CanEditChange(const UProperty* InProper
 	return (UObject::CanEditChange(InProperty) && bCanEditChange);
 }
 
-UPulldownBuilderSettings::FSettingsInfo UPulldownBuilderAppearanceSettings::GetSettingsInfo() const
+FString UPulldownBuilderAppearanceSettings::GetSettingsName() const
 {
-	return FSettingsInfo(TEXT("Appearance"));
+	return TEXT("Appearance");
 }

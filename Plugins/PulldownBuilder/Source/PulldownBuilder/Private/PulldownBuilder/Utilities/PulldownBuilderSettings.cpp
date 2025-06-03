@@ -24,62 +24,31 @@ namespace PulldownBuilder
 	}
 }
 
-UPulldownBuilderSettings::FSettingsInfo::FSettingsInfo(const FName& InSectionName)
-	: SectionName(InSectionName)
+void UPulldownBuilderSettings::Register()
 {
-	DisplayName = FText::FromString(FName::NameToDisplayString(SectionName.ToString(), false));
+	FCoreDelegates::OnPostEngineInit.AddStatic(&UPulldownBuilderSettings::HandleOnPostEngineInit);
+	FCoreDelegates::OnEnginePreExit.AddStatic(&UPulldownBuilderSettings::HandleOnEnginePreExit);
 }
 
-UPulldownBuilderSettings::FSettingsInfo::FSettingsInfo(const FName& InSectionName, const FText& InDisplayName, const FText& InDescription)
-	: SectionName(InSectionName)
-	, DisplayName(InDisplayName)
-	, Description(InDescription)
+FName UPulldownBuilderSettings::GetSectionName() const
 {
+	return *(PulldownBuilder::Global::PluginName.ToString() + GetSettingsName());
 }
 
-FText UPulldownBuilderSettings::FSettingsInfo::GetFormattedDisplayName() const
+FText UPulldownBuilderSettings::GetDisplayName() const
 {
 	return FText::Format(
 		LOCTEXT("DisplayNameFormat", "{0} - {1}"),
 		FText::FromString(FName::NameToDisplayString(PulldownBuilder::Global::PluginName.ToString(), false)),
-		DisplayName
+		FText::FromString(GetSettingsName())
 	);
 }
 
-void UPulldownBuilderSettings::Register()
+FText UPulldownBuilderSettings::GetTooltipText() const
 {
-	FCoreDelegates::OnPostEngineInit.AddStatic(&UPulldownBuilderSettings::HandleOnPostEngineInit);
-}
-
-void UPulldownBuilderSettings::Unregister()
-{
-	ISettingsModule* SettingsModule = PulldownBuilder::Settings::GetSettingsModule();
-	if (SettingsModule == nullptr)
-	{
-		return;
-	}
-
-	for (const auto& Settings : AllSettings)
-	{
-		const TSharedPtr<ISettingsContainer> Container = SettingsModule->GetContainer(PulldownBuilder::Settings::ContainerName);
-		check(Container.IsValid());
-		const TSharedPtr<ISettingsCategory> Category = Container->GetCategory(PulldownBuilder::Settings::CategoryName);
-		check(Category.IsValid());
-		const TSharedPtr<ISettingsSection> Section = Category->GetSection(Settings.SectionName);
-		check(Section.IsValid());
-		Section->Save();
-		
-		SettingsModule->UnregisterSettings(
-			PulldownBuilder::Settings::ContainerName,
-			PulldownBuilder::Settings::CategoryName,
-			Settings.SectionName
-		);
-	}
-}
-
-const TArray<UPulldownBuilderSettings::FSettingsInfo>& UPulldownBuilderSettings::GetAllSettings()
-{
-	return AllSettings;
+	const UClass* SettingsClass = GetClass();
+	check(IsValid(SettingsClass));
+	return SettingsClass->GetToolTipText();
 }
 
 void UPulldownBuilderSettings::HandleOnPostEngineInit()
@@ -90,14 +59,14 @@ void UPulldownBuilderSettings::HandleOnPostEngineInit()
 		return;
 	}
 	
-	for (auto* GraphPrinterSettings : TObjectRange<UPulldownBuilderSettings>(RF_NoFlags))
+	for (auto* Settings : TObjectRange<UPulldownBuilderSettings>(RF_NoFlags))
 	{
-		if (!IsValid(GraphPrinterSettings))
+		if (!IsValid(Settings))
 		{
 			continue;
 		}
 
-		const UClass* SettingsClass = GraphPrinterSettings->GetClass();
+		const UClass* SettingsClass = Settings->GetClass();
 		if (!IsValid(SettingsClass))
 		{
 			continue;
@@ -106,26 +75,53 @@ void UPulldownBuilderSettings::HandleOnPostEngineInit()
 		{
 			continue;
 		}
-
-		FSettingsInfo SettingsInfo = GraphPrinterSettings->GetSettingsInfo();
-		if (SettingsInfo.Description.IsEmpty())
+		if (!Settings->IsTemplate())
 		{
-			SettingsInfo.Description = SettingsClass->GetToolTipText();
+			continue;
 		}
 		
 		SettingsModule->RegisterSettings(
 			PulldownBuilder::Settings::ContainerName,
 			PulldownBuilder::Settings::CategoryName,
-			SettingsInfo.SectionName,
-			SettingsInfo.GetFormattedDisplayName(),
-			SettingsInfo.Description,
-			GraphPrinterSettings
+			Settings->GetSectionName(),
+			Settings->GetDisplayName(),
+			Settings->GetTooltipText(),
+			Settings
 		);
 
-		AllSettings.Add(SettingsInfo);
+		Settings->AddToRoot();
+		AllSettings.Add(Settings);
 	}
 }
 
-TArray<UPulldownBuilderSettings::FSettingsInfo> UPulldownBuilderSettings::AllSettings;
+void UPulldownBuilderSettings::HandleOnEnginePreExit()
+{
+	ISettingsModule* SettingsModule = PulldownBuilder::Settings::GetSettingsModule();
+	if (SettingsModule == nullptr)
+	{
+		return;
+	}
+
+	for (auto* Settings : AllSettings)
+	{
+		const TSharedPtr<ISettingsContainer> Container = SettingsModule->GetContainer(PulldownBuilder::Settings::ContainerName);
+		check(Container.IsValid());
+		const TSharedPtr<ISettingsCategory> Category = Container->GetCategory(PulldownBuilder::Settings::CategoryName);
+		check(Category.IsValid());
+		const TSharedPtr<ISettingsSection> Section = Category->GetSection(Settings->GetSectionName());
+		check(Section.IsValid());
+		Section->Save();
+		
+		SettingsModule->UnregisterSettings(
+			PulldownBuilder::Settings::ContainerName,
+			PulldownBuilder::Settings::CategoryName,
+			Settings->GetSectionName()
+		);
+
+		Settings->RemoveFromRoot();
+	}
+}
+
+TArray<UPulldownBuilderSettings*> UPulldownBuilderSettings::AllSettings;
 
 #undef LOCTEXT_NAMESPACE

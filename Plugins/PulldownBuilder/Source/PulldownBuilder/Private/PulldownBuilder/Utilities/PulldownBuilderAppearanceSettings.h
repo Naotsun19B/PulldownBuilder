@@ -66,7 +66,8 @@ public:
 #endif
 	// End of UObject interface.
 
+protected:
 	// UPulldownBuilderSettings interface.
-	virtual FSettingsInfo GetSettingsInfo() const override;
+	virtual FString GetSettingsName() const override;
 	// End of UPulldownBuilderSettings interface.
 };
