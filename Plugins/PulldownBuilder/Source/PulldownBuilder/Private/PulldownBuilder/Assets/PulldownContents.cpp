@@ -1,12 +1,12 @@
 // Copyright 2021-2025 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Assets/PulldownContents.h"
-#include "PulldownBuilder/Assets/PulldownContentsLoader.h"
+#include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
-#include "PulldownBuilder/Types/PulldownRow.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 #if UE_5_04_OR_LATER
@@ -273,7 +273,9 @@ void UPulldownContents::RegisterDetailCustomization()
 	}
 
 	PulldownBuilder::FPulldownStructDetail::Register(PulldownStructType);
+
 	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
+	PulldownBuilder::FPulldownContentsDelegates::OnDetailCustomizationRegistered.Broadcast(this);
 }
 
 void UPulldownContents::UnregisterDetailCustomization()
@@ -291,7 +293,9 @@ void UPulldownContents::UnregisterDetailCustomization()
 	}
 
 	PulldownBuilder::FPulldownStructDetail::Unregister(PulldownStructType);
+
 	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
+	PulldownBuilder::FPulldownContentsDelegates::OnDetailCustomizationUnregistered.Broadcast(this);
 }
 
 void UPulldownContents::ModifyPulldownListGenerator()
@@ -337,7 +341,7 @@ void UPulldownContents::ModifyPulldownListGenerator()
 
 		if (PreChangePulldownListGenerator != PulldownListGenerator)
 		{
-			PulldownBuilder::FPulldownContentsLoader::OnPulldownContentsSourceChanged.Broadcast(this);
+			PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.Broadcast(this);
 		}
 	}
 	
