@@ -146,7 +146,7 @@ The following three `PulldownListGenerator`s are provided as standard.
 |       DataTablePulldownListGenerator       | List the Row Names of the data table assets set in `SourceDataTable` in the pull-down menu.            | If there is a variable named "PulldownTooltip" of any type FString, FName, or FText in a structure used as a row in a data table, the tooltip displays the string. </br> If there is a variable named "PulldownTextColor" of any type FColor, FLinearColor, or FSlateColor in a structure used as a row in a data table, the above text will be displayed in the pull-down menu with that color. |
 |      StringTablePulldownListGenerator      | List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.             |                                                                                                                                                                                                                                                                                                                                                                                                  |
 |     InputMappingsPulldownListGenerator     | List the elements of the input mapping set in the input of the project settings in the pull-down menu. |                                                                                                                                                                                                                                                                                                                                                                                                  |
-|       ActorNamePulldownListGenerator       | The pull-down menu lists actors that are located in the currently open world and meet the criteria.    | `SelectedValue` is constructed in the form "WorldName::ActorIdentifierName". The ActorIdentifierName part defaults to use the result of GetName, but you can create a class that inherits from `ActorIdentifierNameRegistry` to replace the way ActorIdentifierName is retrieved in any actor class.                                                                                             |
+|       ActorNamePulldownListGenerator       | The pull-down menu lists actors that are located in the currently open world and meet the criteria.    | `SelectedValue` is constructed in the form "WorldIdentifierName::ActorIdentifierName". The ActorIdentifierName part defaults to use the result of GetName, but you can create a class that inherits from `ActorIdentifierNameRegistry` to replace the way ActorIdentifierName is retrieved in any actor class.                                                                                   |
 |        SimplePulldownListGenerator         | Set `PulldownRow` directly to enumerate its values in the pull-down menu.                              |                                                                                                                                                                                                                                                                                                                                                                                                  |
 | (Deprecated)NameArrayPulldownListGenerator | List the elements of the array in the pull-down menu under `SourceNameArray`.                          |                                                                                                                                                                                                                                                                                                                                                                                                  |
 
@@ -157,6 +157,15 @@ Since the object with the variable being edited and the variable being edited ar
 ![BP_TestPulldown4PulldownListGenerator-GetPulldownRowsFromBlueprint](https://user-images.githubusercontent.com/51815450/177553308-a277f778-67d1-41aa-8495-2cba434ed423.png)
 
 https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-be00-2c5b24244a73.mp4
+
+If you have already implemented the same function as `ActorNamePulldownListGenerator` and when switching, there are differences in the format of `SelectedValue` and the way in which the world name is retrieved, you can override the processing with a class that inherits `UActorNamePulldownProcessOverride`.
+
+| **Function Name**                                               | **Description**                                                                        |
+|:----------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| GetWorldToActorBelong                                           | Returns the world to which it belongs based on the specified actor.                    |
+| GetWorldIdentifierName                                          | Returns the unique name of the world to which it belongs based on the specified world. |
+| SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName   | Splits a built `SelectedValue` into a `WorldIdentifierName` and `ActorIdentifierName`. |
+| BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName | Builds a `SelectedValue` from the `WorldIdentifierName and `ActorIdentifierName`.      |
 
 ### ・RowNameUpdater  
 
@@ -216,9 +225,6 @@ The following items can be set using the combo button in the top right corner of
 
 ・The PulldownContents asset is an editor-only asset and will not be cooked into the package.  
 ・In UE4.27 and earlier, the reset to default value function cannot be implemented when inline displaying, so `Should Inline Display When Single Property` will be disabled.
-・Although it is only available in C++, if you have already implemented the same function as `ActorNamePulldownListGenerator` and when switching, if there are differences in the format of the delimiter or `SelectedValue`, please overwrite the processing using the delegate below.  
-  - `UPulldownStructFunctionLibrary::OnSplitSelectedValueToWorldNameAndActorIdentifierName`  
-  - `UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName`  
 
 ## License
 

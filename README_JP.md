@@ -146,7 +146,7 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 |    DataTablePulldownListGenerator    | `SourceDataTable`に設定されたデータテーブルアセットのRowNameをプルダウンメニューに列挙します。 | データテーブルの行として使用されている構造体内にFString, FName, FTextいずれかの型の"PulldownTooltip"という名前の変数があった場合、ツールチップにはその文字列を表示します。</br> データテーブルの行として使用されている構造体内にFColor, FLinearColor, FSlateColorいずれかの型の"PulldownTextColor"という名前の変数があった場合、その色でプルダウンメニューに上のテキストを表示します。 |
 |   StringTablePulldownListGenerator   | `SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。 |                                                                                                                                                                                                                                             |
 |  InputMappingsPulldownListGenerator  | プロジェクト設定の入力で設定されている入力のマッピングの要素をプルダウンメニューに列挙します。             |                                                                                                                                                                                                                                             |
-|    ActorNamePulldownListGenerator    | 現在開いているワールドに配置されていて、条件にあうアクターをプルダウンメニューに列挙します。              | `SelectedValue`は"WorldName::ActorIdentifierName"の形式で構築されます。ActorIdentifierNameの部分はデフォルトで`GetName`の結果を使用しますが、`ActorIdentifierNameRegistry`を継承したクラスを作成して任意のアクタークラスでのActorIdentifierNameの取得方法を差し替えることができます。                                    |
+|    ActorNamePulldownListGenerator    | 現在開いているワールドに配置されていて、条件にあうアクターをプルダウンメニューに列挙します。              | `SelectedValue`は"WorldIdentifierName::ActorIdentifierName"の形式で構築されます。ActorIdentifierNameの部分はデフォルトで`GetName`の結果を使用しますが、`ActorIdentifierNameRegistry`を継承したクラスを作成して任意のアクタークラスでのActorIdentifierNameの取得方法を差し替えることができます。                          |
 |     SimplePulldownListGenerator      | 直接`PulldownRow`を設定してその値をプルダウンメニューに列挙します。                    |                                                                                                                                                                                                                                             |
 | (非推奨) NameArrayPulldownListGenerator | `SourceNameArray`の要素をプルダウンメニューに列挙します。                       |                                                                                                                                                                                                                                             |
 
@@ -157,6 +157,15 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 ![BP_TestPulldown4PulldownListGenerator-GetPulldownRowsFromBlueprint](https://user-images.githubusercontent.com/51815450/177553308-a277f778-67d1-41aa-8495-2cba434ed423.png)
 
 https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-be00-2c5b24244a73.mp4
+
+既に`ActorNamePulldownListGenerator`と同等の機能を実装していて乗り換える際に`SelectedValue`のフォーマットやワールド名の取得方法に違いがある際は`UActorNamePulldownProcessOverride`を継承したクラスで処理をオーバーライドできます。
+
+| **関数名**                                                         | **説明**                                        |
+|:----------------------------------------------------------------|-----------------------------------------------|
+| GetWorldToActorBelong                                           | アクターから紐づけるワールドを取得します。                         |
+| GetWorldIdentifierName                                          | ワールドから一意の名前を取得します。                            |
+| SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName   | `SelectedValue`からワールドの一意の名前とアクターの一意の名前に分割します。 |
+| BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName | ワールドの一意の名前とアクターの一意の名前から`SelectedValue`を構築します。 |
 
 ### ・RowNameUpdater  
 
@@ -215,10 +224,7 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 ## 備考  
 
 ・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。
-・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。  
-・C++限定ですが、既に`ActorNamePulldownListGenerator`と同等の機能を実装していて乗り換える際に区切り文字や`SelectedValue`のフォーマットに違いがある際は下記デリゲートで処理を上書きしてください。  
-  - `UPulldownStructFunctionLibrary::OnSplitSelectedValueToWorldNameAndActorIdentifierName`  
-  - `UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName`  
+・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。
 
 ## ライセンス
 

@@ -12,7 +12,7 @@ class UInterface;
 
 /**
  * A generator class that generates a list displayed in the pull-down menu from actors placed in the currently open world.
- * SelectedValue is in the following format: WorldName::ActorIdentifierName
+ * SelectedValue is in the following format: WorldIdentifierName::ActorIdentifierName
  */
 UCLASS()
 class PULLDOWNBUILDER_API UActorNamePulldownListGenerator : public UPulldownListGeneratorBase
@@ -60,14 +60,4 @@ protected:
 	// The list of interfaces that the actors listed in the pull-down menu must implement.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	TArray<TSubclassOf<UInterface>> RequiredInterfaces;
-
-public:
-	// The event that already implements a similar function, and when switching to this plugin,
-	// it will work even from the SelectedValue format, which is already implemented.
-	DECLARE_DELEGATE_RetVal_TwoParams(
-		FString, FOnBuildSelectedValueFromWorldNameAndActorIdentifierName,
-		const FString& /* WorldName */,
-		const FString& /* ActorIdentifierName */
-	);
-	static FOnBuildSelectedValueFromWorldNameAndActorIdentifierName OnBuildSelectedValueFromWorldNameAndActorIdentifierName;
 };

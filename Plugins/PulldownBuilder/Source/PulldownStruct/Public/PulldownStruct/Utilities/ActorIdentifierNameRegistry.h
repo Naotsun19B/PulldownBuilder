@@ -8,8 +8,7 @@
 #include "ActorIdentifierNameRegistry.generated.h"
 
 /**
- * A base class in the registry for implementing the unique name of actors used in
- * pull-down struct constructed from UActorNamePulldownListGenerator for each actor class.
+ * A base class in the registry for implementing the unique name of actors used in pull-down struct constructed from UActorNamePulldownListGenerator for each actor class.
  */
 UCLASS(Abstract, Blueprintable)
 class PULLDOWNSTRUCT_API UActorIdentifierNameRegistry : public UObject
@@ -18,10 +17,10 @@ class PULLDOWNSTRUCT_API UActorIdentifierNameRegistry : public UObject
 
 public:
 	// Returns whether the specified actor's class is supported by this registry.
-	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name Registry")
+	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name")
 	bool SupportsActorClass(const UClass* ActorClass) const;
 	
 	// Returns a unique name from the actor.
-	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name Registry")
+	UFUNCTION(BlueprintNativeEvent, Category = "Actor Identifier Name")
 	FString GetActorIdentifierName(const AActor* Actor) const;
 };

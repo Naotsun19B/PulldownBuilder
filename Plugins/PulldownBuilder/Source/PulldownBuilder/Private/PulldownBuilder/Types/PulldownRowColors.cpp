@@ -11,16 +11,14 @@
 namespace PulldownBuilder
 {
 #if UE_5_01_OR_LATER
-#define GET_STYLE_SET() FAppStyle::Get()
+#define GET_SLATE_COLOR(PropertyName) FAppStyle::Get().GetSlateColor(TEXT(PropertyName))
 #else
-#define GET_STYLE_SET() FEditorStyle::Get()
+#define GET_SLATE_COLOR(PropertyName) FEditorStyle::Get().GetSlateColor(TEXT(PropertyName))
 #endif
-#define GET_SLATE_COLOR(PropertyName) GET_STYLE_SET().GetSlateColor(TEXT(#PropertyName))
 	
 	const FSlateColor FPulldownRowColors::Normal		= GET_SLATE_COLOR("Colors.Foreground");
 	const FSlateColor FPulldownRowColors::None			= GET_SLATE_COLOR("Colors.Warning");
 	const FSlateColor FPulldownRowColors::NonExistent	= GET_SLATE_COLOR("Colors.Error");
 
 #undef GET_SLATE_COLOR
-#undef GET_STYLE_SET
 }

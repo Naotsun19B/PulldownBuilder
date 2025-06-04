@@ -55,25 +55,23 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 			continue;
 		}
 
-		const auto* WorldToBelongTo = Actor->GetTypedOuter<UWorld>();
-		if (!IsValid(WorldToBelongTo))
+		const auto* LevelToBelongTo = Actor->GetTypedOuter<ULevel>();
+		if (!IsValid(LevelToBelongTo))
 		{
 			continue;
 		}
-			
-		const FString WorldName = FSoftObjectPath(WorldToBelongTo).GetAssetName();
+
+		const UWorld* World = UPulldownStructFunctionLibrary::GetWorldToActorBelong(Actor);
+		if (!IsValid(World))
+		{
+			continue;
+		}
+		
+		const FString WorldIdentifierName = UPulldownStructFunctionLibrary::GetWorldIdentifierName(World);
 		const FString ActorIdentifierName = UPulldownStructFunctionLibrary::GetActorIdentifierName(Actor);
 			
 		FPulldownRow PulldownRow;
-		if (OnBuildSelectedValueFromWorldNameAndActorIdentifierName.IsBound())
-		{
-			PulldownRow.SelectedValue = OnBuildSelectedValueFromWorldNameAndActorIdentifierName.Execute(WorldName, ActorIdentifierName);
-		}
-		else
-		{
-			PulldownRow.SelectedValue = (WorldName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
-		}
-		
+		PulldownRow.SelectedValue = UPulldownStructFunctionLibrary::BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName(WorldIdentifierName, ActorIdentifierName);
 		PulldownRow.TooltipText = FText::FromString(Actor->GetPathName());
 		PulldownRow.DisplayText = FText::FromString(Actor->GetActorLabel());
 			
@@ -128,5 +126,3 @@ UClass* UActorNamePulldownListGenerator::GetActorClass() const
 {
 	return ActorClass;
 }
-
-UActorNamePulldownListGenerator::FOnBuildSelectedValueFromWorldNameAndActorIdentifierName UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName;
