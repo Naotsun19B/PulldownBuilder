@@ -36,7 +36,7 @@ namespace PulldownBuilder
 		}
 	}
 	
-#if UE_5_01_OR_LATER
+#if UE_5_00_OR_LATER
 	class FProgressNotification
 	{
 	public:
@@ -53,7 +53,7 @@ namespace PulldownBuilder
 		Instance = MakeUnique<FPulldownContentsAsyncLoader>();
 		check(Instance.IsValid());
 
-#if UE_5_01_OR_LATER
+#if UE_5_00_OR_LATER
 		Instance->ProgressNotification = MakePimpl<FProgressNotification>();
 #endif
 		

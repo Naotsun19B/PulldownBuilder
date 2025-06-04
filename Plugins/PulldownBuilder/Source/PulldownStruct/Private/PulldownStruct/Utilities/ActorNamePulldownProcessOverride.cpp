@@ -2,6 +2,10 @@
 
 #include "PulldownStruct/Utilities/ActorNamePulldownProcessOverride.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "Engine/Level.h"
+#include "UObject/SoftObjectPath.h"
 
 UWorld* UActorNamePulldownProcessOverride::GetWorldToActorBelong_Implementation(const AActor* Actor) const
 {

@@ -6,12 +6,12 @@
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 #if UE_5_04_OR_LATER
 #include "UObject/AssetRegistryTagsContext.h"
 #endif
+#include "UObject/UObjectThreadContext.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownContents)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GameFramework/Actor.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStructFunctionLibrary.generated.h"
 
