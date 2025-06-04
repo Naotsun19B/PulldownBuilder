@@ -36,12 +36,7 @@ UWorld* UPulldownStructFunctionLibrary::GetWorldToActorBelong(const AActor* Acto
 		return OverriddenProcess->GetWorldToActorBelong(Actor);
 	}
 	
-	if (const auto* LevelToBelongTo = Actor->GetTypedOuter<ULevel>())
-	{
-		return Cast<UWorld>(LevelToBelongTo->GetOuter());
-	}
-
-	return nullptr;
+	return UDefaultActorNamePulldownProcess::GetWorldToActorBelong(Actor);
 }
 
 FString UPulldownStructFunctionLibrary::GetWorldIdentifierName(const UWorld* World)
@@ -51,7 +46,7 @@ FString UPulldownStructFunctionLibrary::GetWorldIdentifierName(const UWorld* Wor
 		return OverriddenProcess->GetWorldIdentifierName(World);
 	}
 	
-	return FSoftObjectPath(World).GetAssetName();
+	return UDefaultActorNamePulldownProcess::GetWorldIdentifierName(World);
 }
 
 FString UPulldownStructFunctionLibrary::GetActorIdentifierName(const AActor* Actor)
@@ -75,7 +70,7 @@ FString UPulldownStructFunctionLibrary::GetActorIdentifierName(const AActor* Act
 		return ActorIdentifierNameRegistry->GetActorIdentifierName(Actor);
 	}
 
-	return GetNameSafe(Actor);
+	return UDefaultActorNamePulldownProcess::GetActorIdentifierName(Actor);
 }
 
 bool UPulldownStructFunctionLibrary::SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName(
@@ -89,7 +84,7 @@ bool UPulldownStructFunctionLibrary::SplitSelectedValueToWorldIdentifierNameAndA
 		return OverriddenProcess->SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName(SelectedValue, WorldIdentifierName, ActorIdentifierName);
 	}
 	
-	return SelectedValue.Split(PulldownBuilder::Global::WorldAndActorDelimiter, &WorldIdentifierName, &ActorIdentifierName);
+	return UDefaultActorNamePulldownProcess::SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName(SelectedValue, WorldIdentifierName, ActorIdentifierName);
 }
 
 FString UPulldownStructFunctionLibrary::BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName(
@@ -102,7 +97,7 @@ FString UPulldownStructFunctionLibrary::BuildSelectedValueFromWorldIdentifierNam
 		return OverriddenProcess->BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName(WorldIdentifierName, ActorIdentifierName);
 	}
 	
-	return (WorldIdentifierName + PulldownBuilder::Global::WorldAndActorDelimiter + ActorIdentifierName);
+	return UDefaultActorNamePulldownProcess::BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName(WorldIdentifierName, ActorIdentifierName);
 }
 
 AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
