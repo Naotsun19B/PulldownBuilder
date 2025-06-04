@@ -54,7 +54,13 @@ bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) cons
 
 FPulldownRows UPulldownListGeneratorBase::InvokeGetPulldownRows(const TArray<UObject*>& OuterObjects, const FStructContainer& StructInstance) const
 {
-	const TArray<FPulldownRow> PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects, StructInstance);
+	// Blueprint functions are not available during routing post load.
+	TArray<FPulldownRow> PulldownRowsFromBlueprint;
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		PulldownRowsFromBlueprint = GetPulldownRowsFromBlueprint(OuterObjects, StructInstance);
+	}
+	
 	FPulldownRows PulldownRows(PulldownRowsFromBlueprint);
 	if (PulldownRows.IsEmpty())
 	{
@@ -259,6 +265,12 @@ TArray<FName> UPulldownListGeneratorBase::GetDefaultValueOptions_Implementation(
 
 void UPulldownListGeneratorBase::VerifyDefaultValue()
 {
+	// Blueprint functions are not available during routing post load.
+	if (FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		return;
+	}
+	
 	const TArray<FName> DefaultValueOptions = GetDefaultValueOptions();
 	if (DefaultValueOptions.Contains(DefaultValue))
 	{
@@ -271,6 +283,12 @@ void UPulldownListGeneratorBase::VerifyDefaultValue()
 
 void UPulldownListGeneratorBase::ApplyDefaultValue(FPulldownRows& PulldownRows) const
 {
+	// Blueprint functions are not available during routing post load.
+	if (FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		return;
+	}
+	
 	if (IsEnableCustomDefaultValue() || !bEnableDefaultValue)
 	{
 		return;

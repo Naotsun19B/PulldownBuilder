@@ -161,15 +161,17 @@ void UPulldownContents::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags)
 	AddTag(GeneratorClassTag, GetPulldownListGeneratorClassName());
 
 	// Added the name of the underlying asset of the PulldownListGenerator to AssetRegistryTags.
-	FString SourceAssetName = LexToString(NAME_None);
 	if (IsValid(PulldownListGenerator))
 	{
-		if (PulldownListGenerator->HasSourceAsset())
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
 		{
-			SourceAssetName = PulldownListGenerator->GetSourceAssetName();
+			if (PulldownListGenerator->HasSourceAsset())
+			{
+				AddTag(SourceAssetTag, PulldownListGenerator->GetSourceAssetName());
+			}
 		}
 	}
-	AddTag(SourceAssetTag, SourceAssetName);
 }
 
 const FPulldownStructType& UPulldownContents::GetPulldownStructType() const

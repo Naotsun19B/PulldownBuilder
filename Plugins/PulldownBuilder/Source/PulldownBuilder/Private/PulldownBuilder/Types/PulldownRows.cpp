@@ -18,7 +18,7 @@ FPulldownRows::FPulldownRows(const int32 NumOfReserves /*= INDEX_NONE */)
 }
 
 FPulldownRows::FPulldownRows(const TArray<FPulldownRow>& BlueprintValue)
-	: FPulldownRows()
+	: FPulldownRows(BlueprintValue.Num())
 {
 	for (const auto& PulldownRowFromBlueprint : BlueprintValue)
 	{
