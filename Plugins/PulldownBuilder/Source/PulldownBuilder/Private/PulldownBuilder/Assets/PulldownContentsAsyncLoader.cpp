@@ -3,13 +3,13 @@
 #include "PulldownBuilder/Assets/PulldownContentsAsyncLoader.h"
 #include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
-#include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #if UE_4_26_OR_LATER
 #include "AssetRegistry/IAssetRegistry.h"
 #else
 #include "IAssetRegistry.h"
 #endif
+#include "AssetRegistry/AssetData.h"
 #include "Engine/AssetManager.h"
 #if UE_5_01_OR_LATER
 #include "Framework/Notifications/NotificationManager.h"

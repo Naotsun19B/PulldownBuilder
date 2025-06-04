@@ -135,7 +135,12 @@ namespace PulldownBuilder
 	FSlateColor SPulldownSelectorComboButton::GetDisplayTextColor() const
 	{
 		const TSharedPtr<FPulldownRow> SelectedItem = GetSelectedItem();
-		return FPulldownRowColors::GetPulldownRowDisplayTextColor(SelectedItem);
+		if (SelectedItem.IsValid())
+		{
+			return SelectedItem->GetDisplayTextColor();
+		}
+
+		return FPulldownRowColors::NonExistent;
 	}
 
 	void SPulldownSelectorComboButton::HandleOnSelectionChanged(TSharedPtr<FPulldownRow> SelectedItem, ESelectInfo::Type SelectInfo)

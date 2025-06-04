@@ -7,6 +7,7 @@
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
+#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "EdGraphSchema_K2.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"
@@ -161,7 +162,7 @@ namespace PulldownBuilder
 	{
 		check(IsValid(InStruct));
 		
-		if (const UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
+		if (UScriptStruct::ICppStructOps* CppStructOps = InStruct->GetCppStructOps())
 		{
 			return CppStructOps->HasPostSerialize();
 		}
@@ -257,7 +258,7 @@ namespace PulldownBuilder
 	{
 		check(Pin != nullptr);
 
-		const auto* ScriptStruct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject);
+		auto* ScriptStruct = Cast<UScriptStruct>(Pin->PinType.PinSubCategoryObject);
 		if (!IsValid(ScriptStruct))
 		{
 			return false;
@@ -279,8 +280,9 @@ namespace PulldownBuilder
 
 		auto* RawData = static_cast<uint8*>(FMemory::Malloc(ScriptStruct->GetStructureSize()));
 		ScriptStruct->InitializeStruct(RawData);
-
+		
 		bool bWasSuccessful = false;
+
 		if (ScriptStruct->ImportText(*DefaultValue, RawData, nullptr, PPF_None, GLog, GetNameSafe(ScriptStruct)) != nullptr)
 		{
 			StructContainer = FStructContainer(ScriptStruct, RawData);

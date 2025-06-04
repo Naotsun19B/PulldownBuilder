@@ -22,8 +22,10 @@ class UPulldownBuilderAppearanceSettings : public UPulldownBuilderSettings
 	GENERATED_BODY()
 
 public:
+#if UE_5_00_OR_LATER
 	// The passkey for the class that allows you to make changes to this class.
 	using FPassKey = PulldownBuilder::TPassKeys<PulldownBuilder::SPulldownSelector>;
+#endif
 	
 	// Define a default value for the size of the PulldownSelector widget so that it can be used externally.
 	static FVector2D DefaultPanelSize;

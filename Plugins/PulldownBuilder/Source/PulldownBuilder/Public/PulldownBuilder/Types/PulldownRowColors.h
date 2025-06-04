@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-struct FPulldownRow;
+#include "Styling/SlateColor.h"
 
 namespace PulldownBuilder
 {
@@ -22,12 +21,5 @@ namespace PulldownBuilder
 
 		// The color applied to pull-down row with value that is not present in the values displayed in the list in the pull-down menu.
 		static const FSlateColor NonExistent;
-
-	public:
-		// Returns the slate color registered in the style set.
-		static FSlateColor FindStyleSetSlateColor(const FName& PropertyName);
-
-		// Returns the color of the text to be displayed based on the specified pull-down row.
-		static FSlateColor GetPulldownRowDisplayTextColor(const TSharedPtr<FPulldownRow>& PulldownRow);
 	};
 }

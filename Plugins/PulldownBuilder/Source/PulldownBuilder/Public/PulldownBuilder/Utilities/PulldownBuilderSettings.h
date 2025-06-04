@@ -59,7 +59,11 @@ namespace PulldownBuilder
 
 	// Returns mutable reference of settings.
 	template<class TSettings>
-	static TSettings& GetMutableSettings(typename TSettings::FPassKey)
+	static TSettings& GetMutableSettings(
+#if UE_5_00_OR_LATER
+		typename TSettings::FPassKey
+#endif
+	)
 	{
 		static_assert(TIsDerivedFrom<TSettings, UPulldownBuilderSettings>::IsDerived, "This implementation wasn't tested for a filter that isn't a child of UPulldownBuilderSettings.");
 

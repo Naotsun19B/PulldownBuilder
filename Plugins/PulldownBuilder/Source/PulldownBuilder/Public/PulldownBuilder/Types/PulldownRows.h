@@ -3,8 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Templates/IsArray.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#if UE_5_00_OR_LATER
+#include "Containers/Map.h"
+#endif
+
+#if !UE_5_00_OR_LATER
+template <typename T> struct TIsTMap { enum { Value = false }; };
+template <typename KeyType, typename ValueType, typename SetAllocator, typename KeyFuncs> struct TIsTMap<               TMap<KeyType, ValueType, SetAllocator, KeyFuncs>> { enum { Value = true }; };
+template <typename KeyType, typename ValueType, typename SetAllocator, typename KeyFuncs> struct TIsTMap<const          TMap<KeyType, ValueType, SetAllocator, KeyFuncs>> { enum { Value = true }; };
+template <typename KeyType, typename ValueType, typename SetAllocator, typename KeyFuncs> struct TIsTMap<      volatile TMap<KeyType, ValueType, SetAllocator, KeyFuncs>> { enum { Value = true }; };
+template <typename KeyType, typename ValueType, typename SetAllocator, typename KeyFuncs> struct TIsTMap<const volatile TMap<KeyType, ValueType, SetAllocator, KeyFuncs>> { enum { Value = true }; };
+#endif
 
 /**
  * A struct of the data that appears in the list in the pull-down menu.

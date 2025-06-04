@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Framework/Commands/Commands.h"
-#include "Framework/Commands/UICommandList.h"
 #include "Framework/Commands/UICommandInfo.h"
 
 namespace PulldownBuilder

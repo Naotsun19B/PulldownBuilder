@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Templates/PimplPtr.h"
 
 class UPulldownContents;
+struct FAssetData;
 
 namespace PulldownBuilder
 {

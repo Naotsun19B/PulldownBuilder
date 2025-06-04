@@ -28,7 +28,7 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.27 ~ 5.5  
+対象バージョン : UE4.27 ~ 5.6  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -141,12 +141,14 @@ C++で定義したものとは違い、プルダウンメニューの元とな�
 プルダウンメニューの元となるリストを構築するクラスとして`PulldownListGenerator`があります。  
 標準で以下の3つの`PulldownListGenerator`が用意されています。
 
-|              **クラス**               | **機能**                                                     | **ツールチップ**                                                                   |
-|:----------------------------------:|------------------------------------------------------------|------------------------------------------------------------------------------|
-|   DataTablePulldownListGenerator   | `SourceDataTable`に設定されたデータテーブルアセットのRowNameをプルダウンメニューに列挙します。 | データテーブルの行として使用されている構造体内にFString型の"PulldownTooltip"という名前の変数があった場合、その文字列を表示します。 |
-|  StringTablePulldownListGenerator  | `SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。 | 各項目の対応する文字列を表示します。                                                           |
-|   NameArrayPulldownListGenerator   | `SourceNameArray`の要素をプルダウンメニューに列挙します。                      | 各項目のValueに設定されている文字列を表示します。                                                  |
-| InputMappingsPulldownListGenerator | プロジェクト設定の入力で設定されている入力のマッピングの要素をプルダウンメニューに列挙します。            | 入力名に対応したボタンの名前を表示します。                                                        |
+|               **クラス**                | **機能**                                                      | **備考**                                                                                                                                                                                                                                      |
+|:------------------------------------:|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    DataTablePulldownListGenerator    | `SourceDataTable`に設定されたデータテーブルアセットのRowNameをプルダウンメニューに列挙します。 | データテーブルの行として使用されている構造体内にFString, FName, FTextいずれかの型の"PulldownTooltip"という名前の変数があった場合、ツールチップにはその文字列を表示します。</br> データテーブルの行として使用されている構造体内にFColor, FLinearColor, FSlateColorいずれかの型の"PulldownTextColor"という名前の変数があった場合、その色でプルダウンメニューに上のテキストを表示します。 |
+|   StringTablePulldownListGenerator   | `SourceStringTable`に設定されたストリングテーブルアセットのKeyをプルダウンメニューに列挙します。 |                                                                                                                                                                                                                                             |
+|  InputMappingsPulldownListGenerator  | プロジェクト設定の入力で設定されている入力のマッピングの要素をプルダウンメニューに列挙します。             |                                                                                                                                                                                                                                             |
+|    ActorNamePulldownListGenerator    | 現在開いているワールドに配置されていて、条件にあうアクターをプルダウンメニューに列挙します。              | `SelectedValue`は"WorldName::ActorIdentifierName"の形式で構築されます。ActorIdentifierNameの部分はデフォルトで`GetName`の結果を使用しますが、`ActorIdentifierNameRegistry`を継承したクラスを作成して任意のアクタークラスでのActorIdentifierNameの取得方法を差し替えることができます。                                    |
+|     SimplePulldownListGenerator      | 直接`PulldownRow`を設定してその値をプルダウンメニューに列挙します。                    |                                                                                                                                                                                                                                             |
+| (非推奨) NameArrayPulldownListGenerator | `SourceNameArray`の要素をプルダウンメニューに列挙します。                       |                                                                                                                                                                                                                                             |
 
 独自の`PulldownListGenerator`を作成するには、C++もしくはBPで [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) を継承し、`GetPulldownRows`をオーバライドします。  
 戻り値の配列がプルダウンメニューに列挙される内容になります。  
@@ -182,6 +184,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 対象のプルダウン構造体が`NativeLessPulldownStruct`の場合、ノードの詳細パネルから`Pulldown Contents`というプロパティでノードのピンの項目の元となるアセットを選択できます。  
 また、対象のプルダウン構造体が`NativeLessPulldownStruct`の場合で、いずれの項目でもない値が渡された場合はデフォルトピンに出力されます。  
 
+![FindActorByPulldownStructNode](https://github.com/user-attachments/assets/e7261b0b-93a2-4ad3-b162-832fd256e97a)
+
+`ActorNamePulldownListGenerator`によって構築されるプルダウン構造体の値からアクターを取得するノードが利用できます。
+
 ## オプション  
 
 ![EditorPreferences](https://user-images.githubusercontent.com/51815450/173224011-f82601a7-77e8-45fb-b74a-31ca17464163.PNG)
@@ -197,10 +203,22 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 | Redirect   | Should Update When Source Row Name Changed | RowNameUpdaterを使ったプルダウンメニューの自動更新処理を行うかを指定します。                       |
 |            | Active Row Name Updater                    | 有効化するRowNameUpdaterのクラスを指定します。ここで設定されているRowNameUpdaterのみが更新処理を行います。 |
 
+![PulldownViewOptions](https://github.com/user-attachments/assets/88768430-f3af-467d-88f6-5ba6ebb91fdc)
+
+プルダウンメニューの右上のコンボボタンから設定できる項目は以下の通りです。
+
+| **項目**                | **説明**                                             |
+|-----------------------|----------------------------------------------------|
+| Disable Display Text  | `DisplayText`が設定されていても強制的に`SelectedValue`の値を表示します。 |
+| Disable Text Coloring | テキストの色を無効にし、全ての要素をデフォルトの色ので表示します。                  |
+
 ## 備考  
 
 ・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。
 ・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。  
+・C++限定ですが、既に`ActorNamePulldownListGenerator`と同等の機能を実装していて乗り換える際に区切り文字や`SelectedValue`のフォーマットに違いがある際は下記デリゲートで処理を上書きしてください。  
+  - `UPulldownStructFunctionLibrary::OnSplitSelectedValueToWorldNameAndActorIdentifierName`  
+  - `UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName`  
 
 ## ライセンス
 
@@ -211,6 +229,21 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2025/06/04) v2.7  
+  UE5.6に対応しました
+  プルダウン構造体の設定済の値が意図せずデフォルト値に変更される不具合を修正しました    
+  `NativeLessPulldownStruct`が編集できなくなる不具合を修正しました    
+  PulldownContentsアセットで設定されているプルダウン構造体がスイッチノードをサポートするかどうかを設定できるようにしました  
+  PulldownContentsアセットで設定されているプルダウン構造体が`PulldownListGenerator`から構築されるリストに存在しない値を許容するかどうかを設定できるようにしました  
+  ワールドに配置されているアクターからプルダウンのリストを生成する`PulldownListGenerator`を追加しました  
+  `ActorNamePulldownListGenerator`によって構築されるプルダウン構造体からアクターを取得する`Find Actor By Pulldown Struct`ノードを追加しました  
+  プルダウンメニューに表示されるテキストに色を付けられる機能を追加しました  
+  `DataTablePulldownListGenerator`でプルダウンメニューに表示されるテキストの色を指定できるメタ指定子を追加しました  
+  `NameArrayPulldownListGenerator`を非推奨として代わりに`SimplePulldownListGenerator`を追加しました  
+  プルダウンメニューに表示オプションを追加しました  
+  エディタ環境設定やビルド構成などの設定が正常に保存されない不具合の修正を行いました  
+  PulldownContentsアセットに更新を行った際に詳細パネルが更新されるように変更しました  
 
 - (2025/04/26) v2.6  
   UE4.26以前のサポートを打ち切りました  

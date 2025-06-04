@@ -4,12 +4,15 @@
 #include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "GameFramework/Actor.h"
+#include "Editor.h"
 #if UE_5_00_OR_LATER
 #include "Subsystems/UnrealEditorSubsystem.h"
-#else
-#include "Editor.h"
 #endif
 #include "EngineUtils.h"
+
+#if UE_5_01_OR_LATER
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ActorNamePulldownListGenerator)
+#endif
 
 UActorNamePulldownListGenerator::UActorNamePulldownListGenerator()
 	: ActorClass(AActor::StaticClass())
@@ -22,7 +25,7 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	const auto* EditorWorld = []() -> const UWorld*
+	auto* EditorWorld = []() -> UWorld*
 	{
 		check(IsValid(GEditor));
 #if UE_5_00_OR_LATER

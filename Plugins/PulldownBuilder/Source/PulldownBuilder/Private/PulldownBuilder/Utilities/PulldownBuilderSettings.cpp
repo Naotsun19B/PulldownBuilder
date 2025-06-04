@@ -2,6 +2,8 @@
 
 #include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "Misc/CoreDelegates.h"
+#include "UObject/UObjectIterator.h"
 #include "Modules/ModuleManager.h"
 #include "ISettingsModule.h"
 #include "ISettingsContainer.h"

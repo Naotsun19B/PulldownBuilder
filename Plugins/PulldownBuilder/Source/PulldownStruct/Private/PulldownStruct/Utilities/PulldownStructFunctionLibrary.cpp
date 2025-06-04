@@ -3,7 +3,9 @@
 #include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownStruct/Utilities/ActorIdentifierNameRegistry.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "UObject/UObjectIterator.h"
 #include "EngineUtils.h"
+#include "Engine/Engine.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PulldownStructFunctionLibrary)
@@ -60,7 +62,7 @@ AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 	}
 	
 	verify(IsValid(GEngine));
-	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (WorldName != FSoftObjectPath(World).GetAssetName())
 	{
 		return nullptr;

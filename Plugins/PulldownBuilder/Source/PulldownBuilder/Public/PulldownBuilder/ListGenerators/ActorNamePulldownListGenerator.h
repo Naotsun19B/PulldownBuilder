@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Templates/SubclassOf.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
 #include "ActorNamePulldownListGenerator.generated.h"
 
 class AActor;
+class UInterface;
 
 /**
  * A generator class that generates a list displayed in the pull-down menu from actors placed in the currently open world.
@@ -51,7 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	bool bIncludeInheritedActorClasses;
 
-	// The list of classes of actors that inherit from Actor Class but do not explicitly list them in the pull-down menu.
+	// The list of actor classes that inherit from Actor Class but do not explicitly list them in the pull-down menu.
 	UPROPERTY(EditAnywhere, Category = "Pulldown", meta = (EditCondition = "bIncludeInheritedActorClasses"))
 	TArray<TSubclassOf<AActor>> ActorClassesToExclude;
 
@@ -60,7 +62,7 @@ protected:
 	TArray<TSubclassOf<UInterface>> RequiredInterfaces;
 
 public:
-	// The event that already implements a similar function and when switching to this plugin,
+	// The event that already implements a similar function, and when switching to this plugin,
 	// it will work even from the SelectedValue format, which is already implemented.
 	DECLARE_DELEGATE_RetVal_TwoParams(
 		FString, FOnBuildSelectedValueFromWorldNameAndActorIdentifierName,

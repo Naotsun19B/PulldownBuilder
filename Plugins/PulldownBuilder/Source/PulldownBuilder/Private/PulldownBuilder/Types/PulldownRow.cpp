@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/Types/PulldownRow.h"
 #include "PulldownBuilder/Types/PulldownRowColors.h"
+#include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 
 #define LOCTEXT_NAMESPACE "PulldownRow"
 
@@ -35,6 +36,27 @@ FText FPulldownRow::GetDisplayText() const
 bool FPulldownRow::IsNonExistentValue() const
 {
 	return bIsNonExistentValue;
+}
+
+FSlateColor FPulldownRow::GetDisplayTextColor() const
+{
+	const auto& Settings = PulldownBuilder::GetSettings<UPulldownBuilderAppearanceSettings>();
+	if (Settings.bIsTextColoringDisabled)
+	{
+		return PulldownBuilder::FPulldownRowColors::Normal;
+	}
+		
+	if (IsNonExistentValue())
+	{
+		return PulldownBuilder::FPulldownRowColors::NonExistent;
+	}
+
+	if (IsNone())
+	{
+		return PulldownBuilder::FPulldownRowColors::None;
+	}
+		
+	return DisplayTextColor;
 }
 
 #undef LOCTEXT_NAMESPACE

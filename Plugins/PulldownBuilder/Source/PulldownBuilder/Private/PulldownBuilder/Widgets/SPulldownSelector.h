@@ -7,6 +7,7 @@
 #include "Widgets/Views/SListView.h"
 
 struct FPulldownRow;
+class FUICommandList;
 
 namespace PulldownBuilder
 {

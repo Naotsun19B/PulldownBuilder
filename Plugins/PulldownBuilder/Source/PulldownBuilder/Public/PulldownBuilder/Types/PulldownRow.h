@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Styling/SlateColor.h"
 #include "PulldownRow.generated.h"
-
-struct FPulldownRow;
 
 /**
  * A struct that summarizes the data used in the pull-down menu row.
@@ -75,6 +74,9 @@ public:
 	
 	// Returns whether a value does not exist among the values displayed in the list in the pull-down menu.
 	bool IsNonExistentValue() const;
+
+	// Returns the color of the text to be displayed.
+	FSlateColor GetDisplayTextColor() const;
 };
 
 // Define a GetTypeHash function so that it can be used as a map key.

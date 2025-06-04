@@ -119,7 +119,7 @@ void FPulldownRows::SetNonExistentValue(const FName& SelectedValue, const FText&
 {
 	auto ContainsPredicate = [&](const TSharedPtr<FPulldownRow>& Row) -> bool
 	{
-		return (Row.IsValid() && (Row->SelectedValue == SelectedValue));
+		return (Row.IsValid() && SelectedValue.IsEqual(*Row->SelectedValue));
 	};
 	if (Rows.ContainsByPredicate(ContainsPredicate))
 	{

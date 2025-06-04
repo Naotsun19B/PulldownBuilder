@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 
+#if UE_5_00_OR_LATER
 namespace PulldownBuilder
 {
 	/**
@@ -59,3 +60,6 @@ namespace PulldownBuilder
  * Cannot be used in static functions because the type is determined from this.
  */
 #define PULLDOWN_BUILDER_PASS_KEY PulldownBuilder::TPassKey<PulldownBuilder::TRemoveConstVolatileReference_T<decltype(*this)>>()
+#else
+#define PULLDOWN_BUILDER_PASS_KEY
+#endif

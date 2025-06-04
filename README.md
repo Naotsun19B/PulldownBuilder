@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.27 ~ 5.5  
+Target version : UE4.27 ~ 5.6  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -141,12 +141,14 @@ Unlike the one defined in C++, you can switch the PulldownContents asset from wh
 There is `PulldownListGenerator` as a class that builds the list that is the basis of the pull-down menu.
 The following three `PulldownListGenerator`s are provided as standard.
 
-|             **Class**              | **Function**                                                                                            | **Tooltip**                                                                                                                                  |
-|:----------------------------------:|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-|   DataTablePulldownListGenerator   | List the Row Names of the data table assets set in `SourceDataTable` in the pull-down menu.             | If there is a variable named "PulldownTooltip" of type FString in the structure used as the row of the Data Table, that string is displayed. |
-|  StringTablePulldownListGenerator  | List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.              | Displays the corresponding character string for each item.                                                                                   |
-|   NameArrayPulldownListGenerator   | List the elements of the array in the pull-down menu under `SourceNameArray`.                           | Displays the character string set in the Value of each item.                                                                                 |
-| InputMappingsPulldownListGenerator | List the elements of the input mapping set in the input of the project settings in the pull-down menu.  | Displays the name of the button corresponding to the input name.                                                                             |
+|                 **Class**                  | **Function**                                                                                           | **Node**                                                                                                                                                                                                                                                                                                                                                                                         |
+|:------------------------------------------:|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|       DataTablePulldownListGenerator       | List the Row Names of the data table assets set in `SourceDataTable` in the pull-down menu.            | If there is a variable named "PulldownTooltip" of any type FString, FName, or FText in a structure used as a row in a data table, the tooltip displays the string. </br> If there is a variable named "PulldownTextColor" of any type FColor, FLinearColor, or FSlateColor in a structure used as a row in a data table, the above text will be displayed in the pull-down menu with that color. |
+|      StringTablePulldownListGenerator      | List the Keys of the string table assets set in `SourceStringTable` in the pull-down menu.             |                                                                                                                                                                                                                                                                                                                                                                                                  |
+|     InputMappingsPulldownListGenerator     | List the elements of the input mapping set in the input of the project settings in the pull-down menu. |                                                                                                                                                                                                                                                                                                                                                                                                  |
+|       ActorNamePulldownListGenerator       | The pull-down menu lists actors that are located in the currently open world and meet the criteria.    | `SelectedValue` is constructed in the form "WorldName::ActorIdentifierName". The ActorIdentifierName part defaults to use the result of GetName, but you can create a class that inherits from `ActorIdentifierNameRegistry` to replace the way ActorIdentifierName is retrieved in any actor class.                                                                                             |
+|        SimplePulldownListGenerator         | Set `PulldownRow` directly to enumerate its values in the pull-down menu.                              |                                                                                                                                                                                                                                                                                                                                                                                                  |
+| (Deprecated)NameArrayPulldownListGenerator | List the elements of the array in the pull-down menu under `SourceNameArray`.                          |                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 To create your own `PulldownListGenerator`, inherit the [`UPulldownListGeneratorBase`](https://github.com/Naotsun19B/PulldownBuilder/blob/master/Plugins/PulldownBuilder/Source/PulldownBuilder/Public/PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h) in C++ or BP and override the `GetPulldownRows`.  
 The return value array will be listed in the pull-down menu.  
@@ -182,6 +184,10 @@ Switch nodes is available that consists of the items that appear in the pull-dow
 If the target pulldown structure is `NativeLessPulldownStruct`, the property `Pulldown Contents` from the node details panel allows you to select the asset that the node's pin items are based on.    
 Also, if the target pulldown structure is `Native Less Pulldown Struct` and a value that is not one of the items is passed, it will be output to the default pin.  
 
+![FindActorByPulldownStructNode](https://github.com/user-attachments/assets/e7261b0b-93a2-4ad3-b162-832fd256e97a)
+
+A node is available to retrieve actors from the values of pull-down structures constructed by `ActorNamePulldownListGenerator`.
+
 ## Settings  
 
 ![EditorPreferences](https://user-images.githubusercontent.com/51815450/173224011-f82601a7-77e8-45fb-b74a-31ca17464163.PNG)
@@ -197,10 +203,22 @@ The items that can be set from the editor preferences are as follows.
 | Redirect    | Should Update When Source Row Name Changed | Specifies whether to perform automatic update processing of the pull-down menu using RowNameUpdater.            |
 |             | Active Row Name Updater                    | Specifies the RowNameUpdater class to enable. Only the RowNameUpdater set here will perform the update process. |
 
+![PulldownViewOptions](https://github.com/user-attachments/assets/88768430-f3af-467d-88f6-5ba6ebb91fdc)
+
+The following items can be set using the combo button in the top right corner of the pull-down menu.
+
+| **Item**              | **Description**                                                                                   |
+|-----------------------|---------------------------------------------------------------------------------------------------|
+| Disable Display Text  | Displays the selected value even if it is displayed in the item in the pull-down menu.            |
+| Disable Text Coloring | Disables text coloring in the pull-down menu and display text for all items in the default color. |
+
 ## Note  
 
 ・The PulldownContents asset is an editor-only asset and will not be cooked into the package.  
 ・In UE4.27 and earlier, the reset to default value function cannot be implemented when inline displaying, so `Should Inline Display When Single Property` will be disabled.
+・Although it is only available in C++, if you have already implemented the same function as `ActorNamePulldownListGenerator` and when switching, if there are differences in the format of the delimiter or `SelectedValue`, please overwrite the processing using the delegate below.  
+  - `UPulldownStructFunctionLibrary::OnSplitSelectedValueToWorldNameAndActorIdentifierName`  
+  - `UActorNamePulldownListGenerator::OnBuildSelectedValueFromWorldNameAndActorIdentifierName`  
 
 ## License
 
@@ -212,9 +230,24 @@ The items that can be set from the editor preferences are as follows.
 
 ## History  
 
+- (2025/06/04) v2.7  
+  Added support for UE5.6
+  Fixed an issue where the set value of a pull-down structure was unintentionally changed to the default value    
+  Fixed an issue where `NativeLessPulldownStruct` could no longer be edited    
+  Added a feature that allows you to set whether the pulldown structure configured in the PulldownContents asset supports switch node  
+  Added a feature that allows you to set whether pulldown structures set in the PulldownContents asset to allow values that are not present in the list constructed from `PulldownListGenerator`  
+  Added `PulldownListGenerator` which generates a pulldown list from actors placed in the world  
+  Added `Find Actor By Pulldown Struct` node that retrieves actors from pulldown structures constructed by `ActorNamePulldownListGenerator`  
+  Added a feature that allows you to color text displayed in the pull-down menu  
+  Added a meta specifier that allows you to specify the color of the text displayed in the pull-down menu with `DataTablePulldownListGenerator`  
+  Deprecated `NameArrayPulldownListGenerator` and added `SimplePulldownListGenerator` instead  
+  Added view options to the pull-down menu  
+  Fixed a bug where settings such as editor preferences and build configurations were not saved correctly  
+  Changed to update the details panel when updating a PulldownContents asset
+
 - (2025/04/26) v2.6  
   Support before UE4.26 has been discontinued  
-  Added a function that allows you to set default values for pull-down structures in `PulldownListGenerator`  
+  Added a feature that allows you to set default values for pull-down structures in `PulldownListGenerator`  
   Changed to apply the default value set by the user when reset to default value is performed on the details panel or graph pin  
 
 - (2024/12/26) v2.5  

@@ -2,7 +2,6 @@
 
 #include "PulldownBuilder/Widgets/SPulldownSelector.h"
 #include "PulldownBuilder/Types/PulldownRow.h"
-#include "PulldownBuilder/Types/PulldownRowColors.h"
 #include "PulldownBuilder/CommandActions/PulldownBuilderCommands.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
@@ -11,6 +10,8 @@
 #else
 #include "EditorStyleSet.h"
 #endif
+#include "Framework/Commands/UICommandList.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Images/SImage.h"
@@ -210,7 +211,7 @@ namespace PulldownBuilder
 				InItem->GetDisplayText()
 			)
 			.HighlightText(FText::FromString(FilterString))
-			.ColorAndOpacity(FPulldownRowColors::GetPulldownRowDisplayTextColor(InItem));
+			.ColorAndOpacity(InItem->GetDisplayTextColor());
 
 		if (!InItem->TooltipText.IsEmpty())
 		{
