@@ -11,7 +11,7 @@
 #endif
 #include "AssetRegistry/AssetData.h"
 #include "Engine/AssetManager.h"
-#if UE_5_01_OR_LATER
+#if UE_5_00_OR_LATER
 #include "Framework/Notifications/NotificationManager.h"
 #endif
 
