@@ -231,7 +231,7 @@ The following items can be set using the combo button in the top right corner of
 ## History  
 
 - (2025/06/04) v2.7  
-  Added support for UE5.6
+  Added support for UE5.6  
   Fixed an issue where the set value of a pull-down structure was unintentionally changed to the default value    
   Fixed an issue where `NativeLessPulldownStruct` could no longer be edited    
   Added a feature that allows you to set whether the pulldown structure configured in the PulldownContents asset supports switch node  
