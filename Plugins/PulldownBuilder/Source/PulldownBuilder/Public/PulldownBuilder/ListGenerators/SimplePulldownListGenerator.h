@@ -35,9 +35,9 @@ public:
 protected:
 	// Expansion points for implementation in blueprints.
 	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called before a source name array is changed."))
-	void PreSourceNameArrayModify();
+	void PrePulldownRowsModify();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Pulldown", meta = (Tooltip = "Called after a source name array has been changed."))
-	void PostSourceNameArrayModify();
+	void PostPulldownRowsModify();
 
 	// UPulldownListGeneratorBase interface.
 	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;

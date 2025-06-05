@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/SimplePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "UObject/UObjectThreadContext.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimplePulldownListGenerator)
@@ -29,7 +30,11 @@ void USimplePulldownListGenerator::PreEditChange(UProperty* PropertyAboutToChang
 			PreChangeSelectedValues.Add(*PulldownRow.SelectedValue);
 		}
 
-		PreSourceNameArrayModify();
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+		{
+			PrePulldownRowsModify();
+		}
 	}
 }
 
@@ -51,7 +56,11 @@ void USimplePulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent&
 			PostChangeSelectedValues.Add(*PulldownRow.SelectedValue);
 		}
 
-		PostSourceNameArrayModify();
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+		{
+			PostPulldownRowsModify();
+		}
 		
 		if (NotifyPulldownRowChanged(PreChangeSelectedValues, PostChangeSelectedValues))
 		{

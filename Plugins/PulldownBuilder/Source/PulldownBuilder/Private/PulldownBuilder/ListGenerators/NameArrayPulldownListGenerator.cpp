@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/NameArrayPulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "UObject/UObjectThreadContext.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NameArrayPulldownListGenerator)
@@ -25,7 +26,11 @@ void UDEPRECATED_NameArrayPulldownListGenerator::PreEditChange(UProperty* Proper
 		PreChangeSelectedValues.Reset();
 		SourceNameArray.GenerateKeyArray(PreChangeSelectedValues);
 
-		PreSourceNameArrayModify();
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+		{
+			PreSourceNameArrayModify();
+		}
 	}
 }
 
@@ -43,7 +48,11 @@ void UDEPRECATED_NameArrayPulldownListGenerator::PostEditChangeProperty(FPropert
 		TArray<FName> PostChangeSelectedValues;
 		SourceNameArray.GenerateKeyArray(PostChangeSelectedValues);
 
-		PostSourceNameArrayModify();
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+		{
+			PostSourceNameArrayModify();
+		}
 		
 		if (NotifyPulldownRowChanged(PreChangeSelectedValues, PostChangeSelectedValues))
 		{

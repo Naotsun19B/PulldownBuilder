@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/DataTablePulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "UObject/UObjectThreadContext.h"
 #include "UObject/TextProperty.h"
 
 #if UE_5_01_OR_LATER
@@ -93,7 +94,11 @@ void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FData
 
 	PreChangeRowNames = Changed->GetRowNames();
 
-	PreSourceDataTableModify();
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		PreSourceDataTableModify();
+	}
 }
 
 void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
@@ -111,8 +116,12 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	{
 		PreChangeRowNames.Empty();
 	}
-	
-	PostSourceDataTableModify();
+
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		PostSourceDataTableModify();
+	}
 
 	VerifyDefaultValue();
 }

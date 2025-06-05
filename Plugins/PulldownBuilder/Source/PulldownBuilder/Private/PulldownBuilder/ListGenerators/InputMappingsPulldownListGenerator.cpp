@@ -2,6 +2,7 @@
 
 #include "PulldownBuilder/ListGenerators/InputMappingsPulldownListGenerator.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
+#include "UObject/UObjectThreadContext.h"
 #include "GameFramework/InputSettings.h"
 #include "Editor.h"
 
@@ -198,7 +199,11 @@ void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
 
 void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 {
-	OnActionAxisMappingsChanged();
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		OnActionAxisMappingsChanged();
+	}
 	
 	TArray<FName> PostChangeSelectedValues;
 	{

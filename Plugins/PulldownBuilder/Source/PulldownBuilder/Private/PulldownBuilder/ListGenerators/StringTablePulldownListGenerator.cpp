@@ -4,6 +4,7 @@
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include "UObject/UObjectThreadContext.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(StringTablePulldownListGenerator)
@@ -78,11 +79,20 @@ void UStringTablePulldownListGenerator::Tick(float DeltaTime)
 	TArray<FName> PostChangeKeys;
 	CacheStringTableKeys(PostChangeKeys);
 
-	PreSourceStringTableModify();
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		PreSourceStringTableModify();
+	}
 	
 	if (NotifyPulldownRowChanged(PreChangeKeys, PostChangeKeys))
 	{
-		PostSourceStringTableModify();
+		// Blueprint functions are not available during routing post load.
+		if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+		{
+			PostSourceStringTableModify();
+		}
+		
 		VerifyDefaultValue();
 		
 		PreChangeKeys = MoveTemp(PostChangeKeys);

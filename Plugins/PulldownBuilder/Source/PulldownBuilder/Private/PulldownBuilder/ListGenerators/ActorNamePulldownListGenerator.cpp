@@ -4,6 +4,7 @@
 #include "PulldownStruct/Utilities/PulldownStructFunctionLibrary.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "GameFramework/Actor.h"
+#include "UObject/UObjectThreadContext.h"
 #include "Editor.h"
 #if UE_5_00_OR_LATER
 #include "Subsystems/UnrealEditorSubsystem.h"
@@ -25,6 +26,12 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
+	// Blueprint functions are not available during routing post load.
+	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
+	{
+		return FPulldownRows::Empty;
+	}
+	
 	auto* EditorWorld = []() -> UWorld*
 	{
 		check(IsValid(GEditor));

@@ -29,7 +29,6 @@ bool UPulldownListGeneratorBase::CanEditChange(const FProperty* InProperty) cons
 #else
 bool UPulldownListGeneratorBase::CanEditChange(const UProperty* InProperty) const
 #endif
-
 {
 	bool bCanEditChange = true;
 #if UE_4_25_OR_LATER
