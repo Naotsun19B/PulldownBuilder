@@ -248,7 +248,7 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
   `DataTablePulldownListGenerator`でプルダウンメニューに表示されるテキストの色を指定できるメタ指定子を追加しました  
   `NameArrayPulldownListGenerator`を非推奨として代わりに`SimplePulldownListGenerator`を追加しました  
   プルダウンメニューに表示オプションを追加しました  
-  エディタ環境設定やビルド構成などの設定が正常に保存されない不具合の修正を行いました  
+  エディタ環境設定が正常に保存されない不具合の修正を行いました  
   PulldownContentsアセットに更新を行った際に詳細パネルが更新されるように変更しました  
 
 - (2025/04/26) v2.6  
