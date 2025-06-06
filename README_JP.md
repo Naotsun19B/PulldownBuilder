@@ -223,7 +223,7 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 
 ## 備考  
 
-・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。
+・PulldownContentsアセットはエディタ限定のアセットなため、パッケージにはクックされません。　　
 ・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。
 
 ## ライセンス
