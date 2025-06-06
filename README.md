@@ -248,7 +248,7 @@ The following items can be set using the combo button in the top right corner of
   Added a meta specifier that allows you to specify the color of the text displayed in the pull-down menu with `DataTablePulldownListGenerator`  
   Deprecated `NameArrayPulldownListGenerator` and added `SimplePulldownListGenerator` instead  
   Added view options to the pull-down menu  
-  Fixed a bug where editor preferences was not saved correctly  
+  Fixed a bug where editor preference was not saved correctly  
   Changed to update the details panel when updating a PulldownContents asset
 
 - (2025/04/26) v2.6  
