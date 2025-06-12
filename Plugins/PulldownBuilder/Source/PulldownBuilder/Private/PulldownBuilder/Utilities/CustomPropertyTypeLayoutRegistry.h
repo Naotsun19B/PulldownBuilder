@@ -63,16 +63,30 @@ namespace PulldownBuilder
 	class FCustomizationModuleChangedNotificator
 	{
 	public:
-		// Registers-Unregisters a details panel customization notificator class.
+		// Registers a details panel customization notificator class.
 		static void Register();
-		static void Unregister();
-
+	
 	private:
+		// Unregisters a details panel customization notificator class.
+		static void HandleOnEnginePreExit();
+		
+		// Called when all PulldownContents assets has been loaded.
+		static void HandleOnAllPulldownContentsLoaded();
+
+		// Called when registers the struct set for PulldownContents in detail customization.
+		static void HandleOnDetailCustomizationRegistered(const UPulldownContents* ModifiedPulldownContents);
+
+		// Called when unregisters the struct set for PulldownContents in detail customization.
+		static void HandleOnDetailCustomizationUnregistered(const UPulldownContents* ModifiedPulldownContents);
+
+	public:
 		// Notifies the property editor module that the details panel customization has changed.
-		static void NotifyCustomizationModuleChanged(const UPulldownContents* ModifiedPulldownContents);
+		static void NotifyCustomizationModuleChanged();
 
 	private:
 		// The handles for event called when registers-unregisters the struct set for PulldownContents in detail customization.
+		static FDelegateHandle OnEnginePreExitHandle;
+		static FDelegateHandle OnAllPulldownContentsLoadedHandle;
 		static FDelegateHandle OnDetailCustomizationRegisteredHandle;
 		static FDelegateHandle OnDetailCustomizationUnregisteredHandle;
 	};

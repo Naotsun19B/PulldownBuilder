@@ -5,6 +5,7 @@
 #include "Modules/ModuleManager.h"
 #include "PropertyEditorModule.h"
 #include "IPropertyTypeCustomization.h"
+#include "Misc/CoreDelegates.h"
 
 namespace PulldownBuilder
 {
@@ -39,22 +40,43 @@ namespace PulldownBuilder
 
 	void FCustomizationModuleChangedNotificator::Register()
 	{
-		OnDetailCustomizationRegisteredHandle = FPulldownContentsDelegates::OnDetailCustomizationRegistered.AddStatic(&FCustomizationModuleChangedNotificator::NotifyCustomizationModuleChanged);
-		OnDetailCustomizationUnregisteredHandle = FPulldownContentsDelegates::OnDetailCustomizationUnregistered.AddStatic(&FCustomizationModuleChangedNotificator::NotifyCustomizationModuleChanged);
+		OnEnginePreExitHandle = FCoreDelegates::OnEnginePreExit.AddStatic(&FCustomizationModuleChangedNotificator::HandleOnEnginePreExit);
+		OnAllPulldownContentsLoadedHandle = FPulldownContentsDelegates::OnAllPulldownContentsLoaded.AddStatic(&FCustomizationModuleChangedNotificator::HandleOnAllPulldownContentsLoaded);
 	}
 
-	void FCustomizationModuleChangedNotificator::Unregister()
+	void FCustomizationModuleChangedNotificator::HandleOnEnginePreExit()
 	{
 		FPulldownContentsDelegates::OnDetailCustomizationUnregistered.Remove(OnDetailCustomizationUnregisteredHandle);
 		FPulldownContentsDelegates::OnDetailCustomizationRegistered.Remove(OnDetailCustomizationRegisteredHandle);
+		FPulldownContentsDelegates::OnAllPulldownContentsLoaded.Remove(OnAllPulldownContentsLoadedHandle);
+		FCoreDelegates::OnEnginePreExit.Remove(OnEnginePreExitHandle);
 	}
 
-	void FCustomizationModuleChangedNotificator::NotifyCustomizationModuleChanged(const UPulldownContents* ModifiedPulldownContents)
+	void FCustomizationModuleChangedNotificator::HandleOnAllPulldownContentsLoaded()
+	{
+		OnDetailCustomizationRegisteredHandle = FPulldownContentsDelegates::OnDetailCustomizationRegistered.AddStatic(&FCustomizationModuleChangedNotificator::HandleOnDetailCustomizationRegistered);
+		OnDetailCustomizationUnregisteredHandle = FPulldownContentsDelegates::OnDetailCustomizationUnregistered.AddStatic(&FCustomizationModuleChangedNotificator::HandleOnDetailCustomizationUnregistered);
+		NotifyCustomizationModuleChanged();
+	}
+
+	void FCustomizationModuleChangedNotificator::HandleOnDetailCustomizationRegistered(const UPulldownContents* ModifiedPulldownContents)
+	{
+		NotifyCustomizationModuleChanged();
+	}
+
+	void FCustomizationModuleChangedNotificator::HandleOnDetailCustomizationUnregistered(const UPulldownContents* ModifiedPulldownContents)
+	{
+		NotifyCustomizationModuleChanged();
+	}
+
+	void FCustomizationModuleChangedNotificator::NotifyCustomizationModuleChanged()
 	{
 		auto& PropertyEditorModule = PropertyEditorModule::Get();
 		PropertyEditorModule.NotifyCustomizationModuleChanged();
 	}
 
+	FDelegateHandle FCustomizationModuleChangedNotificator::OnEnginePreExitHandle;
+	FDelegateHandle FCustomizationModuleChangedNotificator::OnAllPulldownContentsLoadedHandle;
 	FDelegateHandle FCustomizationModuleChangedNotificator::OnDetailCustomizationRegisteredHandle;
 	FDelegateHandle FCustomizationModuleChangedNotificator::OnDetailCustomizationUnregisteredHandle;
 }

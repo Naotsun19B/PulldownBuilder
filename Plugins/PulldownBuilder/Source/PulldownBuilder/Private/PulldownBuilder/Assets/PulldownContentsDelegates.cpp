@@ -4,6 +4,7 @@
 
 namespace PulldownBuilder
 {
+	FPulldownContentsDelegates::FOnAllPulldownContentsLoaded FPulldownContentsDelegates::OnAllPulldownContentsLoaded;
 	FPulldownContentsDelegates::FOnPulldownContentsLoaded FPulldownContentsDelegates::OnPulldownContentsLoaded;
 	FPulldownContentsDelegates::FOnDetailCustomizationRegistered FPulldownContentsDelegates::OnDetailCustomizationRegistered;
 	FPulldownContentsDelegates::FOnDetailCustomizationRegistered FPulldownContentsDelegates::OnDetailCustomizationUnregistered;

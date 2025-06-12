@@ -60,6 +60,7 @@ namespace PulldownBuilder
 		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
 		{
 			AssetRegistry->OnAssetAdded().AddRaw(Instance.Get(), &FPulldownContentsAsyncLoader::HandleOnAssetAdded);
+			AssetRegistry->OnFilesLoaded().AddRaw(Instance.Get(), &FPulldownContentsAsyncLoader::HandleOnFilesLoaded);
 		}
 	}
 
@@ -67,6 +68,7 @@ namespace PulldownBuilder
 	{
 		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
 		{
+			AssetRegistry->OnFilesLoaded().RemoveAll(Instance.Get());
 			AssetRegistry->OnAssetAdded().RemoveAll(Instance.Get());
 		}
 
@@ -104,6 +106,21 @@ namespace PulldownBuilder
 		}
 	}
 
+	bool FPulldownContentsAsyncLoader::IsLoadedAllPulldownContents()
+	{
+		if (!Instance.IsValid())
+		{
+			return false;
+		}
+		
+		return Instance->bIsLoadedAllPulldownContents;
+	}
+
+	FPulldownContentsAsyncLoader::FPulldownContentsAsyncLoader()
+		: bIsLoadedAllPulldownContents(false)
+	{
+	}
+
 	void FPulldownContentsAsyncLoader::HandleOnAssetAdded(const FAssetData& AssetData)
 	{
 		const UClass* PulldownContentsClass = UPulldownContents::StaticClass();
@@ -118,6 +135,12 @@ namespace PulldownBuilder
 		}
 		
 		StartAsyncLoading(AssetData);
+	}
+
+	void FPulldownContentsAsyncLoader::HandleOnFilesLoaded()
+	{
+		bIsLoadedAllPulldownContents = true;
+		FPulldownContentsDelegates::OnAllPulldownContentsLoaded.Broadcast();
 	}
 
 	void FPulldownContentsAsyncLoader::StartAsyncLoading(const FAssetData& AssetData)

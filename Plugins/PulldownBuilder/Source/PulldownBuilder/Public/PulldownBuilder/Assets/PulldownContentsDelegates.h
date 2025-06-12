@@ -14,6 +14,10 @@ namespace PulldownBuilder
 	class PULLDOWNBUILDER_API FPulldownContentsDelegates
 	{
 	public:
+		// Called when all PulldownContents assets has been loaded.
+		DECLARE_MULTICAST_DELEGATE(FOnAllPulldownContentsLoaded);
+		static FOnAllPulldownContentsLoaded OnAllPulldownContentsLoaded;
+		
 		// Called when PulldownContents has been loaded.
 		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownContentsLoaded, const UPulldownContents* /* LoadedPulldownContents */);
 		static FOnPulldownContentsLoaded OnPulldownContentsLoaded;

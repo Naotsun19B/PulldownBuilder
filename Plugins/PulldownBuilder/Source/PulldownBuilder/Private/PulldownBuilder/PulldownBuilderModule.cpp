@@ -85,9 +85,6 @@ namespace PulldownBuilder
 
 		// Unregisters row name updaters.
 		URowNameUpdaterBase::Unregister();
-
-		// Unregisters details panel customization notificator class.
-		FCustomizationModuleChangedNotificator::Unregister();
 		
 		// Unregisters pulldown contents async loader.
 		FPulldownContentsAsyncLoader::Unregister();
