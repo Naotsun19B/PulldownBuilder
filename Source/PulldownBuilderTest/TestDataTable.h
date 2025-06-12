@@ -27,5 +27,5 @@ public:
 	// FLinearColor PulldownTextColor;
 	// You can also define a property named "PulldownTextColor" and set the text color as mentioned above.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FColor TestColor;
+	FColor TestColor = FColor::White;
 };

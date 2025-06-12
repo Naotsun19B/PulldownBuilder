@@ -84,7 +84,7 @@ public:
 template<typename TPulldownStruct, typename TEnableIf<TIsPulldownStruct<TPulldownStruct>::Value, nullptr_t>::Type = nullptr>
 FORCEINLINE_DEBUGGABLE bool operator==(const TPulldownStruct& Lhs, const TPulldownStruct& Rhs)
 {
-	return Lhs.SelectedValue.IsEqual(Rhs.SelectedValue, ENameCase::CaseSensitive);
+	return Lhs.SelectedValue.IsEqual(Rhs.SelectedValue);
 }
 
 // Compares structs of the same type inheriting FPulldownStructBase and returns whether the values are not equal.
