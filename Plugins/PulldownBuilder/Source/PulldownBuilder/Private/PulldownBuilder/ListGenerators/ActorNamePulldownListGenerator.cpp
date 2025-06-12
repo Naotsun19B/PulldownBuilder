@@ -26,12 +26,6 @@ FPulldownRows UActorNamePulldownListGenerator::GetPulldownRows(
 	const FStructContainer& StructInstance
 ) const
 {
-	// Blueprint functions are not available during routing post load.
-	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
-	{
-		return FPulldownRows::Empty;
-	}
-	
 	auto* EditorWorld = []() -> UWorld*
 	{
 		check(IsValid(GEditor));
