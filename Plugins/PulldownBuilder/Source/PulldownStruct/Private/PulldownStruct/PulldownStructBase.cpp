@@ -40,6 +40,13 @@ bool FPulldownStructBase::IsNone() const
 	return SelectedValue.IsNone();
 }
 
+#if WITH_EDITOR
+FText FPulldownStructBase::GetDisplayText() const
+{
+	return CachedDisplayText;
+}
+#endif
+
 void FPulldownStructBase::PostSerialize_Implementation(const FArchive& Ar)
 {
 }

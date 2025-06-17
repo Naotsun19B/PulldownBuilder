@@ -30,6 +30,11 @@ public:
 	
 	// Returns whether no valid value is selected.
     bool IsNone() const;
+    
+#if WITH_EDITOR
+	// Returns the cache of text constructed to be displayed in the pull-down menu row.
+	FText GetDisplayText() const;
+#endif
 
 protected:
 	// Provides a point where plugin users can extend it, because normal PostSerialize is used by SETUP_PULLDOWN_STRUCT and cannot be used.
