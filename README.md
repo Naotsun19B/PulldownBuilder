@@ -249,7 +249,8 @@ The following items can be set using the combo button in the top right corner of
   Deprecated `NameArrayPulldownListGenerator` and added `SimplePulldownListGenerator` instead  
   Added view options to the pull-down menu  
   Fixed a bug where editor preference was not saved correctly  
-  Changed to update the details panel when updating a PulldownContents asset
+  Changed to update the details panel when updating a PulldownContents asset  
+  Changed so that the keyboard focus goes to the search box when the pull-down menu is opened  
 
 - (2025/04/26) v2.6  
   Support before UE4.26 has been discontinued  
