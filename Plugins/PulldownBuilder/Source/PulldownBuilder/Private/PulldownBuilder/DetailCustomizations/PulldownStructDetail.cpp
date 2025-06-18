@@ -56,32 +56,42 @@ namespace PulldownBuilder
 			// End of ICustomPropertyTypeLayoutRegistry interface.
 		};
 	
-	public:
-#define PREDICATE \
-		[&](const TUniquePtr<ICustomPropertyTypeLayoutRegistry>& Registry) -> bool \
-		{ \
-			check(Registry.IsValid()); \
-			return (Registry->GetPropertyTypeName() == GetNameSafe(StructType)); \
-		}
+	private:
+		struct FContainsCustomPropertyTypeLayoutRegistry
+		{
+		public:
+			explicit FContainsCustomPropertyTypeLayoutRegistry(const UScriptStruct* InStructType)
+				: StructType(InStructType)
+			{
+			}
+			
+			bool operator()(const TUniquePtr<ICustomPropertyTypeLayoutRegistry>& Registry) const
+			{
+				return (Registry->GetPropertyTypeName() == GetNameSafe(StructType.Get()));
+			}
+
+		private:
+			TWeakObjectPtr<const UScriptStruct> StructType;
+		};
 		
+	public:
 		static void Register(const UScriptStruct* StructType)
 		{
-			check(!Registries.ContainsByPredicate(PREDICATE));
+			check(!Registries.ContainsByPredicate(FContainsCustomPropertyTypeLayoutRegistry(StructType)));
 
 			Registries.Add(MakeUnique<FCustomPropertyTypeLayoutRegistry>(StructType));
 		}
 		
 		static void Unregister(const UScriptStruct* StructType)
 		{
-			check(Registries.ContainsByPredicate(PREDICATE));
+			check(Registries.ContainsByPredicate(FContainsCustomPropertyTypeLayoutRegistry(StructType)));
 			
-			const int32 Index = Registries.IndexOfByPredicate(PREDICATE);
+			const int32 Index = Registries.IndexOfByPredicate(FContainsCustomPropertyTypeLayoutRegistry(StructType));
 			check(Index != INDEX_NONE);
 
 			Registries.RemoveAt(Index);
 		}
-#undef PREDICATE
-		
+	
 	private:
 		static TArray<TUniquePtr<ICustomPropertyTypeLayoutRegistry>> Registries;
 	};
