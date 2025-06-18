@@ -92,7 +92,7 @@ namespace PulldownBuilder
 			PanelSize.X =  Settings.PanelSize.X;
 		}
 		
-		return SAssignNew(PulldownSelector, SPulldownSelector)
+		PulldownSelector = SNew(SPulldownSelector)
 			.ListItemsSource(ListItemsSource)
 			.HeightOverride(PanelSize.Y)
 			.WidthOverride(PanelSize.X)
@@ -102,6 +102,13 @@ namespace PulldownBuilder
 				Settings.bIsSelectWhenDoubleClick
 			)
 			.OnSelectionChanged(this, &SPulldownSelectorComboButton::HandleOnSelectionChanged);
+
+		check(PulldownSelector.IsValid());
+
+		// Makes the keyboard focus in the search box when opens the menu.
+		SetMenuContentWidgetToFocus(PulldownSelector->GetSearchBox());
+
+		return PulldownSelector.ToSharedRef();
 	}
 
 	FText SPulldownSelectorComboButton::GetDisplayText() const

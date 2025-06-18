@@ -15,6 +15,7 @@
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Images/SImage.h"
+#include "Widgets/Layout/SSpacer.h"
 #include "Widgets/SToolTip.h"
 
 namespace PulldownBuilder
@@ -41,7 +42,7 @@ namespace PulldownBuilder
 		FMenuBuilder ViewOptions(false, CommandBindings);
 		ViewOptions.AddMenuEntry(FPulldownBuilderCommands::Get().DisableDisplayText);
 		ViewOptions.AddMenuEntry(FPulldownBuilderCommands::Get().DisableTextColoring);
-
+		
 		static constexpr float MarginBetweenElements = 3.f;
 		
 		ChildSlot
@@ -59,7 +60,7 @@ namespace PulldownBuilder
 					+ SHorizontalBox::Slot()
 					.FillWidth(1.f)
 					[
-						SNew(SSearchBox)
+						SAssignNew(SearchBox, SSearchBox)
 						.HintText(NSLOCTEXT("PulldownSelector", "SearchHintText", "Search"))
 						.OnTextChanged(this, &SPulldownSelector::HandleOnTextChanged)
 						.DelayChangeNotificationsWhileTyping(true)
@@ -100,7 +101,12 @@ namespace PulldownBuilder
 					]
 				]
 				+ SVerticalBox::Slot()
-				.Padding(FMargin(0.f, MarginBetweenElements, 0.f, 0.f))
+				.AutoHeight()
+				[
+					SNew(SSpacer)
+					.Size(FVector2D(MarginBetweenElements))
+				]
+				+ SVerticalBox::Slot()
 				.FillHeight(1.0f)
 				[
 					SAssignNew(ListView, SListView<TSharedPtr<FPulldownRow>>)
@@ -175,6 +181,11 @@ namespace PulldownBuilder
 		{
 			ListView->RebuildList();
 		}
+	}
+
+	TSharedPtr<SWidget> SPulldownSelector::GetSearchBox() const
+	{
+		return SearchBox;
 	}
 
 	void SPulldownSelector::RebuildListItems()

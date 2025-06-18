@@ -8,6 +8,7 @@
 
 struct FPulldownRow;
 class FUICommandList;
+class SSearchBox;
 
 namespace PulldownBuilder
 {
@@ -57,6 +58,9 @@ namespace PulldownBuilder
 		// Rebuilds the list.
 		void RefreshList();
 
+		// Returns the search box widget for internal use.
+		TSharedPtr<SWidget> GetSearchBox() const;
+
 	private:
 		// Rebuilds the underlying data of the list.
 		void RebuildListItems();
@@ -88,6 +92,9 @@ namespace PulldownBuilder
 		static ECheckBoxState GetDisableTextColoringCheckState();
 	
 	private:
+		// The search box widget for internal use.
+		TSharedPtr<SSearchBox> SearchBox;
+		
 		// The list view widget for internal use.
 		TSharedPtr<SListView<TSharedPtr<FPulldownRow>>> ListView;
 
