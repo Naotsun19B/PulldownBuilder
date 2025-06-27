@@ -61,7 +61,6 @@ public:
 	static AActor* FindActorByPulldownStruct(
 		const UObject* WorldContextObject,
 		const FPulldownStructBase& PulldownStruct,
-		const TSubclassOf<AActor>& ActorClass = AActor::StaticClass(),
 		const FOnFilterActor& FilterPredicate = FOnFilterActor()
 	);
 

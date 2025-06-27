@@ -103,7 +103,6 @@ FString UPulldownStructFunctionLibrary::BuildSelectedValueFromWorldIdentifierNam
 AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 	const UObject* WorldContextObject,
 	const FPulldownStructBase& PulldownStruct,
-	const TSubclassOf<AActor>& ActorClass /* = AActor::StaticClass() */,
 	const FOnFilterActor& FilterPredicate /* = FOnFilterActor() */
 )
 {
@@ -117,51 +116,62 @@ AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 		}
 	}
 	
-	verify(IsValid(GEngine));
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	const FString PersistentLevelIdentifierName = GetWorldIdentifierName(World);
-	if (PersistentLevelIdentifierName != WorldIdentifierName)
-	{
-		bool bWasBelongingLevelFound = false;
-		const TArray<ULevel*>& Levels = World->GetLevels();
-		for (const auto* Level : Levels)
-		{
-			if (!IsValid(Level))
-			{
-				continue;
-			}
 
-			const FString SubLevelIdentifierName = GetWorldIdentifierName(Level->GetTypedOuter<UWorld>());
-			if (SubLevelIdentifierName == WorldIdentifierName)
+	const ULevel* LevelToSearch = nullptr;
+	{
+		verify(IsValid(GEngine));
+		const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+		const FString PersistentLevelIdentifierName = GetWorldIdentifierName(World);
+		if (PersistentLevelIdentifierName == WorldIdentifierName)
+		{
+			LevelToSearch = World->PersistentLevel;
+		}
+		else
+		{
+			const TArray<ULevel*>& Levels = World->GetLevels();
+			for (const auto* Level : Levels)
 			{
-				bWasBelongingLevelFound = true;
+				if (!IsValid(Level))
+				{
+					continue;
+				}
+
+				const FString SubLevelIdentifierName = GetWorldIdentifierName(Level->GetTypedOuter<UWorld>());
+				if (SubLevelIdentifierName != WorldIdentifierName)
+				{
+					continue;
+				}
+				
+				LevelToSearch = Level;
 				break;
 			}
 		}
-
-		if (!bWasBelongingLevelFound)
-		{
-			return nullptr;
-		}
 	}
-	
-	for (auto* TestActor : TActorRange<AActor>(World, ActorClass))
+	if (!IsValid(LevelToSearch))
 	{
-		if (!IsValid(TestActor))
+		return nullptr;
+	}
+
+	const TArray<AActor*>& Actors = LevelToSearch->Actors;
+	for (auto* Actor : Actors)
+	{
+		if (!IsValid(Actor))
+		{
+			continue;
+		}
+		
+		if (FilterPredicate.IsBound() && !FilterPredicate.Execute(*Actor))
 		{
 			continue;
 		}
 
-		if (FilterPredicate.IsBound() && !FilterPredicate.Execute(*TestActor))
+		const FString TestActorIdentifierName = GetActorIdentifierName(Actor);
+		if (ActorIdentifierName != TestActorIdentifierName)
 		{
 			continue;
 		}
-
-		const FString TestActorIdentifierName = GetActorIdentifierName(TestActor);
-		if (ActorIdentifierName == TestActorIdentifierName)
-		{
-			return TestActor;
-		}
+		
+		return Actor;
 	}
 	
 	return nullptr;
@@ -176,6 +186,13 @@ AActor* UPulldownStructFunctionLibrary::K2_FindActorByPulldownStruct(
 	return FindActorByPulldownStruct(
 		WorldContextObject,
 		FPulldownStructBase(WorldAndActorIdentifierName),
-		ActorClass
+		FOnFilterActor::CreateLambda(
+			[ActorClass](const AActor& TestActor) -> bool
+			{
+				const UClass* TestActorClass = TestActor.GetClass();
+				verify(IsValid(TestActorClass));
+				return TestActorClass->IsChildOf(ActorClass);
+			}
+		)
 	);
 }
