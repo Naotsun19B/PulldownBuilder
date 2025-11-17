@@ -7,7 +7,6 @@
 #include "PulldownBuilder/Types/StructContainer.h"
 #include "PulldownStruct/PulldownStructBase.h"
 #include "PulldownStruct/NativeLessPulldownStruct.h"
-#include "PulldownStruct/PulldownBuilderGlobals.h"
 #include "EdGraphSchema_K2.h"
 #include "Editor.h"
 #include "Subsystems/AssetEditorSubsystem.h"

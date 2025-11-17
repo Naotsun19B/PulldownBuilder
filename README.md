@@ -28,7 +28,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.27 ~ 5.6  
+Target version : UE4.27 ~ 5.7  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -235,6 +235,15 @@ The following items can be set using the combo button in the top right corner of
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2025/11/17) v2.8  
+  Added support for UE5.7  
+  Fixed BP functions being called while loading assets  
+  Fixed a bug where actors were not displayed in the pulldown list with ActorNamePulldownListGenerator  
+  Fixed a bug where FindActorByPulldownStruct could not retrieve the target actor when the actor to be searched was placed in sublevels  
+  Fixed the details panel update being called multiple times when starting and closing the editor  
+  Changed comparison of pulldown structs to IgnoreCase  
+  Changed the display text used in the editor to be taken from the drop-down struct  
 
 - (2025/06/04) v2.7  
   Added support for UE5.6  

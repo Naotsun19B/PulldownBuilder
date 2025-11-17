@@ -19,6 +19,9 @@ public:
 	// Registers in the editor setting item.
 	static void Register();
 
+	// Returns whether to register it to the editor's settings panel and display it on the editor.
+	virtual bool ShouldRegisterToSettingsPanel() const;
+	
 	// Returns the name of the section registered in ISettingsModule.
 	virtual FName GetSectionName() const;
 
@@ -28,9 +31,18 @@ public:
 	// Returns tooltip text for settings displayed in the editor.
 	virtual FText GetTooltipText() const;
 
+	// Opens the settings menu for this plugin.
+	static void OpenSettings(const FName SectionName);
+
+	// Returns the list of all registered editor settings classes about this plugin.
+	static const TArray<UPulldownBuilderSettings*>& GetAllSettings();
+
 protected:
 	// Returns the unique name of this setting.
 	virtual FString GetSettingsName() const PURE_VIRTUAL(UPulldownBuilderSettings::GetSettingsName, return {};)
+
+	// Called before saving to the config file.
+	virtual void PreSaveConfig() {}
 	
 private:
 	// Called when the end of UEngine::Init, right before loading PostEngineInit modules for both normal execution and commandlets.
@@ -40,7 +52,7 @@ private:
 	static void HandleOnEnginePreExit();
 
 private:
-	// The list of all registered editor settings classes about GraphPrinter.
+	// The list of all registered editor settings classes about this plugin.
 	static TArray<UPulldownBuilderSettings*> AllSettings;
 };
 

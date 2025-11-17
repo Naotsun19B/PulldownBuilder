@@ -21,6 +21,11 @@ public:
 	// UObject interface.
 	virtual void PostInitProperties() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#if UE_4_25_OR_LATER
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#else
+	virtual bool CanEditChange(const UProperty* InProperty) const override;
+#endif
 	virtual void BeginDestroy() override;
 	// End of UObject interface.
 	

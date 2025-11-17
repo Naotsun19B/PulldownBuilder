@@ -17,7 +17,7 @@ namespace PulldownBuilder
 	namespace Settings
 	{
 		static const FName ContainerName	= TEXT("Editor");
-		static const FName CategoryName		= TEXT("Plugins");
+		static const FName CategoryName		= Global::PluginName;
 
 		ISettingsModule* GetSettingsModule()
 		{
@@ -32,6 +32,11 @@ void UPulldownBuilderSettings::Register()
 	FCoreDelegates::OnEnginePreExit.AddStatic(&UPulldownBuilderSettings::HandleOnEnginePreExit);
 }
 
+bool UPulldownBuilderSettings::ShouldRegisterToSettingsPanel() const
+{
+	return true;
+}
+
 FName UPulldownBuilderSettings::GetSectionName() const
 {
 	return *(PulldownBuilder::Global::PluginName.ToString() + GetSettingsName());
@@ -39,11 +44,7 @@ FName UPulldownBuilderSettings::GetSectionName() const
 
 FText UPulldownBuilderSettings::GetDisplayName() const
 {
-	return FText::Format(
-		LOCTEXT("DisplayNameFormat", "{0} - {1}"),
-		FText::FromString(FName::NameToDisplayString(PulldownBuilder::Global::PluginName.ToString(), false)),
-		FText::FromString(GetSettingsName())
-	);
+	return FText::FromString(FName::NameToDisplayString(*GetSettingsName(), false));
 }
 
 FText UPulldownBuilderSettings::GetTooltipText() const
@@ -51,6 +52,23 @@ FText UPulldownBuilderSettings::GetTooltipText() const
 	const UClass* SettingsClass = GetClass();
 	check(IsValid(SettingsClass));
 	return SettingsClass->GetToolTipText();
+}
+
+void UPulldownBuilderSettings::OpenSettings(const FName SectionName)
+{
+	if (ISettingsModule* SettingsModule = PulldownBuilder::Settings::GetSettingsModule())
+	{
+		SettingsModule->ShowViewer(
+			PulldownBuilder::Settings::ContainerName,
+			PulldownBuilder::Settings::CategoryName,
+			SectionName
+		);
+	}
+}
+
+const TArray<UPulldownBuilderSettings*>& UPulldownBuilderSettings::GetAllSettings()
+{
+	return AllSettings;
 }
 
 void UPulldownBuilderSettings::HandleOnPostEngineInit()
@@ -81,16 +99,19 @@ void UPulldownBuilderSettings::HandleOnPostEngineInit()
 		{
 			continue;
 		}
-		
-		SettingsModule->RegisterSettings(
-			PulldownBuilder::Settings::ContainerName,
-			PulldownBuilder::Settings::CategoryName,
-			Settings->GetSectionName(),
-			Settings->GetDisplayName(),
-			Settings->GetTooltipText(),
-			Settings
-		);
 
+		if (Settings->ShouldRegisterToSettingsPanel())
+		{
+			SettingsModule->RegisterSettings(
+				PulldownBuilder::Settings::ContainerName,
+				PulldownBuilder::Settings::CategoryName,
+				Settings->GetSectionName(),
+				Settings->GetDisplayName(),
+				Settings->GetTooltipText(),
+				Settings
+			);
+		}
+		
 		Settings->AddToRoot();
 		AllSettings.Add(Settings);
 	}
@@ -106,20 +127,45 @@ void UPulldownBuilderSettings::HandleOnEnginePreExit()
 
 	for (auto* Settings : AllSettings)
 	{
-		const TSharedPtr<ISettingsContainer> Container = SettingsModule->GetContainer(PulldownBuilder::Settings::ContainerName);
-		check(Container.IsValid());
-		const TSharedPtr<ISettingsCategory> Category = Container->GetCategory(PulldownBuilder::Settings::CategoryName);
-		check(Category.IsValid());
-		const TSharedPtr<ISettingsSection> Section = Category->GetSection(Settings->GetSectionName());
-		check(Section.IsValid());
-		Section->Save();
+		if (Settings->ShouldRegisterToSettingsPanel())
+		{
+			SettingsModule->UnregisterSettings(
+				PulldownBuilder::Settings::ContainerName,
+				PulldownBuilder::Settings::CategoryName,
+				Settings->GetSectionName()
+			);
+		}
 		
-		SettingsModule->UnregisterSettings(
-			PulldownBuilder::Settings::ContainerName,
-			PulldownBuilder::Settings::CategoryName,
-			Settings->GetSectionName()
-		);
-
+		Settings->PreSaveConfig();
+		
+		const UClass* SettingsClass = Settings->GetClass();
+		check(IsValid(SettingsClass));
+		if (SettingsClass->HasAnyClassFlags(CLASS_DefaultConfig))
+		{
+#if UE_5_00_OR_LATER
+			Settings->TryUpdateDefaultConfigFile();
+#else
+			Settings->UpdateDefaultConfigFile();
+#endif
+		}
+		else if (SettingsClass->HasAnyClassFlags(CLASS_GlobalUserConfig))
+		{
+			Settings->UpdateGlobalUserConfigFile();
+		}
+		else if (SettingsClass->HasAnyClassFlags(CLASS_ProjectUserConfig))
+		{
+			Settings->UpdateProjectUserConfigFile();
+		}
+		else
+		{
+			const FString& ConfigFilename = GetConfigFilename(Settings);
+#if UE_5_00_OR_LATER
+			Settings->TryUpdateDefaultConfigFile(ConfigFilename);
+#else
+			Settings->UpdateDefaultConfigFile(ConfigFilename);
+#endif
+		}
+		
 		Settings->RemoveFromRoot();
 	}
 }

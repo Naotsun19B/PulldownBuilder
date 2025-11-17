@@ -116,11 +116,10 @@ AActor* UPulldownStructFunctionLibrary::FindActorByPulldownStruct(
 		}
 	}
 	
-
 	const ULevel* LevelToSearch = nullptr;
+	verify(IsValid(GEngine));
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
-		verify(IsValid(GEngine));
-		const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 		const FString PersistentLevelIdentifierName = GetWorldIdentifierName(World);
 		if (PersistentLevelIdentifierName == WorldIdentifierName)
 		{

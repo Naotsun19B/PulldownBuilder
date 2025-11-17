@@ -44,6 +44,30 @@ void UInputMappingsPulldownListGenerator::PostEditChangeProperty(FPropertyChange
 	}
 }
 
+#if UE_4_25_OR_LATER
+bool UInputMappingsPulldownListGenerator::CanEditChange(const FProperty* InProperty) const
+#else
+bool UInputMappingsPulldownListGenerator::CanEditChange(const UProperty* InProperty) const
+#endif
+{
+	bool bCanEditChange = true;
+#if UE_5_07_OR_LATER
+#if UE_4_25_OR_LATER
+	if (InProperty != nullptr)
+#else
+	if (IsValid(InProperty))
+#endif
+	{
+		if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UInputMappingsPulldownListGenerator, bIncludeSpeechMappings))
+		{
+			bCanEditChange = false;
+		}
+	}
+#endif
+	
+	return (UObject::CanEditChange(InProperty) && bCanEditChange);
+}
+
 void UInputMappingsPulldownListGenerator::BeginDestroy()
 {
 	FEditorDelegates::OnActionAxisMappingsChanged.RemoveAll(this);
@@ -80,6 +104,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 				continue;
 			}
 
+#if !UE_5_07_OR_LATER
 			{
 				const TArray<FInputActionSpeechMapping>& SpeechMappings = InputSettings->GetSpeechMappings();
 				if (SpeechMappings.ContainsByPredicate(
@@ -92,6 +117,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 					continue;
 				}
 			}
+#endif
 			
 			TArray<FString> InputTexts;
 			{
@@ -156,6 +182,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 		}
 	}
 
+#if !UE_5_07_OR_LATER
 	if (bIncludeSpeechMappings)
 	{
 		const TArray<FInputActionSpeechMapping>& SpeechMappings = InputSettings->GetSpeechMappings();
@@ -176,6 +203,7 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 			PulldownRows.Add(FPulldownRow(DisplayText, FText::FromString(TooltipText)));
 		}
 	}
+#endif
 	
 	return PulldownRows;
 }

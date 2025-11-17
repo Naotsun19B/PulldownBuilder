@@ -33,7 +33,11 @@ public:
 			ANY_PACKAGE,
 #endif
 			*InStructTypeName.ToString(),
+#if UE_5_07_OR_LATER
+			EFindObjectFlags::ExactClass
+#else
 			true
+#endif
 		);
 	}
 
