@@ -243,7 +243,7 @@ The following items can be set using the combo button in the top right corner of
   Fixed a bug where FindActorByPulldownStruct could not retrieve the target actor when the actor to be searched was placed in sublevels  
   Fixed the details panel update being called multiple times when starting and closing the editor  
   Changed comparison of pulldown structs to IgnoreCase  
-  Changed the display text used in the editor to be taken from the drop-down struct  
+  Changed the display text used in the editor to be taken from the pull-down struct  
 
 - (2025/06/04) v2.7  
   Added support for UE5.6  
