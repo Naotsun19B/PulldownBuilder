@@ -237,8 +237,6 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 Fabで配布されるパッケージは [Fab Standard License (Fab EULA)](https://www.fab.com/ja/eula) に基づいて提供されます。  
 特に明記がない限り、本リポジトリ内のドキュメントの著作権は © 2021-2026 Naotsun に帰属し、無断転載は禁止です。  
 
-[MITライセンス](https://ja.wikipedia.org/wiki/MIT_License)
-
 ## 作者
 
 [Naotsun](https://twitter.com/Naotsun_UE)
