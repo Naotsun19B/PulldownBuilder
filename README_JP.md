@@ -1,3 +1,7 @@
+![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.7-0e1128?logo=unrealengine&logoColor=white)
+[![License: Fab Standard License (Fab EULA)](https://img.shields.io/badge/license-Fab%20Standard%20License%20%28Fab%20EULA%29-blue)](https://www.fab.com/eula)
+[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/Naotsun_UE?style=social)](https://twitter.com/Naotsun_UE)
+
 # PulldownBuilder 
 
 ![Plugin](https://user-images.githubusercontent.com/51815450/173223798-f60374a1-1d14-4ac2-93c1-bdbab9fe5278.PNG)
@@ -227,6 +231,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 ・UE4.27以前には、インライン表示時にデフォルト値にリセットする機能を実装できないため、`Should Inline Display When Single Property`は無効になります。
 
 ## ライセンス
+
+ソースコードはGitHubで[MITライセンス](https://ja.wikipedia.org/wiki/MIT_License)として公開しています。  
+Fabで配布されるパッケージは [Fab Standard License (Fab EULA)](https://www.fab.com/ja/eula) に基づいて提供されます。  
+特に明記がない限り、本リポジトリ内のドキュメントの著作権は © 2021-2026 Naotsun に帰属し、無断転載は禁止です。  
 
 [MITライセンス](https://ja.wikipedia.org/wiki/MIT_License)
 

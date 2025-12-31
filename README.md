@@ -1,3 +1,7 @@
+![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.7-0e1128?logo=unrealengine&logoColor=white)
+[![License: Fab Standard License (Fab EULA)](https://img.shields.io/badge/license-Fab%20Standard%20License%20%28Fab%20EULA%29-blue)](https://www.fab.com/eula)
+[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/Naotsun_UE?style=social)](https://twitter.com/Naotsun_UE)
+
 # PulldownBuilder 
 
 ![Plugin](https://user-images.githubusercontent.com/51815450/173223798-f60374a1-1d14-4ac2-93c1-bdbab9fe5278.PNG)
@@ -228,7 +232,9 @@ The following items can be set using the combo button in the top right corner of
 
 ## License
 
-[MIT License](https://en.wikipedia.org/wiki/MIT_License)
+Source code is available on GitHub under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).  
+The package distributed on Fab is provided under the [Fab Standard License (Fab EULA)](https://www.fab.com/eula).  
+Unless explicitly stated otherwise, all documentation content in this repository is © 2021-2026 Naotsun. All rights reserved.  
 
 ## Author  
 
