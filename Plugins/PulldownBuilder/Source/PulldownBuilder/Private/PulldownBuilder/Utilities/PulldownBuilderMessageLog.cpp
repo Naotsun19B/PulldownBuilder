@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Naotsun. All Rights Reserved.
+// Copyright 2021-2026 Naotsun. All Rights Reserved.
 
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
