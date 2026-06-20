@@ -6,13 +6,10 @@
 #include "PulldownStructNodes/K2Nodes/K2Node_MakeLiteral_PulldownStruct.h"
 #include "K2Node_MakeLiteral_NativeLessPulldownStruct.generated.h"
 
-class UEdGraphSchema_K2;
-class UK2Node_MakeStruct;
-class FKismetCompilerContext;
-
 /**
  * A node class that constructs a literal value of an FNativeLessPulldownStruct.
- * Carries an additional PulldownSource so that the constructed struct points at the correct PulldownContents.
+ * Exposes a single FNativeLessPulldownStruct input pin; the native-less pulldown graph-pin
+ * factory draws the PulldownSource and SelectedValue pickers directly on the pin's default-value widget.
  */
 UCLASS()
 class PULLDOWNSTRUCTNODES_API UK2Node_MakeLiteral_NativeLessPulldownStruct : public UK2Node_MakeLiteral_PulldownStruct
@@ -28,22 +25,22 @@ public:
 	// End of UEdGraphNode interface.
 
 	// UK2Node_MakeLiteral_PulldownStruct interface.
-	virtual bool ApplyDefaultsToMakeStructNode(
+	virtual bool ApplyInputPinDefaultsToMakeStructNode(
 		FKismetCompilerContext& CompilerContext,
 		const UEdGraphSchema_K2* K2Schema,
-		UK2Node_MakeStruct* MakeStructNode
+		UK2Node_MakeStruct* MakeStructNode,
+		const UEdGraphPin* InputPin
 	) const override;
 	virtual bool IsTargetStruct(const UScriptStruct* Struct) const override;
+	virtual bool HasLegacyDefaultValues() const override;
+	virtual void ApplyLegacyDefaultValuesToString(FString& InOutDefaultValueString) const override;
+	virtual void ClearLegacyDefaultValues() override;
 	// End of UK2Node_MakeLiteral_PulldownStruct interface.
 
-	// Returns the PulldownSource of the constructed pull-down struct.
-	const FName& GetPulldownSource() const;
-
-	// Sets the PulldownSource of the constructed pull-down struct.
-	void SetPulldownSource(const FName& InPulldownSource);
-
 protected:
-	// The PulldownContents name to embed as the PulldownSource of the constructed pull-down struct.
-	UPROPERTY(EditAnywhere, Category = "Native Less Pulldown Struct")
+	// Legacy storage of the PulldownSource from before this node moved to an input-pin UX.
+	// Read once during AllocateDefaultPins / PostLoad, then cleared. Kept as UPROPERTY so existing
+	// assets still deserialize without losing data during the migration window.
+	UPROPERTY()
 	FName PulldownSource;
 };

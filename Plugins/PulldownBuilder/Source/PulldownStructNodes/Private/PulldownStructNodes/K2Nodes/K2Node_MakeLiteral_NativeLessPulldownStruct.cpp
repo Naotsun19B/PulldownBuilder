@@ -6,8 +6,8 @@
 #endif
 #include "PulldownStruct/NativeLessPulldownStruct.h"
 #include "PulldownStruct/PulldownBuilderGlobals.h"
-#include "EdGraphSchema_K2.h"
 #include "K2Node_MakeStruct.h"
+#include "EdGraphSchema_K2.h"
 
 #if UE_5_01_OR_LATER
 #include UE_INLINE_GENERATED_CPP_BY_NAME(K2Node_MakeLiteral_NativeLessPulldownStruct)
@@ -29,28 +29,41 @@ FText UK2Node_MakeLiteral_NativeLessPulldownStruct::GetTooltipText() const
 	);
 }
 
-bool UK2Node_MakeLiteral_NativeLessPulldownStruct::ApplyDefaultsToMakeStructNode(
+bool UK2Node_MakeLiteral_NativeLessPulldownStruct::ApplyInputPinDefaultsToMakeStructNode(
 	FKismetCompilerContext& CompilerContext,
 	const UEdGraphSchema_K2* K2Schema,
-	UK2Node_MakeStruct* MakeStructNode
+	UK2Node_MakeStruct* MakeStructNode,
+	const UEdGraphPin* InputPin
 ) const
 {
-	if (!Super::ApplyDefaultsToMakeStructNode(CompilerContext, K2Schema, MakeStructNode))
+#if WITH_EDITOR
+	if (!Super::ApplyInputPinDefaultsToMakeStructNode(CompilerContext, K2Schema, MakeStructNode, InputPin))
 	{
 		return false;
 	}
 
-	UEdGraphPin* PulldownSourcePin = MakeStructNode->FindPin(
+	UEdGraphPin* PulldownSourceSubPin = MakeStructNode->FindPin(
 		GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
 		EGPD_Input
 	);
-	if (PulldownSourcePin == nullptr)
+	if (PulldownSourceSubPin == nullptr)
 	{
 		return false;
 	}
 
-	K2Schema->TrySetDefaultValue(*PulldownSourcePin, PulldownSource.ToString());
+	const TSharedPtr<FString> PulldownSourceString = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
+		InputPin->DefaultValue,
+		GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource)
+	);
+	if (PulldownSourceString.IsValid())
+	{
+		K2Schema->TrySetDefaultValue(*PulldownSourceSubPin, *PulldownSourceString);
+	}
+
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UK2Node_MakeLiteral_NativeLessPulldownStruct::IsTargetStruct(const UScriptStruct* Struct) const
@@ -62,14 +75,38 @@ bool UK2Node_MakeLiteral_NativeLessPulldownStruct::IsTargetStruct(const UScriptS
 #endif
 }
 
-const FName& UK2Node_MakeLiteral_NativeLessPulldownStruct::GetPulldownSource() const
+bool UK2Node_MakeLiteral_NativeLessPulldownStruct::HasLegacyDefaultValues() const
 {
-	return PulldownSource;
+	return (Super::HasLegacyDefaultValues() || !PulldownSource.IsNone());
 }
 
-void UK2Node_MakeLiteral_NativeLessPulldownStruct::SetPulldownSource(const FName& InPulldownSource)
+void UK2Node_MakeLiteral_NativeLessPulldownStruct::ApplyLegacyDefaultValuesToString(FString& InOutDefaultValueString) const
 {
-	PulldownSource = InPulldownSource;
+#if WITH_EDITOR
+	Super::ApplyLegacyDefaultValuesToString(InOutDefaultValueString);
+
+	if (PulldownSource.IsNone())
+	{
+		return;
+	}
+
+	const TSharedPtr<FString> Result = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
+		InOutDefaultValueString,
+		GET_MEMBER_NAME_CHECKED(FNativeLessPulldownStruct, PulldownSource),
+		PulldownSource.ToString()
+	);
+	if (Result.IsValid())
+	{
+		InOutDefaultValueString = *Result;
+	}
+#endif
+}
+
+void UK2Node_MakeLiteral_NativeLessPulldownStruct::ClearLegacyDefaultValues()
+{
+	Super::ClearLegacyDefaultValues();
+
+	PulldownSource = NAME_None;
 }
 
 #undef LOCTEXT_NAMESPACE

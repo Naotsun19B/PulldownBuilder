@@ -19,10 +19,27 @@
 
 #define LOCTEXT_NAMESPACE "K2Node_MakeLiteral_PulldownStruct"
 
+const FName UK2Node_MakeLiteral_PulldownStruct::InputPinName(TEXT("Value"));
+
 UK2Node_MakeLiteral_PulldownStruct::UK2Node_MakeLiteral_PulldownStruct()
 	: PulldownStruct(nullptr)
 	, SelectedValue(NAME_None)
 {
+}
+
+void UK2Node_MakeLiteral_PulldownStruct::PostLoad()
+{
+	Super::PostLoad();
+
+#if WITH_EDITOR
+	// Older versions of this node had no input pin; the SelectedValue lived in a UPROPERTY
+	// edited from the details panel. If we loaded such a node, reconstruct so AllocateDefaultPins
+	// creates the new input pin -- the migration into the pin's default-value string runs there.
+	if (HasLegacyDefaultValues() && (GetInputPin() == nullptr))
+	{
+		ReconstructNode();
+	}
+#endif
 }
 
 FText UK2Node_MakeLiteral_PulldownStruct::GetNodeTitle(ENodeTitleType::Type TitleType) const
@@ -86,7 +103,18 @@ void UK2Node_MakeLiteral_PulldownStruct::AllocateDefaultPins()
 {
 	if (IsValid(PulldownStruct))
 	{
+		// Input pin: same pull-down struct type. FPulldownStructGraphPinFactory recognises this and
+		// attaches the pulldown UI to the pin's default-value widget so the user picks the value on the node itself.
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, PulldownStruct, InputPinName);
+
+		// Output pin: returns the constructed literal.
 		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, PulldownStruct, UEdGraphSchema_K2::PN_ReturnValue);
+
+#if WITH_EDITOR
+		// Migrate legacy SelectedValue / PulldownSource UPROPERTY data onto the freshly-created input pin.
+		// No-op for nodes that never carried legacy data.
+		MigrateLegacyDefaultValuesToInputPin();
+#endif
 	}
 	else
 	{
@@ -134,26 +162,47 @@ void UK2Node_MakeLiteral_PulldownStruct::ExpandNode(FKismetCompilerContext& Comp
 		return;
 	}
 
+	UEdGraphPin* InputPin = GetInputPin();
+	UEdGraphPin* OutputPin = GetOutputPin();
+	if ((InputPin == nullptr) || (OutputPin == nullptr))
+	{
+		BreakAllNodeLinks();
+		return;
+	}
+
 	const UEdGraphSchema_K2* K2Schema = CompilerContext.GetSchema();
 	check(IsValid(K2Schema));
 
-	auto* MakeStructNode = CompilerContext.SpawnIntermediateNode<UK2Node_MakeStruct>(this, SourceGraph);
-	check(IsValid(MakeStructNode));
-	MakeStructNode->StructType = PulldownStruct;
-	MakeStructNode->AllocateDefaultPins();
-	MakeStructNode->bMadeAfterOverridePinRemoval = true;
-
-	if (!ApplyDefaultsToMakeStructNode(CompilerContext, K2Schema, MakeStructNode))
+	if (InputPin->LinkedTo.Num() > 0)
 	{
-		CompilerContext.MessageLog.Error(
-			TEXT("[MakeLiteral PulldownStruct] Failed to apply default values to the intermediate MakeStruct node. @@"),
-			this
-		);
+		// Upstream is connected to the input pin: route the upstream output pin directly to whatever
+		// the OutputPin was connected to, removing this node from the expanded graph entirely.
+		UEdGraphPin* UpstreamPin = InputPin->LinkedTo[0];
+		CompilerContext.MovePinLinksToIntermediate(*OutputPin, *UpstreamPin);
 	}
+	else
+	{
+		// No upstream link: the input pin's struct-literal default value (e.g. "(SelectedValue=Red)")
+		// is the value we want. Spawn an intermediate MakeStruct node, copy the selected fields from
+		// the literal string onto its sub-pins, and forward its output pin to whatever the OutputPin
+		// was connected to.
+		auto* MakeStructNode = CompilerContext.SpawnIntermediateNode<UK2Node_MakeStruct>(this, SourceGraph);
+		check(IsValid(MakeStructNode));
+		MakeStructNode->StructType = PulldownStruct;
+		MakeStructNode->AllocateDefaultPins();
+		MakeStructNode->bMadeAfterOverridePinRemoval = true;
 
-	UEdGraphPin* SourceOutputPin = GetOutputPin();
-	UEdGraphPin* MakeStructOutputPin = MakeStructNode->FindPinChecked(PulldownStruct->GetFName(), EGPD_Output);
-	check(CompilerContext.MovePinLinksToIntermediate(*SourceOutputPin, *MakeStructOutputPin).CanSafeConnect());
+		if (!ApplyInputPinDefaultsToMakeStructNode(CompilerContext, K2Schema, MakeStructNode, InputPin))
+		{
+			CompilerContext.MessageLog.Error(
+				TEXT("[MakeLiteral PulldownStruct] Failed to apply default values to the intermediate MakeStruct node. @@"),
+				this
+			);
+		}
+
+		UEdGraphPin* MakeStructOutputPin = MakeStructNode->FindPinChecked(PulldownStruct->GetFName(), EGPD_Output);
+		CompilerContext.MovePinLinksToIntermediate(*OutputPin, *MakeStructOutputPin);
+	}
 
 	BreakAllNodeLinks();
 }
@@ -164,11 +213,6 @@ void UK2Node_MakeLiteral_PulldownStruct::PreloadRequiredAssets()
 	{
 		PreloadObject(PulldownStruct);
 	}
-}
-
-bool UK2Node_MakeLiteral_PulldownStruct::ShouldShowNodeProperties() const
-{
-	return true;
 }
 
 UScriptStruct* UK2Node_MakeLiteral_PulldownStruct::GetPulldownStruct() const
@@ -183,14 +227,9 @@ void UK2Node_MakeLiteral_PulldownStruct::SetPulldownStruct(UScriptStruct* NewPul
 	ReconstructNode();
 }
 
-const FName& UK2Node_MakeLiteral_PulldownStruct::GetSelectedValue() const
+UEdGraphPin* UK2Node_MakeLiteral_PulldownStruct::GetInputPin() const
 {
-	return SelectedValue;
-}
-
-void UK2Node_MakeLiteral_PulldownStruct::SetSelectedValue(const FName& InSelectedValue)
-{
-	SelectedValue = InSelectedValue;
+	return FindPin(InputPinName, EGPD_Input);
 }
 
 UEdGraphPin* UK2Node_MakeLiteral_PulldownStruct::GetOutputPin() const
@@ -198,25 +237,38 @@ UEdGraphPin* UK2Node_MakeLiteral_PulldownStruct::GetOutputPin() const
 	return FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
 }
 
-bool UK2Node_MakeLiteral_PulldownStruct::ApplyDefaultsToMakeStructNode(
+bool UK2Node_MakeLiteral_PulldownStruct::ApplyInputPinDefaultsToMakeStructNode(
 	FKismetCompilerContext& CompilerContext,
 	const UEdGraphSchema_K2* K2Schema,
-	UK2Node_MakeStruct* MakeStructNode
+	UK2Node_MakeStruct* MakeStructNode,
+	const UEdGraphPin* InputPin
 ) const
 {
-	check(IsValid(K2Schema) && IsValid(MakeStructNode));
+#if WITH_EDITOR
+	check(IsValid(K2Schema) && IsValid(MakeStructNode) && (InputPin != nullptr));
 
-	UEdGraphPin* SelectedValuePin = MakeStructNode->FindPin(
+	UEdGraphPin* SelectedValueSubPin = MakeStructNode->FindPin(
 		GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
 		EGPD_Input
 	);
-	if (SelectedValuePin == nullptr)
+	if (SelectedValueSubPin == nullptr)
 	{
 		return false;
 	}
 
-	K2Schema->TrySetDefaultValue(*SelectedValuePin, SelectedValue.ToString());
+	const TSharedPtr<FString> SelectedValueString = PulldownBuilder::FPulldownBuilderUtils::StructStringToMemberValue(
+		InputPin->DefaultValue,
+		GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue)
+	);
+	if (SelectedValueString.IsValid())
+	{
+		K2Schema->TrySetDefaultValue(*SelectedValueSubPin, *SelectedValueString);
+	}
+
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UK2Node_MakeLiteral_PulldownStruct::IsTargetStruct(const UScriptStruct* Struct) const
@@ -227,6 +279,66 @@ bool UK2Node_MakeLiteral_PulldownStruct::IsTargetStruct(const UScriptStruct* Str
 	return PulldownBuilder::FPulldownBuilderUtils::IsPulldownStruct(Struct, true);
 #else
 	return false;
+#endif
+}
+
+bool UK2Node_MakeLiteral_PulldownStruct::HasLegacyDefaultValues() const
+{
+	return !SelectedValue.IsNone();
+}
+
+void UK2Node_MakeLiteral_PulldownStruct::ApplyLegacyDefaultValuesToString(FString& InOutDefaultValueString) const
+{
+#if WITH_EDITOR
+	if (SelectedValue.IsNone())
+	{
+		return;
+	}
+
+	const TSharedPtr<FString> Result = PulldownBuilder::FPulldownBuilderUtils::MemberValueToStructString(
+		InOutDefaultValueString,
+		GET_MEMBER_NAME_CHECKED(FPulldownStructBase, SelectedValue),
+		SelectedValue.ToString()
+	);
+	if (Result.IsValid())
+	{
+		InOutDefaultValueString = *Result;
+	}
+#endif
+}
+
+void UK2Node_MakeLiteral_PulldownStruct::ClearLegacyDefaultValues()
+{
+	SelectedValue = NAME_None;
+}
+
+void UK2Node_MakeLiteral_PulldownStruct::MigrateLegacyDefaultValuesToInputPin()
+{
+#if WITH_EDITOR
+	if (!HasLegacyDefaultValues())
+	{
+		return;
+	}
+	if (!IsValid(PulldownStruct))
+	{
+		return;
+	}
+
+	UEdGraphPin* InputPin = GetInputPin();
+	if (InputPin == nullptr)
+	{
+		return;
+	}
+
+	// Build the struct literal string and overwrite the relevant fields from the legacy UPROPERTY data.
+	FString DefaultValueString = PulldownBuilder::FPulldownBuilderUtils::GenerateStructDefaultValueString(PulldownStruct);
+	ApplyLegacyDefaultValuesToString(DefaultValueString);
+
+	InputPin->DefaultValue = DefaultValueString;
+	InputPin->AutogeneratedDefaultValue = PulldownBuilder::FPulldownBuilderUtils::GetStructDefaultValueString(InputPin->DefaultValue, InputPin);
+
+	// Don't migrate again on subsequent loads or pin reconstructions.
+	ClearLegacyDefaultValues();
 #endif
 }
 
