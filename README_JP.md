@@ -1,4 +1,4 @@
-![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.7-0e1128?logo=unrealengine&logoColor=white)
+![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.8-0e1128?logo=unrealengine&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: Fab Standard License (Fab EULA)](https://img.shields.io/badge/license-Fab%20Standard%20License%20%28Fab%20EULA%29-blue)](https://www.fab.com/eula)
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/Naotsun_UE?style=social)](https://twitter.com/Naotsun_UE)
@@ -33,7 +33,7 @@
 
 ## 動作環境  
 
-対象バージョン : UE4.27 ~ 5.7  
+対象バージョン : UE4.27 ~ 5.8  
 対象プラットフォーム :  Windows, Mac, Linux (ランタイムモジュールはプラットフォームの制限無し)   
 
 ## インストール  
@@ -202,6 +202,10 @@ https://user-images.githubusercontent.com/51815450/177554749-425e7a4a-a17b-4202-
 
 `ActorNamePulldownListGenerator`によって構築されるプルダウン構造体の値からアクターを取得するノードが利用できます。
 
+プルダウン構造体のリテラル値を構築する`Make Literal`ノードが利用できます。  
+組み込みの`Make Literal Int`などと同様にノード上に直接プルダウンメニューが表示され、詳細パネルを開かずに値を選択できます。  
+対象が`NativeLessPulldownStruct`の場合は、`Pulldown Source`と`Selected Value`の両方をノード上で選択できます。  
+
 ## オプション  
 
 ![EditorPreferences](https://user-images.githubusercontent.com/51815450/173224011-f82601a7-77e8-45fb-b74a-31ca17464163.PNG)
@@ -242,6 +246,15 @@ Fabで配布されるパッケージは [Fab Standard License (Fab EULA)](https:
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## 履歴
+
+- (2026/06/21) v2.9  
+  UE5.8に対応しました  
+  プルダウン構造体のリテラル値を構築する`Make Literal`ノードを追加しました  
+  既存のK2Node（スイッチノード等）の複数の不具合を修正しました  
+  エディタ終了時にクラッシュする不具合を修正しました  
+  旧バージョンで保存されたアセットがロード時にLinker Fatalで開けなくなる不具合を修正しました  
+  `StructContainer`の`Identical`比較の判定が反転していた不具合を修正しました  
+  UE4.27〜5.8の全バージョンでStrict Includes / Non-Unityビルドが通ることを確認しました  
 
 - (2025/11/17) v2.8  
   UE5.7に対応しました  

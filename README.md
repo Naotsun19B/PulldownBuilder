@@ -1,4 +1,4 @@
-![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.7-0e1128?logo=unrealengine&logoColor=white)
+![UE Version](https://img.shields.io/badge/Unreal%20Engine-4.27--5.8-0e1128?logo=unrealengine&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: Fab Standard License (Fab EULA)](https://img.shields.io/badge/license-Fab%20Standard%20License%20%28Fab%20EULA%29-blue)](https://www.fab.com/eula)
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/Naotsun_UE?style=social)](https://twitter.com/Naotsun_UE)
@@ -33,7 +33,7 @@ For example, you can specify the Row Name of the data table in a pull-down menu 
 
 ## Requirement  
 
-Target version : UE4.27 ~ 5.7  
+Target version : UE4.27 ~ 5.8  
 Target platform :  Windows, Mac, Linux (Runtime module has no platform restrictions)   
 
 ## Installation  
@@ -202,6 +202,10 @@ Also, if the target pulldown structure is `Native Less Pulldown Struct` and a va
 
 A node is available to retrieve actors from the values of pull-down structures constructed by `ActorNamePulldownListGenerator`.
 
+A `Make Literal` node is available that constructs a literal value of a pull-down structure.  
+Like the built-in `Make Literal Int` and similar nodes, the pull-down menu is displayed directly on the node, so you can select the value without opening the details panel.  
+When the target is `NativeLessPulldownStruct`, you can select both `Pulldown Source` and `Selected Value` directly on the node.  
+
 ## Settings  
 
 ![EditorPreferences](https://user-images.githubusercontent.com/51815450/173224011-f82601a7-77e8-45fb-b74a-31ca17464163.PNG)
@@ -242,6 +246,15 @@ Unless explicitly stated otherwise, all documentation content in this repository
 [Naotsun](https://twitter.com/Naotsun_UE)
 
 ## History  
+
+- (2026/06/21) v2.9  
+  Added support for UE5.8  
+  Added `Make Literal` node that constructs a literal value of a pull-down structure  
+  Fixed multiple bugs in existing K2 nodes (Switch node, etc.)  
+  Fixed crashes that occurred when exiting the editor  
+  Fixed an issue where assets saved in previous versions could not be loaded due to a Linker Fatal  
+  Fixed an issue where the `Identical` comparison of `StructContainer` was inverted  
+  Verified that the plugin builds with Strict Includes / Non-Unity on all UE4.27-5.8 versions  
 
 - (2025/11/17) v2.8  
   Added support for UE5.7  
