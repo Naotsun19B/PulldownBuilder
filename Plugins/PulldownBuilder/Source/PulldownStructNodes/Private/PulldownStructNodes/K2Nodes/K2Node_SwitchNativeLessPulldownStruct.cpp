@@ -1,6 +1,7 @@
 // Copyright 2021-2026 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_SwitchNativeLessPulldownStruct.h"
+#include "PulldownStructNodes/Serializations/StructNodesCustomVersion.h"
 #if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
 #include "PulldownBuilder/Assets/PulldownContents.h"
@@ -45,8 +46,18 @@ void UK2Node_SwitchNativeLessPulldownStruct::PostEditChangeProperty(FPropertyCha
 void UK2Node_SwitchNativeLessPulldownStruct::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
-	
+
 #if WITH_EDITOR
+	Ar.UsingCustomVersion(PulldownBuilder::FStructNodesCustomVersion::GUID);
+
+	// Legacy assets saved before AddedSerializeOfRuntimeFields had a broken guard (&&) that
+	// skipped writing this field. Skip reading it so the linker's recorded size matches.
+	if (Ar.CustomVer(PulldownBuilder::FStructNodesCustomVersion::GUID)
+			< PulldownBuilder::FStructNodesCustomVersion::AddedSerializeOfRuntimeFields)
+	{
+		return;
+	}
+
 	if (Ar.IsSaving() || Ar.IsLoading())
 	{
 		Ar << PulldownContents;

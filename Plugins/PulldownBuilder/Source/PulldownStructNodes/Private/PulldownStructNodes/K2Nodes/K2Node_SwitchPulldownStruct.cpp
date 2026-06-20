@@ -1,6 +1,7 @@
 // Copyright 2021-2026 Naotsun. All Rights Reserved.
 
 #include "PulldownStructNodes/K2Nodes/K2Node_SwitchPulldownStruct.h"
+#include "PulldownStructNodes/Serializations/StructNodesCustomVersion.h"
 #include "PulldownStructNodes/Utilities/PulldownStructNodeUtils.h"
 #if WITH_EDITOR
 #include "PulldownBuilder/Utilities/PulldownBuilderUtils.h"
@@ -62,6 +63,16 @@ void UK2Node_SwitchPulldownStruct::BeginDestroy()
 void UK2Node_SwitchPulldownStruct::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
+
+	Ar.UsingCustomVersion(PulldownBuilder::FStructNodesCustomVersion::GUID);
+
+	// Legacy assets saved before AddedSerializeOfRuntimeFields had a broken guard (&&) that
+	// skipped writing these fields. Skip reading them so the linker's recorded size matches.
+	if (Ar.CustomVer(PulldownBuilder::FStructNodesCustomVersion::GUID)
+			< PulldownBuilder::FStructNodesCustomVersion::AddedSerializeOfRuntimeFields)
+	{
+		return;
+	}
 
 	// If the timing is too early, PulldownContents is not loaded, and even if it is reinitialized after loading,
 	// the connected pin will be cut off, so save the selected values.
