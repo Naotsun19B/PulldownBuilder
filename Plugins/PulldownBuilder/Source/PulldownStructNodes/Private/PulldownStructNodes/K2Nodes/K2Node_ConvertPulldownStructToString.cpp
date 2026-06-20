@@ -52,15 +52,25 @@ FText UK2Node_ConvertPulldownStructToString::GetTooltipText() const
 {
 	if (CachedNodeTooltip.IsOutOfDate(this))
 	{
-		CachedNodeTitle.SetCachedText(
-			FText::Format(
-				LOCTEXT("TooltipFormat", "Convert the values of SelectedValue in {0} and return as string."),
-				PulldownStruct->GetDisplayNameText()
-			),
-			this
-		);
+		if (IsValid(PulldownStruct))
+		{
+			CachedNodeTooltip.SetCachedText(
+				FText::Format(
+					LOCTEXT("TooltipFormat", "Convert the values of SelectedValue in {0} and return as string."),
+					PulldownStruct->GetDisplayNameText()
+				),
+				this
+			);
+		}
+		else
+		{
+			CachedNodeTooltip.SetCachedText(
+				LOCTEXT("Tooltip", "Convert the values of SelectedValue in the unknown pull-down struct and return as string."),
+				this
+			);
+		}
 	}
-	
+
 	return CachedNodeTooltip;
 }
 

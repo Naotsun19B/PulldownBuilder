@@ -64,7 +64,7 @@ FText UK2Node_Compare_PulldownStruct::GetTooltipText() const
 {
 	if (CachedNodeTooltip.IsOutOfDate(this))
 	{
-		CachedNodeTitle.SetCachedText(
+		CachedNodeTooltip.SetCachedText(
 			FText::Format(
 				LOCTEXT("TooltipFormat", "Compare the values of SelectedValue in {0} and return if they are {1}."),
 				FText::FromString(GetNameSafe(PulldownStruct)),
@@ -73,7 +73,7 @@ FText UK2Node_Compare_PulldownStruct::GetTooltipText() const
 			this
 		);
 	}
-	
+
 	return CachedNodeTooltip;
 }
 
@@ -167,7 +167,7 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 			PulldownSourceCompareNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
 			check(IsValid(PulldownSourceCompareNode));
 			PulldownSourceCompareNode->FunctionReference.SetExternalMember(
-				GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, EqualEqual_NameName),
+				GetPulldownSourceFunctionName(),
 				UKismetMathLibrary::StaticClass()
 			);
 			PulldownSourceCompareNode->AllocateDefaultPins();
@@ -201,27 +201,27 @@ void UK2Node_Compare_PulldownStruct::ExpandNode(FKismetCompilerContext& Compiler
 		UEdGraphPin* SourceReturnValuePin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue, EGPD_Output);
 		if (IsValid(PulldownSourceCompareNode))
 		{
-			auto* BoolAndNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-			check(IsValid(BoolAndNode));
-			BoolAndNode->FunctionReference.SetExternalMember(
-				GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, BooleanAND),
+			auto* ReducerNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+			check(IsValid(ReducerNode));
+			ReducerNode->FunctionReference.SetExternalMember(
+				GetReducerFunctionName(),
 				UKismetMathLibrary::StaticClass()
 			);
-			BoolAndNode->AllocateDefaultPins();
-			
+			ReducerNode->AllocateDefaultPins();
+
 			{
 				UEdGraphPin* PulldownSourceReturnValuePin = PulldownSourceCompareNode->GetReturnValuePin();
-				UEdGraphPin* BoolAndLhsPin = BoolAndNode->FindPinChecked(CompareNodeLhsPinName, EGPD_Input);
-				check(K2Schema->TryCreateConnection(PulldownSourceReturnValuePin, BoolAndLhsPin));
+				UEdGraphPin* ReducerLhsPin = ReducerNode->FindPinChecked(CompareNodeLhsPinName, EGPD_Input);
+				check(K2Schema->TryCreateConnection(PulldownSourceReturnValuePin, ReducerLhsPin));
 			}
 			{
 				UEdGraphPin* SelectedValueReturnValuePin = SelectedValueCompareNode->GetReturnValuePin();
-				UEdGraphPin* BoolAndRhsPin = BoolAndNode->FindPinChecked(CompareNodeRhsPinName, EGPD_Input);
-				check(K2Schema->TryCreateConnection(SelectedValueReturnValuePin, BoolAndRhsPin));
+				UEdGraphPin* ReducerRhsPin = ReducerNode->FindPinChecked(CompareNodeRhsPinName, EGPD_Input);
+				check(K2Schema->TryCreateConnection(SelectedValueReturnValuePin, ReducerRhsPin));
 			}
 			{
-				UEdGraphPin* BoolAndReturnValue = BoolAndNode->GetReturnValuePin();
-				check(CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *BoolAndReturnValue).CanSafeConnect());
+				UEdGraphPin* ReducerReturnValue = ReducerNode->GetReturnValuePin();
+				check(CompilerContext.MovePinLinksToIntermediate(*SourceReturnValuePin, *ReducerReturnValue).CanSafeConnect());
 			}
 		}
 		else
@@ -271,6 +271,16 @@ bool UK2Node_Compare_PulldownStruct::ShouldStrictComparison() const
 void UK2Node_Compare_PulldownStruct::SetShouldStrictComparison(const bool bNewState)
 {
 	bStrictComparison = bNewState;
+}
+
+FName UK2Node_Compare_PulldownStruct::GetPulldownSourceFunctionName() const
+{
+	return GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, EqualEqual_NameName);
+}
+
+FName UK2Node_Compare_PulldownStruct::GetReducerFunctionName() const
+{
+	return GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, BooleanAND);
 }
 
 UBlueprintNodeSpawner* UK2Node_Compare_PulldownStruct::HandleOnMakeStructSpawner(const UScriptStruct* Struct) const

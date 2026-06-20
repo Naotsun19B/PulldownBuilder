@@ -68,7 +68,13 @@ protected:
 	
 	// Gets the name of the function to actually execute.
 	virtual FName GetFunctionName() const PURE_VIRTUAL(UK2Node_Compare_PulldownStruct::GetFunctionName, return NAME_None;);
-	
+
+	// Gets the name of the function used to compare FNativeLessPulldownStruct::PulldownSource in strict comparison mode.
+	virtual FName GetPulldownSourceFunctionName() const;
+
+	// Gets the name of the function used to reduce the SelectedValue comparison result and the PulldownSource comparison result.
+	virtual FName GetReducerFunctionName() const;
+
 private:
 	// Called when creating an instance of this node for each pull-down structs.
 	UBlueprintNodeSpawner* HandleOnMakeStructSpawner(const UScriptStruct* Struct) const;

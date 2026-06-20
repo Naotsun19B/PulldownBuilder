@@ -47,7 +47,7 @@ void UK2Node_SwitchNativeLessPulldownStruct::Serialize(FArchive& Ar)
 	Super::Serialize(Ar);
 	
 #if WITH_EDITOR
-	if (Ar.IsSaving() && Ar.IsLoading())
+	if (Ar.IsSaving() || Ar.IsLoading())
 	{
 		Ar << PulldownContents;
 	}

@@ -146,29 +146,18 @@ bool UK2Node_Get_StructContainer::IsConnectionDisallowed(const UEdGraphPin* MyPi
 	{
 		return true;
 	}
-	
-	bool bWasDisallowed = true;
-	if (MyPin == FindPinChecked(StructDataPinName, EGPD_Output))
+
+	const UEdGraphPin* StructDataPin = FindPinChecked(StructDataPinName, EGPD_Output);
+	if (MyPin == StructDataPin && MyPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)
 	{
-		if (MyPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)
+		const FName& OtherPinCategory = OtherPin->PinType.PinCategory;
+		if (OtherPinCategory != UEdGraphSchema_K2::PC_Struct && OtherPinCategory != UEdGraphSchema_K2::PC_Wildcard)
 		{
-			if (OtherPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)
-			{
-				bWasDisallowed = false;
-			}
-			else
-			{
-				bWasDisallowed = (OtherPin->PinType.PinCategory != UEdGraphSchema_K2::PC_Struct);
-			}
+			OutReason = LOCTEXT("DisallowedReason", "Struct Data pin can only be used with struct types.").ToString();
+			return true;
 		}
 	}
-	
-	if (bWasDisallowed)
-	{
-		OutReason = LOCTEXT("DisallowedReason", "Struct Data pin can only be used with struct types.").ToString();
-		return false;
-	}
-	
+
 	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
 }
 

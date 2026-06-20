@@ -25,6 +25,7 @@ public:
 	UK2Node_SwitchPulldownStruct();
 
 	// UObject interface.
+	virtual void PostInitProperties() override;
 	virtual void PostLoad() override;
 	virtual void BeginDestroy() override;
 	virtual void Serialize(FArchive& Ar) override;
@@ -74,6 +75,12 @@ protected:
 	virtual void FillSelectedValues();
 
 #if WITH_EDITOR
+	// Subscribes to the PulldownContents delegates. Idempotent.
+	void BindPulldownContentsDelegates();
+
+	// Unsubscribes from the PulldownContents delegates. Idempotent.
+	void UnbindPulldownContentsDelegates();
+
 	// Called when PulldownContents has been loaded.
 	virtual void HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents);
 

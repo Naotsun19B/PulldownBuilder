@@ -27,29 +27,35 @@ UK2Node_SwitchPulldownStruct::UK2Node_SwitchPulldownStruct()
 	bHasDefaultPin = false;
 }
 
+void UK2Node_SwitchPulldownStruct::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+#if WITH_EDITOR
+	// CDO and archetypes never receive editor events and must not subscribe.
+	if (!HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject))
+	{
+		BindPulldownContentsDelegates();
+	}
+#endif
+}
+
 void UK2Node_SwitchPulldownStruct::PostLoad()
 {
 	Super::PostLoad();
 
 #if WITH_EDITOR
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
+	// PostInitProperties is not called for objects restored from disk, so subscribe again here.
+	BindPulldownContentsDelegates();
 #endif
 }
 
 void UK2Node_SwitchPulldownStruct::BeginDestroy()
 {
 #if WITH_EDITOR
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.RemoveAll(this);
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.RemoveAll(this);
+	UnbindPulldownContentsDelegates();
 #endif
-	
+
 	Super::BeginDestroy();
 }
 
@@ -59,10 +65,10 @@ void UK2Node_SwitchPulldownStruct::Serialize(FArchive& Ar)
 
 	// If the timing is too early, PulldownContents is not loaded, and even if it is reinitialized after loading,
 	// the connected pin will be cut off, so save the selected values.
-	if (Ar.IsSaving() && Ar.IsLoading())
+	if (Ar.IsSaving() || Ar.IsLoading())
 	{
 		Ar << SelectedValues;
-#if WITH_EDITOR
+#if WITH_EDITORONLY_DATA
 		Ar << DisplayTexts;
 #endif
 	}
@@ -461,6 +467,27 @@ void UK2Node_SwitchPulldownStruct::FillSelectedValues()
 }
 
 #if WITH_EDITOR
+void UK2Node_SwitchPulldownStruct::BindPulldownContentsDelegates()
+{
+	// Defensive: avoid duplicate subscription when called from both PostInitProperties and PostLoad.
+	UnbindPulldownContentsDelegates();
+
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowAdded);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRemoved);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownRowRenamed);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.AddUObject(this, &UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsSourceChanged);
+}
+
+void UK2Node_SwitchPulldownStruct::UnbindPulldownContentsDelegates()
+{
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.RemoveAll(this);
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsLoaded.RemoveAll(this);
+}
+
 void UK2Node_SwitchPulldownStruct::HandleOnPulldownContentsLoaded(const UPulldownContents* LoadedPulldownContents)
 {
 	if (!NeedToReconstructNode(LoadedPulldownContents))

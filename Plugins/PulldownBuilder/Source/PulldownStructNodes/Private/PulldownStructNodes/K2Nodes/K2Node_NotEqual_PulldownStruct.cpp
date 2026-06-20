@@ -25,4 +25,19 @@ FName UK2Node_NotEqual_PulldownStruct::GetFunctionName() const
 	return GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, NotEqual_NameName);
 }
 
+FName UK2Node_NotEqual_PulldownStruct::GetPulldownSourceFunctionName() const
+{
+	// For NotEqual, PulldownSource also needs to be compared with NotEqual,
+	// so that the reducer (BooleanOR) can correctly express
+	// "values differ when either the source or the selected value differs".
+	return GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, NotEqual_NameName);
+}
+
+FName UK2Node_NotEqual_PulldownStruct::GetReducerFunctionName() const
+{
+	// For NotEqual, the two sub-results must be combined with OR:
+	// (SourceNotEqual) OR (SelectedValueNotEqual) == !((SourceEqual) AND (SelectedValueEqual)).
+	return GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, BooleanOR);
+}
+
 #undef LOCTEXT_NAMESPACE

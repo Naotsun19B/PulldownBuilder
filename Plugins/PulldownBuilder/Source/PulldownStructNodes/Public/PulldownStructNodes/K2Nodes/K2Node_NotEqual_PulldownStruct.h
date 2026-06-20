@@ -19,5 +19,7 @@ protected:
 	virtual FText GetCompareMethodName() const override;
 	virtual FText GetCompareMethodOperator() const override;
 	virtual FName GetFunctionName() const override;
+	virtual FName GetPulldownSourceFunctionName() const override;
+	virtual FName GetReducerFunctionName() const override;
 	// End of UK2Node_Compare_PulldownStruct interface.
 };
