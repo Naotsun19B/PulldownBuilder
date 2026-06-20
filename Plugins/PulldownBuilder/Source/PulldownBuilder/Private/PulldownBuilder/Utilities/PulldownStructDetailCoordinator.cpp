@@ -216,7 +216,7 @@ namespace PulldownBuilder
 			return;
 		}
 
-		TWeakObjectPtr<const UPulldownContents>* OwnerPtr = RegisteredStructTypes.Find(StructType);
+		const TWeakObjectPtr<const UPulldownContents>* OwnerPtr = RegisteredStructTypes.Find(StructType);
 		const UPulldownContents* Owner = (OwnerPtr != nullptr ? OwnerPtr->Get() : nullptr);
 
 		FPulldownStructDetail::Unregister(StructType);

@@ -11,12 +11,19 @@ namespace PulldownBuilder
 {
 	namespace PropertyEditorModule
 	{
+		// Returns whether the PropertyEditor module is currently loaded.
+		// Use this before Get() to avoid LoadModuleChecked crashes during program shutdown.
+		bool IsLoaded()
+		{
+			return FModuleManager::Get().IsModuleLoaded(TEXT("PropertyEditor"));
+		}
+
 		FPropertyEditorModule& Get()
 		{
 			return FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 		}
 	}
-	
+
 	ICustomPropertyTypeLayoutRegistry::ICustomPropertyTypeLayoutRegistry(const FString& InPropertyTypeName)
 		: PropertyTypeName(InPropertyTypeName)
 	{
@@ -29,7 +36,16 @@ namespace PulldownBuilder
 
 	ICustomPropertyTypeLayoutRegistry::~ICustomPropertyTypeLayoutRegistry()
 	{
-		auto& PropertyEditorModule = PropertyEditorModule::Get();
+		// The static Registries array in PulldownStructDetail.cpp is destroyed at program exit,
+		// after FEngineLoop::Exit has already unloaded the PropertyEditor module. LoadModuleChecked
+		// would crash inside FModuleManager. Skip the unregister in that window -- the PropertyEditor
+		// module's own teardown already released every layout it knew about.
+		if (!PropertyEditorModule::IsLoaded())
+		{
+			return;
+		}
+
+		FPropertyEditorModule& PropertyEditorModule = PropertyEditorModule::Get();
 		PropertyEditorModule.UnregisterCustomPropertyTypeLayout(*PropertyTypeName);
 	}
 
@@ -71,7 +87,15 @@ namespace PulldownBuilder
 
 	void FCustomizationModuleChangedNotificator::NotifyCustomizationModuleChanged()
 	{
-		auto& PropertyEditorModule = PropertyEditorModule::Get();
+		// Defense-in-depth: the OnEnginePreExit handler unsubscribes us before shutdown, but if
+		// this notification fires from any other late path (delayed broadcast, custom delegate),
+		// skip when PropertyEditor is already unloaded.
+		if (!PropertyEditorModule::IsLoaded())
+		{
+			return;
+		}
+
+		FPropertyEditorModule& PropertyEditorModule = PropertyEditorModule::Get();
 		PropertyEditorModule.NotifyCustomizationModuleChanged();
 	}
 
