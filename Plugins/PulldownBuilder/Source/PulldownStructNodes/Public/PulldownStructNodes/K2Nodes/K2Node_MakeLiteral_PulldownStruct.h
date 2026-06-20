@@ -8,6 +8,9 @@
 #include "K2Node_MakeLiteral_PulldownStruct.generated.h"
 
 class UBlueprintNodeSpawner;
+class UEdGraphSchema_K2;
+class UK2Node_MakeStruct;
+class FKismetCompilerContext;
 
 /**
  * A node class that constructs a literal value of a pull-down struct from a SelectedValue chosen on the node.
@@ -58,7 +61,7 @@ protected:
 	virtual bool ApplyDefaultsToMakeStructNode(
 		FKismetCompilerContext& CompilerContext,
 		const UEdGraphSchema_K2* K2Schema,
-		class UK2Node_MakeStruct* MakeStructNode
+		UK2Node_MakeStruct* MakeStructNode
 	) const;
 
 	// Returns whether the specified struct should be exposed as a spawner candidate for this node class.

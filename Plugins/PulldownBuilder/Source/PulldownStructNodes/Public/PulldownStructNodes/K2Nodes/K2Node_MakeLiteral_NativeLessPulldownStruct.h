@@ -6,6 +6,10 @@
 #include "PulldownStructNodes/K2Nodes/K2Node_MakeLiteral_PulldownStruct.h"
 #include "K2Node_MakeLiteral_NativeLessPulldownStruct.generated.h"
 
+class UEdGraphSchema_K2;
+class UK2Node_MakeStruct;
+class FKismetCompilerContext;
+
 /**
  * A node class that constructs a literal value of an FNativeLessPulldownStruct.
  * Carries an additional PulldownSource so that the constructed struct points at the correct PulldownContents.
@@ -27,7 +31,7 @@ public:
 	virtual bool ApplyDefaultsToMakeStructNode(
 		FKismetCompilerContext& CompilerContext,
 		const UEdGraphSchema_K2* K2Schema,
-		class UK2Node_MakeStruct* MakeStructNode
+		UK2Node_MakeStruct* MakeStructNode
 	) const override;
 	virtual bool IsTargetStruct(const UScriptStruct* Struct) const override;
 	// End of UK2Node_MakeLiteral_PulldownStruct interface.
