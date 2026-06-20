@@ -60,6 +60,11 @@ namespace PulldownBuilder
 		void UnregisterFor(const UPulldownContents* PulldownContents);
 		void UnregisterByStructType(const FPulldownStructType& StructType);
 
+		// Tears down every entry in RegisteredStructTypes. Skips the UObject-touching path when
+		// the engine is shutting down (so we never call IsValid / GetNameSafe on stale UScriptStruct
+		// pointers from FEngineLoop::Exit's UnloadModulesAtShutdown).
+		void UnregisterAllByStructType();
+
 	private:
 		// Singleton instance. Constructed by Register, released by Unregister.
 		static TUniquePtr<FPulldownStructDetailCoordinator> Instance;

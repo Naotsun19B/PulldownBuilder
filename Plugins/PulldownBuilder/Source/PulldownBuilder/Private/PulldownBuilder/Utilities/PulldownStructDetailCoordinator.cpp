@@ -5,10 +5,23 @@
 #include "PulldownBuilder/Assets/PulldownContentsAsyncLoader.h"
 #include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
+#include "Misc/CoreMiscDefines.h"
 #include "UObject/UObjectGlobals.h"
 
 namespace PulldownBuilder
 {
+	namespace PulldownStructDetailCoordinatorPrivate
+	{
+		// Returns whether UScriptStruct pointers held in RegisteredStructTypes can be safely
+		// dereferenced right now. During FEngineLoop::Exit's UnloadModulesAtShutdown the UObject
+		// hash table is already torn down, so IsValid / GetNameSafe would crash inside
+		// FUObjectArray::IndexToObject.
+		bool CanSafelyAccessUObjects()
+		{
+			return (UObjectInitialized() && !IsEngineExitRequested());
+		}
+	}
+
 	void FPulldownStructDetailCoordinator::Register()
 	{
 		if (Instance.IsValid())
@@ -28,6 +41,11 @@ namespace PulldownBuilder
 		}
 
 		Instance->Unbind();
+
+		// Drop every registration BEFORE the UniquePtr deleter runs, so that the dtor itself
+		// never needs to touch UScriptStruct pointers (which may already be stale by that point).
+		Instance->UnregisterAllByStructType();
+
 		Instance.Reset();
 	}
 
@@ -36,12 +54,8 @@ namespace PulldownBuilder
 	FPulldownStructDetailCoordinator::~FPulldownStructDetailCoordinator()
 	{
 		// Defensive: if Unregister was bypassed, still tear down every customization we owned.
-		TArray<FPulldownStructType> StructTypesToUnregister;
-		RegisteredStructTypes.GenerateKeyArray(StructTypesToUnregister);
-		for (const FPulldownStructType& StructType : StructTypesToUnregister)
-		{
-			UnregisterByStructType(StructType);
-		}
+		// UnregisterAllByStructType internally guards UObject access against shutdown.
+		UnregisterAllByStructType();
 	}
 
 	void FPulldownStructDetailCoordinator::Bind()
@@ -213,6 +227,30 @@ namespace PulldownBuilder
 			FPulldownContentsDelegates::OnDetailCustomizationUnregistered.Broadcast(Owner);
 		}
 	}
-	
+
+	void FPulldownStructDetailCoordinator::UnregisterAllByStructType()
+	{
+		if (RegisteredStructTypes.Num() == 0)
+		{
+			return;
+		}
+
+		// During engine shutdown the UObject hash table is already gone, so any IsValid /
+		// GetNameSafe on a UScriptStruct pointer crashes. The PropertyEditor module is
+		// tearing down too, so the only safe action is to drop the local map.
+		if (!PulldownStructDetailCoordinatorPrivate::CanSafelyAccessUObjects())
+		{
+			RegisteredStructTypes.Empty();
+			return;
+		}
+
+		TArray<FPulldownStructType> StructTypesToUnregister;
+		RegisteredStructTypes.GenerateKeyArray(StructTypesToUnregister);
+		for (const FPulldownStructType& StructType : StructTypesToUnregister)
+		{
+			UnregisterByStructType(StructType);
+		}
+	}
+
 	TUniquePtr<FPulldownStructDetailCoordinator> FPulldownStructDetailCoordinator::Instance;
 }
