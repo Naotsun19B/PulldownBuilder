@@ -56,7 +56,7 @@ namespace PulldownBuilder
 #if UE_5_00_OR_LATER
 		Instance->ProgressNotification = MakePimpl<FProgressNotification>();
 #endif
-		
+
 		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
 		{
 			AssetRegistry->OnAssetAdded().AddRaw(Instance.Get(), &FPulldownContentsAsyncLoader::HandleOnAssetAdded);
@@ -66,11 +66,23 @@ namespace PulldownBuilder
 
 	void FPulldownContentsAsyncLoader::Unregister()
 	{
+		if (!Instance.IsValid())
+		{
+			return;
+		}
+
+		// Unbind asset-registry callbacks first so no further HandleOnAssetAdded calls can fire while we tear down.
 		if (IAssetRegistry* AssetRegistry = AssetRegistry::Get())
 		{
 			AssetRegistry->OnFilesLoaded().RemoveAll(Instance.Get());
 			AssetRegistry->OnAssetAdded().RemoveAll(Instance.Get());
 		}
+
+#if UE_5_00_OR_LATER
+		// Reset the progress notification before releasing the instance so any in-flight streamable
+		// callback that races with shutdown observes a null ProgressNotification rather than a dangling one.
+		Instance->ProgressNotification.Reset();
+#endif
 
 		Instance.Reset();
 	}
@@ -146,11 +158,13 @@ namespace PulldownBuilder
 	void FPulldownContentsAsyncLoader::StartAsyncLoading(const FAssetData& AssetData)
 	{
 #if UE_5_00_OR_LATER
-		check(ProgressNotification.IsValid());
-		ProgressNotification->PulldownContentsToLoad.Add(AssetData);
-		UpdateProgressNotification();
+		if (ProgressNotification.IsValid())
+		{
+			ProgressNotification->PulldownContentsToLoad.Add(AssetData);
+			UpdateProgressNotification();
+		}
 #endif
-				
+
 		UAssetManager::GetStreamableManager().RequestAsyncLoad(
 			AssetData.ToSoftObjectPath(),
 			FStreamableDelegate::CreateRaw(this, &FPulldownContentsAsyncLoader::EndAsyncLoading, AssetData),
@@ -161,15 +175,17 @@ namespace PulldownBuilder
 	void FPulldownContentsAsyncLoader::EndAsyncLoading(const FAssetData AssetData)
 	{
 #if UE_5_00_OR_LATER
-		check(ProgressNotification.IsValid());
-		ProgressNotification->PulldownContentsToLoad.Remove(AssetData);
-		UpdateProgressNotification();
+		if (ProgressNotification.IsValid())
+		{
+			ProgressNotification->PulldownContentsToLoad.Remove(AssetData);
+			UpdateProgressNotification();
+		}
 #endif
 
 		if (const auto* LoadedPulldownContents = Cast<UPulldownContents>(AssetData.GetAsset()))
 		{
 			FPulldownContentsDelegates::OnPulldownContentsLoaded.Broadcast(LoadedPulldownContents);
-			
+
 			UE_LOG(LogPulldownBuilder, Log, TEXT("Loaded %s"), *LoadedPulldownContents->GetName());
 		}
 	}
@@ -177,8 +193,11 @@ namespace PulldownBuilder
 	void FPulldownContentsAsyncLoader::UpdateProgressNotification()
 	{
 #if UE_5_00_OR_LATER
-		check(ProgressNotification.IsValid());
-		
+		if (!ProgressNotification.IsValid())
+		{
+			return;
+		}
+
 		const int32 TotalWorkToDo = ProgressNotification->PulldownContentsToLoad.Num();
 		const FText DisplayText = FText::Format(
 			LOCTEXT("ProgressNotificationLabel", "Loading Pulldown Contents ({0})"),

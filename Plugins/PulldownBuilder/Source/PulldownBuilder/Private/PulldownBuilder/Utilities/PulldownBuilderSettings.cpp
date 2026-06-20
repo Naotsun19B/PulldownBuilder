@@ -28,7 +28,15 @@ namespace PulldownBuilder
 
 void UPulldownBuilderSettings::Register()
 {
+	// FCoreDelegates::OnPostEngineInit was deprecated in UE5.8 in favour of the getter accessor
+	// GetOnPostEngineInit(). Both forms refer to the same FSimpleMulticastDelegate, so the runtime
+	// behaviour is identical -- the macro branch only suppresses the deprecation warning on 5.8+.
+	// OnEnginePreExit is *not* deprecated in 5.8 and continues to be accessed as a member.
+#if UE_5_08_OR_LATER
+	FCoreDelegates::GetOnPostEngineInit().AddStatic(&UPulldownBuilderSettings::HandleOnPostEngineInit);
+#else
 	FCoreDelegates::OnPostEngineInit.AddStatic(&UPulldownBuilderSettings::HandleOnPostEngineInit);
+#endif
 	FCoreDelegates::OnEnginePreExit.AddStatic(&UPulldownBuilderSettings::HandleOnEnginePreExit);
 }
 

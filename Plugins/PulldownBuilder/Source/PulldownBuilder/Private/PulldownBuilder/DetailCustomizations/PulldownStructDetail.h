@@ -84,6 +84,10 @@ namespace PulldownBuilder
 			const TFunction<void(const TSharedRef<IPropertyHandle>& PropertyHandle)>& Predicate
 		);
 	
+		// Rebuilds SelectableValuesByName from SelectableValues so FindSelectableValueByName runs in O(1).
+		// Call this after SelectableValues has been rebuilt.
+		void RebuildSelectableValuesLookup();
+
 		// Finds for the same name as the specified name from the SelectableValues.
 		// If not found, returns nullptr.
 		TSharedPtr<FPulldownRow> FindSelectableValueByName(const FName& InName) const;
@@ -132,6 +136,10 @@ namespace PulldownBuilder
 	
 		// The list of values that can be set in FPulldownStructBase::SelectedValue.
 		FPulldownRows SelectableValues;
+
+		// O(1) lookup index over SelectableValues keyed by SelectedValue string.
+		// Refreshed by RebuildSelectableValuesLookup() whenever SelectableValues changes.
+		TMap<FString, TSharedPtr<FPulldownRow>> SelectableValuesByName;
 
 		// The property handle of FPulldownStructBase::SelectedValue.
 		TSharedPtr<IPropertyHandle> SelectedValueHandle;

@@ -3,7 +3,6 @@
 #include "PulldownBuilder/Assets/PulldownContents.h"
 #include "PulldownBuilder/Assets/PulldownContentsDelegates.h"
 #include "PulldownBuilder/ListGenerators/PulldownListGeneratorBase.h"
-#include "PulldownBuilder/DetailCustomizations/PulldownStructDetail.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderAppearanceSettings.h"
 #include "Editor.h"
@@ -48,10 +47,9 @@ void UPulldownContents::PostLoad()
 			AssetEditorSubsystem->OnAssetEditorOpened().AddUObject(this, &UPulldownContents::HandleOnAssetEditorOpened);
 		}
 	}
-	
-	FCoreUObjectDelegates::OnPackageReloaded.AddUObject(this, &UPulldownContents::HandleOnPackageReloaded);
-	
-	RegisterDetailCustomization();
+
+	// Detail-customization registration and package-reload handling are owned by FPulldownStructDetailCoordinator.
+	// This asset only fires lifecycle delegates; the coordinator decides when to Register / Unregister.
 }
 
 #if UE_4_25_OR_LATER
@@ -70,7 +68,8 @@ void UPulldownContents::PreEditChange(UProperty* PropertyAboutToChange)
 	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownStructType) ||
 		PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(FPulldownStructType, SelectedStruct))
 	{
-		UnregisterDetailCustomization();
+		// The struct type is about to change; the coordinator unregisters the previous struct type from this signal.
+		PulldownBuilder::FPulldownContentsDelegates::OnPulldownStructTypeChangePending.Broadcast(this);
 	}
 
 	if (PropertyAboutToChange->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownListGenerator))
@@ -90,7 +89,8 @@ void UPulldownContents::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 
 	if (PropertyChangedEvent.MemberProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UPulldownContents, PulldownStructType))
 	{
-		RegisterDetailCustomization();
+		// The struct type has changed; the coordinator registers the new struct type from this signal.
+		PulldownBuilder::FPulldownContentsDelegates::OnPulldownStructTypeChangeCommitted.Broadcast(this);
 		ModifyPulldownListGenerator();
 	}
 
@@ -102,9 +102,12 @@ void UPulldownContents::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 
 void UPulldownContents::BeginDestroy()
 {
-	UnregisterDetailCustomization();
-
-	FCoreUObjectDelegates::OnPackageReloaded.RemoveAll(this);
+	// The struct-type unregistration is owned by FPulldownStructDetailCoordinator; signal it so this asset's
+	// struct type stops being customized when the asset itself goes away.
+	if (!HasAnyFlags(RF_ClassDefaultObject) && PulldownStructType.IsValid())
+	{
+		PulldownBuilder::FPulldownContentsDelegates::OnPulldownStructTypeChangePending.Broadcast(this);
+	}
 
 	if (IsValid(GEditor))
 	{
@@ -113,7 +116,7 @@ void UPulldownContents::BeginDestroy()
 			AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
 		}
 	}
-	
+
 	Super::BeginDestroy();
 }
 
@@ -262,42 +265,16 @@ bool UPulldownContents::SupportsSwitchNode() const
 
 void UPulldownContents::RegisterDetailCustomization()
 {
-	// The default object does not perform registration processing.
-	if (HasAnyFlags(RF_ClassDefaultObject))
-	{
-		return;
-	}
-
-	// If the Pulldown Struct Type is empty, the process will be skipped.
-	if (!PulldownStructType.IsValid())
-	{
-		return;
-	}
-
-	PulldownBuilder::FPulldownStructDetail::Register(PulldownStructType);
-
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been registered with detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
-	PulldownBuilder::FPulldownContentsDelegates::OnDetailCustomizationRegistered.Broadcast(this);
+	// Kept as a virtual hook for backwards compatibility, but the canonical registration path is now
+	// FPulldownStructDetailCoordinator (driven by OnPulldownStructTypeChangeCommitted and friends).
+	// Overrides may still extend behaviour here, but the base implementation is intentionally empty.
 }
 
 void UPulldownContents::UnregisterDetailCustomization()
 {
-	// The default object does not perform registration processing.
-	if (HasAnyFlags(RF_ClassDefaultObject))
-	{
-		return;
-	}
-
-	// If the Pulldown Struct Type is empty, the process will be skipped.
-	if (!PulldownStructType.IsValid())
-	{
-		return;
-	}
-
-	PulldownBuilder::FPulldownStructDetail::Unregister(PulldownStructType);
-
-	UE_LOG(LogPulldownBuilder, Log, TEXT("[%s] %s has been unregistered from detail customization."), *GetName(), *GetNameSafe(PulldownStructType.SelectedStruct));
-	PulldownBuilder::FPulldownContentsDelegates::OnDetailCustomizationUnregistered.Broadcast(this);
+	// Kept as a virtual hook for backwards compatibility, but the canonical unregistration path is now
+	// FPulldownStructDetailCoordinator (driven by OnPulldownStructTypeChangePending and friends).
+	// Overrides may still extend behaviour here, but the base implementation is intentionally empty.
 }
 
 void UPulldownContents::ModifyPulldownListGenerator()
@@ -360,11 +337,8 @@ void UPulldownContents::HandleOnAssetEditorOpened(UObject* OpenedAsset)
 
 void UPulldownContents::HandleOnPackageReloaded(EPackageReloadPhase ReloadPhase, FPackageReloadedEvent* ReloadedEvent)
 {
-	if (ReloadPhase == EPackageReloadPhase::PostBatchPostGC)
-	{
-		UnregisterDetailCustomization();
-		RegisterDetailCustomization();
-	}
+	// Package-reload handling is owned by FPulldownStructDetailCoordinator now.
+	// This stub is preserved only so external code referencing the symbol still links.
 }
 
 #undef LOCTEXT_NAMESPACE

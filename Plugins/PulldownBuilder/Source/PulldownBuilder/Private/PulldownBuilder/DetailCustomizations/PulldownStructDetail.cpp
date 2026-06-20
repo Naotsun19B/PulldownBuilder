@@ -208,9 +208,10 @@ namespace PulldownBuilder
 	void FPulldownStructDetail::InitializePulldown()
 	{
 		check(IsEditedHandle.IsValid());
-		
+
 		SelectableValues = GenerateSelectableValues();
-		
+		RebuildSelectableValuesLookup();
+
 		UpdateSearchableObject();
 
 		// The default value is applied only if the default value is sets and the default value is None.
@@ -267,6 +268,7 @@ namespace PulldownBuilder
 		if (StructPropertyHandle->GetValueData(StructValueData) == FPropertyAccess::Success)
 		{
 			SelectableValues = GenerateSelectableValues();
+			RebuildSelectableValuesLookup();
 		}
 		// Empties the list if data acquisition fails or if multiple selections are made.
 		else
@@ -353,6 +355,20 @@ namespace PulldownBuilder
 	void FPulldownStructDetail::OnMultipleSelected()
 	{
 		SelectableValues.Reset();
+		SelectableValuesByName.Reset();
+	}
+
+	void FPulldownStructDetail::RebuildSelectableValuesLookup()
+	{
+		SelectableValuesByName.Reset();
+		SelectableValuesByName.Reserve(SelectableValues.Num());
+		for (const TSharedPtr<FPulldownRow>& Row : SelectableValues)
+		{
+			if (Row.IsValid())
+			{
+				SelectableValuesByName.Add(Row->SelectedValue, Row);
+			}
+		}
 	}
 
 	UPulldownContents* FPulldownStructDetail::GetRelatedPulldownContents() const
@@ -458,6 +474,17 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> FPulldownStructDetail::FindSelectableValueByName(const FName& InName) const
 	{
+		// O(1) via SelectableValuesByName; fall back to a linear scan only when the lookup is stale
+		// (defensive: protects against a rebuild path that forgot to call RebuildSelectableValuesLookup).
+		if (SelectableValuesByName.Num() == SelectableValues.Num())
+		{
+			if (const TSharedPtr<FPulldownRow>* Found = SelectableValuesByName.Find(InName.ToString()))
+			{
+				return *Found;
+			}
+			return nullptr;
+		}
+
 		return SelectableValues.FindByPredicate(
 			[&](const TSharedPtr<FPulldownRow>& Row)
 			{

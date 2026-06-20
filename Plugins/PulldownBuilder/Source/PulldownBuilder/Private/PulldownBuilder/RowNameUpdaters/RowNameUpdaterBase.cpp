@@ -19,12 +19,24 @@
 
 void URowNameUpdaterBase::Register()
 {
+	// Guard against double registration leaking the previous handle.
+	if (OnPulldownRowRenamedHandle.IsValid())
+	{
+		return;
+	}
+
 	OnPulldownRowRenamedHandle = PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.AddStatic(&URowNameUpdaterBase::UpdateRowNames);
 }
 
 void URowNameUpdaterBase::Unregister()
 {
+	if (!OnPulldownRowRenamedHandle.IsValid())
+	{
+		return;
+	}
+
 	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.Remove(OnPulldownRowRenamedHandle);
+	OnPulldownRowRenamedHandle.Reset();
 }
 
 void URowNameUpdaterBase::UpdateRowNames(

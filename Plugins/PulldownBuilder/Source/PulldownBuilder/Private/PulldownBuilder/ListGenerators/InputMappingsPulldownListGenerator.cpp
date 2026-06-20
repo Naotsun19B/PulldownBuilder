@@ -22,8 +22,9 @@ void UInputMappingsPulldownListGenerator::PostInitProperties()
 	Super::PostInitProperties();
 
 	FEditorDelegates::OnActionAxisMappingsChanged.AddUObject(this, &UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged);
-	
-	CachePreChangeDisplayTexts();
+
+	// Seed the cached baseline so the first change event diffs against the startup state.
+	CapturePreChangeSelectedValues();
 }
 
 void UInputMappingsPulldownListGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -208,23 +209,6 @@ FPulldownRows UInputMappingsPulldownListGenerator::GetPulldownRowsFromInputSetti
 	return PulldownRows;
 }
 
-void UInputMappingsPulldownListGenerator::CachePreChangeDisplayTexts()
-{
-	const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
-	
-	PreChangeSelectedValues.Reset(PulldownRows.Num());
-	
-	for (const auto& PulldownRow : PulldownRows)
-	{
-		if (!PulldownRow.IsValid())
-		{
-			continue;
-		}
-
-		PreChangeSelectedValues.Add(*PulldownRow->SelectedValue);
-	}
-}
-
 void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 {
 	// Blueprint functions are not available during routing post load.
@@ -232,28 +216,29 @@ void UInputMappingsPulldownListGenerator::HandleOnActionAxisMappingsChanged()
 	{
 		OnActionAxisMappingsChanged();
 	}
-	
-	TArray<FName> PostChangeSelectedValues;
-	{
-		const FPulldownRows& PulldownRows = GetPulldownRowsFromInputSettings();
-		PostChangeSelectedValues.Reserve(PulldownRows.Num());
-		for (const auto& PulldownRow : PulldownRows)
-		{
-			if (!PulldownRow.IsValid())
-			{
-				continue;
-			}
 
-			PostChangeSelectedValues.Add(*PulldownRow->SelectedValue);
-		}
-	}
-
-	if (NotifyPulldownRowChanged(PreChangeSelectedValues, PostChangeSelectedValues))
-	{
-		CachePreChangeDisplayTexts();
-	}
+	// Common cache + diff path: diff current vs the previously captured baseline and refresh.
+	CommitPostChangeSelectedValues();
 
 	VerifyDefaultValue();
+}
+
+TArray<FName> UInputMappingsPulldownListGenerator::CollectCurrentSelectedValues() const
+{
+	const FPulldownRows PulldownRows = GetPulldownRowsFromInputSettings();
+
+	TArray<FName> Result;
+	Result.Reserve(PulldownRows.Num());
+	for (const auto& PulldownRow : PulldownRows)
+	{
+		if (!PulldownRow.IsValid())
+		{
+			continue;
+		}
+
+		Result.Add(*PulldownRow->SelectedValue);
+	}
+	return Result;
 }
 
 TArray<FName> UInputMappingsPulldownListGenerator::GetDefaultValueOptions_Implementation() const

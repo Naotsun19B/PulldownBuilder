@@ -68,7 +68,7 @@ namespace PulldownBuilder
 	FPulldownRows FNativeLessPulldownStructDetail::GenerateSelectableValues()
 	{
 		check(StructPropertyHandle.IsValid());
-		
+
 		PulldownContentsNames.Reset();
 		PulldownContentsNames.Add(MakeShared<FPulldownRow>());
 
@@ -85,6 +85,8 @@ namespace PulldownBuilder
 				);
 			}
 		}
+
+		RebuildPulldownContentsNamesLookup();
 
 		FName PulldownSource;
 		PulldownSourceHandle->GetValue(PulldownSource);
@@ -119,7 +121,21 @@ namespace PulldownBuilder
 	void FNativeLessPulldownStructDetail::OnMultipleSelected()
 	{
 		PulldownContentsNames.Reset();
+		PulldownContentsNamesByName.Reset();
 		FPulldownStructDetail::OnMultipleSelected();
+	}
+
+	void FNativeLessPulldownStructDetail::RebuildPulldownContentsNamesLookup()
+	{
+		PulldownContentsNamesByName.Reset();
+		PulldownContentsNamesByName.Reserve(PulldownContentsNames.Num());
+		for (const TSharedPtr<FPulldownRow>& Row : PulldownContentsNames)
+		{
+			if (Row.IsValid())
+			{
+				PulldownContentsNamesByName.Add(Row->SelectedValue, Row);
+			}
+		}
 	}
 
 	UPulldownContents* FNativeLessPulldownStructDetail::GetRelatedPulldownContents() const
@@ -182,6 +198,16 @@ namespace PulldownBuilder
 
 	TSharedPtr<FPulldownRow> FNativeLessPulldownStructDetail::FindPulldownContentsNameByName(const FName& InName) const
 	{
+		// O(1) via PulldownContentsNamesByName; fall back to a linear scan only when the lookup is stale.
+		if (PulldownContentsNamesByName.Num() == PulldownContentsNames.Num())
+		{
+			if (const TSharedPtr<FPulldownRow>* Found = PulldownContentsNamesByName.Find(InName.ToString()))
+			{
+				return *Found;
+			}
+			return nullptr;
+		}
+
 		return PulldownContentsNames.FindByPredicate(
 			[&](const TSharedPtr<FPulldownRow>& Row)
 			{

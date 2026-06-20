@@ -28,7 +28,7 @@ namespace PulldownBuilder
 	
 		// Called when unregisters the struct set for PulldownContents from detail customization.
 		DECLARE_MULTICAST_DELEGATE_OneParam(FOnDetailCustomizationUnregistered, const UPulldownContents* /* UnregisteredPulldownContents */);
-		static FOnDetailCustomizationRegistered OnDetailCustomizationUnregistered;
+		static FOnDetailCustomizationUnregistered OnDetailCustomizationUnregistered;
 		
 		// Called when a value added to the pull-down menu.
 		DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPulldownRowAdded, UPulldownContents* /* ModifiedPulldownContents */, const FName& /* AddedSelectedValue */);
@@ -45,5 +45,15 @@ namespace PulldownBuilder
 		// Called when the underlying data for the pull-down menu has changed.
 		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownContentsSourceChanged, UPulldownContents* /* ModifiedPulldownContents */);
 		static FOnPulldownContentsSourceChanged OnPulldownContentsSourceChanged;
+
+		// Called just before the PulldownContents' struct type (and therefore its detail-customization registration)
+		// is about to change. The coordinator uses this to unregister the *old* struct type.
+		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownStructTypeChangePending, UPulldownContents* /* PulldownContentsAboutToChange */);
+		static FOnPulldownStructTypeChangePending OnPulldownStructTypeChangePending;
+
+		// Called just after the PulldownContents' struct type was committed. The coordinator uses this to register
+		// the *new* struct type.
+		DECLARE_MULTICAST_DELEGATE_OneParam(FOnPulldownStructTypeChangeCommitted, UPulldownContents* /* ChangedPulldownContents */);
+		static FOnPulldownStructTypeChangeCommitted OnPulldownStructTypeChangeCommitted;
 	};
 };

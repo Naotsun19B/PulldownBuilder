@@ -39,10 +39,7 @@ public:
 protected:
 	// Gets a list of input information from UInputSettings.
 	FPulldownRows GetPulldownRowsFromInputSettings() const;
-	
-	// Caches a pull-down list of current input mapping.
-	void CachePreChangeDisplayTexts();
-	
+
 	// Called when action or axis mappings have been changed.
 	void HandleOnActionAxisMappingsChanged();
 
@@ -51,9 +48,10 @@ protected:
 	void OnActionAxisMappingsChanged();
 
 	// UPulldownListGeneratorBase interface.
+	virtual TArray<FName> CollectCurrentSelectedValues() const override;
 	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
-	
+
 protected:
 	// Whether to include the action mapping in the list in thepull-down menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
@@ -66,8 +64,4 @@ protected:
 	// Whether to include the speech mapping in the list in the pull-down menu.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pulldown")
 	bool bIncludeSpeechMappings;
-
-	// The cache of the selected values before the change for the redirect process.
-	UPROPERTY(Transient)
-	TArray<FName> PreChangeSelectedValues;
 };

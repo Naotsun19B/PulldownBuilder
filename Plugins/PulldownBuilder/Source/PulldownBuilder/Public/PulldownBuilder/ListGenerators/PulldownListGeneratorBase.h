@@ -65,15 +65,42 @@ protected:
 
 	// Notifies a value removed from the pull-down menu.
 	virtual void NotifyPulldownRowRemoved(const FName& RemovedSelectedValue);
-	
+
 	// Notifies a value contained in the pull-down menu has been renamed.
 	virtual void NotifyPulldownRowRenamed(const FName& PreChangeSelectedValue, const FName& PostChangeSelectedValue);
 
 	// Notifies the underlying data for the pull-down menu has changed.
 	virtual void NotifyPulldownContentsSourceChanged();
-	
+
 	// Notifies of changes to pull-down menus and returns whether they were actually notified.
 	bool NotifyPulldownRowChanged(const TArray<FName>& PreChangeSelectedValues, const TArray<FName>& PostChangeSelectedValues);
+
+	/**
+	 * Common cache + diff pattern for derived generators that watch an external source for change.
+	 *
+	 * Use one of the two flows:
+	 *   - Pre/post pair (e.g. DataTable's PreChange + PostChange):
+	 *       PreChange  -> CapturePreChangeSelectedValues()
+	 *       PostChange -> CommitPostChangeSelectedValues()
+	 *   - Single event (e.g. InputMappings' OnActionAxisMappingsChanged):
+	 *       PostInitProperties (or similar seed point) -> CapturePreChangeSelectedValues()
+	 *       on change                                  -> CommitPostChangeSelectedValues()
+	 *                                                     (which also re-captures the new baseline)
+	 *
+	 * Subclasses provide the live snapshot via CollectCurrentSelectedValues().
+	 */
+
+	// Returns the current set of SelectedValues this generator would emit. Default returns an empty array.
+	// Subclasses that want to use CapturePreChangeSelectedValues / CommitPostChangeSelectedValues override this.
+	virtual TArray<FName> CollectCurrentSelectedValues() const;
+
+	// Snapshots CollectCurrentSelectedValues() into the cached baseline. Idempotent.
+	void CapturePreChangeSelectedValues();
+
+	// Diffs CollectCurrentSelectedValues() vs the cached baseline, broadcasts the diff via
+	// NotifyPulldownRowAdded / Removed / Renamed, and refreshes the cached baseline to the new current state.
+	// Returns true if any change was notified.
+	bool CommitPostChangeSelectedValues();
 	
 	// Expansion points for implementation in blueprints.
 	UFUNCTION(BlueprintPure, BlueprintImplementableEvent, Category = "Pulldown", meta = (BlueprintProtected, DisplayName = "Get Pulldown Rows", Tooltip = "Returns a list of data to display in the pull-down menu."))
@@ -110,4 +137,10 @@ protected:
 	// The row name to use as the default value.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown | Default Value", meta = (GetOptions = "GetDefaultValueOptions"))
 	FName DefaultValue;
+
+private:
+	// The cached snapshot of SelectedValues from the most recent CapturePreChangeSelectedValues() /
+	// successful CommitPostChangeSelectedValues() call. Used to diff the next state against.
+	UPROPERTY(Transient)
+	TArray<FName> CachedSelectedValues;
 };

@@ -17,39 +17,34 @@ void UDataTableUpdater::UpdateRowNamesInternal(
 	EnumerateAssets<UDataTable>([&](UDataTable* DataTable) -> bool
 	{
 		bool bIsModified = false;
-		
-		const UScriptStruct* RowType = DataTable->GetRowStruct();
-		const TArray<FName> RowNames = DataTable->GetRowNames();
-		for (const auto& RowName : RowNames)
-		{
-#if UE_4_25_OR_LATER
-			for (FStructProperty* StructProperty : TFieldRange<FStructProperty>(RowType))
-#else
-			for (UStructProperty* StructProperty : TFieldRange<UStructProperty>(RowType))
-#endif
-			{
-				if (StructProperty == nullptr)
-				{
-					continue;
-				}
 
-				const TMap<FName, uint8*>& RowMap = DataTable->GetRowMap();
-				if (auto* Row = RowMap.Find(RowName))
-				{
-					if (UpdateMemberVariables(
-						RowType,
-						*Row,
-						PulldownContents,
-						PreChangeSelectedValue,
-						PostChangeSelectedValue
-					))
-					{
-						bIsModified = true;
-					}
-				}
+		const UScriptStruct* RowType = DataTable->GetRowStruct();
+		if (!IsValid(RowType))
+		{
+			return false;
+		}
+
+		const TMap<FName, uint8*>& RowMap = DataTable->GetRowMap();
+		for (const TPair<FName, uint8*>& Pair : RowMap)
+		{
+			uint8* RowData = Pair.Value;
+			if (RowData == nullptr)
+			{
+				continue;
+			}
+
+			if (UpdateMemberVariables(
+				RowType,
+				RowData,
+				PulldownContents,
+				PreChangeSelectedValue,
+				PostChangeSelectedValue
+			))
+			{
+				bIsModified = true;
 			}
 		}
-		
+
 		return bIsModified;
 	});
 }

@@ -194,12 +194,32 @@ namespace PulldownBuilder
 		{
 			ListItems = *ListItemsSource;
 		}
-	
+
 		if (!FilterString.IsEmpty())
 		{
-			ListItems.RemoveAll([this](const TSharedPtr<FPulldownRow>& ListItem) -> bool
+			// Pull the settings access out of the per-row predicate; bIsDisplayTextDisabled is constant
+			// across the filter pass and the appearance-settings lookup is not trivial.
+			const auto& Settings = GetSettings<UPulldownBuilderAppearanceSettings>();
+			const bool bIsDisplayTextDisabled = Settings.bIsDisplayTextDisabled;
+
+			ListItems.RemoveAll([this, bIsDisplayTextDisabled](const TSharedPtr<FPulldownRow>& ListItem) -> bool
 			{
-				return !FilterRow(ListItem);
+				if (!ListItem.IsValid())
+				{
+					return true;
+				}
+
+				const FString DisplayString = (
+					bIsDisplayTextDisabled ?
+					ListItem->SelectedValue :
+					ListItem->GetDisplayText().ToString()
+				);
+				if (DisplayString.Contains(FilterString))
+				{
+					return false;
+				}
+
+				return !ListItem->TooltipText.ToString().Contains(FilterString);
 			});
 		}
 	}

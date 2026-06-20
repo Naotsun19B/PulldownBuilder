@@ -160,42 +160,77 @@ bool UPulldownListGeneratorBase::SupportsSwitchNode_Implementation() const
 
 void UPulldownListGeneratorBase::NotifyPulldownRowAdded(const FName& AddedSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.Broadcast(
-		GetTypedOuter<UPulldownContents>(),
-		AddedSelectedValue
-	);
+	UPulldownContents* OwnerPulldownContents = GetTypedOuter<UPulldownContents>();
+	if (OwnerPulldownContents == nullptr)
+	{
+		return;
+	}
 
-	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *AddedSelectedValue.ToString());
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowAdded.Broadcast(OwnerPulldownContents, AddedSelectedValue);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected the addition of the row name that is the source of %s. (+ %s)"), *OwnerPulldownContents->GetName(), *AddedSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownRowRemoved(const FName& RemovedSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.Broadcast(
-		GetTypedOuter<UPulldownContents>(),
-		RemovedSelectedValue
-	);
+	UPulldownContents* OwnerPulldownContents = GetTypedOuter<UPulldownContents>();
+	if (OwnerPulldownContents == nullptr)
+	{
+		return;
+	}
 
-	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *RemovedSelectedValue.ToString());
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRemoved.Broadcast(OwnerPulldownContents, RemovedSelectedValue);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected removal of the row name that is the source of %s. (- %s)"), *OwnerPulldownContents->GetName(), *RemovedSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownRowRenamed(const FName& PreChangeSelectedValue, const FName& PostChangeSelectedValue)
 {
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.Broadcast(
-		GetTypedOuter<UPulldownContents>(),
-		PreChangeSelectedValue,
-		PostChangeSelectedValue
-	);
+	UPulldownContents* OwnerPulldownContents = GetTypedOuter<UPulldownContents>();
+	if (OwnerPulldownContents == nullptr)
+	{
+		return;
+	}
 
-	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *GetNameSafe(GetTypedOuter<UPulldownContents>()), *PreChangeSelectedValue.ToString(), *PostChangeSelectedValue.ToString());
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownRowRenamed.Broadcast(OwnerPulldownContents, PreChangeSelectedValue, PostChangeSelectedValue);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected renaming of row name that is the source of %s. (%s -> %s)"), *OwnerPulldownContents->GetName(), *PreChangeSelectedValue.ToString(), *PostChangeSelectedValue.ToString());
 }
 
 void UPulldownListGeneratorBase::NotifyPulldownContentsSourceChanged()
 {
-	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.Broadcast(
-		GetTypedOuter<UPulldownContents>()
-	);
+	UPulldownContents* OwnerPulldownContents = GetTypedOuter<UPulldownContents>();
+	if (OwnerPulldownContents == nullptr)
+	{
+		return;
+	}
 
-	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected modification of underlying data of %s."), *GetNameSafe(GetTypedOuter<UPulldownContents>()));
+	PulldownBuilder::FPulldownContentsDelegates::OnPulldownContentsSourceChanged.Broadcast(OwnerPulldownContents);
+
+	UE_LOG(LogPulldownBuilder, Log, TEXT("Detected modification of underlying data of %s."), *OwnerPulldownContents->GetName());
+}
+
+TArray<FName> UPulldownListGeneratorBase::CollectCurrentSelectedValues() const
+{
+	return {};
+}
+
+void UPulldownListGeneratorBase::CapturePreChangeSelectedValues()
+{
+	CachedSelectedValues = CollectCurrentSelectedValues();
+}
+
+bool UPulldownListGeneratorBase::CommitPostChangeSelectedValues()
+{
+	const TArray<FName> CurrentSelectedValues = CollectCurrentSelectedValues();
+	const bool bWasNotified = NotifyPulldownRowChanged(CachedSelectedValues, CurrentSelectedValues);
+
+	// Refresh the cached baseline so the next round diffs against the new current state.
+	// We refresh unconditionally so single-event flows (InputMappings-style) can call this
+	// every signal without manually re-seeding.
+	CachedSelectedValues = CurrentSelectedValues;
+
+	return bWasNotified;
 }
 
 bool UPulldownListGeneratorBase::NotifyPulldownRowChanged(const TArray<FName>& PreChangeSelectedValues, const TArray<FName>& PostChangeSelectedValues)

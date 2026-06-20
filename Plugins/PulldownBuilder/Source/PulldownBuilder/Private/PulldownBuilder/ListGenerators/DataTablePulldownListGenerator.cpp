@@ -36,39 +36,156 @@ FPulldownRows UDataTablePulldownListGenerator::GetPulldownRows(
 ) const
 {
 	FPulldownRows PulldownRows;
-	if (UDataTable* DataTable = SourceDataTable.LoadSynchronous())
+	UDataTable* DataTable = SourceDataTable.LoadSynchronous();
+	if (!IsValid(DataTable))
 	{
-		const UScriptStruct* RowStruct = DataTable->GetRowStruct();
-		const TMap<FName, uint8*>& RowMap = DataTable->GetRowMap();
-		for (const auto& Pair : RowMap)
-		{
-			const FName& RowName = Pair.Key;
-			uint8* RowData = Pair.Value;
-			if (RowName == NAME_None)
-			{
-				continue;
-			}
+		return PulldownRows;
+	}
 
-			FPulldownRow NewPulldownRow(RowName.ToString());
-			{
-				FText TooltipText;
-				if (FindTooltip(RowStruct, RowData, TooltipText))
-				{
-					NewPulldownRow.TooltipText = TooltipText;
-				}
-			}
-			{
-				FLinearColor TextColor;
-				if (FindTextColor(RowStruct, RowData, TextColor))
-				{
-					NewPulldownRow.DisplayTextColor = TextColor;
-				}
-			}
-				
-			PulldownRows.Add(NewPulldownRow);
+	const UScriptStruct* RowStruct = DataTable->GetRowStruct();
+	if (!IsValid(RowStruct))
+	{
+		return PulldownRows;
+	}
+
+	// The tooltip / text-color property names and the matching FProperty are constant across all rows.
+	// Calling FindTooltip / FindTextColor per row would iterate TFieldRange every time; instead, resolve once
+	// outside the row loop and dispatch to the cheap extraction helpers per row.
+	//
+	// NOTE: FindTooltip / FindTextColor remain virtual for back-compat -- subclasses that override them and
+	// also override GetPulldownRows can still call them directly. The default GetPulldownRows below uses the
+	// inlined fast path.
+
+	FString TooltipPropertyName = DefaultPulldownTooltipName;
+	if (RowStruct->HasMetaData(*TooltipPropertyMeta))
+	{
+		TooltipPropertyName = RowStruct->GetMetaData(*TooltipPropertyMeta);
+	}
+
+	FString TextColorPropertyName = DefaultPulldownTextColorName;
+	if (RowStruct->HasMetaData(*TextColorPropertyMeta))
+	{
+		TextColorPropertyName = RowStruct->GetMetaData(*TextColorPropertyMeta);
+	}
+
+#if UE_4_25_OR_LATER
+	const FProperty* TooltipProperty = nullptr;
+	for (const FProperty* Property : TFieldRange<FProperty>(RowStruct))
+#else
+	const UProperty* TooltipProperty = nullptr;
+	for (const UProperty* Property : TFieldRange<UProperty>(RowStruct))
+#endif
+	{
+		if (Property != nullptr && Property->GetName() == TooltipPropertyName)
+		{
+			TooltipProperty = Property;
+			break;
 		}
 	}
-	
+
+#if UE_4_25_OR_LATER
+	const FStructProperty* TextColorProperty = nullptr;
+	for (const FStructProperty* Property : TFieldRange<FStructProperty>(RowStruct))
+#else
+	const UStructProperty* TextColorProperty = nullptr;
+	for (const UStructProperty* Property : TFieldRange<UStructProperty>(RowStruct))
+#endif
+	{
+		if (Property != nullptr && Property->GetName() == TextColorPropertyName)
+		{
+			TextColorProperty = Property;
+			break;
+		}
+	}
+
+	const TMap<FName, uint8*>& RowMap = DataTable->GetRowMap();
+	for (const auto& Pair : RowMap)
+	{
+		const FName& RowName = Pair.Key;
+		uint8* RowData = Pair.Value;
+		if (RowName == NAME_None || RowData == nullptr)
+		{
+			continue;
+		}
+
+		FPulldownRow NewPulldownRow(RowName.ToString());
+
+		if (TooltipProperty != nullptr)
+		{
+#if UE_4_25_OR_LATER
+			if (TooltipProperty->IsA<FStrProperty>())
+#else
+			if (TooltipProperty->IsA<UStrProperty>())
+#endif
+			{
+				if (const FString* ValuePtr = TooltipProperty->ContainerPtrToValuePtr<FString>(RowData))
+				{
+					NewPulldownRow.TooltipText = FText::FromString(*ValuePtr);
+				}
+			}
+#if UE_4_25_OR_LATER
+			else if (TooltipProperty->IsA<FNameProperty>())
+#else
+			else if (TooltipProperty->IsA<UNameProperty>())
+#endif
+			{
+				if (const FName* ValuePtr = TooltipProperty->ContainerPtrToValuePtr<FName>(RowData))
+				{
+					NewPulldownRow.TooltipText = FText::FromName(*ValuePtr);
+				}
+			}
+#if UE_4_25_OR_LATER
+			else if (TooltipProperty->IsA<FTextProperty>())
+#else
+			else if (TooltipProperty->IsA<UTextProperty>())
+#endif
+			{
+				if (const FText* ValuePtr = TooltipProperty->ContainerPtrToValuePtr<FText>(RowData))
+				{
+					NewPulldownRow.TooltipText = *ValuePtr;
+				}
+			}
+		}
+
+		if (TextColorProperty != nullptr)
+		{
+			FLinearColor TextColor(ForceInit);
+			bool bExtracted = false;
+			if (TextColorProperty->Struct == TBaseStructure<FColor>::Get())
+			{
+				if (const FColor* ValuePtr = TextColorProperty->ContainerPtrToValuePtr<FColor>(RowData))
+				{
+					TextColor = *ValuePtr;
+					bExtracted = true;
+				}
+			}
+			else if (TextColorProperty->Struct == TBaseStructure<FLinearColor>::Get())
+			{
+				if (const FLinearColor* ValuePtr = TextColorProperty->ContainerPtrToValuePtr<FLinearColor>(RowData))
+				{
+					TextColor = *ValuePtr;
+					bExtracted = true;
+				}
+			}
+			else if (TextColorProperty->Struct == FSlateColor::StaticStruct())
+			{
+				if (const FSlateColor* ValuePtr = TextColorProperty->ContainerPtrToValuePtr<FSlateColor>(RowData))
+				{
+					TextColor = ValuePtr->GetSpecifiedColor();
+					bExtracted = true;
+				}
+			}
+
+			// Match the existing semantics: only apply the color when the source alpha is fully opaque.
+			if (bExtracted && FMath::IsNearlyEqual(TextColor.A, 1.f))
+			{
+				NewPulldownRow.DisplayTextColor = TextColor;
+			}
+		}
+
+		PulldownRows.Add(NewPulldownRow);
+	}
+
 	return PulldownRows;
 }
 
@@ -92,7 +209,7 @@ void UDataTablePulldownListGenerator::PreChange(const UDataTable* Changed, FData
 		return;
 	}
 
-	PreChangeRowNames = Changed->GetRowNames();
+	CapturePreChangeSelectedValues();
 
 	// Blueprint functions are not available during routing post load.
 	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
@@ -110,12 +227,8 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	{
 		return;
 	}
-	
-	const TArray<FName> PostChangeRowNames = Changed->GetRowNames();
-	if (NotifyPulldownRowChanged(PreChangeRowNames, PostChangeRowNames))
-	{
-		PreChangeRowNames.Empty();
-	}
+
+	CommitPostChangeSelectedValues();
 
 	// Blueprint functions are not available during routing post load.
 	if (!FUObjectThreadContext::Get().IsRoutingPostLoad)
@@ -124,6 +237,16 @@ void UDataTablePulldownListGenerator::PostChange(const UDataTable* Changed, FDat
 	}
 
 	VerifyDefaultValue();
+}
+
+TArray<FName> UDataTablePulldownListGenerator::CollectCurrentSelectedValues() const
+{
+	if (const UDataTable* DataTable = SourceDataTable.LoadSynchronous())
+	{
+		return DataTable->GetRowNames();
+	}
+
+	return {};
 }
 
 bool UDataTablePulldownListGenerator::FindTooltip(const UScriptStruct* RowStruct, uint8* RowData, FText& TooltipText) const

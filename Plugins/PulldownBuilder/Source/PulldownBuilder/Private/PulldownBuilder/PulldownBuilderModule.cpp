@@ -19,6 +19,7 @@
 #include "PulldownBuilder/Utilities/PulldownBuilderSettings.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderMessageLog.h"
 #include "PulldownBuilder/Utilities/PulldownBuilderStyle.h"
+#include "PulldownBuilder/Utilities/PulldownStructDetailCoordinator.h"
 
 namespace PulldownBuilder
 {
@@ -33,73 +34,93 @@ namespace PulldownBuilder
 
 	void FPulldownBuilderModule::StartupModule()
 	{
+		// Initialization order is meaningful. The blocks below are grouped by responsibility and ordered
+		// so that each consumer is registered AFTER everything it observes / depends on. ShutdownModule
+		// runs the reverse order.
+		//
+		//   1. Asset registry / asset definition entry points -- so the PulldownContents asset class is
+		//      recognized before the async loader starts surfacing instances of it.
+		//   2. Style / commands / message log -- pure UI / diagnostics primitives with no dependencies.
+		//   3. Async loader -- starts listening to the AssetRegistry. After this point, OnPulldownContentsLoaded
+		//      can fire, so every listener must be ready to receive it (steps 4 onward).
+		//   4. Customization-module notificator -- relays detail-customization-module changes that downstream
+		//      detail customization registrations depend on.
+		//   5. Settings -- registered before any module that reads them at registration time.
+		//   6. Row-name updaters -- subscribe to OnPulldownRowRenamed so a delegate fire during 7+ is handled.
+		//   7. Graph pin factories / context menu extensions -- need PulldownContents assets to already be
+		//      discoverable in order to bind correctly.
+		//   8. Detail customizations -- registered last so the PropertyEditor module sees the latest factory state.
+
 #if !UE_5_02_OR_LATER
-		// Registers asset type actions.
+		// 1. Asset type actions (UE5.1 and earlier). UE5.2+ uses UAssetDefinition discovered automatically.
 		FAssetTypeActions_PulldownContents::Register();
 #endif
 
-		// Registers the icons of this plugin.
+		// 2. Style / commands / message log (no deps).
 		FPulldownBuilderStyle::Register();
-
-		// Registers command actions.
 		FPulldownBuilderCommands::Register();
-
-		// Registers message log.
 		FPulldownBuilderMessageLog::Register();
-		
-		// Registers pulldown contents async loader.
+
+		// 3. Async loader. Must come BEFORE listeners that react to OnPulldownContentsLoaded.
 		FPulldownContentsAsyncLoader::Register();
 
-		// Registers details panel customization notificator class.
+		// 4. Detail-customization-module notificator.
 		FCustomizationModuleChangedNotificator::Register();
-		
-		// Registers settings.
+
+		// 5. Settings.
 		UPulldownBuilderSettings::Register();
 
-		// Registers row name updaters.
+		// 6. Row name updaters. Subscribes to OnPulldownRowRenamed broadcast from PulldownContents.
 		URowNameUpdaterBase::Register();
-		
-		// Registers custom graph pin.
+
+		// 7. Graph pin factories and context menu extension.
 		FPulldownStructGraphPinFactory::Register();
 		FNativeLessPulldownStructGraphPinFactory::Register();
-
-		// Registers a graph pin context menu extension.
 		FGraphPinContextMenuExtender::Register();
-		
-		// Registers detail customizations.
+
+		// 8. Detail customizations.
 		FPulldownStructTypeDetail::Register();
 		FPreviewPulldownStructDetail::Register();
 		FNativeLessPulldownStructDetail::Register();
+
+		// 9. Detail-customization coordinator. Registered last because it Broadcasts via the property editor
+		//    module and needs every other listener (RowNameUpdater, NativeLessPulldownStructDetail, ...)
+		//    already in place. Inside Register() it also catches up on any PulldownContents that already
+		//    finished loading.
+		FPulldownStructDetailCoordinator::Register();
 	}
 
 	void FPulldownBuilderModule::ShutdownModule()
 	{
-		// Unregisters detail customizations.
+		// Reverse of StartupModule. Each block tears down the corresponding initialization step.
+
+		// 9. Coordinator -- stop listening first so subsequent unregistrations don't trigger needless work.
+		FPulldownStructDetailCoordinator::Unregister();
+
+		// 8. Detail customizations.
 		FNativeLessPulldownStructDetail::Unregister();
 		FPreviewPulldownStructDetail::Unregister();
 		FPulldownStructTypeDetail::Unregister();
-		
-		// Unregisters custom graph pin.
+
+		// 7. Graph pin factories and context menu extension are torn down implicitly by the property editor /
+		//    graph editor module on shutdown; only the factory pair has an explicit Unregister.
 		FNativeLessPulldownStructGraphPinFactory::Unregister();
 		FPulldownStructGraphPinFactory::Unregister();
 
-		// Unregisters row name updaters.
+		// 6. Row name updaters.
 		URowNameUpdaterBase::Unregister();
-		
-		// Unregisters pulldown contents async loader.
-		FPulldownContentsAsyncLoader::Unregister();
-		
-		// Unregisters message log.
-		FPulldownBuilderMessageLog::Unregister();
 
-		// Unregisters command actions.
+		// 3. Async loader. Stops listening to the AssetRegistry first so no further callbacks fire while
+		//    the rest of the module tears down.
+		FPulldownContentsAsyncLoader::Unregister();
+
+		// 2. Style / commands / message log.
+		FPulldownBuilderMessageLog::Unregister();
 		FPulldownBuilderCommands::Unregister();
-		
-		// Unregisters the icons of this plugin.
 		FPulldownBuilderStyle::Unregister();
-		
+
 #if !UE_5_02_OR_LATER
-		// Unregisters asset type actions.
+		// 1. Asset type actions.
 		FAssetTypeActions_PulldownContents::Unregister();
 #endif
 	}

@@ -54,16 +54,22 @@ public:
 private:
 #if WITH_EDITORONLY_DATA
 	// The cache of text constructed to be displayed in the pull-down menu row.
+	// Edited only through reflection by FPulldownStructDetail; hidden from the details panel by that customization.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	FText CachedDisplayText;
-	
+
 	// The reference that allows you to view the asset that is the source of the Selected Value from the reference viewer in the editor environment.
-	// Access only through reflection so that unnecessary variables are not visible to plugin users.
+	// Persisted (not Transient) because asset registry searchable-name lookup depends on this back-reference.
+	// Edited only through reflection by FPulldownStructDetail; hidden from the details panel by that customization.
+	// NOTE: kept as a raw UObject* on purpose. UHT only honours WITH_EDITOR / WITH_EDITORONLY_DATA around
+	// UPROPERTY fields, so version-gated swapping to TObjectPtr is not supported here. The plugin must
+	// stay compilable on UE4.27 -- raw UObject* is the common-denominator form across all supported engines.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	UObject* SearchableObject;
 
 	// Whether it has been edited at least once.
 	// True if the user edits even once, even if SelectedValue is None.
+	// Edited only through reflection by FPulldownStructDetail; hidden from the details panel by that customization.
 	UPROPERTY(EditAnywhere, Category = "Pulldown")
 	bool bIsEdited;
 #endif

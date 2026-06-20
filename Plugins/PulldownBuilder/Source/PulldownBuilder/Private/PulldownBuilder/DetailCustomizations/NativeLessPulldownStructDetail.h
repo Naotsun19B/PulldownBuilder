@@ -56,8 +56,16 @@ namespace PulldownBuilder
 		void OnPulldownSourcePasteAction();
 	
 	private:
+		// Rebuilds PulldownContentsNamesByName from PulldownContentsNames so FindPulldownContentsNameByName runs in O(1).
+		void RebuildPulldownContentsNamesLookup();
+
+	private:
 		// The list of values that can be set in FNativeLessPulldownStruct::PulldownSource.
 		FPulldownRows PulldownContentsNames;
+
+		// O(1) lookup index over PulldownContentsNames keyed by SelectedValue string.
+		// Refreshed by RebuildPulldownContentsNamesLookup() whenever PulldownContentsNames changes.
+		TMap<FString, TSharedPtr<FPulldownRow>> PulldownContentsNamesByName;
 	
 		// The property handle of FNativeLessPulldownStruct::PulldownContentsName.
 		TSharedPtr<IPropertyHandle> PulldownSourceHandle;

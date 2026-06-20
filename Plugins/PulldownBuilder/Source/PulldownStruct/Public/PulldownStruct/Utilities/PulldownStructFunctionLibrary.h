@@ -12,6 +12,12 @@ class UActorNamePulldownProcessOverride;
 
 /**
  * A utility class that defines the functions to be used at the runtime of a pull-down struct.
+ *
+ * The Actor Name * functions below are the **public entry points** for runtime / Blueprint code.
+ * Each performs the dispatch documented on UDefaultActorNamePulldownProcess
+ * (UActorNamePulldownProcessOverride first, optionally UActorIdentifierNameRegistry next,
+ * UDefaultActorNamePulldownProcess as the final fallback). Prefer these over calling the
+ * default class directly.
  */
 UCLASS()
 class PULLDOWNSTRUCT_API UPulldownStructFunctionLibrary : public UBlueprintFunctionLibrary
@@ -22,18 +28,19 @@ public:
 	// Returns overridden processes that constructs a SelectedValue for a pulldown structure constructed from a UActorNamePulldownListGenerator.
 	static UActorNamePulldownProcessOverride* FindActorNamePulldownProcessOverride();
 
-	// Returns the world to which it belongs based on the specified actor.
-	// If UActorNamePulldownProcessOverride does not override processing, it returns the world the actor belongs to.
+	// Public entry point: returns the world the actor belongs to, routed through any UActorNamePulldownProcessOverride.
+	// Falls back to UDefaultActorNamePulldownProcess::GetWorldToActorBelong when no override is registered.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static UWorld* GetWorldToActorBelong(const AActor* Actor);
-	
-	// Returns the unique name of the world to which it belongs based on the specified actor.
-	// If UActorNamePulldownProcessOverride does not override processing, it returns the asset name.
+
+	// Public entry point: returns the world's identifier name, routed through any UActorNamePulldownProcessOverride.
+	// Falls back to UDefaultActorNamePulldownProcess::GetWorldIdentifierName when no override is registered.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static FString GetWorldIdentifierName(const UWorld* World);
-	
-	// Returns the unique name of the actor in the process registered in the registry.
-	// If there is no UActorIdentifierNameRegistry that the specified actor is supported, the result of AActor::GetName is returned.
+
+	// Public entry point: returns the actor's identifier name.
+	// First a UActorIdentifierNameRegistry that SupportsActorClass(...) is consulted; if none matches,
+	// UDefaultActorNamePulldownProcess::GetActorIdentifierName (i.e. GetNameSafe(Actor)) is returned.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static FString GetActorIdentifierName(const AActor* Actor);
 

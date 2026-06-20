@@ -82,15 +82,12 @@ protected:
 	void PostSourceDataTableModify();
 
 	// UPulldownListGeneratorBase interface.
+	virtual TArray<FName> CollectCurrentSelectedValues() const override;
 	virtual TArray<FName> GetDefaultValueOptions_Implementation() const override;
 	// End of UPulldownListGeneratorBase interface.
-	
+
 protected:
 	// The data table asset from which the list displayed in the pull-down menu is based.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pulldown")
 	mutable TSoftObjectPtr<UDataTable> SourceDataTable;
-
-	// The cache of row list before change.
-	UPROPERTY(Transient)
-	TArray<FName> PreChangeRowNames;
 };

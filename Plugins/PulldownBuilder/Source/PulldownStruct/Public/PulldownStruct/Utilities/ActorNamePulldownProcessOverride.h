@@ -10,6 +10,10 @@
 /**
  * A class that overrides the process of building SelectedValue for pull-down structs constructed from UActorNamePulldownListGenerator.
  * Used to switch to functionality of this plugin if the user already implements a similar feature.
+ *
+ * Scope: a single subclass is picked via TObjectRange and applied **project-wide**.
+ * For per-actor-class identifier customization (without changing the project-wide format), use
+ * UActorIdentifierNameRegistry instead -- see that header for the dispatch order and when to pick which.
  */
 UCLASS(Abstract, Blueprintable)
 class PULLDOWNSTRUCT_API UActorNamePulldownProcessOverride : public UObject
@@ -42,7 +46,17 @@ public:
 };
 
 /**
- * A utility class that defines the process of building SelectedValue for pulldown structures constructed from the default UActorNamePulldownListGenerator.
+ * A utility class that exposes the *default* (non-overridden, non-registry) implementations used when
+ * UPulldownStructFunctionLibrary resolves an actor-name pull-down value.
+ *
+ * Dispatch order in UPulldownStructFunctionLibrary:
+ *   1. If a UActorNamePulldownProcessOverride subclass exists, its implementation is used.
+ *   2. For GetActorIdentifierName only, any UActorIdentifierNameRegistry that supports the actor class is used next.
+ *   3. Otherwise this default class is used.
+ *
+ * Public so that user code overriding UActorNamePulldownProcessOverride can chain back into the default
+ * implementation. End-user / Blueprint code should normally call UPulldownStructFunctionLibrary instead,
+ * which performs the routing above.
  */
 UCLASS()
 class PULLDOWNSTRUCT_API UDefaultActorNamePulldownProcess : public UBlueprintFunctionLibrary
@@ -50,22 +64,20 @@ class PULLDOWNSTRUCT_API UDefaultActorNamePulldownProcess : public UBlueprintFun
 	GENERATED_BODY()
 
 public:
-	// Returns the persistent level or sub level to which the specified actor belongs.
+	// Default implementation: returns the persistent level or sub level to which the specified actor belongs.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static UWorld* GetWorldToActorBelong(const AActor* Actor);
-	
-	// Returns the unique name of the world to which it belongs based on the specified actor.
-	// If UActorNamePulldownProcessOverride does not override processing, it returns the asset name.
+
+	// Default implementation: returns FSoftObjectPath(World).GetAssetName() as the identifier.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static FString GetWorldIdentifierName(const UWorld* World);
-	
-	// Returns the unique name of the actor in the process registered in the registry.
-	// If there is no UActorIdentifierNameRegistry that the specified actor is supported, the result of AActor::GetName is returned.
+
+	// Default implementation: returns GetNameSafe(Actor). Does NOT consult UActorIdentifierNameRegistry --
+	// the registry lookup is performed by UPulldownStructFunctionLibrary::GetActorIdentifierName.
 	UFUNCTION(BlueprintPure, Category = "Pulldown Builder|Actor Name")
 	static FString GetActorIdentifierName(const AActor* Actor);
 
-	// Splits a built SelectedValue into a WorldIdentifierName and ActorIdentifierName.
-	// Supports the format of "WorldIdentifierName::ActorIdentifierName" if it is not overridden in UActorNamePulldownProcessOverride.
+	// Default implementation: splits SelectedValue using PulldownBuilder::Global::WorldAndActorDelimiter ("::").
 	UFUNCTION(BlueprintCallable, Category = "Pulldown Builder|Actor Name")
 	static bool SplitSelectedValueToWorldIdentifierNameAndActorIdentifierName(
 		const FString& SelectedValue,
@@ -73,8 +85,7 @@ public:
 		FString& ActorIdentifierName
 	);
 
-	// Builds a SelectedValue from the WorldIdentifierName and ActorIdentifierName.
-	// If it is not overridden in UActorNamePulldownProcessOverride, constructs it in the format "WorldIdentifierName::ActorIdentifierName".
+	// Default implementation: builds a SelectedValue in the format "WorldIdentifierName::ActorIdentifierName".
 	UFUNCTION(BlueprintCallable, Category = "Pulldown Builder|Actor Name")
 	static FString BuildSelectedValueFromWorldIdentifierNameAndActorIdentifierName(
 		const FString& WorldIdentifierName,
