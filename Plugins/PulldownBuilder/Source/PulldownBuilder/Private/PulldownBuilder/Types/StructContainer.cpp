@@ -37,7 +37,7 @@ FStructContainer::~FStructContainer()
 
 bool FStructContainer::Identical(const FStructContainer* Other, uint32 PortFlags) const
 {
-	if (Other == nullptr || ScriptStruct == Other->GetScriptStruct())
+	if (Other == nullptr || ScriptStruct != Other->GetScriptStruct())
 	{
 		return false;
 	}
@@ -126,7 +126,7 @@ const uint8* FStructContainer::GetMemory() const
 	return StructMemory;
 }
 
-uint8* FStructContainer::GetMutableMemory() const
+uint8* FStructContainer::GetMutableMemory()
 {
 	return const_cast<uint8*>(StructMemory);
 }
@@ -144,7 +144,7 @@ UScriptStruct* FStructContainer::ReinitializeAs(const UScriptStruct* InScriptStr
 	return NonConstStruct;
 }
 
-void FStructContainer::DestroyScriptStruct() const
+void FStructContainer::DestroyScriptStruct()
 {
 	check(StructMemory != nullptr);
 	if (::IsValid(ScriptStruct))

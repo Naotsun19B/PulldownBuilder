@@ -92,7 +92,7 @@ public:
 
 	// Returns the raw data of the struct stored in this container.
 	const uint8* GetMemory() const;
-	uint8* GetMutableMemory() const;
+	uint8* GetMutableMemory();
 	
 	// Casts the data stored in the container to TStruct and return it.
 	template<typename TStruct>
@@ -115,7 +115,7 @@ protected:
 	UScriptStruct* ReinitializeAs(const UScriptStruct* InScriptStruct);
 
 	// Discards the struct data stored in this container.
-	void DestroyScriptStruct() const;
+	void DestroyScriptStruct();
 
 	// Sets new values for struct types and values.
 	void SetStructData(const UScriptStruct* InScriptStruct, const uint8* InStructMemory);
