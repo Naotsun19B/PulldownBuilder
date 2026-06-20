@@ -6,6 +6,15 @@
 *.user
 Plugins/Developer/RiderLink/*
 
+# Claude Code
+# Track only project-shared skills and agents.
+# All other .claude/ contents (settings, caches, scripts, hooks) are
+# treated as environment-specific and intentionally not tracked.
+.claude/*
+!.claude/skills/
+!.claude/agents/
+.mcp.json
+
 # Visual Studio database file
 *.VC.db
 
